@@ -375,7 +375,7 @@ function Verdict({ o, lang, limitMs, next, onShowSolution }: { o: Outcome; lang:
     const explanation = explainError('cpp', r.compileError, ui)
     return (
       <div className="flex flex-col gap-3">
-        <p className="flex items-center gap-2 font-semibold text-bad">
+        <p className="flex items-center gap-2 font-semibold text-bad" aria-live="polite">
           <CircleAlert className="size-5" aria-hidden /> {t('Erreur de compilation', 'Compilation error')}
         </p>
         {explanation && (
