@@ -1,0 +1,482 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geologica/full.css";
+@import "@fontsource-variable/fira-code/wght.css";
+
+/* `dark:` suit le thème forcé (data-theme) sinon celui du système. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Cordée. Neige (fond), ardoise (encre), jaune balise (« tu es ici »,
+   ta ligne au classement, la série). Les couleurs de pistes
+   (verte, bleue, rouge, noire) ne servent qu'à dire la difficulté.
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --snow: #f2f5f4;
+  --surface: #ffffff;
+  --surface-2: #e9eeec;
+  --surface-3: #dde4e1;
+  --line: #d3dcd8;
+  --line-strong: #aebbb6;
+  --field-line: #7d8c95;
+  --ink: #142433;
+  --ink-2: #3a4b59;
+  --muted: #56666f;
+  --signal: #f6c400;
+  --signal-ink: #142433;
+  --signal-soft: #fff4c4;
+  --verte: #12814a;
+  --bleue: #1c5cc4;
+  --rouge: #c8243a;
+  --noire: #142433;
+  --verte-soft: #dcf1e5;
+  --bleue-soft: #dfe9fa;
+  --rouge-soft: #fbe2e5;
+  --noire-soft: #dfe3e8;
+  --amber: #a35f00;
+  --amber-soft: #fbeccf;
+  --focus: #1c5cc4;
+  --btn: #142433;
+  --btn-ink: #ffffff;
+  --btn-hover: #24394d;
+  --code-bg: #f7f9f8;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237d8c95' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --e1: 0 1px 2px rgb(20 36 51 / 0.06);
+  --e2: 0 1px 2px rgb(20 36 51 / 0.05), 0 8px 24px -10px rgb(20 36 51 / 0.18);
+  --e3: 0 2px 4px rgb(20 36 51 / 0.06), 0 24px 48px -16px rgb(20 36 51 / 0.28);
+
+  /* Coloration syntaxique */
+  --tok-keyword: #8a2be2;
+  --tok-string: #0f7a3d;
+  --tok-number: #b4530a;
+  --tok-comment: #6c7a83;
+  --tok-function: #1c5cc4;
+  --tok-type: #9a3412;
+  --tok-builtin: #0e7490;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --snow: #0d1720;
+    --surface: #142230;
+    --surface-2: #1b2a38;
+    --surface-3: #233545;
+    --line: #253646;
+    --line-strong: #3a4e60;
+    --field-line: #6d8293;
+    --ink: #e8eef0;
+    --ink-2: #bdc9cf;
+    --muted: #93a3ad;
+    --signal-soft: #3a3312;
+    --verte: #40c07e;
+    --bleue: #6b9ef2;
+    --rouge: #ff7183;
+    --noire: #e8eef0;
+    --verte-soft: #12301f;
+    --bleue-soft: #172a47;
+    --rouge-soft: #3a1820;
+    --noire-soft: #26313c;
+    --amber: #f0a43a;
+    --amber-soft: #3a2a10;
+    --focus: #8ab4ff;
+    --btn: #e8eef0;
+    --btn-ink: #0d1720;
+    --btn-hover: #ffffff;
+    --code-bg: #101c27;
+    --e1: 0 1px 2px rgb(0 0 0 / 0.3);
+    --e2: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -10px rgb(0 0 0 / 0.6);
+    --e3: 0 2px 4px rgb(0 0 0 / 0.3), 0 24px 48px -16px rgb(0 0 0 / 0.7);
+    --tok-keyword: #c792ea;
+    --tok-string: #8bd49c;
+    --tok-number: #f5a65b;
+    --tok-comment: #7f8f99;
+    --tok-function: #82aaff;
+    --tok-type: #ffcb6b;
+    --tok-builtin: #6fd3e0;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --snow: #0d1720;
+  --surface: #142230;
+  --surface-2: #1b2a38;
+  --surface-3: #233545;
+  --line: #253646;
+  --line-strong: #3a4e60;
+  --field-line: #6d8293;
+  --ink: #e8eef0;
+  --ink-2: #bdc9cf;
+  --muted: #93a3ad;
+  --signal-soft: #3a3312;
+  --verte: #40c07e;
+  --bleue: #6b9ef2;
+  --rouge: #ff7183;
+  --noire: #e8eef0;
+  --verte-soft: #12301f;
+  --bleue-soft: #172a47;
+  --rouge-soft: #3a1820;
+  --noire-soft: #26313c;
+  --amber: #f0a43a;
+  --amber-soft: #3a2a10;
+  --focus: #8ab4ff;
+  --btn: #e8eef0;
+  --btn-ink: #0d1720;
+  --btn-hover: #ffffff;
+  --code-bg: #101c27;
+  --e1: 0 1px 2px rgb(0 0 0 / 0.3);
+  --e2: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -10px rgb(0 0 0 / 0.6);
+  --e3: 0 2px 4px rgb(0 0 0 / 0.3), 0 24px 48px -16px rgb(0 0 0 / 0.7);
+  --tok-keyword: #c792ea;
+  --tok-string: #8bd49c;
+  --tok-number: #f5a65b;
+  --tok-comment: #7f8f99;
+  --tok-function: #82aaff;
+  --tok-type: #ffcb6b;
+  --tok-builtin: #6fd3e0;
+}
+
+@theme inline {
+  --font-sans: "Geologica Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --color-snow: var(--snow);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-field: var(--field-line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-signal-soft: var(--signal-soft);
+  --color-verte: var(--verte);
+  --color-bleue: var(--bleue);
+  --color-rouge: var(--rouge);
+  --color-noire: var(--noire);
+  --color-verte-soft: var(--verte-soft);
+  --color-bleue-soft: var(--bleue-soft);
+  --color-rouge-soft: var(--rouge-soft);
+  --color-noire-soft: var(--noire-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-focus: var(--focus);
+  --color-btn: var(--btn);
+  --color-btn-ink: var(--btn-ink);
+  --color-btn-hover: var(--btn-hover);
+  --color-code: var(--code-bg);
+
+  /* Échelle typographique (rapport 1,25) */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.35;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.45;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.5625rem;
+  --text-xl--line-height: 1.25;
+  --text-2xl: 1.953rem;
+  --text-2xl--line-height: 1.15;
+  --text-3xl: 2.441rem;
+  --text-3xl--line-height: 1.08;
+  --text-4xl: 3.052rem;
+  --text-4xl--line-height: 1.02;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  --shadow-e1: var(--e1);
+  --shadow-e2: var(--e2);
+  --shadow-e3: var(--e3);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--snow);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-variation-settings: "SHRP" 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Titres : Geologica avec un peu de « sharpness », la seule coquetterie typographique. */
+  h1,
+  h2,
+  h3,
+  .display {
+    font-variation-settings: "SHRP" 60;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
+  ::selection {
+    background: var(--signal);
+    color: var(--signal-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  button:not(:disabled),
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ------------------------------------------------------------------ Texte riche (énoncés, cours) */
+.prose-cordee {
+  max-width: 70ch;
+  color: var(--ink);
+}
+.prose-cordee > * + * {
+  margin-top: 0.85em;
+}
+.prose-cordee h2 {
+  font-size: var(--text-lg);
+  font-weight: 650;
+  margin-top: 1.8em;
+  line-height: 1.3;
+}
+.prose-cordee h3 {
+  font-size: var(--text-base);
+  font-weight: 650;
+  margin-top: 1.4em;
+}
+.prose-cordee ul {
+  list-style: disc;
+  padding-left: 1.3em;
+}
+.prose-cordee ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+}
+.prose-cordee li + li {
+  margin-top: 0.3em;
+}
+.prose-cordee li::marker {
+  color: var(--muted);
+}
+.prose-cordee a {
+  color: var(--bleue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-cordee strong {
+  font-weight: 650;
+}
+.prose-cordee :not(pre) > code {
+  font-size: 0.9em;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 0.08em 0.35em;
+}
+.prose-cordee pre {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 0.9em 1.1em;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.prose-cordee table {
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.prose-cordee th,
+.prose-cordee td {
+  border: 1px solid var(--line);
+  padding: 0.35em 0.7em;
+  text-align: left;
+}
+.prose-cordee blockquote {
+  border-left: 3px solid var(--signal);
+  padding-left: 1em;
+  color: var(--ink-2);
+}
+
+/* Groupes Python / C++ : on n'affiche que le langage choisi. */
+.code-group > pre + pre {
+  margin-top: 0;
+}
+[data-lang-pref="python"] .code-group > pre[data-lang="cpp"],
+[data-lang-pref="cpp"] .code-group > pre[data-lang="python"] {
+  display: none;
+}
+
+/* highlight.js → nos jetons */
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-literal {
+  color: var(--tok-keyword);
+}
+.hljs-string,
+.hljs-meta .hljs-string {
+  color: var(--tok-string);
+}
+.hljs-number {
+  color: var(--tok-number);
+}
+.hljs-comment {
+  color: var(--tok-comment);
+  font-style: italic;
+}
+.hljs-title.function_,
+.hljs-title {
+  color: var(--tok-function);
+}
+.hljs-type,
+.hljs-meta {
+  color: var(--tok-type);
+}
+.hljs-built_in {
+  color: var(--tok-builtin);
+}
+
+/* ------------------------------------------------------------------ Mouvement */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--len, 2000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes gain {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  20% {
+    opacity: 1;
+    transform: none;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.anim-rise {
+  animation: rise 360ms var(--ease-out) both;
+}
+.anim-draw {
+  stroke-dasharray: var(--len, 2000);
+  animation: draw 1400ms var(--ease-out) both;
+}
+.anim-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse-ring 1800ms var(--ease-out) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+  .anim-pulse {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ CodeMirror */
+.cm-editor {
+  height: 100%;
+  font-size: 0.9rem;
+  background: var(--code-bg);
+}
+.cm-editor.cm-focused {
+  outline: none;
+}
+.cm-scroller {
+  font-family: var(--font-mono) !important;
+  line-height: 1.6 !important;
+  font-variant-ligatures: none;
+}
+.cm-gutters {
+  background: var(--code-bg) !important;
+  border-right: 1px solid var(--line) !important;
+  color: var(--muted) !important;
+}
+.cm-activeLine,
+.cm-activeLineGutter {
+  background: color-mix(in oklab, var(--surface-2) 70%, transparent) !important;
+}
+.cm-cursor {
+  border-left-color: var(--ink) !important;
+  border-left-width: 2px !important;
+}
+.cm-selectionBackground,
+.cm-focused .cm-selectionBackground {
+  background: color-mix(in oklab, var(--bleue) 22%, transparent) !important;
+}
+.cm-tooltip {
+  background: var(--surface) !important;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: var(--radius-md);
+  box-shadow: var(--e2);
+}
+.cm-tooltip-autocomplete > ul > li[aria-selected] {
+  background: var(--bleue) !important;
+  color: #fff !important;
+}

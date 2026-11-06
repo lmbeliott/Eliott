@@ -1,0 +1,97 @@
+import { createClient } from '@supabase/supabase-js'
+
+// Clé « publishable » : faite pour être publique ; les droits sont gérés par RLS côté serveur.
+export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://bskgiaejgvbjpixijruk.supabase.co'
+export const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? 'sb_publishable_v6HxcdZkbMdzIWB0fi_XzQ_AM05NF3A'
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'cordee-auth' },
+})
+
+export interface Profile {
+  id: string
+  username: string
+  display_name: string
+  school: string | null
+  preferred_language: 'python' | 'cpp'
+  xp: number
+  solved_count: number
+  current_streak: number
+  best_streak: number
+  last_streak_day: string | null
+  created_at: string
+}
+
+export interface Solve {
+  problem_id: string
+  solved_at: string
+  xp: number
+  first_try: boolean
+  daily: boolean
+  language: 'python' | 'cpp'
+}
+
+export interface Group {
+  id: string
+  name: string
+  kind: 'classe' | 'etablissement' | 'amis'
+  join_code: string
+  owner_id: string
+  created_at: string
+}
+
+export interface LeaderRow {
+  rank: number
+  user_id: string
+  username: string
+  display_name: string
+  school: string | null
+  xp: number
+  solved: number
+  streak: number
+  is_me: boolean
+}
+
+export interface SubmitResult {
+  new_solve: boolean
+  xp_gain: number
+  first_try: boolean
+  daily: boolean
+  xp: number
+  solved_count: number
+  streak: number
+}
+
+/** Série en cours : elle tombe à zéro si le dernier jour actif date d'avant-hier. */
+export function liveStreak(p: Pick<Profile, 'current_streak' | 'last_streak_day'>) {
+  if (!p.last_streak_day) return 0
+  const today = parisDay(new Date())
+  const last = p.last_streak_day
+  const yesterday = parisDay(new Date(Date.now() - 86400_000))
+  return last === today || last === yesterday ? p.current_streak : 0
+}
+
+/** Date du jour à Paris, au format AAAA-MM-JJ (comme le serveur). */
+export function parisDay(d: Date) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
+}
+
+/** Message d'erreur lisible à partir d'une erreur Supabase / Postgres. */
+export function errorText(e: unknown, lang: 'fr' | 'en'): string {
+  const err = e as { message?: string; code?: string; status?: number }
+  const msg = err?.message ?? String(e)
+  const map: [RegExp, string, string][] = [
+    [/Invalid login credentials/i, 'Adresse e-mail ou mot de passe incorrect.', 'Wrong email or password.'],
+    [/Email not confirmed/i, 'Confirme d’abord ton adresse e-mail avec le lien reçu.', 'Confirm your email address first, using the link we sent you.'],
+    [/User already registered/i, 'Un compte existe déjà avec cette adresse. Connecte-toi.', 'An account already exists with this email. Sign in instead.'],
+    [/Password should be at least (\d+)/i, 'Le mot de passe doit contenir au moins 8 caractères.', 'The password must be at least 8 characters long.'],
+    [/rate limit|too many/i, 'Trop de tentatives. Réessaie dans quelques minutes.', 'Too many attempts. Try again in a few minutes.'],
+    [/Unable to validate email address|invalid format/i, 'Cette adresse e-mail n’est pas valide.', 'This email address is not valid.'],
+    [/Failed to fetch|NetworkError|Load failed/i, 'Pas de connexion au serveur. Vérifie ta connexion internet puis réessaie.', 'Cannot reach the server. Check your internet connection and try again.'],
+    [/duplicate key value.*username/i, 'Ce pseudo est déjà pris.', 'This username is already taken.'],
+    [/Trop de soumissions/i, 'Trop de soumissions en une minute. Attends un peu avant de recommencer.', 'Too many submissions in one minute. Wait a moment before trying again.'],
+    [/Aucune cordée ne correspond au code (\w+)/i, 'Aucune cordée ne correspond à ce code. Vérifie-le auprès de la personne qui te l’a donné.', 'No group matches this code. Check it with the person who gave it to you.'],
+  ]
+  for (const [re, fr, en] of map) if (re.test(msg)) return lang === 'en' ? en : fr
+  return msg
+}
