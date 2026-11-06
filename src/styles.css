@@ -205,32 +205,195 @@
   }
 }
 
-@keyframes rise {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
+/* ==================================================================
+   Mouvement — durées et courbes partagées
+   ================================================================== */
+:root {
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 560ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  interpolate-size: allow-keywords;
 }
-@keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(24px); }
-  to { opacity: 1; transform: none; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes slide-in-right { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes slide-out-right { from { transform: none; } to { transform: translateX(100%); } }
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop { 0% { transform: scale(0.94); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pop-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.96); opacity: 0; } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes word-up { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes pool-fill { from { clip-path: inset(0 100% 0 0 round 14px); } to { clip-path: inset(0 0 0 0 round 14px); } }
+@keyframes rope-in { from { transform: translateX(-24px); opacity: 0; } to { transform: none; opacity: 0.9; } }
+@keyframes rope-drift { from { background-position-x: 0, calc(var(--float) * 2), calc(var(--float) * 4), 0; } to { background-position-x: calc(var(--float) * 6), calc(var(--float) * 8), calc(var(--float) * 10), 0; } }
+@keyframes lane-card-in { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
+@keyframes caustics { 0% { transform: translate3d(-4%, -3%, 0) scale(1.05); } 50% { transform: translate3d(3%, 2%, 0) scale(1.12); } 100% { transform: translate3d(-4%, -3%, 0) scale(1.05); } }
+@keyframes swim-along { from { left: 0; } to { left: calc(100% - 28px); } }
+@keyframes step-light { to { background: var(--water-bright); color: #04212c; transform: scale(1.06); } }
+@keyframes draw { from { stroke-dashoffset: var(--len, 200); } to { stroke-dashoffset: 0; } }
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(240 86 63 / 0.45); } 100% { box-shadow: 0 0 0 8px rgb(240 86 63 / 0); } }
+@keyframes slide-from-right { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes slide-from-left { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+
+@layer components {
+  /* Apparition au défilement */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity var(--dur-4) var(--ease-out), transform var(--dur-4) var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal[data-shown] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Titre : mots qui montent depuis la ligne d'eau */
+  .word-mask {
+    display: inline-block;
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+    vertical-align: top;
+    padding-bottom: 0.06em;
+    margin-bottom: -0.06em;
+  }
+  .word-rise {
+    display: inline-block;
+    animation: word-up 820ms var(--ease-out) both;
+  }
+
+  /* Logo : la ligne se dessine derrière le nageur ; au survol, le point avance d'un battement */
+  .logo-anim .logo-s { stroke-dasharray: 100; animation: draw 1500ms cubic-bezier(0.6, 0, 0.25, 1) both; --len: 100; }
+  .logo-dot { transition: transform var(--dur-3) var(--ease-spring); }
+  .logo-link:hover .logo-mark:not(.logo-anim) .logo-dot { transform: translateX(-2.5px); }
+
+  /* Bassin du héros : se remplit, les lignes s'installent, les créneaux arrivent */
+  .pool-animated:not([data-play]) .pool-water { clip-path: inset(0 100% 0 0 round 14px); }
+  .pool-animated:not([data-play]) :is(.pool-card, .pool-block) { opacity: 0; }
+  .pool-animated[data-play] .pool-water { animation: pool-fill 1000ms var(--ease-in-out) both; }
+  .pool-animated[data-play] .pool-water .lane-rope {
+    animation: rope-in 700ms var(--ease-out) both, rope-drift 16s linear infinite;
+    animation-delay: calc(250ms + var(--i, 0) * 70ms), 1600ms;
+  }
+  .pool-animated[data-play] :is(.pool-card, .pool-block) {
+    animation: lane-card-in 620ms var(--ease-out) both;
+    animation-delay: calc(700ms + var(--i, 0) * 110ms);
+  }
+  .pool-caustics {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 30% at 30% 30%, rgb(255 255 255 / 0.16), transparent 70%),
+      radial-gradient(35% 25% at 70% 60%, rgb(255 255 255 / 0.12), transparent 70%),
+      radial-gradient(30% 22% at 45% 85%, rgb(255 255 255 / 0.10), transparent 70%);
+    mix-blend-mode: soft-light;
+    animation: caustics 16s var(--ease-in-out) infinite;
+  }
+  .rope-drift { animation: rope-drift 18s linear infinite; }
+
+  /* Parcours en 4 étapes : un nageur longe la ligne */
+  .swimmer-dot {
+    position: absolute;
+    top: 13px;
+    height: 18px;
+    width: 28px;
+    border-radius: 999px;
+    background: var(--water-bright);
+    box-shadow: 0 0 0 4px var(--surface);
+    left: 0;
+  }
+  [data-shown] > .swimmer-dot { animation: swim-along 2600ms linear 300ms both; }
+  [data-shown] .step-num { animation: step-light 300ms var(--ease-out) both; animation-delay: calc(300ms + var(--i) * 690ms); }
+
+  /* Entrée du héros */
+  .hero-in { animation: rise 700ms var(--ease-out) both; }
+
+  /* Aperçus produit : les éléments se posent un à un */
+  .mock:not([data-shown]) .mock-cell { opacity: 0; }
+  .mock[data-shown] .mock-cell { animation: pop 460ms var(--ease-out) both; animation-delay: calc(260ms + var(--i, 0) * 55ms); }
+
+  /* Indicateurs glissants (onglets, contrôles segmentés) */
+  .slide-indicator {
+    position: absolute;
+    transition: transform var(--dur-3) var(--ease-out), width var(--dur-3) var(--ease-out);
+    will-change: transform, width;
+  }
+
+  /* Boutons : léger enfoncement au clic */
+  .press { transition-property: color, background-color, border-color, box-shadow, transform, filter; }
+  .press:active:not(:disabled) { transform: scale(0.97); }
+
+  .badge-bump { animation: bump 420ms var(--ease-spring); }
+  .live-dot { animation: pulse-ring 1.6s var(--ease-out) infinite; }
+
+  /* Curseur de prix */
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 28px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--water-bright) var(--fill), var(--line) var(--fill));
+  }
+  .range::-moz-range-track { height: 6px; border-radius: 999px; background: var(--line); }
+  .range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--water-bright); }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    margin-top: -9px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 3px solid var(--water-bright);
+    box-shadow: 0 2px 8px -2px rgb(12 42 62 / 0.35);
+    transition: transform var(--dur-2) var(--ease-spring);
+  }
+  .range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 3px solid var(--water-bright);
+  }
+  .range:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .range:focus-visible { outline-offset: 3px; border-radius: 999px; }
+
+  /* FAQ : ouverture fluide (navigateurs récents), instantanée ailleurs */
+  .faq::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size var(--dur-3) var(--ease-out), content-visibility var(--dur-3) allow-discrete;
+  }
+  .faq[open]::details-content { block-size: auto; }
 }
-@keyframes overlay-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes pop {
-  0% { transform: scale(0.96); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-@keyframes ripple {
-  0% { transform: translateX(-30%); }
-  100% { transform: translateX(0%); }
-}
+
+/* Transitions de page (API View Transitions, via React Router) */
+.app-main { view-transition-name: page; }
+::view-transition-old(page) { animation: 140ms var(--ease-in-out) both fade-out; }
+::view-transition-new(page) { animation: 260ms var(--ease-out) 60ms both rise; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .reveal { opacity: 1; transform: none; }
+  .pool-caustics, .rope-drift { animation: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

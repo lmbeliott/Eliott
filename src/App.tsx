@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, type ReactNode } from 'react'
-import { BrowserRouter, HashRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { lazy, Suspense, type ReactNode } from 'react'
+import { createBrowserRouter, createHashRouter, Navigate, Outlet, RouterProvider, ScrollRestoration, useLocation } from 'react-router-dom'
 import { FeedbackProvider } from './components/feedback'
 import { useSession } from './data/store'
 import { useCtx } from './data/hooks'
@@ -21,20 +21,6 @@ const Reports = lazy(() => import('./pages/app/Reports'))
 const Billing = lazy(() => import('./pages/app/Billing'))
 const Support = lazy(() => import('./pages/app/Support'))
 const Account = lazy(() => import('./pages/app/Account'))
-
-const Router = import.meta.env.VITE_HASH_ROUTER === '1' ? HashRouter : BrowserRouter
-
-function ScrollReset() {
-  const { pathname, hash } = useLocation()
-  useEffect(() => {
-    if (hash) {
-      document.getElementById(hash.slice(1))?.scrollIntoView()
-      return
-    }
-    window.scrollTo(0, 0)
-  }, [pathname, hash])
-  return null
-}
 
 function RequireSession({ children }: { children: ReactNode }) {
   const session = useSession()
@@ -68,39 +54,55 @@ function PageSkeleton() {
   )
 }
 
-export default function App() {
+// Routeur « data » : nécessaire pour les transitions de page (View Transitions API).
+function Root() {
   return (
-    <Router>
-      <FeedbackProvider>
-        <ScrollReset />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/connexion" element={<GuestOnly><Login /></GuestOnly>} />
-          <Route path="/inscription" element={<GuestOnly><Register /></GuestOnly>} />
-          <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
-          <Route path="/cgv" element={<Terms />} />
-          <Route path="/confidentialite" element={<Privacy />} />
-          <Route path="/clubs" element={<RequireSession><ClubChoice /></RequireSession>} />
-          <Route path="/app" element={<RequireClub />}>
-            <Route index element={<Dashboard />} />
-            <Route path="planning" element={<Planning />} />
-            <Route path="configuration/*" element={<Config />} />
-            <Route path="absences" element={<Absences />} />
-            <Route path="remplacements" element={<Replacements />} />
-            <Route path="equipe/*" element={<Team />} />
-            <Route path="rapports" element={<Reports />} />
-            <Route path="abonnement" element={<Billing />} />
-            <Route path="support" element={<Support />} />
-            <Route path="compte" element={<Account />} />
-          </Route>
-          {/* Anciennes adresses */}
-          <Route path="/login" element={<Navigate to="/connexion" replace />} />
-          <Route path="/register" element={<Navigate to="/inscription" replace />} />
-          <Route path="/club-choice" element={<Navigate to="/clubs" replace />} />
-          <Route path="/dashboard" element={<Navigate to="/app" replace />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </FeedbackProvider>
-    </Router>
+    <FeedbackProvider>
+      <ScrollRestoration />
+      <Outlet />
+    </FeedbackProvider>
   )
+}
+
+const createRouter = import.meta.env.VITE_HASH_ROUTER === '1' ? createHashRouter : createBrowserRouter
+
+const router = createRouter([
+  {
+    element: <Root />,
+    children: [
+      { path: '/', element: <Landing /> },
+      { path: '/connexion', element: <GuestOnly><Login /></GuestOnly> },
+      { path: '/inscription', element: <GuestOnly><Register /></GuestOnly> },
+      { path: '/mot-de-passe-oublie', element: <ForgotPassword /> },
+      { path: '/cgv', element: <Terms /> },
+      { path: '/confidentialite', element: <Privacy /> },
+      { path: '/clubs', element: <RequireSession><ClubChoice /></RequireSession> },
+      {
+        path: '/app',
+        element: <RequireClub />,
+        children: [
+          { index: true, element: <Dashboard /> },
+          { path: 'planning', element: <Planning /> },
+          { path: 'configuration/*', element: <Config /> },
+          { path: 'absences', element: <Absences /> },
+          { path: 'remplacements', element: <Replacements /> },
+          { path: 'equipe/*', element: <Team /> },
+          { path: 'rapports', element: <Reports /> },
+          { path: 'abonnement', element: <Billing /> },
+          { path: 'support', element: <Support /> },
+          { path: 'compte', element: <Account /> },
+        ],
+      },
+      // Anciennes adresses du site d'origine
+      { path: '/login', element: <Navigate to="/connexion" replace /> },
+      { path: '/register', element: <Navigate to="/inscription" replace /> },
+      { path: '/club-choice', element: <Navigate to="/clubs" replace /> },
+      { path: '/dashboard', element: <Navigate to="/app" replace /> },
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+])
+
+export default function App() {
+  return <RouterProvider router={router} />
 }

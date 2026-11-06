@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight, Bell, CalendarDays, CalendarX2, CreditCard, Download, FileSpreadsheet, Home, LifeBuoy,
@@ -87,7 +87,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1240px] px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8">{children}</main>
+      <main className="app-main mx-auto w-full max-w-[1240px] px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8">{children}</main>
 
       {/* Barre d'onglets (mobile) */}
       <nav aria-label="Navigation rapide" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
@@ -99,10 +99,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
             { to: '/app/remplacements', label: 'Remplacer', icon: Repeat, badge: counts.replacements },
           ].map((i) => (
             <li key={i.to}>
-              <NavLink to={i.to} end={i.end} className={({ isActive }) => cn('relative flex h-16 flex-col items-center justify-center gap-1 text-[11.5px] font-semibold', isActive ? 'text-water' : 'text-muted')}>
+              <NavLink to={i.to} end={i.end} viewTransition className={({ isActive }) => cn('relative flex h-16 flex-col items-center justify-center gap-1 text-[11.5px] font-semibold transition-colors duration-200 [&>svg]:transition-transform [&>svg]:duration-300 active:[&>svg]:scale-90', isActive ? 'text-water [&>svg]:-translate-y-0.5' : 'text-muted')}>
                 <i.icon aria-hidden className="size-[22px]" strokeWidth={2} />
                 {i.label}
-                {!!i.badge && <span className="absolute left-1/2 top-2 ml-2 rounded-full bg-rope px-1.5 text-[10.5px] font-bold leading-4 text-white dark:text-[#2a0d08]">{i.badge}</span>}
+                {!!i.badge && <span key={i.badge} className="badge-bump absolute left-1/2 top-2 ml-2 rounded-full bg-rope px-1.5 text-[10.5px] font-bold leading-4 text-white dark:text-[#2a0d08]">{i.badge}</span>}
               </NavLink>
             </li>
           ))}
@@ -131,8 +131,22 @@ export default function AppShell({ children }: { children: ReactNode }) {
 }
 
 function SidebarNav({ main, manage, footer }: { main: NavItem[]; manage: NavItem[]; footer: NavItem[] }) {
+  const ref = useRef<HTMLElement>(null)
+  const { pathname } = useLocation()
+  const [hl, setHl] = useState<{ y: number; h: number } | null>(null)
+  useLayoutEffect(() => {
+    const el = ref.current?.querySelector<HTMLElement>('a[aria-current="page"]')
+    if (!el || !ref.current) { setHl(null); return }
+    const a = el.getBoundingClientRect(); const b = ref.current.getBoundingClientRect()
+    setHl({ y: a.top - b.top, h: a.height })
+  }, [pathname, main.length, manage.length])
   return (
-    <nav aria-label="Navigation de l'application" className="flex flex-col gap-5">
+    <nav ref={ref} aria-label="Navigation de l'application" className="relative flex flex-col gap-5">
+      {hl && (
+        <span aria-hidden className="slide-indicator inset-x-0 top-0 rounded-lg bg-water-soft" style={{ transform: `translateY(${hl.y}px)`, height: hl.h }}>
+          <span className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r bg-water-bright" />
+        </span>
+      )}
       <NavGroup items={main} />
       {manage.length > 0 && <NavGroup title="Gestion du club" items={manage} />}
       <NavGroup items={footer} />
@@ -150,14 +164,15 @@ function NavGroup({ title, items }: { title?: string; items: NavItem[] }) {
             <NavLink
               to={i.to}
               end={i.end}
+              viewTransition
               className={({ isActive }) => cn(
-                'relative flex h-10 items-center gap-3 rounded-lg px-3 text-[15px] font-medium transition-colors',
-                isActive ? 'bg-water-soft text-ink font-semibold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r before:bg-water-bright' : 'text-ink-2 hover:bg-surface-2 hover:text-ink',
+                'relative flex h-10 items-center gap-3 rounded-lg px-3 text-[15px] font-medium transition-colors duration-200',
+                isActive ? 'text-ink font-semibold' : 'text-ink-2 hover:bg-surface-2/70 hover:text-ink',
               )}
             >
               <i.icon aria-hidden className="size-[18px] shrink-0" strokeWidth={2} />
               <span className="flex-1 truncate">{i.label}</span>
-              {!!i.badge && <span className="rounded-full bg-rope px-1.5 text-[11.5px] font-bold leading-5 text-white dark:text-[#2a0d08]" aria-label={`${i.badge} en attente`}>{i.badge}</span>}
+              {!!i.badge && <span key={i.badge} className="badge-bump rounded-full bg-rope px-1.5 text-[11.5px] font-bold leading-5 text-white dark:text-[#2a0d08]" aria-label={`${i.badge} en attente`}>{i.badge}</span>}
             </NavLink>
           </li>
         ))}
@@ -256,7 +271,7 @@ function Notifications() {
         className="relative inline-flex size-10 items-center justify-center rounded-lg text-ink-2 hover:bg-surface-2 hover:text-ink"
       >
         <Bell aria-hidden className="size-[18px]" />
-        {unread.length > 0 && <span className="absolute right-2 top-2 size-2.5 rounded-full bg-rope-bright ring-2 ring-bg" />}
+        {unread.length > 0 && <span key={unread.length} className="badge-bump absolute right-2 top-2 size-2.5 rounded-full bg-rope-bright ring-2 ring-bg" />}
       </button>
       {open && (
         <div className="absolute right-0 top-12 z-40 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">

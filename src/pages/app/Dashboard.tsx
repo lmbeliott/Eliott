@@ -11,6 +11,7 @@ import { absenceStatus, approvedMembers, eligibility, fullName, shortName, volun
 import { buildOccurrence, effectiveCoaches, involves, occurrencesOn, type Occurrence } from '../../data/occurrences'
 import { addDays, daysUntil, fmtLong, fmtRange, fmtShort, fmtTime, isOver, relativeDay, today, toISO, startOfWeek } from '../../lib/dates'
 import { cn, ucfirst } from '../../lib/util'
+import { CountUp } from '../../lib/motion'
 import type { Creneau } from '../../data/types'
 
 export default function Dashboard() {
@@ -213,7 +214,7 @@ function Kpi({ to, label, value, alert, warn }: { to: string; label: string; val
   return (
     <Link to={to} className="group border-b border-r border-line px-5 py-4 transition-colors hover:bg-surface-2/60 [&:nth-child(2n)]:border-r-0 lg:border-b-0 lg:[&:nth-child(2n)]:border-r lg:last:border-r-0">
       <dt className="text-[13px] font-medium text-muted">{label}</dt>
-      <dd className={cn('display-md mt-1 text-[34px] num', alert ? 'text-rope' : warn ? 'text-buoy' : 'text-ink')}>{value}</dd>
+      <dd className={cn('display-md mt-1 text-[34px]', alert ? 'text-rope' : warn ? 'text-buoy' : 'text-ink')}><CountUp value={value} startOnView duration={800} /></dd>
     </Link>
   )
 }

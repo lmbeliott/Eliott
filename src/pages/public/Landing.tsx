@@ -9,6 +9,8 @@ import { loginDemo } from '../../data/api'
 import { DEMO_ADMIN_EMAIL } from '../../data/seed'
 import { BASE_PRICE, euros, quote } from '../../lib/pricing'
 import { cn } from '../../lib/util'
+import { CountUp, Reveal, RisingWords, useInView } from '../../lib/motion'
+import type { CSSProperties } from 'react'
 
 export default function Landing() {
   const [install, setInstall] = useState(false)
@@ -27,17 +29,17 @@ export default function Landing() {
         <section className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 px-4 pb-20 pt-10 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pb-28 lg:pt-16">
           <div>
             <h1 className="display text-[52px] text-ink sm:text-[76px] lg:text-[88px]">
-              Chaque ligne d'eau a son éducateur.
+              <RisingWords text="Chaque ligne d'eau a son éducateur." delay={150} />
             </h1>
-            <p className="mt-6 max-w-[54ch] text-[17px] leading-relaxed text-ink-2 sm:text-lg">
+            <p className="hero-in mt-6 max-w-[54ch] text-[17px] leading-relaxed text-ink-2 sm:text-lg" style={{ animationDelay: '520ms' }}>
               SwimHub Connect centralise les plannings de votre club de natation, propose chaque absence aux collègues
               diplômés et disponibles, et prépare le relevé d'heures du mois pour la paie.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="hero-in mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: '640ms' }}>
               <ButtonLink to="/inscription" size="lg">Créer mon club</ButtonLink>
               <Button size="lg" variant="secondary" onClick={startDemo}>Explorer la démo</Button>
             </div>
-            <ul className="mt-7 flex flex-col gap-2 text-[15px] text-ink-2 sm:flex-row sm:gap-6">
+            <ul className="hero-in mt-7 flex flex-col gap-2 text-[15px] text-ink-2 sm:flex-row sm:gap-6" style={{ animationDelay: '760ms' }}>
               <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />6 mois avec 5 accès pour {euros(BASE_PRICE)}</li>
               <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />Sans engagement</li>
             </ul>
@@ -48,30 +50,17 @@ export default function Landing() {
         {/* ------------------------------------------------ Parcours d'une absence */}
         <section className="border-y border-line bg-surface" aria-labelledby="parcours">
           <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:py-24">
-            <div className="max-w-[640px]">
+            <Reveal className="max-w-[640px]">
               <h2 id="parcours" className="display-md text-[34px] text-ink sm:text-[44px]">De l'absence au remplaçant, sans message de groupe.</h2>
               <p className="mt-4 text-[17px] text-ink-2">Fini les relances sur WhatsApp à 22 h. Le créneau ne s'affiche qu'aux personnes qui peuvent vraiment le prendre.</p>
-            </div>
-            <ol className="relative mt-14 grid gap-10 md:grid-cols-4 md:gap-6">
-              <div aria-hidden className="lane-rope lane-rope-on-light absolute left-0 right-0 top-[18px] hidden md:block" />
-              {STEPS.map((s, i) => (
-                <li key={s.title} className="relative flex gap-4 md:block">
-                  <span className="relative z-10 flex size-11 shrink-0 items-center justify-center rounded-lg bg-ink text-xl font-extrabold text-surface num [font-stretch:75%]">
-                    {i + 1}
-                  </span>
-                  <div className="md:mt-5">
-                    <h3 className="text-[17px] font-bold text-ink">{s.title}</h3>
-                    <p className="mt-1.5 text-[15px] leading-relaxed text-ink-2">{s.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+            </Reveal>
+            <StepsLane />
           </div>
         </section>
 
         {/* ------------------------------------------------ Fonctionnalités */}
         <section id="fonctionnalites" className="mx-auto max-w-[1200px] scroll-mt-20 px-4 py-20 sm:px-6 lg:py-28">
-          <h2 className="display-md max-w-[720px] text-[34px] text-ink sm:text-[44px]">Pensé par et pour le monde de la natation.</h2>
+          <Reveal as="h2" className="display-md max-w-[720px] text-[34px] text-ink sm:text-[44px]">Pensé par et pour le monde de la natation.</Reveal>
           <div className="mt-16 space-y-24">
             <Feature
               title="Le planning de la semaine, bassin par bassin"
@@ -95,12 +84,12 @@ export default function Landing() {
           </div>
 
           <ul className="mt-24 grid gap-x-8 gap-y-8 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
-            {EXTRAS.map(({ icon: Icon, title, text }) => (
-              <li key={title}>
+            {EXTRAS.map(({ icon: Icon, title, text }, i) => (
+              <Reveal as="li" key={title} delay={i * 90}>
                 <Icon aria-hidden className="size-5 text-water" />
                 <h3 className="mt-3 font-bold text-ink">{title}</h3>
                 <p className="mt-1 text-[15px] text-ink-2">{text}</p>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </section>
@@ -108,23 +97,23 @@ export default function Landing() {
         {/* ------------------------------------------------ Tarifs */}
         <section id="tarifs" className="scroll-mt-20 border-y border-line bg-surface">
           <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:py-28">
-            <div className="max-w-[640px]">
+            <Reveal className="max-w-[640px]">
               <h2 className="display-md text-[34px] text-ink sm:text-[44px]">Un prix qui suit la taille de votre équipe.</h2>
               <p className="mt-4 text-[17px] text-ink-2">Un seul forfait, payé par le club. Les éducateurs créent leur compte gratuitement.</p>
-            </div>
+            </Reveal>
             <PricingCalculator />
           </div>
         </section>
 
         {/* ------------------------------------------------ FAQ */}
         <section id="faq" className="mx-auto max-w-[860px] scroll-mt-20 px-4 py-20 sm:px-6 lg:py-28">
-          <h2 className="display-md text-[34px] text-ink sm:text-[44px]">Questions fréquentes</h2>
+          <Reveal as="h2" className="display-md text-[34px] text-ink sm:text-[44px]">Questions fréquentes</Reveal>
           <div className="mt-10 divide-y divide-line border-y border-line">
             {FAQ.map((f) => (
-              <details key={f.q} className="group py-1">
+              <details key={f.q} className="faq group py-1">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md py-4 text-[17px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
                   {f.q}
-                  <span aria-hidden className="relative size-4 shrink-0 before:absolute before:inset-x-0 before:top-1/2 before:h-0.5 before:-translate-y-1/2 before:bg-ink-2 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-ink-2 after:transition-transform group-open:after:scale-y-0" />
+                  <span aria-hidden className="relative size-4 shrink-0 transition-transform duration-300 ease-[var(--ease-out)] group-open:rotate-180 before:absolute before:inset-x-0 before:top-1/2 before:h-0.5 before:-translate-y-1/2 before:bg-ink-2 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-ink-2 after:transition-transform after:duration-300 group-open:after:scale-y-0" />
                 </summary>
                 <p className="max-w-[68ch] pb-5 text-[15px] leading-relaxed text-ink-2">{f.a}</p>
               </details>
@@ -134,7 +123,7 @@ export default function Landing() {
 
         {/* ------------------------------------------------ Appel final */}
         <section className="bg-[#0c2a3e] text-white">
-          <div className="lane-rope" aria-hidden />
+          <div className="lane-rope rope-drift" aria-hidden />
           <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-8 px-4 py-16 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:py-20">
             <div>
               <h2 className="display-md text-[32px] sm:text-[42px]">Testez avec votre vrai planning cette semaine.</h2>
@@ -173,7 +162,7 @@ export function SiteHeader({ onInstall }: { onInstall?: () => void }) {
   return (
     <header className={cn('sticky top-0 z-40 bg-bg transition-[border-color] duration-200', scrolled ? 'border-b border-line' : 'border-b border-transparent')}>
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6">
-        <Logo />
+        <Logo animate />
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
             <Link key={l.href} to={l.href} className="rounded-md px-3 py-2 text-[15px] font-medium text-ink-2 hover:text-ink">{l.label}</Link>
@@ -253,10 +242,31 @@ const FAQ = [
 
 // ---------------------------------------------------------------- blocs illustrés
 
+function StepsLane() {
+  const [ref, inView] = useInView<HTMLOListElement>({ threshold: 0.3 })
+  return (
+    <ol ref={ref} data-shown={inView || undefined} className="relative mt-14 grid gap-10 md:grid-cols-4 md:gap-6">
+      <div aria-hidden className="lane-rope lane-rope-on-light absolute left-0 right-0 top-[18px] hidden md:block" />
+      <div aria-hidden className="swimmer-dot hidden md:block" />
+      {STEPS.map((s, i) => (
+        <li key={s.title} className="relative flex gap-4 md:block">
+          <span className="step-num relative z-10 flex size-11 shrink-0 items-center justify-center rounded-lg bg-ink text-xl font-extrabold text-surface num [font-stretch:75%]" style={{ '--i': i } as CSSProperties}>
+            {i + 1}
+          </span>
+          <div className="reveal md:mt-5" data-shown={inView || undefined} style={{ '--reveal-delay': `${300 + i * 690}ms` } as CSSProperties}>
+            <h3 className="text-[17px] font-bold text-ink">{s.title}</h3>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-ink-2">{s.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
 function Feature({ title, text, points, visual, reverse }: { title: string; text: string; points: string[]; visual: React.ReactNode; reverse?: boolean }) {
   return (
     <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-      <div className={cn(reverse && 'lg:order-2')}>
+      <Reveal className={cn(reverse && 'lg:order-2')}>
         <h3 className="display-md text-[28px] text-ink sm:text-[32px]">{title}</h3>
         <p className="mt-4 max-w-[52ch] text-[17px] leading-relaxed text-ink-2">{text}</p>
         <ul className="mt-6 space-y-2.5">
@@ -267,8 +277,8 @@ function Feature({ title, text, points, visual, reverse }: { title: string; text
             </li>
           ))}
         </ul>
-      </div>
-      <div aria-hidden className={cn('rounded-2xl border border-line bg-surface p-4 shadow-float sm:p-5', reverse && 'lg:order-1')}>{visual}</div>
+      </Reveal>
+      <Reveal aria-hidden delay={120} className={cn('mock rounded-2xl border border-line bg-surface p-4 shadow-float sm:p-5', reverse && 'lg:order-1')}>{visual}</Reveal>
     </div>
   )
 }
@@ -292,8 +302,8 @@ function WeekMock() {
           <div key={d}>
             <p className="mb-1.5 text-center text-[12px] font-semibold text-muted">{d}</p>
             <div className="space-y-1.5">
-              {cols[i].map((s) => (
-                <div key={s.t + s.g} className={cn('rounded-md border-l-[3px] bg-surface-2 px-1.5 py-1.5 sm:px-2', 'abs' in s && s.abs && 'bg-rope-soft', 'rep' in s && s.rep && 'bg-kelp-soft')} style={{ borderColor: s.c }}>
+              {cols[i].map((s, j) => (
+                <div key={s.t + s.g} className={cn('mock-cell rounded-md border-l-[3px] bg-surface-2 px-1.5 py-1.5 sm:px-2', 'abs' in s && s.abs && 'bg-rope-soft', 'rep' in s && s.rep && 'bg-kelp-soft')} style={{ borderColor: s.c, '--i': i * 3 + j } as CSSProperties}>
                   <p className="text-[11px] font-semibold text-muted num sm:text-[12px]">{s.t}</p>
                   <p className="truncate text-[11.5px] font-bold text-ink sm:text-[13px]">{s.g}</p>
                   {'abs' in s && s.abs && <p className="text-[10.5px] font-semibold text-rope sm:text-[11.5px]">À remplacer</p>}
@@ -320,8 +330,8 @@ function DiplomaMock() {
     <div>
       <p className="mb-3 text-sm font-bold text-ink">Diplômes de l'équipe</p>
       <ul className="divide-y divide-line">
-        {rows.map((r) => (
-          <li key={r.name + r.d} className="flex items-center justify-between gap-3 py-2.5">
+        {rows.map((r, i) => (
+          <li key={r.name + r.d} className="mock-cell flex items-center justify-between gap-3 py-2.5" style={{ '--i': i * 2 } as CSSProperties}>
             <div className="min-w-0">
               <p className="truncate text-[14px] font-semibold text-ink">{r.name}</p>
               <p className="text-[13px] text-muted">{r.d}</p>
@@ -359,8 +369,8 @@ function HoursMock() {
             </tr>
           </thead>
           <tbody className="num">
-            {rows.map((r) => (
-              <tr key={r[0]} className="border-t border-line">
+            {rows.map((r, i) => (
+              <tr key={r[0]} className="mock-cell border-t border-line" style={{ '--i': i * 2 } as CSSProperties}>
                 <td className="py-2 font-semibold text-ink">{r[0]}</td>
                 <td className="py-2 text-right text-ink-2">{r[1]}</td>
                 <td className="hidden py-2 text-right text-ink-2 sm:table-cell">{r[2]}</td>
@@ -395,7 +405,8 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
           max={40}
           value={access}
           onChange={(e) => setAccess(Number(e.target.value))}
-          className="mt-3 w-full accent-[var(--water)]"
+          className="range mt-3 w-full"
+          style={{ '--fill': `${((access - 1) / 39) * 100}%` } as CSSProperties}
           aria-describedby="acces-aide"
         />
         <p id="acces-aide" className="mt-2 text-[13px] text-muted">1 accès = 1 compte actif (responsable ou éducateur).</p>
@@ -425,7 +436,7 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
         <div>
           <p className="text-[15px] font-semibold text-ink-2">Votre club paiera</p>
           <p className="mt-1 flex items-baseline gap-2">
-            <span className="display text-[64px] text-ink num sm:text-[80px]">{euros(q.total)}</span>
+            <CountUp value={q.total} format={euros} duration={420} className="display text-[64px] text-ink sm:text-[80px]" />
             <span className="text-[17px] text-muted">par mois TTC</span>
           </p>
           <ul className="mt-6 space-y-2.5">

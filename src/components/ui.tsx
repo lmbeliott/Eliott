@@ -1,6 +1,6 @@
-import { forwardRef, useEffect, useId, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import { forwardRef, useEffect, useId, useLayoutEffect, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, NavLink, type LinkProps } from 'react-router-dom'
+import { Link, NavLink, useLocation, type LinkProps } from 'react-router-dom'
 import { X, type LucideIcon } from 'lucide-react'
 import { cn, hueFrom } from '../lib/util'
 
@@ -9,7 +9,7 @@ import { cn, hueFrom } from '../lib/util'
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'water'
 type Size = 'sm' | 'md' | 'lg'
 
-const base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap transition-colors duration-150 disabled:opacity-50 disabled:pointer-events-none select-none'
+const base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap transition duration-150 ease-out active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none select-none'
 const variants: Record<Variant, string> = {
   primary: 'bg-btn text-btn-ink hover:bg-btn-hover',
   water: 'bg-water text-white hover:brightness-110 dark:text-[#04212c]',
@@ -56,7 +56,7 @@ export function IconButton({ label, icon: Icon, className, size = 'md', ...rest 
       type="button"
       aria-label={label}
       title={label}
-      className={cn('inline-flex items-center justify-center rounded-lg text-ink-2 hover:bg-surface-2 hover:text-ink transition-colors', size === 'sm' ? 'size-8' : 'size-10', className)}
+      className={cn('inline-flex items-center justify-center rounded-lg text-ink-2 hover:bg-surface-2 hover:text-ink transition duration-150 active:scale-95', size === 'sm' ? 'size-8' : 'size-10', className)}
       {...rest}
     >
       <Icon aria-hidden className="size-[18px]" strokeWidth={2} />
@@ -204,40 +204,73 @@ export function EmptyState({ icon: Icon, title, children, action, compact }: { i
 }
 
 export function Tabs({ items }: { items: Array<{ to: string; label: string; count?: number; end?: boolean }> }) {
+  const list = useRef<HTMLUListElement>(null)
+  const { pathname } = useLocation()
+  const [bar, setBar] = useState<{ x: number; w: number } | null>(null)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = list.current?.querySelector<HTMLElement>('a[aria-current="page"]')
+      setBar(el ? { x: el.offsetLeft + 8, w: el.offsetWidth - 16 } : null)
+    }
+    measure()
+    document.fonts?.ready.then(measure).catch(() => {})
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [pathname, items.length])
   return (
     <nav aria-label="Sections" className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <ul className="flex min-w-max gap-1 border-b border-line">
+      <ul ref={list} className="relative flex min-w-max gap-1 border-b border-line">
         {items.map((it) => (
           <li key={it.to}>
             <NavLink
               to={it.to}
               end={it.end}
-              className={({ isActive }) => cn(
-                'relative flex h-11 items-center gap-2 px-3 text-sm font-semibold transition-colors',
-                isActive ? 'text-ink after:absolute after:inset-x-2 after:-bottom-px after:h-[3px] after:rounded-t after:bg-water-bright' : 'text-muted hover:text-ink',
-              )}
+              viewTransition
+              className={({ isActive }) => cn('relative flex h-11 items-center gap-2 px-3 text-sm font-semibold transition-colors duration-200', isActive ? 'text-ink' : 'text-muted hover:text-ink')}
             >
               {it.label}
-              {!!it.count && <span className="rounded-full bg-rope px-1.5 text-[11px] font-bold leading-[18px] text-white dark:text-[#2a0d08]">{it.count}</span>}
+              {!!it.count && <span key={it.count} className="badge-bump rounded-full bg-rope px-1.5 text-[11px] font-bold leading-[18px] text-white dark:text-[#2a0d08]">{it.count}</span>}
             </NavLink>
           </li>
         ))}
+        {bar && <span aria-hidden className="slide-indicator -bottom-px left-0 h-[3px] rounded-t bg-water-bright" style={{ transform: `translateX(${bar.x}px)`, width: bar.w }} />}
       </ul>
     </nav>
   )
 }
 
 export function Segmented<T extends string>({ value, onChange, options, label }: { value: T; onChange: (v: T) => void; options: Array<{ value: T; label: string }>; label: string }) {
+  const wrap = useRef<HTMLDivElement>(null)
+  const [thumb, setThumb] = useState<{ x: number; w: number } | null>(null)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = wrap.current?.querySelector<HTMLElement>('[aria-checked="true"]')
+      setThumb(el ? { x: el.offsetLeft, w: el.offsetWidth } : null)
+    }
+    measure()
+    document.fonts?.ready.then(measure).catch(() => {})
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [value, options.length])
+  const move = (dir: 1 | -1) => {
+    const i = options.findIndex((o) => o.value === value)
+    const next = options[(i + dir + options.length) % options.length]
+    onChange(next.value)
+    requestAnimationFrame(() => wrap.current?.querySelector<HTMLElement>('[aria-checked="true"]')?.focus())
+  }
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-lg border border-line-strong bg-surface p-0.5">
+    <div ref={wrap} role="radiogroup" aria-label={label} className="relative inline-flex rounded-lg border border-line-strong bg-surface p-0.5"
+      onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); move(1) } if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); move(-1) } }}>
+      {thumb && <span aria-hidden className="slide-indicator inset-y-0.5 left-0 rounded-md bg-btn" style={{ transform: `translateX(${thumb.x - 2}px)`, width: thumb.w }} />}
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           role="radio"
           aria-checked={value === o.value}
+          tabIndex={value === o.value ? 0 : -1}
           onClick={() => onChange(o.value)}
-          className={cn('h-8 rounded-md px-3 text-[13px] font-semibold transition-colors', value === o.value ? 'bg-btn text-btn-ink' : 'text-ink-2 hover:text-ink')}
+          className={cn('relative z-[1] h-8 rounded-md px-3 text-[13px] font-semibold transition-colors duration-300', value === o.value ? (thumb ? 'text-btn-ink' : 'bg-btn text-btn-ink') : 'text-ink-2 hover:text-ink')}
         >
           {o.label}
         </button>
@@ -258,6 +291,8 @@ export function Table({ children, className }: { children: ReactNode; className?
 
 // ---------------------------------------------------------------- tiroir latéral
 
+const EXIT_MS = 200
+
 export function Drawer({ open, onClose, title, description, children, footer, width = 480 }: {
   open: boolean; onClose: () => void; title: string; description?: ReactNode; children: ReactNode; footer?: ReactNode; width?: number
 }) {
@@ -266,6 +301,20 @@ export function Drawer({ open, onClose, title, description, children, footer, wi
   const closeRef = useRef(onClose)
   closeRef.current = onClose
   const titleId = useId()
+  // Garde le dernier contenu affiché pendant l'animation de sortie.
+  const shown = useRef({ title, description, children, footer })
+  if (open) shown.current = { title, description, children, footer }
+  const [mounted, setMounted] = useState(open)
+  const [closing, setClosing] = useState(false)
+
+  useEffect(() => {
+    if (open) { setMounted(true); setClosing(false); return }
+    if (!mounted) return
+    setClosing(true)
+    const t = setTimeout(() => { setMounted(false); setClosing(false) }, EXIT_MS)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -277,6 +326,7 @@ export function Drawer({ open, onClose, title, description, children, footer, wi
       ;(first ?? panel.current)?.focus()
     }, 30)
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return
       if (e.key === 'Escape') { e.stopPropagation(); closeRef.current() }
       if (e.key === 'Tab' && panel.current) trapTab(e, panel.current)
     }
@@ -289,28 +339,33 @@ export function Drawer({ open, onClose, title, description, children, footer, wi
     }
   }, [open])
 
-  if (!open) return null
+  if (!mounted) return null
+  const c = shown.current
   return createPortal(
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-[#04121b]/45 animate-[overlay-in_160ms_ease-out]" onClick={onClose} aria-hidden />
+    <div className="fixed inset-0 z-50 flex justify-end" inert={closing || undefined}>
+      <div
+        className={cn('absolute inset-0 bg-[#04121b]/45', closing ? 'animate-[fade-out_200ms_ease-in_both]' : 'animate-[overlay-in_220ms_ease-out]')}
+        onClick={onClose}
+        aria-hidden
+      />
       <div
         ref={panel}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="relative flex h-full w-full flex-col bg-surface shadow-float outline-none animate-[slide-in-right_220ms_var(--ease-swim)]"
+        className={cn('relative flex h-full w-full flex-col bg-surface shadow-float outline-none', closing ? 'animate-[slide-out-right_200ms_var(--ease-in-out)_both]' : 'animate-[slide-in-right_340ms_var(--ease-out)]')}
         style={{ maxWidth: width }}
       >
         <header className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
           <div>
-            <h2 id={titleId} className="text-lg font-bold text-ink">{title}</h2>
-            {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}
+            <h2 id={titleId} className="text-lg font-bold text-ink">{c.title}</h2>
+            {c.description && <p className="mt-0.5 text-sm text-muted">{c.description}</p>}
           </div>
           <IconButton data-close label="Fermer" icon={X} onClick={onClose} className="-mr-2 -mt-1" />
         </header>
-        <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
-        {footer && <footer className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3.5 sm:px-6 pb-[max(14px,env(safe-area-inset-bottom))]">{footer}</footer>}
+        <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">{c.children}</div>
+        {c.footer && <footer className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3.5 sm:px-6 pb-[max(14px,env(safe-area-inset-bottom))]">{c.footer}</footer>}
       </div>
     </div>,
     document.body,

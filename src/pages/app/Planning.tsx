@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CalendarPlus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button, ButtonLink, EmptyState, IconButton, LevelDot, PageHeader, Segmented, Select } from '../../components/ui'
@@ -27,6 +27,12 @@ export default function Planning() {
   }, [])
 
   const focus = params.get('date') ? fromISO(params.get('date')!) : today()
+  // Sens de navigation : la semaine (ou le jour) suivante arrive par la droite.
+  const prevFocus = useRef(toISO(focus))
+  const focusISO = toISO(focus)
+  const dir = focusISO >= prevFocus.current ? 'next' : 'prev'
+  useEffect(() => { prevFocus.current = focusISO }, [focusISO])
+  const slideClass = dir === 'next' ? 'animate-[slide-from-right_340ms_var(--ease-out)]' : 'animate-[slide-from-left_340ms_var(--ease-out)]'
   const mineOnly = params.get('vue') === 'moi'
   const pool = params.get('piscine') ?? ''
   const [mode, setMode] = useState<'week' | 'day'>(wide ? 'week' : 'day')
@@ -86,7 +92,9 @@ export default function Planning() {
           </EmptyState>
         </div>
       ) : effectiveMode === 'week' ? (
-        <WeekGrid days={days} byDay={byDay} me={ctx.user.id} showPool={!pool && pools.length > 1} onOpen={(o) => setSelected({ slot: o.slot, date: o.date })} />
+        <div key={`${days[0]}-${pool}-${mineOnly}`} className={slideClass}>
+          <WeekGrid days={days} byDay={byDay} me={ctx.user.id} showPool={!pool && pools.length > 1} onOpen={(o) => setSelected({ slot: o.slot, date: o.date })} />
+        </div>
       ) : (
         <DayView
           days={days}
@@ -244,6 +252,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
         })}
       </div>
 
+      <div key={days[idx]} className="animate-[rise_320ms_var(--ease-out)]">
       {items.length === 0 ? (
         <div className="rounded-2xl border border-line bg-surface">
           <EmptyState compact title={`Aucune séance ${weekday(fromISO(days[idx])) >= 5 ? 'ce jour-là' : 'ce jour'}`}>Choisissez un autre jour ou affichez tout le club.</EmptyState>
@@ -289,6 +298,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }

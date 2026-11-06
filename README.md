@@ -30,7 +30,12 @@ Demo accounts: `camille.martin@demo.swimhub.fr` / `lea.bernard@demo.swimhub.fr`,
 | Import | `.xlsx` upload | Paste cells straight from Excel/Sheets (or CSV), live preview, per-line error report |
 | Exports | CSV | Excel-ready CSV (`;`, decimal comma, UTF-8 BOM) with totals |
 | Roles | Basic | Custom roles with 5 granular permissions, guarded in the UI and in the business layer |
-| Quality | — | Dark mode, keyboard focus and focus traps, reduced-motion support, 375 px → desktop without horizontal scroll, installable PWA with offline shell |
+| Motion | — | Orchestrated hero (headline rises, pool fills, sessions arrive, then the substitution plays), swimmer travelling the 4 steps, scroll reveals, price and KPI count-ups, sliding tab/segmented/sidebar indicators, page transitions (View Transitions API), drawers and dialogs that animate out. All of it is disabled under `prefers-reduced-motion` |
+| Quality | — | Dark mode, keyboard focus and focus traps, 375 px → desktop without horizontal scroll, installable PWA with offline shell |
+
+## Logo
+
+A single-stroke **S**: the path of a swimmer doing lengths (out, turn, back), with the dot as the swimmer. On first load the dot swims the S while the line draws behind it. The mark is in `src/components/Logo.tsx` (theme-aware). The app icon and favicon (`public/favicon.svg`, `public/icon*.png`) use the same S, in white on navy.
 
 ## Architecture
 
@@ -57,4 +62,4 @@ The screens never touch storage directly. They call `src/data/api.ts`, so a real
 
 ## Stack
 
-React 19, React Router 7, TypeScript, Vite, Tailwind CSS 4, lucide icons, Archivo variable font (self-hosted).
+React 19, React Router 7 (data router), TypeScript, Vite, Tailwind CSS 4, lucide icons, Archivo variable font (self-hosted). Motion helpers live in `src/lib/motion.tsx`; keyframes and tokens in `src/styles.css`.
