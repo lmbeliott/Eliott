@@ -1,8 +1,8 @@
-Refuges linked by trails, stations linked by cables, neighbouring cells on a map: all of these form a **graph**. The elements are the **vertices** (numbered from `1` to `N`) and the links are the **edges**.
+Cities linked by roads, web pages linked by hyperlinks, neighbouring cells in a grid: all of these form a **graph**. The elements are the **vertices** (numbered from `1` to `N`) and the links are the **edges**.
 
 ## Adjacency lists
 
-For each vertex, we keep the list of its neighbours. A trail between `a` and `b` can be walked in both directions: we add it to both lists.
+For each vertex, we keep the list of its neighbours. In an undirected graph, an edge between `a` and `b` can be followed in both directions: we add it to both lists.
 
 ```python
 import sys

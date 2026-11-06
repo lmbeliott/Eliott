@@ -1,10 +1,10 @@
-Quand chaque sentier a une durée différente, le chemin avec le moins de sentiers n'est plus forcément le plus rapide : le parcours en largeur ne suffit plus. Ce cours présente deux outils : l'**algorithme de Dijkstra**, pour les plus courts chemins dans un graphe pondéré, et l'**union-find**, pour regrouper des sommets au fur et à mesure qu'on ajoute des arêtes.
+Quand chaque arête a une longueur différente, le chemin avec le moins d'arêtes n'est plus forcément le plus court : le parcours en largeur ne suffit plus. Ce cours présente deux outils : l'**algorithme de Dijkstra**, pour les plus courts chemins dans un graphe pondéré, et l'**union-find**, pour regrouper des sommets au fur et à mesure qu'on ajoute des arêtes.
 
 ## L'algorithme de Dijkstra
 
-On range le graphe en listes d'adjacence de couples `(voisin, durée)`. On garde `dist[v]`, la meilleure durée connue pour atteindre `v`, et un **tas** (file de priorité) qui donne toujours le sommet de plus petite distance.
+On range le graphe en listes d'adjacence de couples `(voisin, longueur)`. On garde `dist[v]`, la meilleure distance connue pour atteindre `v`, et un **tas** (file de priorité) qui donne toujours le sommet de plus petite distance.
 
-À chaque étape, on retire du tas le sommet `u` le plus proche. Comme toutes les durées sont positives, aucun autre chemin ne pourra l'améliorer : sa distance est **définitive**. On essaie alors d'améliorer chaque voisin : si `dist[u] + t < dist[v]`, on met à jour `dist[v]` et on ajoute `(dist[v], v)` au tas.
+À chaque étape, on retire du tas le sommet `u` le plus proche. Comme toutes les longueurs sont positives, aucun autre chemin ne pourra l'améliorer : sa distance est **définitive**. On essaie alors d'améliorer chaque voisin : si `dist[u] + t < dist[v]`, on met à jour `dist[v]` et on ajoute `(dist[v], v)` au tas.
 
 ```python
 import heapq
@@ -47,8 +47,8 @@ Un sommet peut être dans le tas plusieurs fois avec des distances différentes 
 
 Beaucoup de problèmes se ramènent à Dijkstra après une transformation.
 
-- Un **coût sur les sommets** (une pause dans chaque refuge traversé) se reporte sur les arêtes qui y entrent.
-- Une **ressource limitée** (des tickets, des jokers) s'ajoute à l'état : un sommet du nouveau graphe est un couple `(lieu, ressource utilisée)`. Le graphe d'états a plus de sommets, mais l'algorithme reste le même, et ses arcs se calculent à la volée.
+- Un **coût sur les sommets** (un prix à payer pour chaque sommet traversé) se reporte sur les arêtes qui y entrent.
+- Une **ressource limitée** (un nombre maximal d'arêtes spéciales, de jokers…) s'ajoute à l'état : un sommet du nouveau graphe est un couple `(sommet, ressource utilisée)`. Le graphe d'états a plus de sommets, mais l'algorithme reste le même, et ses arcs se calculent à la volée.
 
 ## L'union-find
 

@@ -1,10 +1,10 @@
-When each trail takes a different time, the path with the fewest trails is no longer necessarily the fastest: breadth-first search is not enough any more. This lesson presents two tools: **Dijkstra's algorithm**, for shortest paths in a weighted graph, and **union-find**, to group vertices together as edges are added.
+When each edge has a different length, the path with the fewest edges is no longer necessarily the shortest: breadth-first search is not enough any more. This lesson presents two tools: **Dijkstra's algorithm**, for shortest paths in a weighted graph, and **union-find**, to group vertices together as edges are added.
 
 ## Dijkstra's algorithm
 
-We store the graph as adjacency lists of pairs `(neighbour, duration)`. We keep `dist[v]`, the best known duration to reach `v`, and a **heap** (priority queue) that always gives the vertex with the smallest distance.
+We store the graph as adjacency lists of pairs `(neighbour, length)`. We keep `dist[v]`, the best known distance to reach `v`, and a **heap** (priority queue) that always gives the vertex with the smallest distance.
 
-At each step, we take out of the heap the closest vertex `u`. Since all durations are positive, no other path can improve it: its distance is **final**. We then try to improve each neighbour: if `dist[u] + t < dist[v]`, we update `dist[v]` and push `(dist[v], v)` onto the heap.
+At each step, we take out of the heap the closest vertex `u`. Since all lengths are positive, no other path can improve it: its distance is **final**. We then try to improve each neighbour: if `dist[u] + t < dist[v]`, we update `dist[v]` and push `(dist[v], v)` onto the heap.
 
 ```python
 import heapq
@@ -47,8 +47,8 @@ A vertex can be in the heap several times with different distances: only the sma
 
 Many problems reduce to Dijkstra after a transformation.
 
-- A **cost on the vertices** (a break in each refuge you pass through) can be moved onto the edges entering them.
-- A **limited resource** (tickets, jokers) is added to the state: a vertex of the new graph is a pair `(place, resource used)`. The state graph has more vertices, but the algorithm stays the same, and its arcs are computed on the fly.
+- A **cost on the vertices** (a price to pay for each vertex you pass through) can be moved onto the edges entering them.
+- A **limited resource** (a maximum number of special edges, of jokers…) is added to the state: a vertex of the new graph is a pair `(vertex, resource used)`. The state graph has more vertices, but the algorithm stays the same, and its arcs are computed on the fly.
 
 ## Union-find
 

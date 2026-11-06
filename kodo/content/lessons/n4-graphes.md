@@ -1,8 +1,8 @@
-Des refuges reliés par des sentiers, des gares reliées par des câbles, des cases voisines sur une carte : tout cela forme un **graphe**. Les éléments sont les **sommets** (numérotés de `1` à `N`) et les liaisons sont les **arêtes**.
+Des villes reliées par des routes, des pages web reliées par des liens, des cases voisines dans une grille : tout cela forme un **graphe**. Les éléments sont les **sommets** (numérotés de `1` à `N`) et les liaisons sont les **arêtes**.
 
 ## Les listes d'adjacence
 
-Pour chaque sommet, on garde la liste de ses voisins. Un sentier entre `a` et `b` se parcourt dans les deux sens : on l'ajoute dans les deux listes.
+Pour chaque sommet, on garde la liste de ses voisins. Dans un graphe non orienté, une arête entre `a` et `b` se parcourt dans les deux sens : on l'ajoute dans les deux listes.
 
 ```python
 import sys
@@ -121,7 +121,7 @@ file = deque([(si, sj)])
 while file:
     i, j = file.popleft()
     for ni, nj in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)):
-        if 0 <= ni < r and 0 <= nj < c and carte[ni][nj] != '#' and dist[ni][nj] == -1:
+        if 0 <= ni < r and 0 <= nj < c and grille[ni][nj] != '#' and dist[ni][nj] == -1:
             dist[ni][nj] = dist[i][j] + 1
             file.append((ni, nj))
 ```
@@ -137,7 +137,7 @@ while (!file.empty()) {
     file.pop();
     for (int d = 0; d < 4; d++) {
         int ni = i + di[d], nj = j + dj[d];
-        if (ni >= 0 && ni < r && nj >= 0 && nj < c && carte[ni][nj] != '#' && dist[ni][nj] == -1) {
+        if (ni >= 0 && ni < r && nj >= 0 && nj < c && grille[ni][nj] != '#' && dist[ni][nj] == -1) {
             dist[ni][nj] = dist[i][j] + 1;
             file.push({ni, nj});
         }

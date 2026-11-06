@@ -13,16 +13,16 @@ On donne un tableau de `N` entiers `a[1], a[2], …, a[N]`. Écris un programme 
 - `Q i h` (question) : affiche le plus petit indice `j ≥ i` tel que `a[j] ≥ h`, ou `-1` s'il n'y en a aucun.
 
 ## Entrée
-- La première ligne contient deux entiers `N` et `Q` : la taille du tableau et le nombre d'opérations.
+- La première ligne contient deux entiers `N` et `K` : la taille du tableau et le nombre d'opérations.
 - La deuxième ligne contient `N` entiers : les valeurs initiales de `a[1]` à `a[N]`.
-- Chacune des `Q` lignes suivantes contient une opération : la lettre `M` ou `Q`, puis deux entiers.
+- Chacune des `K` lignes suivantes contient une opération : la lettre `M` ou `Q`, puis deux entiers.
 
 ## Sortie
 Pour chaque opération `Q`, dans l'ordre, une ligne contenant la réponse.
 
 ## Contraintes
 - 1 ≤ N ≤ 10 000
-- 1 ≤ Q ≤ 10 000
+- 1 ≤ K ≤ 10 000
 - 1 ≤ i ≤ N
 - toutes les valeurs (initiales, `v` et `h`) sont entre `1` et `5 000`
 
@@ -40,7 +40,7 @@ On construit un **arbre de segments** du tableau où chaque nœud contient le ma
 1. *Remontée.* On part de la feuille `k` de l'indice `i`. Tant que `max[k] < h`, le bloc de `k` ne contient aucune réponse : on passe au bloc situé juste à sa droite. Pour cela, tant que `k` est un fils droit (impair), on remonte à son parent, puis on prend `k + 1`. Si l'on remonte au-dessus de la racine (`k = 0`), il n'y a aucune réponse : `-1`.
 2. *Descente.* Le bloc trouvé contient la réponse. Tant que `k` n'est pas une feuille, on va dans le fils gauche si son maximum est `≥ h` (la réponse la plus à gauche y est), sinon dans le fils droit.
 
-Les blocs visités pendant la remontée sont consécutifs, couvrent tout ce qui est à droite de `i` dans l'ordre, et leur taille ne fait que croître : il y en a O(log N). La descente coûte aussi O(log N). Complexité totale : **O(N + Q log N)**.
+Les blocs visités pendant la remontée sont consécutifs, couvrent tout ce qui est à droite de `i` dans l'ordre, et leur taille ne fait que croître : il y en a O(log N). La descente coûte aussi O(log N). Complexité totale : **O(N + K log N)**.
 
 Pourquoi les autres idées échouent :
 - Le parcours direct coûte O(N) par question, soit 10⁸ opérations quand toutes les réponses sont lointaines ou `-1`.
