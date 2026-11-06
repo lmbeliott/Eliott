@@ -1,0 +1,236 @@
+@import "tailwindcss";
+@import "@fontsource-variable/archivo/wdth.css";
+
+/* ------------------------------------------------------------------
+   Tokens — « bassin » : fond de carrelage, lignes de fond marine,
+   bouées rouges (absence non pourvue), jaunes (en attente), vert (remplacé).
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --bg: #f2f7f9;
+  --surface: #ffffff;
+  --surface-2: #e8f0f3;
+  --line: #d3e0e6;
+  --line-strong: #b4c7d0;
+  --ink: #0c2a3e;
+  --ink-2: #33505f;
+  --muted: #557080;
+  --water: #08708f;
+  --water-bright: #0b8fb3;
+  --water-soft: #dcf0f6;
+  --rope: #c9361f;
+  --rope-bright: #e0412e;
+  --rope-soft: #fbe5e1;
+  --buoy: #8a6100;
+  --buoy-bright: #f2b824;
+  --buoy-soft: #fcf1d2;
+  --kelp: #157350;
+  --kelp-bright: #1e9b6b;
+  --kelp-soft: #ddf2e8;
+  --btn: #0c2a3e;
+  --btn-ink: #ffffff;
+  --btn-hover: #133a54;
+  --pool-deep: #0a5f7a;
+  --pool-mid: #0e86a8;
+  --pool-light: #2fb2d1;
+  --shadow: 0 1px 2px rgb(12 42 62 / 0.06), 0 8px 24px -12px rgb(12 42 62 / 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #07141d;
+    --surface: #0d1f2b;
+    --surface-2: #132a38;
+    --line: #1e3a4b;
+    --line-strong: #2b4e62;
+    --ink: #e6f1f5;
+    --ink-2: #bdd0da;
+    --muted: #8fa8b6;
+    --water: #5ccfeb;
+    --water-bright: #3cc4e4;
+    --water-soft: #0f3342;
+    --rope: #ff8a78;
+    --rope-bright: #f0563f;
+    --rope-soft: #3a1a17;
+    --buoy: #f7cf62;
+    --buoy-bright: #f2b824;
+    --buoy-soft: #382c0c;
+    --kelp: #6ad7a8;
+    --kelp-bright: #2bb980;
+    --kelp-soft: #0f3326;
+    --btn: #3cc4e4;
+    --btn-ink: #04212c;
+    --btn-hover: #6fd5ee;
+    --pool-deep: #06384a;
+    --pool-mid: #0a5873;
+    --pool-light: #12809f;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #07141d;
+  --surface: #0d1f2b;
+  --surface-2: #132a38;
+  --line: #1e3a4b;
+  --line-strong: #2b4e62;
+  --ink: #e6f1f5;
+  --ink-2: #bdd0da;
+  --muted: #8fa8b6;
+  --water: #5ccfeb;
+  --water-bright: #3cc4e4;
+  --water-soft: #0f3342;
+  --rope: #ff8a78;
+  --rope-bright: #f0563f;
+  --rope-soft: #3a1a17;
+  --buoy: #f7cf62;
+  --buoy-bright: #f2b824;
+  --buoy-soft: #382c0c;
+  --kelp: #6ad7a8;
+  --kelp-bright: #2bb980;
+  --kelp-soft: #0f3326;
+  --btn: #3cc4e4;
+  --btn-ink: #04212c;
+  --btn-hover: #6fd5ee;
+  --pool-deep: #06384a;
+  --pool-mid: #0a5873;
+  --pool-light: #12809f;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-water: var(--water);
+  --color-water-bright: var(--water-bright);
+  --color-water-soft: var(--water-soft);
+  --color-rope: var(--rope);
+  --color-rope-bright: var(--rope-bright);
+  --color-rope-soft: var(--rope-soft);
+  --color-buoy: var(--buoy);
+  --color-buoy-bright: var(--buoy-bright);
+  --color-buoy-soft: var(--buoy-soft);
+  --color-kelp: var(--kelp);
+  --color-kelp-bright: var(--kelp-bright);
+  --color-kelp-soft: var(--kelp-soft);
+  --color-btn: var(--btn);
+  --color-btn-ink: var(--btn-ink);
+  --color-btn-hover: var(--btn-hover);
+  --color-pool-deep: var(--pool-deep);
+  --color-pool-mid: var(--pool-mid);
+  --color-pool-light: var(--pool-light);
+  --shadow-float: var(--shadow);
+  --ease-swim: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "kern", "liga";
+  }
+  ::selection {
+    background: var(--water-soft);
+    color: var(--ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--water-bright);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  input, select, textarea, button {
+    font: inherit;
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Titres « tableau d'affichage » : Archivo condensé, très gras. */
+  .display {
+    font-stretch: 68%;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+  }
+  .display-md {
+    font-stretch: 78%;
+    font-weight: 750;
+    letter-spacing: -0.005em;
+    line-height: 1.05;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Ligne de nage : flotteurs alternés sur leur câble, comme en bassin. */
+  .lane-rope {
+    --float: 9px;
+    --float-light: #ffffff;
+    height: var(--float);
+    background-image:
+      radial-gradient(circle at center, var(--rope-bright) 0 calc(var(--float) / 2 - 0.5px), transparent calc(var(--float) / 2)),
+      radial-gradient(circle at center, var(--float-light) 0 calc(var(--float) / 2 - 0.5px), transparent calc(var(--float) / 2)),
+      radial-gradient(circle at center, var(--water-bright) 0 calc(var(--float) / 2 - 0.5px), transparent calc(var(--float) / 2)),
+      linear-gradient(var(--rope-cable, rgb(12 42 62 / 0.25)), var(--rope-cable, rgb(12 42 62 / 0.25)));
+    background-size: calc(var(--float) * 6) var(--float), calc(var(--float) * 6) var(--float), calc(var(--float) * 6) var(--float), 100% 1px;
+    background-position: 0 0, calc(var(--float) * 2) 0, calc(var(--float) * 4) 0, 0 50%;
+    background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+  }
+  /* Sur fond clair, le flotteur blanc prend un gris d'eau pour rester visible. */
+  .lane-rope-on-light {
+    --float-light: var(--line-strong);
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop {
+  0% { transform: scale(0.96); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes ripple {
+  0% { transform: translateX(-30%); }
+  100% { transform: translateX(0%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
