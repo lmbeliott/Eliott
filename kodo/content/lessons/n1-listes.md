@@ -3,22 +3,22 @@ Avec une boucle, tu sais lire `N` nombres et en faire la somme. Mais à chaque t
 ## Créer une liste
 
 ```python
-altitudes = [1200, 1450, 1600]
-print(altitudes[0])
-print(altitudes[2])
-print(len(altitudes))
-altitudes[1] = 1500
+valeurs = [12, 45, 30]
+print(valeurs[0])
+print(valeurs[2])
+print(len(valeurs))
+valeurs[1] = 50
 ```
 
 ```cpp
-vector<int> altitudes = {1200, 1450, 1600};
-cout << altitudes[0] << "\n";
-cout << altitudes[2] << "\n";
-cout << altitudes.size() << "\n";
-altitudes[1] = 1500;
+vector<int> valeurs = {12, 45, 30};
+cout << valeurs[0] << "\n";
+cout << valeurs[2] << "\n";
+cout << valeurs.size() << "\n";
+valeurs[1] = 50;
 ```
 
-Une liste est une rangée de cases numérotées. Le numéro d'une case s'appelle sa **position** (ou son indice), et il commence à **0** : `altitudes[0]` vaut 1200, `altitudes[2]` vaut 1600. Le programme affiche donc `1200`, `1600`, puis `3`, le nombre d'éléments, donné par `len` en Python et `.size()` en C++. La dernière ligne change le contenu de la case 1.
+Une liste est une rangée de cases numérotées. Le numéro d'une case s'appelle sa **position** (ou son indice), et il commence à **0** : `valeurs[0]` vaut 12, `valeurs[2]` vaut 30. Le programme affiche donc `12`, `30`, puis `3`, le nombre d'éléments, donné par `len` en Python et `.size()` en C++. La dernière ligne change le contenu de la case 1.
 
 Dans une liste de `N` éléments, les positions vont de `0` à `N - 1`. La case `N` n'existe pas : en Python, y accéder provoque une erreur ; en C++, le programme lit n'importe quoi ou plante.
 

@@ -2,27 +2,27 @@ Jusqu'ici, tes programmes faisaient toujours la même chose, quelles que soient 
 
 ## Si… sinon
 
-À la station de Valcorde, les pistes ouvrent quand il y a au moins 30 centimètres de neige :
+Un test est réussi quand on obtient au moins 30 points :
 
 ```python
-neige = int(input())
-if neige >= 30:
-    print("Pistes ouvertes")
+points = int(input())
+if points >= 30:
+    print("Test réussi")
 else:
-    print("Pistes fermées")
+    print("Test raté")
 ```
 
 ```cpp
-int neige;
-cin >> neige;
-if (neige >= 30) {
-    cout << "Pistes ouvertes\n";
+int points;
+cin >> points;
+if (points >= 30) {
+    cout << "Test réussi\n";
 } else {
-    cout << "Pistes fermées\n";
+    cout << "Test raté\n";
 }
 ```
 
-Si la condition `neige >= 30` est vraie, le programme exécute le premier bloc ; sinon, il exécute le bloc du `else`. Jamais les deux.
+Si la condition `points >= 30` est vraie, le programme exécute le premier bloc ; sinon, il exécute le bloc du `else`. Jamais les deux.
 
 En Python, la ligne du `if` se termine par deux-points `:`, et le bloc est **décalé vers la droite** (on dit « indenté ») de 4 espaces. C'est ce décalage qui indique quelles lignes font partie du bloc. En C++, la condition s'écrit entre parenthèses et le bloc entre accolades `{ }`.
 
@@ -66,30 +66,30 @@ if (n % 2 == 0) {
 Quand il y a plus de deux cas, on enchaîne les tests avec `elif` en Python (contraction de « else if »), et `else if` en C++ :
 
 ```python
-neige = int(input())
-if neige < 30:
-    print("Station fermée")
-elif neige < 80:
-    print("Quelques pistes ouvertes")
+points = int(input())
+if points < 30:
+    print("Test raté")
+elif points < 80:
+    print("Test réussi")
 else:
-    print("Toutes les pistes ouvertes")
+    print("Excellent")
 ```
 
 ```cpp
-int neige;
-cin >> neige;
-if (neige < 30) {
-    cout << "Station fermée\n";
-} else if (neige < 80) {
-    cout << "Quelques pistes ouvertes\n";
+int points;
+cin >> points;
+if (points < 30) {
+    cout << "Test raté\n";
+} else if (points < 80) {
+    cout << "Test réussi\n";
 } else {
-    cout << "Toutes les pistes ouvertes\n";
+    cout << "Excellent\n";
 }
 ```
 
-Les tests sont faits **dans l'ordre**, et seul le premier test vrai est exécuté : les suivants sont sautés. Quand le programme arrive à `neige < 80`, il sait donc déjà que `neige` vaut au moins 30. Le `else` final attrape tous les cas qui restent.
+Les tests sont faits **dans l'ordre**, et seul le premier test vrai est exécuté : les suivants sont sautés. Quand le programme arrive à `points < 80`, il sait donc déjà que `points` vaut au moins 30. Le `else` final attrape tous les cas qui restent.
 
-L'ordre des tests compte : si on testait `neige < 80` en premier, la station ne serait jamais annoncée comme fermée.
+L'ordre des tests compte : si on testait `points < 80` en premier, un test ne serait jamais annoncé comme raté.
 
 ## Combiner des conditions
 
@@ -99,7 +99,7 @@ On peut assembler plusieurs conditions :
 - `or` en Python, `||` en C++ : vrai si au moins une des deux est vraie ;
 - `not` en Python, `!` en C++ : inverse une condition.
 
-Le téléphérique ferme si le vent dépasse 60 km/h ou s'il fait moins de −20 degrés :
+Un parc ferme si le vent dépasse 60 km/h ou s'il fait moins de −20 degrés :
 
 ```python
 vent, temperature = map(int, input().split())

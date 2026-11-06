@@ -3,22 +3,22 @@ With a loop, you know how to read `N` numbers and add them up. But at each turn,
 ## Creating a list
 
 ```python
-altitudes = [1200, 1450, 1600]
-print(altitudes[0])
-print(altitudes[2])
-print(len(altitudes))
-altitudes[1] = 1500
+values = [12, 45, 30]
+print(values[0])
+print(values[2])
+print(len(values))
+values[1] = 50
 ```
 
 ```cpp
-vector<int> altitudes = {1200, 1450, 1600};
-cout << altitudes[0] << "\n";
-cout << altitudes[2] << "\n";
-cout << altitudes.size() << "\n";
-altitudes[1] = 1500;
+vector<int> values = {12, 45, 30};
+cout << values[0] << "\n";
+cout << values[2] << "\n";
+cout << values.size() << "\n";
+values[1] = 50;
 ```
 
-A list is a row of numbered cells. The number of a cell is called its **position** (or index), and it starts at **0**: `altitudes[0]` is 1200, `altitudes[2]` is 1600. So the program prints `1200`, `1600`, then `3`, the number of elements, given by `len` in Python and `.size()` in C++. The last line changes the content of cell 1.
+A list is a row of numbered cells. The number of a cell is called its **position** (or index), and it starts at **0**: `values[0]` is 12, `values[2]` is 30. So the program prints `12`, `30`, then `3`, the number of elements, given by `len` in Python and `.size()` in C++. The last line changes the content of cell 1.
 
 In a list of `N` elements, the positions go from `0` to `N - 1`. Cell `N` doesn't exist: in Python, using it causes an error; in C++, the program reads garbage or crashes.
 

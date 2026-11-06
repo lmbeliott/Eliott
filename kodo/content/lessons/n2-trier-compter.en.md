@@ -23,29 +23,29 @@ Strings are sorted in alphabetical order. So watch out for numbers read as text:
 
 ## Sorting with several criteria
 
-You often sort items that carry several pieces of information, like a name and a time. You store them in **pairs**: a tuple in Python, a `pair` in C++. Two pairs are compared by their first element first, and only if those are equal, by their second element. So you put first whatever should decide the ranking.
+You often sort items that carry several pieces of information, like a bib number and a time. You store them in **pairs**: a tuple in Python, a `pair` in C++. Two pairs are compared by their first element first, and only if those are equal, by their second element. So you put first whatever should decide the ranking.
 
 To sort by **decreasing** score, then by **increasing** name, here's a trick: sort the pairs `(-score, name)` in the normal increasing order. The highest score has the smallest `-score`, so it comes first.
 
 ```python
-teams = [("yeti", 7), ("aigle", 9), ("igloo", 7)]
+teams = [("green", 7), ("blue", 9), ("red", 7)]
 ranking = []
 for name, score in teams:
     ranking.append((-score, name))
 ranking.sort()
 for minus_score, name in ranking:
-    print(name, -minus_score)    # aigle 9, igloo 7, yeti 7
+    print(name, -minus_score)    # blue 9, green 7, red 7
 ```
 
 ```cpp
-vector<pair<string, int>> teams = {{"yeti", 7}, {"aigle", 9}, {"igloo", 7}};
+vector<pair<string, int>> teams = {{"green", 7}, {"blue", 9}, {"red", 7}};
 vector<pair<int, string>> ranking;
 for (auto& t : teams) {
     ranking.push_back({-t.second, t.first});
 }
 sort(ranking.begin(), ranking.end());
 for (auto& r : ranking) {
-    cout << r.second << " " << -r.first << "\n";   // aigle 9, igloo 7, yeti 7
+    cout << r.second << " " << -r.first << "\n";   // blue 9, green 7, red 7
 }
 ```
 
@@ -55,18 +55,18 @@ When the values to count are small integers or letters, an array is enough: cell
 
 ```python
 count = [0] * 26
-for c in "marmotte":
+for c in "letter":
     count[ord(c) - ord("a")] += 1
-print(count[ord("m") - ord("a")])   # 2
+print(count[ord("t") - ord("a")])   # 2
 ```
 
 ```cpp
 vector<int> count(26, 0);
-string word = "marmotte";
+string word = "letter";
 for (char c : word) {
     count[c - 'a']++;
 }
-cout << count['m' - 'a'] << "\n";   // 2
+cout << count['t' - 'a'] << "\n";   // 2
 ```
 
 ## Counting with a dictionary
@@ -74,24 +74,24 @@ cout << count['m' - 'a'] << "\n";   // 2
 When the values are words, or numbers too big for an array, you use a **dictionary**: it associates a **value** with each **key**. In Python, you have to create the key before increasing it. In C++, a `map` automatically creates a missing key with the value `0`, and it keeps its keys sorted.
 
 ```python
-votes = ["yeti", "aigle", "yeti", "igloo", "yeti"]
+votes = ["green", "blue", "green", "red", "green"]
 count = {}
 for v in votes:
     if v not in count:
         count[v] = 0
     count[v] += 1
 for name in sorted(count):
-    print(name, count[name])   # aigle 1, igloo 1, yeti 3
+    print(name, count[name])   # blue 1, green 3, red 1
 ```
 
 ```cpp
-vector<string> votes = {"yeti", "aigle", "yeti", "igloo", "yeti"};
+vector<string> votes = {"green", "blue", "green", "red", "green"};
 map<string, int> count;
 for (string v : votes) {
     count[v]++;
 }
 for (auto& p : count) {
-    cout << p.first << " " << p.second << "\n";   // aigle 1, igloo 1, yeti 3
+    cout << p.first << " " << p.second << "\n";   // blue 1, green 3, red 1
 }
 ```
 
@@ -103,20 +103,20 @@ A dictionary can also hold **lists**: you put together the items that share the 
 
 ```python
 groups = {}
-for word in ["lac", "col", "piolet", "neige", "luge"]:
+for word in ["salt", "rice", "tomato", "apple", "bread"]:
     key = len(word)
     if key not in groups:
         groups[key] = []
     groups[key].append(word)
-print(groups[3])   # ['lac', 'col']
+print(groups[4])   # ['salt', 'rice']
 ```
 
 ```cpp
 map<int, vector<string>> groups;
-for (string word : {"lac", "col", "piolet", "neige", "luge"}) {
+for (string word : {"salt", "rice", "tomato", "apple", "bread"}) {
     groups[word.size()].push_back(word);
 }
-cout << groups[3][0] << " " << groups[3][1] << "\n";   // lac col
+cout << groups[4][0] << " " << groups[4][1] << "\n";   // salt rice
 ```
 
 The whole art of grouping is choosing the right key: a value you compute for each item, which is the same for two items exactly when they belong in the same group.

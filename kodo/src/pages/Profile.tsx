@@ -2,13 +2,13 @@ import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Check, Flame, Lock } from 'lucide-react'
 import { Heatmap } from '../components/Heatmap'
-import { SummitProgress } from '../components/SummitProgress'
-import { Avatar, LinkButton, Skeleton, SlopeMark, cx } from '../components/ui'
+import { LeagueBadge, LeagueProgress } from '../components/League'
+import { Avatar, DifficultyMark, LinkButton, Skeleton, cx } from '../components/ui'
 import { useAuth } from '../lib/auth'
-import { levels, problemById, problemTitle, SLOPES } from '../lib/content'
-import { formatAltitude, formatDate, plural, timeAgo, useI18n } from '../lib/i18n'
+import { DIFFICULTIES, levels, problemById, problemTitle } from '../lib/content'
+import { formatDate, formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
 import { useActivity, useLeaderboard, useMyGroups, useProfile, useSolvesOf } from '../lib/queries'
-import { badges, SUMMITS, summitName } from '../lib/summits'
+import { badges, LEAGUES } from '../lib/leagues'
 import { liveStreak } from '../lib/supabase'
 import { NotFound } from './NotFound'
 
@@ -36,10 +36,10 @@ export function ProfilePage() {
 
   const rank = board.data?.find((r) => r.user_id === profile.id)?.rank
   const earned = badges({ solves: list, bestStreak: profile.best_streak, groups: isMe ? (myGroups.data?.length ?? 0) : 0 })
-  const bySlope = SLOPES.map((s) => {
-    const total = levels.filter((l) => l.slope === s).flatMap((l) => l.chapters.flatMap((c) => c.problems)).length
-    const done = list.filter((x) => problemById(x.problem_id)?.slope === s).length
-    return { s, total, done }
+  const byLevel = DIFFICULTIES.map((d) => {
+    const total = levels.filter((l) => l.difficulty === d).flatMap((l) => l.chapters.flatMap((c) => c.problems)).length
+    const done = list.filter((x) => problemById(x.problem_id)?.difficulty === d).length
+    return { d, total, done }
   })
 
   return (
@@ -65,7 +65,7 @@ export function ProfilePage() {
 
       <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4">
         {[
-          { k: t('Altitude', 'Altitude'), v: formatAltitude(lang, profile.xp) },
+          { k: t('Points', 'Points'), v: formatPoints(lang, profile.xp) },
           { k: t('Classement', 'Rank'), v: rank ? `${rank}${lang === 'en' ? '' : rank === 1 ? 'ᵉʳ' : 'ᵉ'}` : '–' },
           { k: t('Problèmes réussis', 'Problems solved'), v: String(profile.solved_count) },
           { k: t('Série (record)', 'Streak (best)'), v: `${liveStreak(profile)} (${profile.best_streak})` },
@@ -79,20 +79,19 @@ export function ProfilePage() {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_1fr]">
         <section>
-          <h2 className="text-lg font-semibold">{t('Sommets', 'Summits')}</h2>
+          <h2 className="text-lg font-semibold">{t('Ligue', 'League')}</h2>
           <div className="mt-4 rounded-xl border border-line bg-surface p-5">
-            <SummitProgress xp={profile.xp} />
+            <LeagueProgress points={profile.xp} />
             <ol className="mt-5 flex flex-col">
-              {[...SUMMITS].reverse().map((s) => {
-                const reached = profile.xp >= s.meters
+              {[...LEAGUES].reverse().map((l) => {
+                const reached = profile.xp >= l.min
                 return (
-                  <li key={s.name} className="flex items-center justify-between border-t border-line py-2 text-sm">
+                  <li key={l.id} className="flex items-center justify-between border-t border-line py-2 text-sm">
                     <span className={cx('flex items-center gap-2', reached ? 'text-ink' : 'text-muted')}>
-                      {reached ? <Check className="size-4 text-verte" aria-label={t('Atteint', 'Reached')} /> : <span className="inline-block size-4" aria-hidden />}
-                      <span className={reached ? 'font-medium' : ''}>{summitName(lang, s)}</span>
-                      <span className="text-muted">{lang === 'en' ? s.whereEn : s.where}</span>
+                      {reached ? <Check className="size-4 text-accent" aria-label={t('Atteinte', 'Reached')} /> : <span className="inline-block size-4" aria-hidden />}
+                      <LeagueBadge league={l} className={reached ? '' : 'font-normal opacity-70'} />
                     </span>
-                    <span className="tabular text-ink-2">{formatAltitude(lang, s.meters)}</span>
+                    <span className="tabular text-ink-2">{formatPoints(lang, l.min)}</span>
                   </li>
                 )
               })}
@@ -116,11 +115,11 @@ export function ProfilePage() {
       </div>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold">{t('Par piste', 'By run')}</h2>
+        <h2 className="text-lg font-semibold">{t('Par niveau', 'By level')}</h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-4">
-          {bySlope.map(({ s, total, done }) => (
-            <li key={s} className="rounded-lg border border-line bg-surface p-4">
-              <SlopeMark slope={s} />
+          {byLevel.map(({ d, total, done }) => (
+            <li key={d} className="rounded-lg border border-line bg-surface p-4">
+              <DifficultyMark difficulty={d} />
               <p className="mt-2 text-xl font-semibold tabular">
                 {done}
                 <span className="text-base font-normal text-muted"> / {total}</span>
@@ -153,19 +152,19 @@ export function ProfilePage() {
                       {problemTitle(lang, p)}
                     </Link>
                     <span className="flex flex-wrap items-center gap-x-3 text-xs text-muted">
-                      <SlopeMark slope={p.slope} className="text-xs" />
+                      <DifficultyMark difficulty={p.difficulty} className="text-xs" />
                       <span>{s.language === 'cpp' ? 'C++' : 'Python'}</span>
                       {s.first_try && <span>{t('du premier coup', 'first try')}</span>}
                       {s.daily && (
                         <span className="inline-flex items-center gap-1">
-                          <Flame className="size-3 text-amber" aria-hidden />
+                          <Flame className="size-3 text-warn" aria-hidden />
                           {t('défi du jour', 'daily challenge')}
                         </span>
                       )}
                     </span>
                   </span>
                   <span className="shrink-0 text-right text-sm">
-                    <span className="block font-medium tabular">+{formatAltitude(lang, s.xp)}</span>
+                    <span className="block font-medium tabular">+{formatPoints(lang, s.xp)}</span>
                     <span className="text-xs text-muted">{timeAgo(lang, s.solved_at)}</span>
                   </span>
                 </li>

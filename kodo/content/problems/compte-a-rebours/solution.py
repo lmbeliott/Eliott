@@ -5,4 +5,4 @@ for i in range(n, 0, -1):
     print(i)
 
 # Après la boucle : une seule fois.
-print("PARTEZ")
+print("FIN")

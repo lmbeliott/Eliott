@@ -1,5 +1,7 @@
 # SwimHub Connect — v2
 
+> Ce dépôt contient aussi **Kodo**, un site d'entraînement à l'algorithmique (dans le dossier [`kodo/`](kodo/README.md)), publié sur https://lmbeliott.github.io/Eliott/kodo/.
+
 A full rebuild of [swimhub-connect.onrender.com](https://swimhub-connect.onrender.com/): schedules, absences and substitutions for swimming clubs. The interface is in French, like the original.
 
 > « Chaque ligne d'eau a son éducateur. »

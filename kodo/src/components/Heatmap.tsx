@@ -23,7 +23,7 @@ export function Heatmap({ days, weeks = 26 }: { days: { day: string; submissions
   }, [weeks])
   const activeDays = days.filter((d) => d.submissions > 0).length
   const level = (n: number) => (n === 0 ? 0 : n < 3 ? 1 : n < 6 ? 2 : n < 10 ? 3 : 4)
-  const fill = ['var(--surface-2)', 'color-mix(in oklab, var(--verte) 30%, var(--surface))', 'color-mix(in oklab, var(--verte) 55%, var(--surface))', 'color-mix(in oklab, var(--verte) 80%, var(--surface))', 'var(--verte)']
+  const fill = ['var(--surface-2)', 'color-mix(in oklab, var(--accent) 28%, var(--surface))', 'color-mix(in oklab, var(--accent) 52%, var(--surface))', 'color-mix(in oklab, var(--accent) 76%, var(--surface))', 'var(--accent)']
   const cell = 12
   const gap = 3
   return (

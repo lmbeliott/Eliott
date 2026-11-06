@@ -30,8 +30,8 @@ export function Daily() {
       <PageHeader
         title={t('Défi du jour', 'Daily challenge')}
         lead={t(
-          `Chaque jour, un problème par piste, le même pour tout le monde. Nouveau défi dans ${left.h} h ${String(left.m).padStart(2, '0')}.`,
-          `Every day, one problem per run, the same for everyone. New challenge in ${left.h} h ${String(left.m).padStart(2, '0')} min.`,
+          `Chaque jour, un problème par niveau, le même pour tout le monde. Nouveau défi dans ${left.h}\u00a0h\u00a0${String(left.m).padStart(2, '0')}.`,
+          `Every day, one problem per level, the same for everyone. New challenge in ${left.h}\u00a0h\u00a0${String(left.m).padStart(2, '0')}\u00a0min.`,
         )}
       />
       <DailyList daily={daily.data} loading={daily.isLoading} solved={progress.solved} />
@@ -39,7 +39,7 @@ export function Daily() {
         <div>
           <h2 className="text-lg font-semibold">{t('Les règles', 'The rules')}</h2>
           <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-ink-2">
-            <li>{t('Un défi réussi aujourd’hui rapporte 50 % d’altitude en plus.', 'A challenge solved today earns 50% more altitude.')}</li>
+            <li>{t('Un défi réussi aujourd’hui rapporte 50 % de points en plus.', 'A challenge solved today earns 50% more points.')}</li>
             <li>{t('Ta série avance d’un jour dès que tu réussis un nouveau problème ou un défi du jour.', 'Your streak grows by one day as soon as you solve a new problem or a daily challenge.')}</li>
             <li>{t('Un jour sans réussite, et la série repart de zéro.', 'Miss a day, and the streak starts over.')}</li>
             <li>{t('Les jours changent à minuit, heure de Paris.', 'Days change at midnight, Paris time.')}</li>

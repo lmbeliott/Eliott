@@ -7,7 +7,7 @@ import { Avatar, Button, CopyButton, Field, Input, Notice, Segmented, Skeleton, 
 import { useToast } from '../components/Toast'
 import { useAuth } from '../lib/auth'
 import { chapters, chapterTitle, problemById, problemTitle } from '../lib/content'
-import { formatAltitude, plural, timeAgo, useI18n } from '../lib/i18n'
+import { formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
 import { useGroup, useLeaderboard, type GroupMember, type Period } from '../lib/queries'
 import { errorText, supabase } from '../lib/supabase'
 import { KIND_LABEL } from './Groups'
@@ -64,7 +64,7 @@ function StudentPanel({ member, onClose }: { member: GroupMember; onClose: () =>
                 <button type="button" onClick={() => setOpen(open === s.id ? null : s.id)} className="flex w-full items-center justify-between gap-3 text-left text-sm" aria-expanded={open === s.id}>
                   <span className="min-w-0 truncate font-medium">{p ? problemTitle(lang, p) : s.problem_id}</span>
                   <span className="flex shrink-0 items-center gap-3 text-xs">
-                    <span className={s.verdict === 'accepted' ? 'text-verte' : 'text-rouge'}>
+                    <span className={s.verdict === 'accepted' ? 'text-ok' : 'text-bad'}>
                       {verdictLabel(t, s.verdict)} {s.total > 0 && `(${s.passed}/${s.total})`}
                     </span>
                     <span className="text-muted">{s.language === 'cpp' ? 'C++' : 'Python'}</span>
@@ -92,7 +92,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
     return m
   }, [solves])
   const students = members.filter((m) => m.role === 'membre').sort((a, b) => b.profile.xp - a.profile.xp)
-  if (!students.length) return <p className="text-sm text-ink-2">{t('Aucun élève pour l’instant. Partage le code de la cordée pour qu’ils te rejoignent.', 'No students yet. Share the group code so they can join.')}</p>
+  if (!students.length) return <p className="text-sm text-ink-2">{t('Aucun élève pour l’instant. Partage le code du groupe pour qu’ils te rejoignent.', 'No students yet. Share the group code so they can join.')}</p>
   const cols = chapters.filter((c) => c.problems.length > 0)
   return (
     <div className="overflow-x-auto rounded-xl border border-line bg-surface">
@@ -110,7 +110,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
               </th>
             ))}
             <th scope="col" className="px-4 py-2 text-right font-medium">
-              {t('Altitude', 'Altitude')}
+              {t('Points', 'Points')}
             </th>
           </tr>
         </thead>
@@ -118,8 +118,8 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
           {students.map((m) => {
             const set = solvedBy.get(m.user_id) ?? new Set()
             return (
-              <tr key={m.user_id} className={cx('border-b border-line last:border-0', picked === m.user_id && 'bg-signal-soft')}>
-                <th scope="row" className={cx('sticky left-0 z-10 px-4 py-2 text-left font-medium', picked === m.user_id ? 'bg-signal-soft' : 'bg-surface')}>
+              <tr key={m.user_id} className={cx('border-b border-line last:border-0', picked === m.user_id && 'bg-accent-soft')}>
+                <th scope="row" className={cx('sticky left-0 z-10 px-4 py-2 text-left font-medium', picked === m.user_id ? 'bg-accent-soft' : 'bg-surface')}>
                   <button type="button" onClick={() => onPick(m)} className="flex items-center gap-2 hover:underline">
                     <Avatar name={m.profile.display_name} size={24} />
                     <span className="truncate">{m.profile.display_name}</span>
@@ -132,7 +132,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
                     <td key={c.id} className="px-1 py-1.5 text-center">
                       <span
                         className="inline-flex size-8 items-center justify-center rounded-md text-xs tabular"
-                        style={{ background: done ? `color-mix(in oklab, var(--verte) ${20 + ratio * 70}%, var(--surface))` : 'var(--surface-2)', color: ratio > 0.6 ? 'white' : 'var(--ink-2)' }}
+                        style={{ background: done ? `color-mix(in oklab, var(--accent) ${18 + ratio * 72}%, var(--surface))` : 'var(--surface-2)', color: ratio > 0.6 ? 'var(--accent-ink)' : 'var(--ink-2)' }}
                         title={`${chapterTitle(lang, c)} : ${done}/${c.problems.length}`}
                       >
                         {done || ''}
@@ -140,7 +140,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
                     </td>
                   )
                 })}
-                <td className="px-4 py-2 text-right tabular">{formatAltitude(lang, m.profile.xp)}</td>
+                <td className="px-4 py-2 text-right tabular">{formatPoints(lang, m.profile.xp)}</td>
               </tr>
             )
           })}
@@ -185,11 +185,11 @@ export function GroupPage() {
     qc.invalidateQueries({ queryKey: ['leaderboard'] })
   }
   const removeMember = async (m: GroupMember) => {
-    if (!window.confirm(t(`Retirer ${m.profile.display_name} de la cordée ?`, `Remove ${m.profile.display_name} from the group?`))) return
+    if (!window.confirm(t(`Retirer ${m.profile.display_name} du groupe ?`, `Remove ${m.profile.display_name} from the group?`))) return
     const { error } = await supabase.from('group_members').delete().eq('group_id', id).eq('user_id', m.user_id)
     if (error) toast(errorText(error, lang), 'error')
     else {
-      toast(t(`${m.profile.display_name} a été retiré de la cordée.`, `${m.profile.display_name} was removed from the group.`), 'ok')
+      toast(t(`${m.profile.display_name} a été retiré du groupe.`, `${m.profile.display_name} was removed from the group.`), 'ok')
       refresh()
     }
   }
@@ -199,16 +199,16 @@ export function GroupPage() {
     if (error) toast(errorText(error, lang), 'error')
     else {
       refresh()
-      navigate('/cordees')
+      navigate('/groupes')
     }
   }
   const remove = async () => {
     const { error } = await supabase.from('groups').delete().eq('id', id)
     if (error) toast(errorText(error, lang), 'error')
     else {
-      toast(t(`Cordée « ${group.name} » supprimée.`, `Group “${group.name}” deleted.`), 'ok')
+      toast(t(`Groupe « ${group.name} » supprimé.`, `Group “${group.name}” deleted.`), 'ok')
       refresh()
-      navigate('/cordees')
+      navigate('/groupes')
     }
   }
   const saveName = async () => {
@@ -229,14 +229,14 @@ export function GroupPage() {
 
   return (
     <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
-      <Link to="/cordees" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
-        <ArrowLeft className="size-4" aria-hidden /> {t('Cordées', 'Groups')}
+      <Link to="/groupes" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
+        <ArrowLeft className="size-4" aria-hidden /> {t('Groupes', 'Groups')}
       </Link>
       <header className="mt-3 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           {rename !== null ? (
             <div className="flex items-end gap-2">
-              <Field label={t('Nom de la cordée', 'Group name')} htmlFor="rename">
+              <Field label={t('Nom du groupe', 'Group name')} htmlFor="rename">
                 <Input id="rename" value={rename} onChange={(e) => setRename(e.target.value)} maxLength={60} autoFocus onKeyDown={(e) => e.key === 'Enter' && saveName()} />
               </Field>
               <Button onClick={saveName}>{t('Enregistrer', 'Save')}</Button>
@@ -267,7 +267,7 @@ export function GroupPage() {
         </div>
       </header>
 
-      <div role="tablist" aria-label={t('Sections de la cordée', 'Group sections')} className="mt-8 flex gap-1 border-b border-line">
+      <div role="tablist" aria-label={t('Sections du groupe', 'Group sections')} className="mt-8 flex gap-1 border-b border-line">
         {tabs.map((tb) => (
           <button
             key={tb.id}
@@ -295,7 +295,7 @@ export function GroupPage() {
               ]}
             />
             <div className="mt-4">
-              <LeaderboardTable rows={board.data} loading={board.isLoading} empty={<p className="text-sm text-muted">{t('Personne n’a encore grimpé.', 'Nobody has climbed yet.')}</p>} />
+              <LeaderboardTable rows={board.data} loading={board.isLoading} empty={<p className="text-sm text-muted">{t('Personne n’a encore marqué de points.', 'Nobody has scored yet.')}</p>} />
             </div>
           </>
         )}
@@ -342,17 +342,17 @@ export function GroupPage() {
             {!owner && me && (
               <div>
                 <Button variant="danger" onClick={leave}>
-                  {t('Quitter la cordée', 'Leave the group')}
+                  {t('Quitter le groupe', 'Leave the group')}
                 </Button>
               </div>
             )}
             {owner && (
-              <section className="rounded-xl border border-rouge/40 p-5" aria-labelledby="supprimer">
+              <section className="rounded-xl border border-bad/40 p-5" aria-labelledby="supprimer">
                 <h2 id="supprimer" className="font-semibold">
-                  {t('Supprimer la cordée', 'Delete the group')}
+                  {t('Supprimer le groupe', 'Delete the group')}
                 </h2>
                 <p className="mt-1 text-sm text-ink-2">
-                  {t('Les membres et le classement de la cordée disparaissent. Les réussites de chacun restent sur leur profil.', 'Members and the group leaderboard are removed. Everyone keeps their solves on their own profile.')}
+                  {t('Les membres et le classement du groupe disparaissent. Les réussites de chacun restent sur leur profil.', 'Members and the group leaderboard are removed. Everyone keeps their solves on their own profile.')}
                 </p>
                 <div className="mt-4 flex flex-wrap items-end gap-3">
                   <Field label={t(`Tape « ${group.name} » pour confirmer`, `Type “${group.name}” to confirm`)} htmlFor="confirm-delete">
@@ -364,7 +364,7 @@ export function GroupPage() {
                 </div>
               </section>
             )}
-            {!me && <Notice>{t('Tu ne fais pas partie de cette cordée.', 'You are not a member of this group.')}</Notice>}
+            {!me && <Notice>{t('Tu ne fais pas partie de ce groupe.', 'You are not a member of this group.')}</Notice>}
           </div>
         )}
       </div>

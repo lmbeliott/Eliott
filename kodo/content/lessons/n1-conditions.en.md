@@ -2,27 +2,27 @@ So far, your programs always did the same thing, whatever the data. With a **con
 
 ## If… else
 
-At the Valcorde ski resort, the slopes open when there are at least 30 centimeters of snow:
+You pass a test when you get at least 30 points:
 
 ```python
-snow = int(input())
-if snow >= 30:
-    print("Slopes open")
+points = int(input())
+if points >= 30:
+    print("Test passed")
 else:
-    print("Slopes closed")
+    print("Test failed")
 ```
 
 ```cpp
-int snow;
-cin >> snow;
-if (snow >= 30) {
-    cout << "Slopes open\n";
+int points;
+cin >> points;
+if (points >= 30) {
+    cout << "Test passed\n";
 } else {
-    cout << "Slopes closed\n";
+    cout << "Test failed\n";
 }
 ```
 
-If the condition `snow >= 30` is true, the program runs the first block; otherwise, it runs the `else` block. Never both.
+If the condition `points >= 30` is true, the program runs the first block; otherwise, it runs the `else` block. Never both.
 
 In Python, the `if` line ends with a colon `:`, and the block is **shifted to the right** (we say "indented") by 4 spaces. This shift is what tells Python which lines belong to the block. In C++, the condition goes between parentheses and the block between curly braces `{ }`.
 
@@ -68,30 +68,30 @@ if (n % 2 == 0) {
 When there are more than two cases, you chain the tests with `elif` in Python (short for "else if"), and `else if` in C++:
 
 ```python
-snow = int(input())
-if snow < 30:
-    print("Resort closed")
-elif snow < 80:
-    print("Some slopes open")
+points = int(input())
+if points < 30:
+    print("Test failed")
+elif points < 80:
+    print("Test passed")
 else:
-    print("All slopes open")
+    print("Excellent")
 ```
 
 ```cpp
-int snow;
-cin >> snow;
-if (snow < 30) {
-    cout << "Resort closed\n";
-} else if (snow < 80) {
-    cout << "Some slopes open\n";
+int points;
+cin >> points;
+if (points < 30) {
+    cout << "Test failed\n";
+} else if (points < 80) {
+    cout << "Test passed\n";
 } else {
-    cout << "All slopes open\n";
+    cout << "Excellent\n";
 }
 ```
 
-The tests are done **in order**, and only the first true test is run: the following ones are skipped. So when the program reaches `snow < 80`, it already knows that `snow` is at least 30. The final `else` catches every case that is left.
+The tests are done **in order**, and only the first true test is run: the following ones are skipped. So when the program reaches `points < 80`, it already knows that `points` is at least 30. The final `else` catches every case that is left.
 
-The order of the tests matters: if we tested `snow < 80` first, the resort would never be announced as closed.
+The order of the tests matters: if we tested `points < 80` first, a test would never be announced as failed.
 
 ## Combining conditions
 
@@ -101,7 +101,7 @@ You can put several conditions together:
 - `or` in Python, `||` in C++: true if at least one of the two is true;
 - `not` in Python, `!` in C++: flips a condition.
 
-The cable car closes if the wind is above 60 km/h or if it's colder than −20 degrees:
+A park closes if the wind is above 60 km/h or if it's colder than −20 degrees:
 
 ```python
 wind, temperature = map(int, input().split())

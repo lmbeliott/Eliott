@@ -5,7 +5,7 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://bskgia
 export const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? 'sb_publishable_v6HxcdZkbMdzIWB0fi_XzQ_AM05NF3A'
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'cordee-auth' },
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'kodo-auth' },
 })
 
 export interface Profile {
@@ -90,7 +90,10 @@ export function errorText(e: unknown, lang: 'fr' | 'en'): string {
     [/Failed to fetch|NetworkError|Load failed/i, 'Pas de connexion au serveur. Vérifie ta connexion internet puis réessaie.', 'Cannot reach the server. Check your internet connection and try again.'],
     [/duplicate key value.*username/i, 'Ce pseudo est déjà pris.', 'This username is already taken.'],
     [/Trop de soumissions/i, 'Trop de soumissions en une minute. Attends un peu avant de recommencer.', 'Too many submissions in one minute. Wait a moment before trying again.'],
-    [/Aucune cordée ne correspond au code (\w+)/i, 'Aucune cordée ne correspond à ce code. Vérifie-le auprès de la personne qui te l’a donné.', 'No group matches this code. Check it with the person who gave it to you.'],
+    [/Aucun groupe ne correspond au code (\w+)/i, 'Aucun groupe ne correspond à ce code. Vérifie-le auprès de la personne qui te l’a donné.', 'No group matches this code. Check it with the person who gave it to you.'],
+    [/déjà créé 30 groupes/i, 'Tu as déjà créé 30 groupes.', 'You have already created 30 groups.'],
+    [/déjà partie de 30 groupes/i, 'Tu fais déjà partie de 30 groupes.', 'You are already in 30 groups.'],
+    [/créé un groupe qui a encore des membres/i, 'Tu as créé un groupe qui a encore des membres. Supprime-le d’abord (page du groupe, onglet Membres).', 'You created a group that still has members. Delete it first (group page, Members tab).'],
   ]
   for (const [re, fr, en] of map) if (re.test(msg)) return lang === 'en' ? en : fr
   return msg

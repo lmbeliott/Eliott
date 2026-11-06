@@ -9,6 +9,6 @@ int main() {
         cout << i << "\n";
     }
     // Après la boucle : une seule fois.
-    cout << "PARTEZ\n";
+    cout << "FIN\n";
     return 0;
 }

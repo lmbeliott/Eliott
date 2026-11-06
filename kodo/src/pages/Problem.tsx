@@ -3,10 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, ArrowRight, Check, ChevronRight, CircleAlert, Clock, Lightbulb, Lock, Play, RotateCcw, Send, TriangleAlert, X } from 'lucide-react'
 import { CodeEditor } from '../components/CodeEditor'
-import { Button, CopyButton, cx, LinkButton, Notice, Segmented, Skeleton, SlopeMark, Spinner, useDelayed } from '../components/ui'
+import { Button, CopyButton, cx, DifficultyMark, LinkButton, Notice, Segmented, Skeleton, Spinner, useDelayed } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { chapterById, chapterTitle, loadProblem, problemById, problemList, problemTitle, type ProblemData } from '../lib/content'
-import { formatAltitude, pick, plural, useI18n } from '../lib/i18n'
+import { formatPoints, pick, plural, useI18n } from '../lib/i18n'
 import { judge, runtimeFor, warmUp, limitFor, type JudgeReport, type JudgeTest, type TestResult } from '../judge/judge'
 import { explainError, trimCompilerOutput } from '../judge/explain'
 import type { Lang } from '../judge/protocol'
@@ -46,7 +46,7 @@ function RuntimeStatus({ lang }: { lang: Lang }) {
   const { state, progress } = useRuntimeState(lang)
   const name = lang === 'python' ? 'Python' : 'C++'
   if (state === 'ready') return <span className="text-xs text-muted">{t(`${name} prêt`, `${name} ready`)}</span>
-  if (state === 'failed') return <span className="text-xs text-rouge">{t(`${name} n’a pas pu se charger`, `${name} failed to load`)}</span>
+  if (state === 'failed') return <span className="text-xs text-bad">{t(`${name} n’a pas pu se charger`, `${name} failed to load`)}</span>
   if (state === 'loading') {
     const pct = progress.total ? Math.round((progress.loaded / progress.total) * 100) : 0
     const mb = Math.round(progress.total / 1e6)
@@ -111,7 +111,7 @@ function Hints({ hints }: { hints: string[] }) {
         {hints.slice(0, shown).map((h, i) => (
           <li key={i} className="anim-rise rounded-lg border border-line bg-surface p-4">
             <p className="mb-1 text-xs font-medium text-muted">{t(`Indice ${i + 1}`, `Hint ${i + 1}`)}</p>
-            <div className="prose-cordee text-[0.95rem]" dangerouslySetInnerHTML={{ __html: h }} />
+            <div className="prose-kodo text-[0.95rem]" dangerouslySetInnerHTML={{ __html: h }} />
           </li>
         ))}
       </ol>
@@ -144,7 +144,7 @@ function Solution({ data, solved, lang }: { data: ProblemData; solved: boolean; 
   const code = data.solutionCode[lang] ?? data.solutionCode.python
   return (
     <div className="flex flex-col gap-6">
-      <div className="prose-cordee" dangerouslySetInnerHTML={{ __html: text.solution }} />
+      <div className="prose-kodo" dangerouslySetInnerHTML={{ __html: text.solution }} />
       {code && (
         <div className="rounded-lg border border-line bg-code">
           <div className="flex items-center justify-between border-b border-line px-3 py-1">
@@ -201,15 +201,15 @@ function StatementPanel({ data, solved, codeLang }: { data: ProblemData; solved:
         )}
         <h1 className="mt-1.5 text-xl font-semibold sm:text-2xl">{text.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-2">
-          <SlopeMark slope={data.slope} />
-          <span className="tabular">+{formatAltitude(lang, data.xp)}</span>
+          <DifficultyMark difficulty={data.difficulty} />
+          <span className="tabular">+{formatPoints(lang, data.points)}</span>
           <span className="text-muted">
             {solvers > 0
               ? t(`Réussi par ${plural(lang, solvers, ['élève', 'élèves'], ['', ''])}`, `Solved by ${plural(lang, solvers, ['', ''], ['student', 'students'])}`)
               : t('Personne ne l’a encore réussi', 'Nobody has solved it yet')}
           </span>
           {solved && (
-            <span className="inline-flex items-center gap-1 font-medium text-verte">
+            <span className="inline-flex items-center gap-1 font-medium text-ok">
               <Check className="size-4" aria-hidden /> {t('Réussi', 'Solved')}
             </span>
           )}
@@ -235,15 +235,15 @@ function StatementPanel({ data, solved, codeLang }: { data: ProblemData; solved:
       <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-6" role="tabpanel">
         {tab === 'statement' && (
           <article>
-            <div className="prose-cordee" dangerouslySetInnerHTML={{ __html: text.statement }} />
+            <div className="prose-kodo" dangerouslySetInnerHTML={{ __html: text.statement }} />
             <h2 className="mt-8 text-lg font-semibold">{t('Entrée', 'Input')}</h2>
-            <div className="prose-cordee mt-2" dangerouslySetInnerHTML={{ __html: text.input }} />
+            <div className="prose-kodo mt-2" dangerouslySetInnerHTML={{ __html: text.input }} />
             <h2 className="mt-6 text-lg font-semibold">{t('Sortie', 'Output')}</h2>
-            <div className="prose-cordee mt-2" dangerouslySetInnerHTML={{ __html: text.output }} />
+            <div className="prose-kodo mt-2" dangerouslySetInnerHTML={{ __html: text.output }} />
             {text.constraints && (
               <>
                 <h2 className="mt-6 text-lg font-semibold">{t('Contraintes', 'Constraints')}</h2>
-                <div className="prose-cordee mt-2" dangerouslySetInnerHTML={{ __html: text.constraints }} />
+                <div className="prose-kodo mt-2" dangerouslySetInnerHTML={{ __html: text.constraints }} />
               </>
             )}
             <Samples data={data} />
@@ -264,10 +264,10 @@ function StatementPanel({ data, solved, codeLang }: { data: ProblemData; solved:
 const statusStyle: Record<TestResult['status'], string> = {
   pending: 'border-line bg-surface text-muted',
   running: 'border-ink-2 bg-surface text-ink',
-  ok: 'border-verte/40 bg-verte-soft text-verte',
-  wrong: 'border-rouge/40 bg-rouge-soft text-rouge',
-  timeout: 'border-amber/40 bg-amber-soft text-amber',
-  error: 'border-rouge/40 bg-rouge-soft text-rouge',
+  ok: 'border-ok/40 bg-ok-soft text-ok',
+  wrong: 'border-bad/40 bg-bad-soft text-bad',
+  timeout: 'border-warn/40 bg-warn-soft text-warn',
+  error: 'border-bad/40 bg-bad-soft text-bad',
   skipped: 'border-line bg-surface-2 text-muted',
 }
 
@@ -297,7 +297,7 @@ const clip = (s: string, n = 1200) => (s.length > n ? `${s.slice(0, n)}\n… (+$
 function OutputBox({ title, text, tone }: { title: string; text: string; tone?: 'bad' }) {
   return (
     <div className="min-w-0 rounded-md border border-line bg-code">
-      <p className={cx('border-b border-line px-3 py-1 text-xs font-medium', tone === 'bad' ? 'text-rouge' : 'text-muted')}>{title}</p>
+      <p className={cx('border-b border-line px-3 py-1 text-xs font-medium', tone === 'bad' ? 'text-bad' : 'text-muted')}>{title}</p>
       <pre className="max-h-48 overflow-auto px-3 py-2 text-[0.8rem] leading-relaxed">{text === '' ? ' ' : clip(text)}</pre>
     </div>
   )
@@ -325,8 +325,8 @@ function TestDetail({ r, lang, limitMs }: { r: TestResult; lang: Lang; limitMs: 
         </p>
       )}
       {explanation && (
-        <p className="flex gap-2 rounded-md border border-amber/40 bg-amber-soft px-3 py-2 text-sm">
-          <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden />
+        <p className="flex gap-2 rounded-md border border-warn/40 bg-warn-soft px-3 py-2 text-sm">
+          <Lightbulb className="mt-0.5 size-4 shrink-0 text-warn" aria-hidden />
           <span>{explanation}</span>
         </p>
       )}
@@ -375,12 +375,12 @@ function Verdict({ o, lang, limitMs, next, onShowSolution }: { o: Outcome; lang:
     const explanation = explainError('cpp', r.compileError, ui)
     return (
       <div className="flex flex-col gap-3">
-        <p className="flex items-center gap-2 font-semibold text-rouge">
+        <p className="flex items-center gap-2 font-semibold text-bad">
           <CircleAlert className="size-5" aria-hidden /> {t('Erreur de compilation', 'Compilation error')}
         </p>
         {explanation && (
-          <p className="flex gap-2 rounded-md border border-amber/40 bg-amber-soft px-3 py-2 text-sm">
-            <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden />
+          <p className="flex gap-2 rounded-md border border-warn/40 bg-warn-soft px-3 py-2 text-sm">
+            <Lightbulb className="mt-0.5 size-4 shrink-0 text-warn" aria-hidden />
             {explanation}
           </p>
         )}
@@ -406,7 +406,7 @@ function Verdict({ o, lang, limitMs, next, onShowSolution }: { o: Outcome; lang:
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className={cx('flex items-center gap-2 text-base font-semibold', accepted ? 'text-verte' : done && o.mode !== 'custom' ? 'text-rouge' : 'text-ink')} aria-live="polite">
+        <p className={cx('flex items-center gap-2 text-base font-semibold', accepted ? 'text-ok' : done && o.mode !== 'custom' ? 'text-bad' : 'text-ink')} aria-live="polite">
           {accepted && <Check className="size-5" aria-hidden />}
           {title}
         </p>
@@ -418,11 +418,11 @@ function Verdict({ o, lang, limitMs, next, onShowSolution }: { o: Outcome; lang:
       </div>
 
       {accepted && o.mode === 'submit' && (
-        <div className="anim-rise flex flex-col gap-3 rounded-lg border border-verte/40 bg-verte-soft p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="anim-rise flex flex-col gap-3 rounded-lg border border-ok/40 bg-ok-soft p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             {o.recorded?.new_solve ? (
               <>
-                <p className="display text-2xl font-semibold tabular">+{formatAltitude(ui, o.recorded.xp_gain)}</p>
+                <p className="display text-2xl font-semibold tabular">+{formatPoints(ui, o.recorded.xp_gain)}</p>
                 <p className="text-sm text-ink-2">
                   {[
                     o.recorded.first_try && t('bonus premier essai', 'first-try bonus'),
@@ -441,10 +441,10 @@ function Verdict({ o, lang, limitMs, next, onShowSolution }: { o: Outcome; lang:
                 <Link to="/inscription" className="font-medium underline underline-offset-2">
                   {t('Crée un compte', 'Create an account')}
                 </Link>{' '}
-                {t('pour gagner de l’altitude et apparaître au classement.', 'to gain altitude and show up on the leaderboard.')}
+                {t('pour gagner des points et apparaître au classement.', 'to earn points and show up on the leaderboard.')}
               </p>
             ) : o.recordError ? (
-              <p className="text-sm text-rouge">{o.recordError}</p>
+              <p className="text-sm text-bad">{o.recordError}</p>
             ) : (
               <Spinner label={t('Enregistrement…', 'Saving…')} />
             )}
@@ -709,7 +709,7 @@ export function Problem() {
     setMobilePane('statement')
   }, [id])
   useEffect(() => {
-    if (meta) document.title = `${problemTitle(lang, meta)} · Cordée`
+    if (meta) document.title = `${problemTitle(lang, meta)} · Kodo`
   }, [meta, lang])
 
   const idx = problemList.findIndex((p) => p.id === id)
@@ -764,7 +764,7 @@ export function Problem() {
         ) : null
       ) : (
         <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,44fr)_minmax(0,56fr)]">
-          <div className={cx('min-h-0 border-line bg-snow lg:block lg:border-r', mobilePane === 'statement' ? 'block' : 'hidden')}>
+          <div className={cx('min-h-0 border-line bg-bg lg:block lg:border-r', mobilePane === 'statement' ? 'block' : 'hidden')}>
             <StatementPanel key={`${id}-${solutionKey}`} data={q.data} solved={solved} codeLang={codeLang} />
           </div>
           <div className={cx('min-h-0 bg-surface lg:block', mobilePane === 'code' ? 'block' : 'hidden')}>

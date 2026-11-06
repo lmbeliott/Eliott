@@ -4,8 +4,8 @@ import catalogJson from '../content/catalog.json'
 import type { UiLang } from './i18n'
 import { pick } from './i18n'
 
-export type Slope = 'verte' | 'bleue' | 'rouge' | 'noire'
-export const SLOPES: Slope[] = ['verte', 'bleue', 'rouge', 'noire']
+export type Difficulty = 'facile' | 'moyen' | 'difficile' | 'expert'
+export const DIFFICULTIES: Difficulty[] = ['facile', 'moyen', 'difficile', 'expert']
 
 export interface CatalogProblem {
   id: string
@@ -13,10 +13,10 @@ export interface CatalogProblem {
   titleEn: string | null
   chapter: string
   level: string
-  slope: Slope
+  difficulty: Difficulty
   order: number
   tags: string[]
-  xp: number
+  points: number
 }
 export interface Chapter {
   id: string
@@ -29,7 +29,7 @@ export interface Chapter {
 }
 export interface Level {
   id: string
-  slope: Slope
+  difficulty: Difficulty
   title: string
   titleEn?: string
   summary: string
@@ -56,15 +56,16 @@ export const chapterSummary = (lang: UiLang, c: Chapter) => pick(lang, c.summary
 export const levelTitle = (lang: UiLang, l: Level) => pick(lang, l.title, l.titleEn)
 export const levelSummary = (lang: UiLang, l: Level) => pick(lang, l.summary, l.summaryEn)
 
-export const SLOPE_LABEL: Record<Slope, { fr: string; en: string }> = {
-  verte: { fr: 'Piste verte', en: 'Green run' },
-  bleue: { fr: 'Piste bleue', en: 'Blue run' },
-  rouge: { fr: 'Piste rouge', en: 'Red run' },
-  noire: { fr: 'Piste noire', en: 'Black run' },
+export const DIFFICULTY_LABEL: Record<Difficulty, { fr: string; en: string }> = {
+  facile: { fr: 'Facile', en: 'Easy' },
+  moyen: { fr: 'Moyen', en: 'Medium' },
+  difficile: { fr: 'Difficile', en: 'Hard' },
+  expert: { fr: 'Expert', en: 'Expert' },
 }
+export const difficultyRank = (d: Difficulty) => DIFFICULTIES.indexOf(d) + 1
 
-/** Altitude totale du massif : la somme de tous les problèmes. */
-export const totalAltitude = problemList.reduce((a, p) => a + p.xp, 0)
+/** Total des points disponibles : la somme de tous les problèmes. */
+export const totalPoints = problemList.reduce((a, p) => a + p.points, 0)
 
 // ------------------------------------------------------------------ Énoncés
 
@@ -83,10 +84,10 @@ export interface ProblemData {
   titleEn: string | null
   chapter: string
   level: string
-  slope: Slope
+  difficulty: Difficulty
   order: number
   tags: string[]
-  xp: number
+  points: number
   timeLimitMs: number
   text: { fr: ProblemText; en: ProblemText | null }
   solutionCode: { python: string | null; cpp: string | null }

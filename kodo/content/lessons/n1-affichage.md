@@ -3,7 +3,7 @@ Un programme est une suite d'instructions que l'ordinateur exécute dans l'ordre
 ## Afficher un message
 
 ```python
-print("Bienvenue à Valcorde !")
+print("Bonjour !")
 print(2026)
 ```
 
@@ -12,7 +12,7 @@ print(2026)
 using namespace std;
 
 int main() {
-    cout << "Bienvenue à Valcorde !" << "\n";
+    cout << "Bonjour !" << "\n";
     cout << 2026 << "\n";
     return 0;
 }
@@ -27,22 +27,22 @@ En C++, un programme a toujours cette forme : les deux premières lignes prépar
 Une **variable** est une boîte qui porte un nom et dans laquelle on range une valeur.
 
 ```python
-lits = 40
-dormeurs = 27
-libres = lits - dormeurs
-print(libres)
+pages = 40
+lues = 27
+restantes = pages - lues
+print(restantes)
 ```
 
 ```cpp
-int lits = 40;
-int dormeurs = 27;
-int libres = lits - dormeurs;
-cout << libres << "\n";
+int pages = 40;
+int lues = 27;
+int restantes = pages - lues;
+cout << restantes << "\n";
 ```
 
 Ce programme affiche `13`. En C++, la première fois qu'on utilise une boîte, on annonce ce qu'elle contient : `int` veut dire « nombre entier ». En Python, ce n'est pas nécessaire.
 
-Le contenu d'une boîte peut changer : `dormeurs = dormeurs + 3` calcule d'abord `dormeurs + 3`, puis range le résultat dans `dormeurs`. Le signe `=` ne veut donc pas dire « est égal à », mais « prend la valeur ».
+Le contenu d'une boîte peut changer : `lues = lues + 3` calcule d'abord `lues + 3`, puis range le résultat dans `lues`. Le signe `=` ne veut donc pas dire « est égal à », mais « prend la valeur ».
 
 ## Calculer
 

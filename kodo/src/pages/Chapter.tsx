@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, ArrowRight, Check, Circle, CircleDot } from 'lucide-react'
-import { Button, LinkButton, Notice, Segmented, Skeleton, SlopeMark, cx, useDelayed } from '../components/ui'
+import { Button, DifficultyMark, LinkButton, Notice, Segmented, Skeleton, cx, useDelayed } from '../components/ui'
 import { chapters, chapterById, chapterSummary, chapterTitle, loadLesson, problemById, problemTitle } from '../lib/content'
-import { formatAltitude, plural, useI18n } from '../lib/i18n'
+import { formatPoints, plural, useI18n } from '../lib/i18n'
 import { useCodeLang, useProgress } from '../lib/progress'
 import { NotFound } from './NotFound'
 
@@ -36,9 +36,9 @@ export function ChapterPage() {
             <li key={pid} className="border-b border-line last:border-0">
               <Link to={`/probleme/${pid}`} className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2">
                 {solved ? (
-                  <Check className="size-5 shrink-0 text-verte" aria-label={t('Réussi', 'Solved')} />
+                  <Check className="size-5 shrink-0 text-ok" aria-label={t('Réussi', 'Solved')} />
                 ) : tried ? (
-                  <CircleDot className="size-5 shrink-0 text-amber" aria-label={t('Tenté', 'Attempted')} />
+                  <CircleDot className="size-5 shrink-0 text-accent" aria-label={t('Tenté', 'Attempted')} />
                 ) : (
                   <Circle className="size-5 shrink-0 text-line-strong" aria-label={t('À faire', 'To do')} />
                 )}
@@ -48,7 +48,7 @@ export function ChapterPage() {
                     {problemTitle(lang, p)}
                   </span>
                 </span>
-                <span className="shrink-0 text-sm text-muted tabular">+{formatAltitude(lang, p.xp)}</span>
+                <span className="shrink-0 text-sm text-muted tabular">+{formatPoints(lang, p.points)}</span>
               </Link>
             </li>
           )
@@ -70,7 +70,7 @@ export function ChapterPage() {
         <ArrowLeft className="size-4" aria-hidden /> {t('Parcours', 'Path')}
       </Link>
       <header className="mt-3 max-w-3xl">
-        <SlopeMark slope={chapter.level.slope} />
+        <DifficultyMark difficulty={chapter.level.difficulty} />
         <h1 className="mt-1 text-3xl font-semibold">{chapterTitle(lang, chapter)}</h1>
         <p className="mt-2 text-lg text-ink-2">{chapterSummary(lang, chapter)}</p>
         <p className="mt-2 text-sm text-muted">
@@ -113,7 +113,7 @@ export function ChapterPage() {
             </Notice>
           ) : body ? (
             <>
-              <div className="prose-cordee" dangerouslySetInnerHTML={{ __html: body.html }} />
+              <div className="prose-kodo" dangerouslySetInnerHTML={{ __html: body.html }} />
               {lang === 'en' && !lesson.data?.en && <p className="mt-6 text-sm text-muted">This lesson has not been translated into English yet, so it is shown in French.</p>}
             </>
           ) : !chapter.lessonMinutes ? (

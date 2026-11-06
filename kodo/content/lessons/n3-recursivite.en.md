@@ -2,7 +2,7 @@ A **recursive** function is a function that calls itself. It is the ideal tool t
 
 ## A function that calls itself
 
-The number of ways to put N different pairs of skis on a rack is N! = N × (N − 1) × … × 1. We can define it from a smaller problem: N! = N × (N − 1)!, and 0! = 1.
+The number of ways to put N different books on a shelf is N! = N × (N − 1) × … × 1. We can define it from a smaller problem: N! = N × (N − 1)!, and 0! = 1.
 
 ```python
 def factorial(n):
@@ -25,7 +25,7 @@ Two rules must be respected: there must be a **base case** that does not call th
 
 ## Listing all the possibilities
 
-To print all the possible orders of N hikers (the **permutations**), we fill the places one by one. The function `explore` chooses who takes the next place among those not yet placed, calls `explore` for the rest, then **undoes** its choice to try the next one.
+To print all the possible orders of the numbers from 1 to N (the **permutations**), we fill the places one by one. The function `explore` chooses the number that takes the next place among those not yet placed, calls `explore` for the rest, then **undoes** its choice to try the next one.
 
 ```python
 n = 3
@@ -36,13 +36,13 @@ def explore():
     if len(order) == n:
         print(*order)                 # a complete permutation
         return
-    for h in range(1, n + 1):
-        if not placed[h]:
-            placed[h] = True          # choose
-            order.append(h)
+    for x in range(1, n + 1):
+        if not placed[x]:
+            placed[x] = True          # choose
+            order.append(x)
             explore()                 # explore the rest
             order.pop()               # undo the choice
-            placed[h] = False
+            placed[x] = False
 
 explore()   # 1 2 3, 1 3 2, 2 1 3, 2 3 1, 3 1 2, 3 2 1
 ```
@@ -54,17 +54,17 @@ vector<bool> placed(n + 1, false);
 
 void explore() {
     if ((int)order.size() == n) {     // a complete permutation
-        for (int h : order) cout << h << " ";
+        for (int x : order) cout << x << " ";
         cout << "\n";
         return;
     }
-    for (int h = 1; h <= n; h++) {
-        if (!placed[h]) {
-            placed[h] = true;         // choose
-            order.push_back(h);
+    for (int x = 1; x <= n; x++) {
+        if (!placed[x]) {
+            placed[x] = true;         // choose
+            order.push_back(x);
             explore();                // explore the rest
             order.pop_back();         // undo the choice
-            placed[h] = false;
+            placed[x] = false;
         }
     }
 }

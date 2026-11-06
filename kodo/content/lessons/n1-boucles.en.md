@@ -109,7 +109,7 @@ The program prints `14`. Look closely at the indentation: the `if` is inside the
 
 ## Repeating as long as: the while loop
 
-Sometimes you don't know in advance how many turns you'll need. Yanis puts 15 euros aside every week to buy himself a 200-euro ski pass. How many weeks does he have to wait?
+Sometimes you don't know in advance how many turns you'll need. You put 15 euros aside every week to buy a 200-euro bike. How many weeks do you have to wait?
 
 ```python
 savings = 0
@@ -130,7 +130,7 @@ while (savings < 200) {
 cout << weeks << "\n";
 ```
 
-The `while` loop checks the condition **before** each turn. As long as it's true, the block is repeated; as soon as it becomes false, the loop stops and the program carries on after it. Here, it prints `14`: after 13 weeks, Yanis only has 195 euros.
+The `while` loop checks the condition **before** each turn. As long as it's true, the block is repeated; as soon as it becomes false, the loop stops and the program carries on after it. Here, it prints `14`: after 13 weeks, you only have 195 euros.
 
 Be careful: if the condition never becomes false, the loop runs forever and your program never stops. Make sure each turn brings you closer to the exit.
 

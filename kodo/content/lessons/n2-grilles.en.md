@@ -1,8 +1,8 @@
-A hiking map, a game board, a snowfield seen from above: many problems take place on a **grid**, that is, a two-dimensional table with rows and columns.
+A city map, a game board, an image made of pixels: many problems take place on a **grid**, that is, a two-dimensional table with rows and columns.
 
 ## Reading a grid
 
-In the problems, a grid is given as `H` lines of `W` characters, for example `.` for a free cell and `#` for a rock:
+In the problems, a grid is given as `H` lines of `W` characters, for example `.` for a free cell and `#` for a wall:
 
 ```text
 3 5
@@ -33,27 +33,27 @@ cout << grid[0][2] << "\n";   // #: row 0, column 2
 
 ## Going through all the cells
 
-To visit every cell, you nest two loops: one over the rows, one over the columns. Here, we count the rocks:
+To visit every cell, you nest two loops: one over the rows, one over the columns. Here, we count the walls:
 
 ```python
-rocks = 0
+walls = 0
 for i in range(h):
     for j in range(w):
         if grid[i][j] == "#":
-            rocks += 1
-print(rocks)
+            walls += 1
+print(walls)
 ```
 
 ```cpp
-int rocks = 0;
+int walls = 0;
 for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
         if (grid[i][j] == '#') {
-            rocks++;
+            walls++;
         }
     }
 }
-cout << rocks << "\n";
+cout << walls << "\n";
 ```
 
 The same double loop lets you **find a cell**: when `grid[i][j]` is the character you're looking for, you remember `i` and `j`.
@@ -83,7 +83,7 @@ The four neighbours of cell `(i, j)` are the one above `(i - 1, j)`, below `(i +
 Watch out for the edges: a cell on the edge has neighbours outside the grid. You must **always** check that a cell is inside the grid before reading it. In Python, it's even more of a trap because `grid[-1]` doesn't cause an error: it's the last row!
 
 ```python
-count = 0   # number of rocks next to cell (i, j)
+count = 0   # number of walls next to cell (i, j)
 for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
     nr = i + dr
     nc = j + dc
@@ -94,7 +94,7 @@ for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
 ```cpp
 int dr[4] = {-1, 1, 0, 0};
 int dc[4] = {0, 0, -1, 1};
-int count = 0;   // number of rocks next to cell (i, j)
+int count = 0;   // number of walls next to cell (i, j)
 for (int d = 0; d < 4; d++) {
     int nr = i + dr[d];
     int nc = j + dc[d];
@@ -110,7 +110,7 @@ For the eight neighbours (diagonals included), you write two loops on `dr` and `
 
 ## Moving around a grid
 
-To move a character around, you keep its position `(r, c)` and its direction as an offset `(dr, dc)`: `(-1, 0)` to go up, `(1, 0)` to go down, `(0, -1)` to go left, `(0, 1)` to go right. One step is `r += dr` and `c += dc`. Before moving, you check that the target cell is inside the grid and free.
+To move a robot or a game piece around, you keep its position `(r, c)` and its direction as an offset `(dr, dc)`: `(-1, 0)` to go up, `(1, 0)` to go down, `(0, -1)` to go left, `(0, 1)` to go right. One step is `r += dr` and `c += dc`. Before moving, you check that the target cell is inside the grid and free.
 
 ## Key takeaways
 

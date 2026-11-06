@@ -1,7 +1,7 @@
 import { LinkButton, PageHeader } from '../components/ui'
-import { formatAltitude, useI18n } from '../lib/i18n'
-import { SUMMITS, summitName } from '../lib/summits'
-import { XP } from '../lib/xp'
+import { formatPoints, useI18n } from '../lib/i18n'
+import { LEAGUES, leagueName } from '../lib/leagues'
+import { POINTS_TABLE } from '../lib/xp'
 
 export function About() {
   const { lang, t } = useI18n()
@@ -37,38 +37,35 @@ export function About() {
     [
       t('input("Nombre ?") affiche-t-il la question ?', 'Does input("Number?") print the prompt?'),
       t(
-        'Non : sur Cordée, le texte passé à input() n’est pas affiché, pour ne pas fausser ta sortie.',
-        'No: on Cordée, the text passed to input() is not printed, so it does not spoil your output.',
+        'Non : sur Kodo, le texte passé à input() n’est pas affiché, pour ne pas fausser ta sortie.',
+        'No: on Kodo, the text passed to input() is not printed, so it does not spoil your output.',
       ),
     ],
     [
       t('Qui voit mon code ?', 'Who can see my code?'),
       t(
-        'Toi, et les encadrants des cordées dont tu fais partie. Les autres élèves voient seulement quels problèmes tu as réussis.',
+        'Toi, et les encadrants des groupes dont tu fais partie. Les autres élèves voient seulement quels problèmes tu as réussis.',
         'You, and the leaders of the groups you belong to. Other students only see which problems you solved.',
       ),
     ],
   ]
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <PageHeader title={t('Comment ça marche', 'How it works')} lead={t('L’altitude, les pistes, la série, le juge : tout ce qu’il faut savoir.', 'Altitude, runs, streaks, the judge: everything you need to know.')} />
+      <PageHeader title={t('Comment ça marche', 'How it works')} lead={t('Les points, les ligues, la série, le juge : tout ce qu’il faut savoir.', 'Points, leagues, streaks, the judge: everything you need to know.')} />
 
       <section>
-        <h2 className="text-xl font-semibold">{t('L’altitude', 'Altitude')}</h2>
+        <h2 className="text-xl font-semibold">{t('Les points', 'Points')}</h2>
         <p className="mt-2 text-ink-2">
-          {t(
-            'Chaque problème réussi pour la première fois te fait grimper. Plus la piste est difficile, plus le dénivelé est grand :',
-            'Every problem you solve for the first time takes you higher. The harder the run, the bigger the climb:',
-          )}
+          {t('Chaque problème réussi pour la première fois rapporte des points, selon sa difficulté :', 'Every problem you solve for the first time earns points, depending on its difficulty:')}
         </p>
         <table className="mt-4 w-full max-w-md text-sm">
           <tbody>
-            {XP.map((x) => (
-              <tr key={x.slope} className="border-b border-line">
+            {POINTS_TABLE.map((x) => (
+              <tr key={x.difficulty} className="border-b border-line">
                 <th scope="row" className="py-2 text-left font-medium">
                   {lang === 'en' ? x.en : x.fr}
                 </th>
-                <td className="py-2 text-right tabular">+{formatAltitude(lang, x.xp)}</td>
+                <td className="py-2 text-right tabular">+{formatPoints(lang, x.points)}</td>
               </tr>
             ))}
           </tbody>
@@ -79,9 +76,9 @@ export function About() {
             'Bonuses: +20% if your very first submission is accepted, +50% for the daily challenge. Re-submitting a solved problem earns nothing.',
           )}
         </p>
-        <p className="mt-4 text-ink-2">
-          {t('Les paliers portent le nom de vrais sommets : ', 'Milestones are named after real summits: ')}
-          {SUMMITS.map((s) => `${summitName(lang, s)} (${formatAltitude(lang, s.meters)})`).join(', ')}.
+        <h3 className="mt-8 font-semibold">{t('Les ligues', 'Leagues')}</h3>
+        <p className="mt-2 text-ink-2">
+          {LEAGUES.map((l) => `${leagueName(lang, l)} (${formatPoints(lang, l.min)})`).join(', ')}.
         </p>
       </section>
 

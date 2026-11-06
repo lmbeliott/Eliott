@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useMatches, useNavigate } from 'react-router-dom'
-import { Flame, LogOut, Menu, Moon, Mountain, Settings, Sun, User, X } from 'lucide-react'
+import { Flame, LogOut, Menu, Moon, Settings, Sun, User, X } from 'lucide-react'
 import { Logo } from './Logo'
 import { Avatar, cx, IconButton, LinkButton, Segmented } from './ui'
 import { useAuth } from '../lib/auth'
-import { formatAltitude, useI18n, type UiLang } from '../lib/i18n'
+import { formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { liveStreak, supabase } from '../lib/supabase'
 import { useTheme } from '../lib/theme'
 import { useGuestSync } from '../lib/progress'
@@ -18,7 +18,7 @@ function useNav() {
     { to: '/problemes', label: t('Problèmes', 'Problems') },
     { to: '/defi', label: t('Défi du jour', 'Daily') },
     { to: '/classements', label: t('Classements', 'Leaderboards') },
-    { to: '/cordees', label: t('Cordées', 'Groups') },
+    { to: '/groupes', label: t('Groupes', 'Groups') },
   ]
 }
 
@@ -119,12 +119,11 @@ function Stats() {
   const streak = liveStreak(profile)
   return (
     <Link to={`/profil/${profile.username}`} className="hidden items-center gap-4 rounded-md px-2 py-1 text-sm hover:bg-surface-2 sm:flex">
-      <span className="flex items-center gap-1.5 tabular" title={t('Ton altitude', 'Your altitude')}>
-        <Mountain className="size-4 text-muted" aria-hidden />
-        <span className="font-medium">{formatAltitude(lang, profile.xp)}</span>
+      <span className="tabular font-medium" title={t('Tes points', 'Your points')}>
+        {formatPoints(lang, profile.xp)}
       </span>
       <span className="flex items-center gap-1.5 tabular" title={t('Ta série de jours', 'Your day streak')}>
-        <Flame className={cx('size-4', streak > 0 ? 'text-amber' : 'text-muted')} aria-hidden />
+        <Flame className={cx('size-4', streak > 0 ? 'text-warn' : 'text-muted')} aria-hidden />
         <span className="font-medium">{streak}</span>
         <span className="sr-only">{t('jours de suite', 'days in a row')}</span>
       </span>
@@ -141,9 +140,9 @@ function TopBar() {
   useEffect(() => setMenu(false), [location.pathname])
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-snow/95 supports-[backdrop-filter]:bg-snow/90">
+    <header className="sticky top-0 z-30 border-b border-line bg-bg ">
       <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-6 px-4 sm:px-6">
-        <Link to="/" className="shrink-0 rounded-md" aria-label={t('Cordée, accueil', 'Cordée, home')}>
+        <Link to="/" className="shrink-0 rounded-md" aria-label={t('Kodo, accueil', 'Kodo, home')}>
           <Logo />
         </Link>
         <nav aria-label={t('Navigation principale', 'Main navigation')} className="hidden h-full items-stretch gap-1 lg:flex">
@@ -154,7 +153,7 @@ function TopBar() {
               className={({ isActive }) =>
                 cx(
                   'relative flex items-center px-3 text-sm font-medium transition-colors',
-                  isActive ? 'text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-ink' : 'text-muted hover:text-ink',
+                  isActive ? 'text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-accent' : 'text-muted hover:text-ink',
                 )
               }
             >
@@ -229,7 +228,7 @@ function Footer() {
           <Link to="/parcours" className="hover:text-ink">{t('Parcours', 'Path')}</Link>
           <Link to="/classements" className="hover:text-ink">{t('Classements', 'Leaderboards')}</Link>
           <Link to="/problemes" className="hover:text-ink">{t('Problèmes', 'Problems')}</Link>
-          <Link to="/cordees" className="hover:text-ink">{t('Cordées et classes', 'Groups and classes')}</Link>
+          <Link to="/groupes" className="hover:text-ink">{t('Groupes et classes', 'Groups and classes')}</Link>
           <Link to="/defi" className="hover:text-ink">{t('Défi du jour', 'Daily challenge')}</Link>
           <Link to="/a-propos" className="hover:text-ink">{t('Comment ça marche', 'How it works')}</Link>
         </div>

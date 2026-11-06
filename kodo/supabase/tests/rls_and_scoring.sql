@@ -10,9 +10,9 @@ declare
   daily text;
   procedure_ok boolean;
 begin
-  insert into public.problems (id, chapter, level, slope, xp, title) values
-    ('t-un', 'n1-affichage', 'n1', 'verte', 50, 'Test 1'),
-    ('t-deux', 'n2-chaines', 'n2', 'bleue', 100, 'Test 2')
+  insert into public.problems (id, chapter, level, difficulty, points, title) values
+    ('t-un', 'n1-affichage', 'n1', 'facile', 50, 'Test 1'),
+    ('t-deux', 'n2-chaines', 'n2', 'moyen', 100, 'Test 2')
   on conflict (id) do nothing;
 
   insert into auth.users (id, email, raw_user_meta_data, aud, role) values

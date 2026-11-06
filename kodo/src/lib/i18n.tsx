@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
 export type UiLang = 'fr' | 'en'
-const KEY = 'cordee:lang'
+const KEY = 'kodo:lang'
 
 function initialLang(): UiLang {
   try {
@@ -55,9 +55,9 @@ export function formatNumber(lang: UiLang, n: number) {
   return new Intl.NumberFormat(locale(lang)).format(n)
 }
 
-/** Altitude (l'XP du site) : « 1 250 m ». */
-export function formatAltitude(lang: UiLang, meters: number) {
-  return `${formatNumber(lang, meters)} m`
+/** Points : « 1 250 pts ». */
+export function formatPoints(lang: UiLang, points: number) {
+  return `${formatNumber(lang, points)} pts`
 }
 
 export function plural(lang: UiLang, n: number, fr: [string, string], en: [string, string]) {

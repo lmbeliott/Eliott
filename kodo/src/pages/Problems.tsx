@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Check, Circle, CircleDot, Search, X } from 'lucide-react'
-import { Button, Input, PageHeader, Select, SlopeMark, cx } from '../components/ui'
-import { chapters, chapterTitle, problemList, problemTitle, SLOPE_LABEL, SLOPES, tagLabel, type Slope } from '../lib/content'
-import { formatAltitude, formatNumber, plural, useI18n } from '../lib/i18n'
+import { Button, DifficultyMark, Input, PageHeader, Select, cx } from '../components/ui'
+import { chapters, chapterTitle, DIFFICULTIES, problemList, problemTitle, tagLabel, type Difficulty } from '../lib/content'
+import { formatNumber, formatPoints, plural, useI18n } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
 import { useProblemStats } from '../lib/queries'
 
@@ -16,7 +16,7 @@ export function Problems() {
   const progress = useProgress()
   const stats = useProblemStats()
   const q = params.get('q') ?? ''
-  const slopes = (params.get('pistes')?.split(',').filter(Boolean) ?? []) as Slope[]
+  const levelsSel = (params.get('niveaux')?.split(',').filter(Boolean) ?? []) as Difficulty[]
   const chapter = params.get('chapitre') ?? ''
   const tag = params.get('tag') ?? ''
   const status = (params.get('statut') ?? 'tous') as Status
@@ -27,14 +27,14 @@ export function Problems() {
     else next.delete(key)
     setParams(next, { replace: true })
   }
-  const toggleSlope = (s: Slope) => {
-    const next = slopes.includes(s) ? slopes.filter((x) => x !== s) : [...slopes, s]
-    set('pistes', next.join(','))
+  const toggleLevel = (d: Difficulty) => {
+    const next = levelsSel.includes(d) ? levelsSel.filter((x) => x !== d) : [...levelsSel, d]
+    set('niveaux', next.join(','))
   }
 
   const tags = useMemo(() => [...new Set(problemList.flatMap((p) => p.tags))].sort((a, b) => tagLabel(lang, a).localeCompare(tagLabel(lang, b))), [lang])
   const list = problemList.filter((p) => {
-    if (slopes.length && !slopes.includes(p.slope)) return false
+    if (levelsSel.length && !levelsSel.includes(p.difficulty)) return false
     if (chapter && p.chapter !== chapter) return false
     if (tag && !p.tags.includes(tag)) return false
     const solved = progress.solved.has(p.id)
@@ -44,7 +44,7 @@ export function Problems() {
     if (q && !norm(`${p.title} ${p.titleEn ?? ''} ${p.tags.join(' ')}`).includes(norm(q))) return false
     return true
   })
-  const filtered = !!(q || slopes.length || chapter || tag || status !== 'tous')
+  const filtered = !!(q || levelsSel.length || chapter || tag || status !== 'tous')
   const solvedCount = problemList.filter((p) => progress.solved.has(p.id)).length
 
   return (
@@ -52,8 +52,8 @@ export function Problems() {
       <PageHeader
         title={t('Problèmes', 'Problems')}
         lead={t(
-          `${plural(lang, problemList.length, ['problème', 'problèmes'], ['', ''])}, ${solvedCount} réussi${solvedCount > 1 ? 's' : ''}. Filtre par piste, par chapitre ou par notion.`,
-          `${problemList.length} problems, ${solvedCount} solved. Filter by run, chapter or topic.`,
+          `${plural(lang, problemList.length, ['problème', 'problèmes'], ['', ''])}, ${solvedCount} réussi${solvedCount > 1 ? 's' : ''}. Filtre par difficulté, par chapitre ou par notion.`,
+          `${problemList.length} problems, ${solvedCount} solved. Filter by difficulty, chapter or topic.`,
         )}
       />
 
@@ -98,16 +98,16 @@ export function Problems() {
             </Select>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('Pistes', 'Runs')}>
-          {SLOPES.map((s) => (
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('Difficulté', 'Difficulty')}>
+          {DIFFICULTIES.map((d) => (
             <button
-              key={s}
+              key={d}
               type="button"
-              aria-pressed={slopes.includes(s)}
-              onClick={() => toggleSlope(s)}
-              className={cx('h-8 rounded-md border px-3 text-sm transition-colors', slopes.includes(s) ? 'border-ink bg-surface-2' : 'border-line hover:border-line-strong')}
+              aria-pressed={levelsSel.includes(d)}
+              onClick={() => toggleLevel(d)}
+              className={cx('h-8 rounded-md border px-3 text-sm transition-colors', levelsSel.includes(d) ? 'border-accent bg-accent-soft' : 'border-line hover:border-line-strong')}
             >
-              <SlopeMark slope={s} />
+              <DifficultyMark difficulty={d} />
             </button>
           ))}
           {filtered && (
@@ -130,7 +130,7 @@ export function Problems() {
               <th scope="col" className="hidden py-2.5 font-medium md:table-cell">{t('Chapitre', 'Chapter')}</th>
               <th scope="col" className="hidden py-2.5 font-medium lg:table-cell">{t('Notions', 'Topics')}</th>
               <th scope="col" className="hidden py-2.5 pr-4 text-right font-medium sm:table-cell">{t('Réussi par', 'Solved by')}</th>
-              <th scope="col" className="py-2.5 pr-4 text-right font-medium">{t('Altitude', 'Altitude')}</th>
+              <th scope="col" className="py-2.5 pr-4 text-right font-medium">{t('Points', 'Points')}</th>
             </tr>
           </thead>
           <tbody>
@@ -142,9 +142,9 @@ export function Problems() {
                 <tr key={p.id} className="border-b border-line last:border-0 hover:bg-surface-2/60">
                   <td className="py-3 pl-4">
                     {solved ? (
-                      <Check className="size-4 text-verte" aria-label={t('Réussi', 'Solved')} />
+                      <Check className="size-4 text-ok" aria-label={t('Réussi', 'Solved')} />
                     ) : tried ? (
-                      <CircleDot className="size-4 text-amber" aria-label={t('Tenté', 'Attempted')} />
+                      <CircleDot className="size-4 text-accent" aria-label={t('Tenté', 'Attempted')} />
                     ) : (
                       <Circle className="size-4 text-line-strong" aria-label={t('À faire', 'To do')} />
                     )}
@@ -154,13 +154,13 @@ export function Problems() {
                       {problemTitle(lang, p)}
                     </Link>
                     <span className="mt-0.5 block">
-                      <SlopeMark slope={p.slope} className="text-xs" />
+                      <DifficultyMark difficulty={p.difficulty} className="text-xs" />
                     </span>
                   </td>
                   <td className="hidden py-3 pr-3 text-ink-2 md:table-cell">{chapterTitle(lang, ch)}</td>
                   <td className="hidden py-3 pr-3 text-ink-2 lg:table-cell">{p.tags.map((x) => tagLabel(lang, x)).join(', ')}</td>
                   <td className="hidden py-3 pr-4 text-right tabular text-ink-2 sm:table-cell">{formatNumber(lang, stats.data?.get(p.id) ?? 0)}</td>
-                  <td className="py-3 pr-4 text-right tabular">{formatAltitude(lang, p.xp)}</td>
+                  <td className="py-3 pr-4 text-right tabular">{formatPoints(lang, p.points)}</td>
                 </tr>
               )
             })}
@@ -175,11 +175,6 @@ export function Problems() {
           </div>
         )}
       </div>
-      <p className="mt-3 text-xs text-muted">
-        {t('Légende des pistes : ', 'Runs: ')}
-        {SLOPES.map((s) => SLOPE_LABEL[s][lang]).join(', ')}
-        {t(', de la plus facile à la plus difficile.', ', from easiest to hardest.')}
-      </p>
     </div>
   )
 }

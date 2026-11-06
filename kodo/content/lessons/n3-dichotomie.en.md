@@ -1,4 +1,4 @@
-Yanis thinks of a number between 1 and 1 000 and answers "higher" or "lower" to your guesses. By always guessing the middle of the values still possible, you get rid of half of the candidates each time: 10 questions are enough, since 2¹⁰ = 1 024. This is **binary search**. With N possible values, you need about log₂(N) steps: 17 for 100 000, 60 for 10¹⁸.
+In the guessing game, someone picks a number between 1 and 1 000 and answers "higher" or "lower" to your guesses. By always guessing the middle of the values still possible, you get rid of half of the candidates each time: 10 questions are enough, since 2¹⁰ = 1 024. This is **binary search**. With N possible values, you need about log₂(N) steps: 17 for 100 000, 60 for 10¹⁸.
 
 ## Searching in a sorted list
 

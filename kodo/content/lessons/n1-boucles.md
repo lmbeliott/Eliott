@@ -109,7 +109,7 @@ Le programme affiche `14`. Regarde bien les décalages : le `if` est dans la bou
 
 ## Répéter tant que : la boucle while
 
-Parfois, on ne sait pas à l'avance combien de tours il faudra. Yanis met 15 euros de côté chaque semaine pour s'offrir un forfait de ski à 200 euros. Combien de semaines doit-il attendre ?
+Parfois, on ne sait pas à l'avance combien de tours il faudra. Tu mets 15 euros de côté chaque semaine pour t'acheter un vélo à 200 euros. Combien de semaines dois-tu attendre ?
 
 ```python
 economies = 0
@@ -130,7 +130,7 @@ while (economies < 200) {
 cout << semaines << "\n";
 ```
 
-La boucle `while` vérifie la condition **avant** chaque tour. Tant qu'elle est vraie, le bloc est répété ; dès qu'elle devient fausse, la boucle s'arrête et le programme continue après. Ici, il affiche `14` : après 13 semaines, Yanis n'a que 195 euros.
+La boucle `while` vérifie la condition **avant** chaque tour. Tant qu'elle est vraie, le bloc est répété ; dès qu'elle devient fausse, la boucle s'arrête et le programme continue après. Ici, il affiche `14` : après 13 semaines, tu n'as que 195 euros.
 
 Attention : si la condition ne devient jamais fausse, la boucle tourne sans fin et ton programme ne s'arrête pas. Vérifie que chaque tour rapproche de la sortie.
 

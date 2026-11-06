@@ -1,23 +1,21 @@
 import { forwardRef, useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react'
 import { Link, type LinkProps } from 'react-router-dom'
 import { Check, Copy, LoaderCircle } from 'lucide-react'
-import type { Slope } from '../lib/content'
-import { SLOPE_LABEL } from '../lib/content'
+import { DIFFICULTY_LABEL, difficultyRank, type Difficulty } from '../lib/content'
 import { useI18n } from '../lib/i18n'
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
 
 // ------------------------------------------------------------------ Boutons
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'signal' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-btn text-btn-ink hover:bg-btn-hover shadow-e1',
+  primary: 'bg-accent text-accent-ink hover:bg-accent-hover shadow-e1',
   secondary: 'bg-surface text-ink border border-line-strong hover:border-ink-2 hover:bg-surface-2',
   ghost: 'text-ink-2 hover:text-ink hover:bg-surface-2',
-  signal: 'bg-signal text-signal-ink hover:brightness-95 shadow-e1',
-  danger: 'bg-surface text-rouge border border-rouge/50 hover:bg-rouge-soft',
+  danger: 'bg-surface text-bad border border-bad/50 hover:bg-bad-soft',
 }
 const sizes: Record<Size, string> = {
   sm: 'h-8 px-3 text-sm gap-1.5',
@@ -67,26 +65,21 @@ export function IconButton({ label, children, className, ...rest }: ButtonHTMLAt
   )
 }
 
-// ------------------------------------------------------------------ Pistes
+// ------------------------------------------------------------------ Difficulté
 
-const slopeDot: Record<Slope, string> = {
-  verte: 'bg-verte',
-  bleue: 'bg-bleue',
-  rouge: 'bg-rouge',
-  noire: 'bg-noire ring-1 ring-line-strong',
-}
-export const slopeText: Record<Slope, string> = { verte: 'text-verte', bleue: 'text-bleue', rouge: 'text-rouge', noire: 'text-noire' }
-export const slopeSoft: Record<Slope, string> = { verte: 'bg-verte-soft', bleue: 'bg-bleue-soft', rouge: 'bg-rouge-soft', noire: 'bg-noire-soft' }
-
-/** Pastille de difficulté : la couleur ET le mot, jamais la couleur seule. */
-export function SlopeMark({ slope, label = true, short, className }: { slope: Slope; label?: boolean; short?: boolean; className?: string }) {
-  const { lang } = useI18n()
-  const full = SLOPE_LABEL[slope][lang]
-  const text = short ? full.split(' ')[lang === 'en' ? 0 : 1].replace(/^./, (c) => c.toUpperCase()) : full
+/** Jauge de difficulté : quatre barres et le mot, jamais la couleur seule. */
+export function DifficultyMark({ difficulty, label = true, className }: { difficulty: Difficulty; label?: boolean; className?: string }) {
+  const { lang, t } = useI18n()
+  const rank = difficultyRank(difficulty)
+  const word = DIFFICULTY_LABEL[difficulty][lang]
   return (
-    <span className={cx('inline-flex items-center gap-1.5 text-sm text-ink-2', className)}>
-      <span className={cx('inline-block size-2.5 shrink-0 rounded-full', slopeDot[slope])} aria-hidden />
-      {label ? <span>{text}</span> : <span className="sr-only">{full}</span>}
+    <span className={cx('inline-flex items-center gap-1.5 text-sm text-ink-2', className)} title={label ? undefined : word}>
+      <span className="inline-flex items-end gap-[2px]" aria-hidden>
+        {[1, 2, 3, 4].map((i) => (
+          <span key={i} className={cx('w-[3px] rounded-[1px]', i <= rank ? 'bg-ink-2' : 'bg-line-strong')} style={{ height: 4 + i * 2.5 }} />
+        ))}
+      </span>
+      {label ? <span>{word}</span> : <span className="sr-only">{`${t('Difficulté', 'Difficulty')} : ${word}`}</span>}
     </span>
   )
 }
@@ -101,7 +94,7 @@ export function Field({ label, hint, error, children, htmlFor }: { label: string
       </label>
       {children}
       {error ? (
-        <p id={`${htmlFor}-error`} className="text-sm text-rouge" role="alert">
+        <p id={`${htmlFor}-error`} className="text-sm text-bad" role="alert">
           {error}
         </p>
       ) : hint ? (
@@ -114,7 +107,7 @@ export function Field({ label, hint, error, children, htmlFor }: { label: string
 }
 
 export const inputClass =
-  'h-10 w-full rounded-md border border-field bg-surface px-3 text-base text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/25 aria-[invalid=true]:border-rouge'
+  'h-10 w-full rounded-md border border-field bg-surface px-3 text-base text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/25 aria-[invalid=true]:border-bad'
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className, ...rest }, ref) {
   return <input ref={ref} className={cx(inputClass, className)} {...rest} />
@@ -227,12 +220,12 @@ export function Avatar({ name, size = 36, me }: { name: string; size?: number; m
   // Teinte stable dérivée du nom, dans la gamme froide du site.
   let h = 0
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360
-  const hue = 180 + (h % 80)
+  const hue = 220 + (h % 70)
   return (
     <span
       aria-hidden
-      className={cx('inline-flex shrink-0 items-center justify-center rounded-full font-semibold', me && 'ring-2 ring-signal ring-offset-2 ring-offset-surface')}
-      style={{ width: size, height: size, fontSize: size * 0.38, background: `oklch(0.9 0.04 ${hue})`, color: `oklch(0.32 0.06 ${hue})` }}
+      className={cx('inline-flex shrink-0 items-center justify-center rounded-full font-semibold', me && 'ring-2 ring-accent ring-offset-2 ring-offset-surface')}
+      style={{ width: size, height: size, fontSize: size * 0.38, background: `oklch(0.92 0.03 ${hue})`, color: `oklch(0.35 0.07 ${hue})` }}
     >
       {initials || '?'}
     </span>
@@ -258,9 +251,9 @@ export function useAutoId(prefix: string) {
 export function Notice({ tone = 'info', children, action }: { tone?: 'info' | 'warn' | 'error' | 'ok'; children: ReactNode; action?: ReactNode }) {
   const tones = {
     info: 'border-line bg-surface-2 text-ink',
-    warn: 'border-amber/40 bg-amber-soft text-ink',
-    error: 'border-rouge/40 bg-rouge-soft text-ink',
-    ok: 'border-verte/40 bg-verte-soft text-ink',
+    warn: 'border-warn/40 bg-warn-soft text-ink',
+    error: 'border-bad/40 bg-bad-soft text-ink',
+    ok: 'border-ok/40 bg-ok-soft text-ink',
   }
   return (
     <div className={cx('flex flex-col gap-3 rounded-lg border px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between', tones[tone])} role={tone === 'error' ? 'alert' : undefined}>

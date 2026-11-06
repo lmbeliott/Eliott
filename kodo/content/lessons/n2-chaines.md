@@ -5,17 +5,17 @@ Une **chaîne de caractères** (en anglais *string*), c'est du texte : un mot, u
 Une chaîne se manipule presque comme une liste. Chaque caractère a un **indice**, qui commence à `0`. La longueur s'obtient avec `len(mot)` en Python et `mot.size()` en C++.
 
 ```python
-mot = "refuge"
-print(len(mot))            # 6
-print(mot[0])              # r : le premier caractère
-print(mot[len(mot) - 1])   # e : le dernier caractère
+mot = "bonjour"
+print(len(mot))            # 7
+print(mot[0])              # b : le premier caractère
+print(mot[len(mot) - 1])   # r : le dernier caractère
 ```
 
 ```cpp
-string mot = "refuge";
-cout << mot.size() << "\n";            // 6
-cout << mot[0] << "\n";                // r : le premier caractère
-cout << mot[mot.size() - 1] << "\n";   // e : le dernier caractère
+string mot = "bonjour";
+cout << mot.size() << "\n";            // 7
+cout << mot[0] << "\n";                // b : le premier caractère
+cout << mot[mot.size() - 1] << "\n";   // r : le dernier caractère
 ```
 
 Le dernier indice est `len(mot) - 1`, pas `len(mot)` : lire `mot[len(mot)]` est une erreur classique.
@@ -45,7 +45,7 @@ for (char c : mot) {
 cout << nb << "\n";
 ```
 
-En C++, un caractère seul s'écrit entre apostrophes (`'e'`, de type `char`) et une chaîne entre guillemets (`"refuge"`, de type `string`). En Python, les deux s'écrivent indifféremment avec `"` ou `'`.
+En C++, un caractère seul s'écrit entre apostrophes (`'e'`, de type `char`) et une chaîne entre guillemets (`"bonjour"`, de type `string`). En Python, les deux s'écrivent indifféremment avec `"` ou `'`.
 
 Quand tu as besoin de la position de la lettre (pour regarder sa voisine, ou pour parcourir le mot à l'envers), boucle plutôt sur les indices : `for i in range(len(mot))` en Python, `for (int i = 0; i < (int)mot.size(); i++)` en C++.
 
@@ -60,20 +60,20 @@ Les caractères se comparent aussi avec `<` et `>` : l'ordre est celui de l'alph
 En Python, on ne peut pas modifier une lettre d'une chaîne (`mot[0] = "x"` provoque une erreur). On fabrique plutôt une nouvelle chaîne, en partant de `""` et en ajoutant les caractères un par un avec `+`. Voici un mot écrit à l'envers :
 
 ```python
-mot = "piolet"
+mot = "crayon"
 envers = ""
 for i in range(len(mot) - 1, -1, -1):
     envers = envers + mot[i]
-print(envers)   # teloip
+print(envers)   # noyarc
 ```
 
 ```cpp
-string mot = "piolet";
+string mot = "crayon";
 string envers = "";
 for (int i = (int)mot.size() - 1; i >= 0; i--) {
     envers += mot[i];
 }
-cout << envers << "\n";   // teloip
+cout << envers << "\n";   // noyarc
 ```
 
 Deux chaînes se comparent directement avec `==` : `envers == mot` est vrai si les deux mots sont identiques.

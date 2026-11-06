@@ -2,7 +2,7 @@ Une fonction **récursive** est une fonction qui s'appelle elle-même. C'est l'o
 
 ## Une fonction qui s'appelle elle-même
 
-Le nombre de façons de ranger N skis différents sur un râtelier vaut N! = N × (N − 1) × … × 1. On peut le définir à partir d'un problème plus petit : N! = N × (N − 1)!, et 0! = 1.
+Le nombre de façons de ranger N livres différents sur une étagère vaut N! = N × (N − 1) × … × 1. On peut le définir à partir d'un problème plus petit : N! = N × (N − 1)!, et 0! = 1.
 
 ```python
 def factorielle(n):
@@ -25,7 +25,7 @@ Deux règles à respecter : il faut un **cas de base** qui ne s'appelle pas, et 
 
 ## Énumérer toutes les possibilités
 
-Pour afficher tous les ordres possibles de N randonneurs (les **permutations**), on remplit les places une par une. La fonction `explorer` choisit qui occupe la place suivante parmi ceux qui ne sont pas encore placés, appelle `explorer` pour la suite, puis **annule** son choix pour essayer le suivant.
+Pour afficher tous les ordres possibles des nombres de 1 à N (les **permutations**), on remplit les places une par une. La fonction `explorer` choisit le nombre qui occupe la place suivante parmi ceux qui ne sont pas encore placés, appelle `explorer` pour la suite, puis **annule** son choix pour essayer le suivant.
 
 ```python
 n = 3
@@ -36,13 +36,13 @@ def explorer():
     if len(ordre) == n:
         print(*ordre)                 # une permutation complète
         return
-    for r in range(1, n + 1):
-        if not place[r]:
-            place[r] = True           # choisir
-            ordre.append(r)
+    for x in range(1, n + 1):
+        if not place[x]:
+            place[x] = True           # choisir
+            ordre.append(x)
             explorer()                # explorer la suite
             ordre.pop()               # annuler le choix
-            place[r] = False
+            place[x] = False
 
 explorer()   # 1 2 3, 1 3 2, 2 1 3, 2 3 1, 3 1 2, 3 2 1
 ```
@@ -54,17 +54,17 @@ vector<bool> place(n + 1, false);
 
 void explorer() {
     if ((int)ordre.size() == n) {     // une permutation complète
-        for (int r : ordre) cout << r << " ";
+        for (int x : ordre) cout << x << " ";
         cout << "\n";
         return;
     }
-    for (int r = 1; r <= n; r++) {
-        if (!place[r]) {
-            place[r] = true;          // choisir
-            ordre.push_back(r);
+    for (int x = 1; x <= n; x++) {
+        if (!place[x]) {
+            place[x] = true;          // choisir
+            ordre.push_back(x);
             explorer();               // explorer la suite
             ordre.pop_back();         // annuler le choix
-            place[r] = false;
+            place[x] = false;
         }
     }
 }

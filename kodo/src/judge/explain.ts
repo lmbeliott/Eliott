@@ -86,8 +86,8 @@ const CPP: Rule[] = [
       ? [`« ${m[1]} » est inconnu : ajoute « using namespace std; » ou écris std::${m[1]}, et vérifie les #include.`, `“${m[1]}” is unknown: add “using namespace std;” or write std::${m[1]}, and check your #include lines.`]
       : [`« ${m[1]} » n’est pas déclaré : faute de frappe, ou variable déclarée dans un autre bloc ?`, `“${m[1]}” is not declared: a typo, or a variable declared in another block?`]],
   [/cannot use '(throw|try)' with exceptions disabled/, () => [
-    'Les exceptions (try/throw) ne sont pas disponibles sur Cordée. Gère les cas particuliers avec des if.',
-    'Exceptions (try/throw) are not available on Cordée. Handle special cases with if statements.',
+    'Les exceptions (try/throw) ne sont pas disponibles sur Kodo. Gère les cas particuliers avec des if.',
+    'Exceptions (try/throw) are not available on Kodo. Handle special cases with if statements.',
   ]],
   [/error: expected '\}'|extraneous closing brace/, () => ['Les accolades { } ne sont pas équilibrées.', 'The braces { } are not balanced.']],
   [/error: no matching function for call to '(\w+)'/, (m) => [

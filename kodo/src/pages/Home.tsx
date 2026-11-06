@@ -1,14 +1,14 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check, Flame, Play } from 'lucide-react'
-import { ElevationProfile } from '../components/ElevationProfile'
 import { LeaderboardTable } from '../components/LeaderboardTable'
-import { SummitProgress } from '../components/SummitProgress'
+import { LeagueProgress } from '../components/League'
+import { CurriculumGrid } from '../components/CurriculumGrid'
 import { Heatmap } from '../components/Heatmap'
-import { Button, LinkButton, Skeleton, SlopeMark, Spinner, cx } from '../components/ui'
+import { Button, DifficultyMark, LinkButton, Skeleton, Spinner, cx } from '../components/ui'
 import { useAuth } from '../lib/auth'
-import { chapterById, chapterTitle, chapters, levels, problemById, problemList, problemTitle, totalAltitude } from '../lib/content'
-import { formatAltitude, plural, useI18n } from '../lib/i18n'
+import { chapterById, chapterTitle, chapters, levels, problemById, problemList, problemTitle, totalPoints } from '../lib/content'
+import { formatPoints, plural, useI18n } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
 import { useActivity, useDaily, useLeaderboard, useMyGroups } from '../lib/queries'
 import { liveStreak, parisDay } from '../lib/supabase'
@@ -65,13 +65,13 @@ function TryIt() {
     <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-e3">
       <div className="border-b border-line px-5 py-4">
         <div className="flex items-center justify-between gap-3">
-          <p className="font-semibold">{t('Le registre du refuge', 'The hut’s logbook')}</p>
-          <SlopeMark slope="verte" />
+          <p className="font-semibold">{t('Somme de deux nombres', 'Sum of two numbers')}</p>
+          <DifficultyMark difficulty="facile" />
         </div>
         <p className="mt-1.5 text-sm text-ink-2">
           {t(
-            'Inès note les randonneurs arrivés le matin et l’après-midi. Lis les deux nombres et affiche leur somme. Complète la ligne 2, puis exécute.',
-            'Inès writes down the hikers who arrived in the morning and in the afternoon. Read both numbers and print their sum. Finish line 2, then run it.',
+            'Ton programme reçoit deux entiers sur une ligne et doit afficher leur somme. Complète la ligne 2, puis exécute.',
+            'Your program receives two integers on one line and must print their sum. Finish line 2, then run it.',
           )}
         </p>
       </div>
@@ -85,9 +85,9 @@ function TryIt() {
           {loading !== null ? (
             <Spinner label={t(`Préparation de Python… ${loading} %`, `Loading Python… ${loading}%`)} />
           ) : failure ? (
-            <span className="text-rouge">{t('Python n’a pas pu démarrer dans ce navigateur.', 'Python could not start in this browser.')}</span>
+            <span className="text-bad">{t('Python n’a pas pu démarrer dans ce navigateur.', 'Python could not start in this browser.')}</span>
           ) : report?.verdict === 'accepted' ? (
-            <span className="inline-flex items-center gap-1.5 font-medium text-verte">
+            <span className="inline-flex items-center gap-1.5 font-medium text-ok">
               <Check className="size-4" aria-hidden /> {t('3 tests sur 3. Tu viens de résoudre ton premier problème.', '3 tests out of 3. You just solved your first problem.')}
             </span>
           ) : report && first ? (
@@ -125,20 +125,20 @@ function Landing() {
     },
     {
       title: t('Valide sur les tests cachés', 'Pass the hidden tests'),
-      text: t('Ton programme affronte une dizaine de tests, cas limites compris. Les erreurs courantes sont expliquées en français.', 'Your program faces a dozen tests, edge cases included. Common errors are explained in plain words.'),
+      text: t('Ton programme affronte une dizaine de tests, cas limites compris. Les erreurs courantes sont expliquées en clair.', 'Your program faces a dozen tests, edge cases included. Common errors are explained in plain words.'),
     },
   ]
   return (
     <>
       <section className="mx-auto grid max-w-[1280px] items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-20">
         <div className="anim-rise">
-          <h1 className="text-[2.6rem] font-semibold leading-[1.02] sm:text-5xl lg:text-[3.6rem]">
-            {t('Apprends à programmer, de ta première ligne aux Olympiades.', 'Learn to code, from your first line to the Olympiads.')}
+          <h1 className="text-[2.6rem] font-semibold leading-[1.02] sm:text-5xl lg:text-[3.75rem]">
+            {t('Apprends l’algorithmique. Pour de vrai.', 'Learn algorithms. For real.')}
           </h1>
           <p className="mt-6 max-w-xl text-lg text-ink-2">
             {t(
-              `Des cours courts et ${problemList.length} problèmes corrigés en direct, en Python ou en C++. Chaque problème réussi te fait grimper, et ta classe grimpe avec toi.`,
-              `Short lessons and ${problemList.length} problems graded instantly, in Python or C++. Every problem you solve takes you higher, and your class climbs with you.`,
+              `De ta première ligne de code aux Olympiades : des cours courts, ${problemList.length} problèmes corrigés en direct en Python ou en C++, et un classement pour te mesurer à ta classe.`,
+              `From your first line of code to the Olympiads: short lessons, ${problemList.length} problems graded instantly in Python or C++, and leaderboards to measure up against your class.`,
             )}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -160,11 +160,11 @@ function Landing() {
         <div className="mx-auto max-w-[1280px] px-4 py-14 sm:px-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
-              <h2 className="text-2xl font-semibold sm:text-3xl">{t('Un parcours, quatre pistes', 'One path, four runs')}</h2>
+              <h2 className="text-2xl font-semibold sm:text-3xl">{t(`${problemList.length} problèmes, ${chapters.length} chapitres, 4 niveaux`, `${problemList.length} problems, ${chapters.length} chapters, 4 levels`)}</h2>
               <p className="mt-2 text-ink-2">
                 {t(
-                  `Du « Bonjour » affiché à l’écran jusqu’aux graphes et à la programmation dynamique : ${chapters.length} chapitres, classés comme des pistes de ski. Tout terminer, c’est grimper à ${formatAltitude(lang, totalAltitude)}.`,
-                  `From printing “Hello” to graphs and dynamic programming: ${chapters.length} chapters, graded like ski runs. Finishing them all takes you up to ${formatAltitude(lang, totalAltitude)}.`,
+                  `Du premier print aux graphes et à la programmation dynamique. Chaque case est un problème ; tout réussir rapporte ${formatPoints(lang, totalPoints)}.`,
+                  `From your first print to graphs and dynamic programming. Each square is a problem; solving them all is worth ${formatPoints(lang, totalPoints)}.`,
                 )}
               </p>
             </div>
@@ -172,7 +172,7 @@ function Landing() {
               {t('Voir le détail des chapitres', 'See all chapters')}
             </Link>
           </div>
-          <ElevationProfile className="mt-8" showHere={false} animate />
+          <CurriculumGrid className="mt-8" />
         </div>
       </section>
 
@@ -191,10 +191,10 @@ function Landing() {
 
       <section className="mx-auto grid max-w-[1280px] gap-12 px-4 pb-8 sm:px-6 lg:grid-cols-2">
         <div>
-          <h2 className="text-2xl font-semibold sm:text-3xl">{t('Pour les profs : une cordée par classe', 'For teachers: one group per class')}</h2>
+          <h2 className="text-2xl font-semibold sm:text-3xl">{t('Pour les profs : un groupe par classe', 'For teachers: one group per class')}</h2>
           <p className="mt-3 text-ink-2">
             {t(
-              'Crée une cordée, donne le code à six caractères à tes élèves, et suis qui a réussi quoi, chapitre par chapitre. Chaque cordée a son propre classement, de la semaine ou depuis le début.',
+              'Crée un groupe, donne le code à six caractères à tes élèves, et suis qui a réussi quoi, chapitre par chapitre. Chaque groupe a son propre classement, de la semaine ou depuis le début.',
               'Create a group, give your students the six-character code, and see who solved what, chapter by chapter. Each group has its own leaderboard, for the week or all time.',
             )}
           </p>
@@ -205,18 +205,18 @@ function Landing() {
               t('Classement de la classe, de l’établissement ou entre amis', 'Leaderboards for a class, a school or friends'),
             ].map((x) => (
               <li key={x} className="flex gap-2.5">
-                <Check className="mt-1 size-4 shrink-0 text-verte" aria-hidden />
+                <Check className="mt-1 size-4 shrink-0 text-ok" aria-hidden />
                 {x}
               </li>
             ))}
           </ul>
-          <LinkButton to="/cordees" variant="secondary" className="mt-6">
-            {t('Créer une cordée', 'Create a group')}
+          <LinkButton to="/groupes" variant="secondary" className="mt-6">
+            {t('Créer un groupe', 'Create a group')}
           </LinkButton>
         </div>
         <div>
           <div className="flex items-baseline justify-between">
-            <h2 className="text-lg font-semibold">{t('En tête cette semaine', 'Top climbers this week')}</h2>
+            <h2 className="text-lg font-semibold">{t('En tête cette semaine', 'Top of the week')}</h2>
             <Link to="/classements" className="text-sm font-medium hover:underline">
               {t('Classements', 'Leaderboards')}
             </Link>
@@ -228,7 +228,7 @@ function Landing() {
               compact
               empty={
                 <div className="rounded-lg border border-line bg-surface p-6">
-                  <p className="font-medium">{t('Personne n’a encore grimpé cette semaine.', 'Nobody has climbed yet this week.')}</p>
+                  <p className="font-medium">{t('Personne n’a encore marqué de points cette semaine.', 'Nobody has scored yet this week.')}</p>
                   <p className="mt-1 text-sm text-ink-2">{t('Résous un problème et ton nom sera le premier du classement.', 'Solve a problem and your name will top the leaderboard.')}</p>
                 </div>
               }
@@ -278,12 +278,12 @@ function Dashboard() {
               <p className="text-sm text-muted">{progress.solved.size === 0 ? t('Pour commencer', 'To get started') : t('Reprendre', 'Pick up where you left off')}</p>
               <p className="mt-2 text-xl font-semibold">{problemTitle(lang, nextProblem)}</p>
               <p className="mt-1 flex flex-wrap items-center gap-x-3 text-sm text-ink-2">
-                <SlopeMark slope={nextProblem.slope} />
+                <DifficultyMark difficulty={nextProblem.difficulty} />
                 <span>{chapterTitle(lang, nextChapter)}</span>
-                <span className="tabular">+{formatAltitude(lang, nextProblem.xp)}</span>
+                <span className="tabular">+{formatPoints(lang, nextProblem.points)}</span>
               </p>
             </div>
-            <span className="mt-6 inline-flex items-center gap-1.5 self-start rounded-md bg-btn px-4 py-2 text-sm font-medium text-btn-ink">
+            <span className="mt-6 inline-flex items-center gap-1.5 self-start rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-ink">
               {t('Ouvrir le problème', 'Open the problem')}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </span>
@@ -295,9 +295,9 @@ function Dashboard() {
           </div>
         )}
         <div className="flex flex-col gap-5 rounded-xl border border-line bg-surface p-6">
-          <SummitProgress xp={profile.xp} />
-          <div className={cx('flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm', doneToday ? 'bg-signal-soft' : 'bg-surface-2')}>
-            <Flame className={cx('size-5 shrink-0', streak > 0 ? 'text-amber' : 'text-muted')} aria-hidden />
+          <LeagueProgress points={profile.xp} />
+          <div className={cx('flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm', doneToday ? 'bg-accent-soft' : 'bg-surface-2')}>
+            <Flame className={cx('size-5 shrink-0', streak > 0 ? 'text-warn' : 'text-muted')} aria-hidden />
             <p>
               <span className="font-semibold tabular">{plural(lang, streak, ['jour', 'jours'], ['day', 'days'])}</span>{' '}
               {doneToday
@@ -317,15 +317,13 @@ function Dashboard() {
             {t('Règles du défi', 'How it works')}
           </Link>
         </div>
-        <p className="mt-1 text-sm text-ink-2">{t('Un problème par piste, +50 % d’altitude s’il est réussi aujourd’hui.', 'One problem per run, +50% altitude if solved today.')}</p>
+        <p className="mt-1 text-sm text-ink-2">{t('Un problème par niveau, +50 % de points s’il est réussi aujourd’hui.', 'One problem per level, +50% points if solved today.')}</p>
         <DailyList daily={daily.data} loading={daily.isLoading} solved={progress.solved} />
       </section>
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold">{t('Ta progression', 'Your progress')}</h2>
-        <div className="mt-4 rounded-xl border border-line bg-surface p-4 sm:p-6">
-          <ElevationProfile solved={new Set(progress.solved.keys())} />
-        </div>
+        <CurriculumGrid className="mt-4" solved={new Set(progress.solved.keys())} tried={progress.tried} />
       </section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -335,8 +333,8 @@ function Dashboard() {
         </section>
         <section>
           <div className="flex items-baseline justify-between">
-            <h2 className="text-lg font-semibold">{t('Tes cordées', 'Your groups')}</h2>
-            <Link to="/cordees" className="text-sm font-medium hover:underline">
+            <h2 className="text-lg font-semibold">{t('Tes groupes', 'Your groups')}</h2>
+            <Link to="/groupes" className="text-sm font-medium hover:underline">
               {t('Gérer', 'Manage')}
             </Link>
           </div>
@@ -347,7 +345,7 @@ function Dashboard() {
               <ul>
                 {groups.data.slice(0, 5).map((g) => (
                   <li key={g.id} className="border-b border-line last:border-0">
-                    <Link to={`/cordees/${g.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-2">
+                    <Link to={`/groupes/${g.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-2">
                       <span className="truncate font-medium">{g.name}</span>
                       <span className="shrink-0 text-sm text-muted">{plural(lang, g.members, ['membre', 'membres'], ['member', 'members'])}</span>
                     </Link>
@@ -356,8 +354,8 @@ function Dashboard() {
               </ul>
             ) : (
               <div className="p-5">
-                <p className="text-sm text-ink-2">{t('Rejoins ta classe avec le code donné par ton prof, ou crée une cordée avec tes amis.', 'Join your class with the code from your teacher, or create a group with friends.')}</p>
-                <LinkButton to="/cordees" size="sm" variant="secondary" className="mt-3">
+                <p className="text-sm text-ink-2">{t('Rejoins ta classe avec le code donné par ton prof, ou crée un groupe avec tes amis.', 'Join your class with the code from your teacher, or create a group with friends.')}</p>
+                <LinkButton to="/groupes" size="sm" variant="secondary" className="mt-3">
                   {t('Rejoindre ou créer', 'Join or create')}
                 </LinkButton>
               </div>
@@ -385,16 +383,16 @@ export function DailyList({ daily, loading, solved }: { daily?: { level: string;
           <li key={level.id}>
             <Link to={`/probleme/${id}`} className="flex h-full flex-col justify-between gap-4 rounded-lg border border-line bg-surface p-4 transition-colors hover:border-line-strong">
               <div>
-                <SlopeMark slope={level.slope} />
+                <DifficultyMark difficulty={level.difficulty} />
                 <p className="mt-2 font-medium leading-snug">{problemTitle(lang, p)}</p>
               </div>
               <p className="text-sm tabular text-ink-2">
                 {done ? (
-                  <span className="inline-flex items-center gap-1 text-verte">
+                  <span className="inline-flex items-center gap-1 text-ok">
                     <Check className="size-4" aria-hidden /> {t('Déjà réussi', 'Already solved')}
                   </span>
                 ) : (
-                  <>+{formatAltitude(lang, Math.round(p.xp * 1.5))}</>
+                  <>+{formatPoints(lang, Math.round(p.points * 1.5))}</>
                 )}
               </p>
             </Link>

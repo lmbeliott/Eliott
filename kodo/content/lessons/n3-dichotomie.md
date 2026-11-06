@@ -1,4 +1,4 @@
-Yanis pense à un nombre entre 1 et 1 000 et répond « plus grand » ou « plus petit » à tes propositions. En proposant toujours le milieu des valeurs encore possibles, tu élimines la moitié des candidats à chaque fois : 10 questions suffisent, car 2¹⁰ = 1 024. C'est la **dichotomie**. Avec N valeurs possibles, il faut environ log₂(N) étapes : 17 pour 100 000, 60 pour 10¹⁸.
+Dans le jeu du nombre mystère, quelqu'un choisit un nombre entre 1 et 1 000 et répond « plus grand » ou « plus petit » à tes propositions. En proposant toujours le milieu des valeurs encore possibles, tu élimines la moitié des candidats à chaque fois : 10 questions suffisent, car 2¹⁰ = 1 024. C'est la **dichotomie**. Avec N valeurs possibles, il faut environ log₂(N) étapes : 17 pour 100 000, 60 pour 10¹⁸.
 
 ## Chercher dans une liste triée
 

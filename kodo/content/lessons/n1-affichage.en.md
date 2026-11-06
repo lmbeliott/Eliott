@@ -3,7 +3,7 @@ A program is a list of instructions that the computer runs in order, from top to
 ## Printing a message
 
 ```python
-print("Welcome to Valcorde!")
+print("Hello!")
 print(2026)
 ```
 
@@ -12,7 +12,7 @@ print(2026)
 using namespace std;
 
 int main() {
-    cout << "Welcome to Valcorde!" << "\n";
+    cout << "Hello!" << "\n";
     cout << 2026 << "\n";
     return 0;
 }
@@ -27,22 +27,22 @@ In C++, a program always has this shape: the first two lines get printing and re
 A **variable** is a box with a name, in which you store a value.
 
 ```python
-beds = 40
-sleepers = 27
-free_beds = beds - sleepers
-print(free_beds)
+pages = 40
+pages_read = 27
+pages_left = pages - pages_read
+print(pages_left)
 ```
 
 ```cpp
-int beds = 40;
-int sleepers = 27;
-int freeBeds = beds - sleepers;
-cout << freeBeds << "\n";
+int pages = 40;
+int pagesRead = 27;
+int pagesLeft = pages - pagesRead;
+cout << pagesLeft << "\n";
 ```
 
 This program prints `13`. In C++, the first time you use a box, you say what it holds: `int` means "whole number" (integer). In Python, you don't need to.
 
-What's inside a box can change: `sleepers = sleepers + 3` first computes `sleepers + 3`, then stores the result in `sleepers`. So the `=` sign doesn't mean "is equal to", it means "takes the value".
+What's inside a box can change: `pages_read = pages_read + 3` first computes `pages_read + 3`, then stores the result in `pages_read`. So the `=` sign doesn't mean "is equal to", it means "takes the value".
 
 ## Computing
 

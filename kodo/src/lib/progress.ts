@@ -38,7 +38,7 @@ interface GuestState {
   solved: Record<string, GuestSolve>
   tried: Record<string, true>
 }
-const GUEST_KEY = 'cordee:guest'
+const GUEST_KEY = 'kodo:guest'
 const readGuest = () => readLocal<GuestState>(GUEST_KEY, { solved: {}, tried: {} })
 
 // ------------------------------------------------------------------ Lecture
@@ -57,10 +57,10 @@ export function useProgress(): Progress {
 
   useEffect(() => {
     const onChange = () => setGuest(readGuest())
-    window.addEventListener('cordee:guest', onChange)
+    window.addEventListener('kodo:guest', onChange)
     window.addEventListener('storage', onChange)
     return () => {
-      window.removeEventListener('cordee:guest', onChange)
+      window.removeEventListener('kodo:guest', onChange)
       window.removeEventListener('storage', onChange)
     }
   }, [])
@@ -89,7 +89,7 @@ export function useProgress(): Progress {
       solved: new Map(
         Object.entries(guest.solved).map(([id, s]) => [
           id,
-          { problem_id: id, solved_at: s.at, xp: problemById(id)?.xp ?? 0, first_try: false, language: s.lang },
+          { problem_id: id, solved_at: s.at, xp: problemById(id)?.points ?? 0, first_try: false, language: s.lang },
         ]),
       ),
       tried: new Set(Object.keys(guest.tried)),
@@ -130,7 +130,7 @@ export function useRecordSubmission() {
           g.solved[r.problemId] = { at: new Date().toISOString(), lang: r.lang, code: r.code, total: r.total }
         }
         writeLocal(GUEST_KEY, g)
-        window.dispatchEvent(new Event('cordee:guest'))
+        window.dispatchEvent(new Event('kodo:guest'))
         return null
       }
       const { data, error } = await supabase.rpc('submit_result', {
@@ -182,7 +182,7 @@ export function useGuestSync(onSynced: (count: number) => void) {
         if (!error) count++
       }
       writeLocal(GUEST_KEY, { solved: {}, tried: {} })
-      window.dispatchEvent(new Event('cordee:guest'))
+      window.dispatchEvent(new Event('kodo:guest'))
       qc.invalidateQueries()
       running.current = false
       if (count > 0) onSynced(count)
@@ -192,11 +192,11 @@ export function useGuestSync(onSynced: (count: number) => void) {
 
 // ------------------------------------------------------------------ Brouillons et préférences
 
-export const draftKey = (problemId: string, lang: Lang) => `cordee:draft:${problemId}:${lang}`
+export const draftKey = (problemId: string, lang: Lang) => `kodo:draft:${problemId}:${lang}`
 export const loadDraft = (problemId: string, lang: Lang) => readLocal<string | null>(draftKey(problemId, lang), null)
 export const saveDraft = (problemId: string, lang: Lang, code: string) => writeLocal(draftKey(problemId, lang), code)
 
-const LANG_KEY = 'cordee:code-lang'
+const LANG_KEY = 'kodo:code-lang'
 export function useCodeLang(): [Lang, (l: Lang) => void] {
   const { profile, session } = useAuth()
   const [lang, setLang] = useState<Lang>(() => readLocal<Lang>(LANG_KEY, 'python'))
@@ -206,7 +206,7 @@ export function useCodeLang(): [Lang, (l: Lang) => void] {
   const update = useCallback(
     (l: Lang) => {
       writeLocal(LANG_KEY, l)
-      window.dispatchEvent(new CustomEvent<Lang>('cordee:code-lang', { detail: l }))
+      window.dispatchEvent(new CustomEvent<Lang>('kodo:code-lang', { detail: l }))
       if (session) supabase.from('profiles').update({ preferred_language: l }).eq('id', session.user.id).then(() => {})
     },
     [session],
@@ -214,8 +214,8 @@ export function useCodeLang(): [Lang, (l: Lang) => void] {
   // Tous les composants qui utilisent ce hook restent synchronisés.
   useEffect(() => {
     const on = (e: Event) => setLang((e as CustomEvent<Lang>).detail)
-    window.addEventListener('cordee:code-lang', on)
-    return () => window.removeEventListener('cordee:code-lang', on)
+    window.addEventListener('kodo:code-lang', on)
+    return () => window.removeEventListener('kodo:code-lang', on)
   }, [])
   useEffect(() => {
     document.documentElement.dataset.langPref = lang

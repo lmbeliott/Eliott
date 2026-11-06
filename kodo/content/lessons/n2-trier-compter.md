@@ -23,29 +23,29 @@ Les chaînes se trient dans l'ordre alphabétique. Attention donc aux nombres lu
 
 ## Trier selon plusieurs critères
 
-Souvent, on trie des éléments qui portent plusieurs informations, comme un prénom et un temps. On les range dans des **couples** : un tuple en Python, une `pair` en C++. Deux couples se comparent d'abord par leur premier élément, et seulement en cas d'égalité par le second. On place donc en premier ce qui doit décider du classement.
+Souvent, on trie des éléments qui portent plusieurs informations, comme un numéro de dossard et un temps. On les range dans des **couples** : un tuple en Python, une `pair` en C++. Deux couples se comparent d'abord par leur premier élément, et seulement en cas d'égalité par le second. On place donc en premier ce qui doit décider du classement.
 
 Pour trier par score **décroissant** puis par nom **croissant**, une astuce : on trie les couples `(-score, nom)` dans l'ordre croissant normal. Le plus grand score a le plus petit `-score`, et il passe devant.
 
 ```python
-equipes = [("yeti", 7), ("aigle", 9), ("igloo", 7)]
+equipes = [("vert", 7), ("bleu", 9), ("rouge", 7)]
 classement = []
 for nom, score in equipes:
     classement.append((-score, nom))
 classement.sort()
 for moins_score, nom in classement:
-    print(nom, -moins_score)    # aigle 9, igloo 7, yeti 7
+    print(nom, -moins_score)    # bleu 9, rouge 7, vert 7
 ```
 
 ```cpp
-vector<pair<string, int>> equipes = {{"yeti", 7}, {"aigle", 9}, {"igloo", 7}};
+vector<pair<string, int>> equipes = {{"vert", 7}, {"bleu", 9}, {"rouge", 7}};
 vector<pair<int, string>> classement;
 for (auto& e : equipes) {
     classement.push_back({-e.second, e.first});
 }
 sort(classement.begin(), classement.end());
 for (auto& c : classement) {
-    cout << c.second << " " << -c.first << "\n";   // aigle 9, igloo 7, yeti 7
+    cout << c.second << " " << -c.first << "\n";   // bleu 9, rouge 7, vert 7
 }
 ```
 
@@ -55,14 +55,14 @@ Quand les valeurs à compter sont des petits entiers ou des lettres, un tableau 
 
 ```python
 compte = [0] * 26
-for c in "marmotte":
+for c in "programme":
     compte[ord(c) - ord("a")] += 1
 print(compte[ord("m") - ord("a")])   # 2
 ```
 
 ```cpp
 vector<int> compte(26, 0);
-string mot = "marmotte";
+string mot = "programme";
 for (char c : mot) {
     compte[c - 'a']++;
 }
@@ -74,24 +74,24 @@ cout << compte['m' - 'a'] << "\n";   // 2
 Quand les valeurs sont des mots, ou des nombres trop grands pour un tableau, on utilise un **dictionnaire** : il associe à chaque **clé** une **valeur**. En Python, il faut créer la clé avant de l'augmenter. En C++, une `map` crée automatiquement une clé absente avec la valeur `0`, et elle garde ses clés triées.
 
 ```python
-votes = ["yeti", "aigle", "yeti", "igloo", "yeti"]
+votes = ["vert", "bleu", "vert", "rouge", "vert"]
 compte = {}
 for v in votes:
     if v not in compte:
         compte[v] = 0
     compte[v] += 1
 for nom in sorted(compte):
-    print(nom, compte[nom])   # aigle 1, igloo 1, yeti 3
+    print(nom, compte[nom])   # bleu 1, rouge 1, vert 3
 ```
 
 ```cpp
-vector<string> votes = {"yeti", "aigle", "yeti", "igloo", "yeti"};
+vector<string> votes = {"vert", "bleu", "vert", "rouge", "vert"};
 map<string, int> compte;
 for (string v : votes) {
     compte[v]++;
 }
 for (auto& p : compte) {
-    cout << p.first << " " << p.second << "\n";   // aigle 1, igloo 1, yeti 3
+    cout << p.first << " " << p.second << "\n";   // bleu 1, rouge 1, vert 3
 }
 ```
 
@@ -103,20 +103,20 @@ Un dictionnaire peut aussi contenir des **listes** : on range ensemble les élé
 
 ```python
 groupes = {}
-for mot in ["lac", "col", "piolet", "neige", "luge"]:
+for mot in ["sel", "riz", "tomate", "pomme", "pain"]:
     cle = len(mot)
     if cle not in groupes:
         groupes[cle] = []
     groupes[cle].append(mot)
-print(groupes[3])   # ['lac', 'col']
+print(groupes[3])   # ['sel', 'riz']
 ```
 
 ```cpp
 map<int, vector<string>> groupes;
-for (string mot : {"lac", "col", "piolet", "neige", "luge"}) {
+for (string mot : {"sel", "riz", "tomate", "pomme", "pain"}) {
     groupes[mot.size()].push_back(mot);
 }
-cout << groupes[3][0] << " " << groupes[3][1] << "\n";   // lac col
+cout << groupes[3][0] << " " << groupes[3][1] << "\n";   // sel riz
 ```
 
 Tout l'art du regroupement est de bien choisir la clé : une valeur que l'on calcule pour chaque élément, et qui est la même pour deux éléments exactement quand ils doivent être dans le même groupe.

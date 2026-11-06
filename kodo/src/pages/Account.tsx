@@ -84,7 +84,7 @@ export function Account() {
   const deleteAccount = async () => {
     setDeleteError(null)
     const { error } = await supabase.rpc('delete_my_account')
-    if (error) return setDeleteError(error.message)
+    if (error) return setDeleteError(errorText(error, lang))
     await supabase.auth.signOut()
     toast(t('Ton compte a été supprimé.', 'Your account has been deleted.'), 'ok')
     navigate('/')
@@ -171,12 +171,12 @@ export function Account() {
         </form>
       </section>
 
-      <section className="mt-6 rounded-xl border border-rouge/40 p-6" aria-labelledby="suppression">
+      <section className="mt-6 rounded-xl border border-bad/40 p-6" aria-labelledby="suppression">
         <h2 id="suppression" className="text-lg font-semibold">
           {t('Supprimer mon compte', 'Delete my account')}
         </h2>
         <p className="mt-1 text-sm text-ink-2">
-          {t('Ton profil, tes soumissions, ta progression et ta place dans les cordées sont effacés définitivement.', 'Your profile, submissions, progress and group memberships are permanently erased.')}
+          {t('Ton profil, tes soumissions, ta progression et ta place dans les groupes sont effacés définitivement.', 'Your profile, submissions, progress and group memberships are permanently erased.')}
         </p>
         {deleteError && (
           <div className="mt-3">

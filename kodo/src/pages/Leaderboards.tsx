@@ -10,7 +10,7 @@ export function Leaderboards() {
   const { session } = useAuth()
   const [params, setParams] = useSearchParams()
   const period = (params.get('periode') === 'semaine' ? 'week' : 'all') as Period
-  const group = params.get('cordee')
+  const group = params.get('groupe')
   const groups = useMyGroups()
   const board = useLeaderboard(period, group, 100)
   const update = (k: string, v: string | null) => {
@@ -24,8 +24,8 @@ export function Leaderboards() {
       <PageHeader
         title={t('Classements', 'Leaderboards')}
         lead={t(
-          'L’altitude, c’est la somme des problèmes réussis : plus la piste est difficile, plus on grimpe. Bonus de 20 % pour une réussite au premier essai, et de 50 % pour le défi du jour.',
-          'Altitude is the sum of the problems you solved: the harder the run, the higher you climb. A 20% bonus for a first-try solve, 50% for the daily challenge.',
+          'Chaque problème réussi rapporte des points : 50 en Facile, 100 en Moyen, 200 en Difficile, 400 en Expert. Bonus de 20 % au premier essai, de 50 % pour le défi du jour.',
+          'Every solved problem earns points: 50 for Easy, 100 for Medium, 200 for Hard, 400 for Expert. A 20% bonus on the first try, 50% for the daily challenge.',
         )}
       />
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -40,8 +40,8 @@ export function Leaderboards() {
         />
         {session && (groups.data?.length ?? 0) > 0 && (
           <div className="w-64">
-            <label htmlFor="classement-cordee" className="sr-only">{t('Cordée', 'Group')}</label>
-            <Select id="classement-cordee" value={group ?? ''} onChange={(e) => update('cordee', e.target.value || null)}>
+            <label htmlFor="classement-groupe" className="sr-only">{t('Groupe', 'Group')}</label>
+            <Select id="classement-groupe" value={group ?? ''} onChange={(e) => update('groupe', e.target.value || null)}>
               <option value="">{t('Tout le monde', 'Everyone')}</option>
               {groups.data!.map((g) => (
                 <option key={g.id} value={g.id}>
@@ -58,7 +58,7 @@ export function Leaderboards() {
         empty={
           <div className="rounded-lg border border-line bg-surface p-6">
             <p className="font-medium">
-              {period === 'week' ? t('Personne n’a encore grimpé cette semaine.', 'Nobody has climbed yet this week.') : t('Le classement est encore vide.', 'The leaderboard is still empty.')}
+              {period === 'week' ? t('Personne n’a encore marqué de points cette semaine.', 'Nobody has scored yet this week.') : t('Le classement est encore vide.', 'The leaderboard is still empty.')}
             </p>
             <p className="mt-1 text-sm text-ink-2">{t('Résous un problème pour y inscrire ton nom.', 'Solve a problem to put your name on it.')}</p>
             <LinkButton to="/parcours" size="sm" className="mt-4">

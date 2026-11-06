@@ -5,17 +5,17 @@ A **string** is text: a word, a sentence, a secret code. In this chapter, you'll
 You handle a string almost like a list. Each character has an **index**, starting at `0`. You get the length with `len(word)` in Python and `word.size()` in C++.
 
 ```python
-word = "refuge"
-print(len(word))             # 6
-print(word[0])               # r: the first character
-print(word[len(word) - 1])   # e: the last character
+word = "hello"
+print(len(word))             # 5
+print(word[0])               # h: the first character
+print(word[len(word) - 1])   # o: the last character
 ```
 
 ```cpp
-string word = "refuge";
-cout << word.size() << "\n";             // 6
-cout << word[0] << "\n";                 // r: the first character
-cout << word[word.size() - 1] << "\n";   // e: the last character
+string word = "hello";
+cout << word.size() << "\n";             // 5
+cout << word[0] << "\n";                 // h: the first character
+cout << word[word.size() - 1] << "\n";   // o: the last character
 ```
 
 The last index is `len(word) - 1`, not `len(word)`: reading `word[len(word)]` is a classic mistake.
@@ -45,7 +45,7 @@ for (char c : word) {
 cout << count << "\n";
 ```
 
-In C++, a single character is written between single quotes (`'e'`, of type `char`) and a string between double quotes (`"refuge"`, of type `string`). In Python, you can use either `"` or `'` for both.
+In C++, a single character is written between single quotes (`'e'`, of type `char`) and a string between double quotes (`"hello"`, of type `string`). In Python, you can use either `"` or `'` for both.
 
 When you need the position of the letter (to look at its neighbour, or to go through the word backwards), loop over the indices instead: `for i in range(len(word))` in Python, `for (int i = 0; i < (int)word.size(); i++)` in C++.
 
@@ -60,20 +60,20 @@ Characters can also be compared with `<` and `>`: the order is the alphabetical 
 In Python, you can't change one letter of a string (`word[0] = "x"` causes an error). Instead, you build a new string, starting from `""` and adding the characters one by one with `+`. Here is a word written backwards:
 
 ```python
-word = "piolet"
+word = "pencil"
 backwards = ""
 for i in range(len(word) - 1, -1, -1):
     backwards = backwards + word[i]
-print(backwards)   # teloip
+print(backwards)   # licnep
 ```
 
 ```cpp
-string word = "piolet";
+string word = "pencil";
 string backwards = "";
 for (int i = (int)word.size() - 1; i >= 0; i--) {
     backwards += word[i];
 }
-cout << backwards << "\n";   // teloip
+cout << backwards << "\n";   // licnep
 ```
 
 Two strings can be compared directly with `==`: `backwards == word` is true if the two words are identical.

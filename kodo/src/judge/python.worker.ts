@@ -13,7 +13,7 @@ import sys, io, builtins, traceback, linecache
 _default_limit = sys.getrecursionlimit()
 _real_input = builtins.input
 
-def __cordee_run(code, data):
+def __kodo_run(code, data):
     out_bytes, err_bytes = io.BytesIO(), io.BytesIO()
     stdout = io.TextIOWrapper(out_bytes, encoding="utf-8", write_through=True)
     stderr = io.TextIOWrapper(err_bytes, encoding="utf-8", write_through=True)
@@ -66,7 +66,7 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
         stderr: () => {},
       })
       py.runPython(PRELUDE)
-      runner = py.globals.get('__cordee_run')
+      runner = py.globals.get('__kodo_run')
       post({ type: 'ready' })
     } catch (err) {
       post({ type: 'fatal', message: err instanceof Error ? err.message : String(err) })

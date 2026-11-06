@@ -1,10 +1,10 @@
-# Reconstruit le site et le publie sur la branche gh-pages (GitHub Pages)
-# à chaque push sur la branche principale de travail.
+# Reconstruit les deux sites et les publie sur la branche gh-pages (GitHub Pages) :
+# SwimHub à la racine (/Eliott/), Kodo dans /Eliott/kodo/.
 name: Déployer sur GitHub Pages
 
 on:
   push:
-    branches: [claude/zen-bell-zzyo9l, main]
+    branches: [claude/serene-cannon-dayh0p, claude/zen-bell-zzyo9l, main]
   workflow_dispatch:
 
 permissions:
@@ -23,7 +23,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            kodo/package-lock.json
       - run: npm ci
+      - name: Construire Kodo (vérifie aussi les 60 problèmes avec Python et g++)
+        if: hashFiles('kodo/package.json') != ''
+        working-directory: kodo
+        env:
+          VITE_BASE: /Eliott/kodo/
+        run: |
+          npm ci
+          npm run build
       - run: npm run build:pages
       - name: Publier dist/ sur gh-pages
         working-directory: dist

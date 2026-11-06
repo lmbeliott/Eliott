@@ -76,7 +76,7 @@ export function CodeEditor({ value, onChange, lang, onRun, onSubmit, label, plac
     })
     view.current = v
     // Pour les tests automatisés (développement uniquement).
-    if (import.meta.env.DEV) (window as unknown as { __cordeeEditor?: EditorView }).__cordeeEditor = v
+    if (import.meta.env.DEV) (window as unknown as { __kodoEditor?: EditorView }).__kodoEditor = v
     return () => v.destroy()
     // L'éditeur est créé une seule fois ; langue et contenu sont synchronisés plus bas.
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 type Theme = 'light' | 'dark'
-const KEY = 'cordee:theme'
+const KEY = 'kodo:theme'
 
 const systemTheme = (): Theme => (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 function current(): Theme {
@@ -16,10 +16,10 @@ export function useTheme(): [Theme, () => void] {
     const mq = window.matchMedia?.('(prefers-color-scheme: dark)')
     const on = () => setTheme(current())
     mq?.addEventListener('change', on)
-    window.addEventListener('cordee:theme', on)
+    window.addEventListener('kodo:theme', on)
     return () => {
       mq?.removeEventListener('change', on)
-      window.removeEventListener('cordee:theme', on)
+      window.removeEventListener('kodo:theme', on)
     }
   }, [])
   const toggle = useCallback(() => {
@@ -30,7 +30,7 @@ export function useTheme(): [Theme, () => void] {
     } catch {
       /* ignore */
     }
-    window.dispatchEvent(new Event('cordee:theme'))
+    window.dispatchEvent(new Event('kodo:theme'))
   }, [])
   return [theme, toggle]
 }

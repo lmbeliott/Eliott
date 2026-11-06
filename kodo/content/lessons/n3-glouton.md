@@ -2,19 +2,19 @@ Un algorithme **glouton** construit sa réponse pas à pas, en faisant à chaque
 
 ## Un glouton qui se trompe
 
-Au téléphérique, on paie avec des jetons de valeur 1, 3 et 4. Pour payer 6 avec le moins de jetons possible, le glouton prend toujours le plus gros jeton qui rentre : 4, puis 1, puis 1, soit 3 jetons. Pourtant 3 + 3 n'en utilise que 2. Une idée gloutonne naturelle peut donc être fausse : il faut une preuve, ou au moins une vérification sérieuse.
+On dispose de pièces de valeur 1, 3 et 4. Pour payer 6 avec le moins de pièces possible, le glouton prend toujours la plus grosse pièce qui rentre : 4, puis 1, puis 1, soit 3 pièces. Pourtant 3 + 3 n'en utilise que 2. Une idée gloutonne naturelle peut donc être fausse : il faut une preuve, ou au moins une vérification sérieuse.
 
-## Rester devant : les étapes de randonnée
+## Rester devant : les arrêts sur une route
 
-Inès suit un sentier jalonné de refuges, aux kilomètres `r[0] < r[1] < …`, et marche au plus D km par jour. Elle part du premier refuge et veut atteindre le dernier en dormant le moins de nuits possible. Choix glouton : chaque jour, aller jusqu'au refuge **le plus loin** qu'elle peut atteindre.
+Une voiture suit une route bordée de stations-service, aux kilomètres `r[0] < r[1] < …`, et parcourt au plus D km avec un plein. Elle part de la première station, réservoir plein, et veut atteindre la dernière en s'arrêtant le moins de fois possible pour refaire le plein. Choix glouton : à chaque fois, aller jusqu'à la station **la plus loin** qu'elle peut atteindre.
 
-Pourquoi est-ce optimal ? Comparons avec n'importe quel autre plan. Après le premier jour, le glouton est au moins aussi loin que l'autre plan, puisqu'il a pris le refuge le plus lointain. Et s'il est au moins aussi loin après k jours, il l'est encore après k + 1 jours : tout refuge que l'autre plan atteint le jour suivant est aussi à portée du glouton. Le glouton **reste devant** chaque jour : il arrive donc au but au plus tard en même temps que n'importe quel autre plan.
+Pourquoi est-ce optimal ? Comparons avec n'importe quel autre plan. Après le premier trajet, le glouton est au moins aussi loin que l'autre plan, puisqu'il a pris la station la plus lointaine. Et s'il est au moins aussi loin après k arrêts, il l'est encore après k + 1 arrêts : toute station que l'autre plan atteint au trajet suivant est aussi à portée du glouton. Le glouton **reste devant** à chaque étape : il n'a donc jamais besoin de plus d'arrêts que n'importe quel autre plan.
 
 ```python
 r = [0, 4, 9, 11, 17, 20, 26]
 D = 10
-nuits = 0
-pos = 0                     # indice du refuge où dort Inès
+arrets = 0
+pos = 0                     # indice de la station où l'on se trouve
 while pos < len(r) - 1:
     suivant = pos
     while suivant + 1 < len(r) and r[suivant + 1] - r[pos] <= D:
@@ -24,14 +24,14 @@ while pos < len(r) - 1:
         break
     pos = suivant
     if pos < len(r) - 1:
-        nuits += 1          # on dort à ce refuge
-print(nuits)                # 2 : on dort aux kilomètres 9 et 17
+        arrets += 1         # on refait le plein à cette station
+print(arrets)               # 2 : on s'arrête aux kilomètres 9 et 17
 ```
 
 ```cpp
 vector<int> r = {0, 4, 9, 11, 17, 20, 26};
 int D = 10;
-int nuits = 0, pos = 0;     // pos : indice du refuge où dort Inès
+int arrets = 0, pos = 0;    // pos : indice de la station où l'on se trouve
 while (pos < (int)r.size() - 1) {
     int suivant = pos;
     while (suivant + 1 < (int)r.size() && r[suivant + 1] - r[pos] <= D) {
@@ -39,18 +39,18 @@ while (pos < (int)r.size() - 1) {
     }
     if (suivant == pos) { cout << "impossible\n"; break; }
     pos = suivant;
-    if (pos < (int)r.size() - 1) nuits++;   // on dort à ce refuge
+    if (pos < (int)r.size() - 1) arrets++;  // on refait le plein à cette station
 }
-cout << nuits << "\n";      // 2 : on dort aux kilomètres 9 et 17
+cout << arrets << "\n";     // 2 : on s'arrête aux kilomètres 9 et 17
 ```
 
 ## L'argument d'échange
 
 Une autre façon de prouver un glouton : partir d'une solution optimale **quelconque** et la modifier petit à petit pour qu'elle ressemble à celle du glouton, sans jamais la rendre moins bonne.
 
-Exemple : le moniteur de ski doit régler les fixations de N skieurs, l'un après l'autre. Le skieur i demande t_i minutes et attend jusqu'à la fin de son réglage. Pour minimiser la somme des attentes, le glouton s'occupe d'abord des réglages **les plus courts**.
+Exemple : une imprimante doit imprimer N documents, l'un après l'autre. Le document i demande t_i minutes, et la personne qui l'a envoyé attend jusqu'à la fin de son impression. Pour minimiser la somme des attentes, le glouton imprime d'abord les documents **les plus courts**.
 
-Preuve : prenons un ordre où deux skieurs voisins a puis b vérifient t_a > t_b. Si on les échange, les autres skieurs ne voient aucune différence. Avant l'échange, b attendait t_a minutes de plus à cause de a ; après, c'est a qui attend t_b minutes de plus à cause de b. Comme t_b < t_a, la somme diminue. Un ordre optimal n'a donc aucune paire de voisins mal rangés : il est trié.
+Preuve : prenons un ordre où deux documents voisins a puis b vérifient t_a > t_b. Si on les échange, les attentes des autres documents ne changent pas. Avant l'échange, b attendait t_a minutes de plus à cause de a ; après, c'est a qui attend t_b minutes de plus à cause de b. Comme t_b < t_a, la somme diminue. Un ordre optimal n'a donc aucune paire de voisins mal rangés : il est trié.
 
 ```python
 t = [7, 2, 5]
@@ -58,7 +58,7 @@ t.sort()               # les plus courts d'abord
 fin = 0
 total = 0
 for duree in t:
-    fin += duree       # ce skieur repart à la minute fin
+    fin += duree       # ce document est prêt à la minute fin
     total += fin
 print(total)           # 2 + 7 + 14 = 23
 ```
@@ -68,7 +68,7 @@ vector<int> t = {7, 2, 5};
 sort(t.begin(), t.end());   // les plus courts d'abord
 long long fin = 0, total = 0;
 for (int duree : t) {
-    fin += duree;           // ce skieur repart à la minute fin
+    fin += duree;           // ce document est prêt à la minute fin
     total += fin;
 }
 cout << total << "\n";      // 2 + 7 + 14 = 23

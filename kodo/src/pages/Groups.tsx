@@ -40,17 +40,17 @@ export function Groups() {
     return (
       <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
         <PageHeader
-          title={t('Cordées', 'Groups')}
+          title={t('Groupes', 'Groups')}
           lead={t(
-            'Une cordée, c’est un groupe qui grimpe ensemble : une classe, un établissement ou des amis. Elle a son propre classement, et l’encadrant suit la progression de chacun.',
+            'Un groupe, c’est une classe, un établissement ou des amis. Il a son propre classement, et l’encadrant suit la progression de chacun.',
             'A group climbs together: a class, a school or friends. It has its own leaderboard, and the teacher can follow everyone’s progress.',
           )}
         />
         <div className="rounded-xl border border-line bg-surface p-6">
           <p className="font-medium">
             {params.code
-              ? t(`Connecte-toi pour rejoindre la cordée ${params.code.toUpperCase()}.`, `Sign in to join group ${params.code.toUpperCase()}.`)
-              : t('Connecte-toi pour créer ou rejoindre une cordée.', 'Sign in to create or join a group.')}
+              ? t(`Connecte-toi pour rejoindre le groupe ${params.code.toUpperCase()}.`, `Sign in to join group ${params.code.toUpperCase()}.`)
+              : t('Connecte-toi pour créer ou rejoindre un groupe.', 'Sign in to create or join a group.')}
           </p>
           <div className="mt-4 flex gap-2">
             <LinkButton to={`/connexion?retour=${encodeURIComponent(window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), ''))}`}>
@@ -82,7 +82,7 @@ export function Groups() {
     await qc.invalidateQueries({ queryKey: ['groups'] })
     const g = data as Group
     toast(t(`Tu as rejoint « ${g.name} ».`, `You joined “${g.name}”.`), 'ok')
-    navigate(`/cordees/${g.id}`)
+    navigate(`/groupes/${g.id}`)
   }
 
   const create = async (e: FormEvent) => {
@@ -100,17 +100,17 @@ export function Groups() {
     }
     await qc.invalidateQueries({ queryKey: ['groups'] })
     const g = data as Group
-    toast(t(`Cordée « ${g.name} » créée. Partage le code ${g.join_code}.`, `Group “${g.name}” created. Share the code ${g.join_code}.`), 'ok')
-    navigate(`/cordees/${g.id}`)
+    toast(t(`Groupe « ${g.name} » créé. Partage le code ${g.join_code}.`, `Group “${g.name}” created. Share the code ${g.join_code}.`), 'ok')
+    navigate(`/groupes/${g.id}`)
   }
 
   return (
     <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
-      <PageHeader title={t('Cordées', 'Groups')} lead={t('Ta classe, ton établissement, tes amis : chaque cordée a son classement.', 'Your class, your school, your friends: each group has its own leaderboard.')} />
+      <PageHeader title={t('Groupes', 'Groups')} lead={t('Ta classe, ton établissement, tes amis : chaque groupe a son classement.', 'Your class, your school, your friends: each group has its own leaderboard.')} />
 
       <section aria-labelledby="mes-cordees">
         <h2 id="mes-cordees" className="text-lg font-semibold">
-          {t('Mes cordées', 'My groups')}
+          {t('Mes groupes', 'My groups')}
         </h2>
         <div className="mt-3 overflow-hidden rounded-xl border border-line bg-surface">
           {groups.isLoading ? (
@@ -119,7 +119,7 @@ export function Groups() {
             <ul>
               {groups.data.map((g) => (
                 <li key={g.id} className="border-b border-line last:border-0">
-                  <Link to={`/cordees/${g.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-2">
+                  <Link to={`/groupes/${g.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-2">
                     <Users className="size-5 shrink-0 text-muted" aria-hidden />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{g.name}</span>
@@ -134,7 +134,7 @@ export function Groups() {
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-4 text-sm text-ink-2">{t('Tu ne fais partie d’aucune cordée pour l’instant. Rejoins-en une avec un code, ou crée la tienne.', 'You are not in any group yet. Join one with a code, or create your own.')}</p>
+            <p className="px-5 py-4 text-sm text-ink-2">{t('Tu ne fais partie d’aucun groupe pour l’instant. Rejoins-en un avec un code, ou crée le tien.', 'You are not in any group yet. Join one with a code, or create your own.')}</p>
           )}
         </div>
       </section>
@@ -142,9 +142,9 @@ export function Groups() {
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <form onSubmit={join} noValidate className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-6" aria-labelledby="rejoindre">
           <h2 id="rejoindre" className="text-lg font-semibold">
-            {t('Rejoindre une cordée', 'Join a group')}
+            {t('Rejoindre un groupe', 'Join a group')}
           </h2>
-          <Field label={t('Code de la cordée', 'Group code')} htmlFor="code" error={joinError} hint={t('6 caractères, donnés par ton prof ou un ami.', '6 characters, from your teacher or a friend.')}>
+          <Field label={t('Code du groupe', 'Group code')} htmlFor="code" error={joinError} hint={t('6 caractères, donnés par ton prof ou un ami.', '6 characters, from your teacher or a friend.')}>
             <Input
               id="code"
               value={code}
@@ -166,7 +166,7 @@ export function Groups() {
 
         <form onSubmit={create} noValidate className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-6" aria-labelledby="creer">
           <h2 id="creer" className="text-lg font-semibold">
-            {t('Créer une cordée', 'Create a group')}
+            {t('Créer un groupe', 'Create a group')}
           </h2>
           <Field label={t('Nom', 'Name')} htmlFor="nom-cordee" error={nameError} hint={t('Par exemple : 2nde B, lycée Jean Moulin', 'For example: Year 10 B, Jean Moulin High')}>
             <Input
@@ -194,7 +194,7 @@ export function Groups() {
             </div>
           </fieldset>
           <Button type="submit" loading={creating} className="self-start">
-            {t('Créer la cordée', 'Create the group')}
+            {t('Créer le groupe', 'Create the group')}
           </Button>
         </form>
       </div>

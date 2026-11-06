@@ -69,7 +69,7 @@ export function SignIn() {
   return (
     <AuthLayout
       title={mode === 'login' ? t('Se connecter', 'Sign in') : t('Mot de passe oublié', 'Forgot password')}
-      lead={mode === 'login' ? t('Retrouve ta progression, ta série et tes cordées.', 'Get back to your progress, your streak and your groups.') : t('Entre ton adresse : tu recevras un lien pour choisir un nouveau mot de passe.', 'Enter your email: you will receive a link to choose a new password.')}
+      lead={mode === 'login' ? t('Retrouve ta progression, ta série et tes groupes.', 'Get back to your progress, your streak and your groups.') : t('Entre ton adresse : tu recevras un lien pour choisir un nouveau mot de passe.', 'Enter your email: you will receive a link to choose a new password.')}
       footer={
         <>
           {t('Pas encore de compte ?', 'No account yet?')}{' '}
@@ -171,7 +171,7 @@ export function SignUp() {
     setBusy(false)
     if (error) return setErrors({ form: errorText(error, lang) })
     if (!data.session) return setConfirmSent(true)
-    toast(t(`Bienvenue sur Cordée, ${f.name.trim()} !`, `Welcome to Cordée, ${f.name.trim()}!`), 'ok')
+    toast(t(`Bienvenue sur Kodo, ${f.name.trim()} !`, `Welcome to Kodo, ${f.name.trim()}!`), 'ok')
     navigate('/parcours')
   }
 
@@ -195,7 +195,7 @@ export function SignUp() {
   return (
     <AuthLayout
       title={t('Créer un compte', 'Create an account')}
-      lead={t('Garde ta progression, gagne de l’altitude et rejoins ta classe.', 'Keep your progress, gain altitude and join your class.')}
+      lead={t('Garde ta progression, gagne des points et rejoins ta classe.', 'Keep your progress, earn points and join your class.')}
       footer={
         <>
           {t('Déjà un compte ?', 'Already have an account?')}{' '}
@@ -226,7 +226,7 @@ export function SignUp() {
           {t('Créer mon compte', 'Create my account')}
         </Button>
         <p className="text-xs text-muted">
-          {t('Ton code et tes résultats sont enregistrés pour ta progression et visibles par les encadrants de tes cordées. Ton adresse e-mail n’est jamais affichée.', 'Your code and results are saved for your progress and visible to the leaders of your groups. Your email address is never shown.')}
+          {t('Ton code et tes résultats sont enregistrés pour ta progression et visibles par les responsables de tes groupes. Ton adresse e-mail n’est jamais affichée.', 'Your code and results are saved for your progress and visible to the leaders of your groups. Your email address is never shown.')}
         </p>
       </form>
     </AuthLayout>
