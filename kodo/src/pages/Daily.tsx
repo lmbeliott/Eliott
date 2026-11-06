@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PageHeader } from '../components/ui'
-import { DailyList } from './Home'
+import { DailyList } from '../components/DailyList'
 import { useI18n } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
 import { useDaily } from '../lib/queries'

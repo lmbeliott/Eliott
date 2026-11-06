@@ -140,20 +140,20 @@ function TopBar() {
   useEffect(() => setMenu(false), [location.pathname])
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-bg ">
-      <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-6 px-4 sm:px-6">
+    <header className="sticky top-0 z-30 border-b border-line bg-bg">
+      <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-8 px-4 sm:px-6">
         <Link to="/" className="shrink-0 rounded-md" aria-label={t('Kodo, accueil', 'Kodo, home')}>
           <Logo />
         </Link>
-        <nav aria-label={t('Navigation principale', 'Main navigation')} className="hidden h-full items-stretch gap-1 lg:flex">
+        <nav aria-label={t('Navigation principale', 'Main navigation')} className="hidden h-full items-stretch gap-0.5 lg:flex">
           {nav.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
               className={({ isActive }) =>
                 cx(
-                  'relative flex items-center px-3 text-sm font-medium transition-colors',
-                  isActive ? 'text-ink after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-accent' : 'text-muted hover:text-ink',
+                  'relative flex items-center px-2.5 text-sm font-medium transition-colors',
+                  isActive ? 'text-ink after:absolute after:inset-x-2.5 after:-bottom-px after:h-0.5 after:rounded-full after:bg-accent' : 'text-muted hover:text-ink',
                 )
               }
             >
@@ -185,7 +185,7 @@ function TopBar() {
       </div>
       {menu && (
         <div className="border-t border-line bg-surface lg:hidden">
-          <nav className="mx-auto flex max-w-[1280px] flex-col px-4 py-2 sm:px-6" aria-label={t('Navigation principale', 'Main navigation')}>
+          <nav className="mx-auto flex max-w-[1200px] flex-col px-4 py-2 sm:px-6" aria-label={t('Navigation principale', 'Main navigation')}>
             {nav.map((n) => (
               <NavLink key={n.to} to={n.to} className={({ isActive }) => cx('rounded-md px-3 py-3 text-base font-medium', isActive ? 'bg-surface-2 text-ink' : 'text-ink-2')}>
                 {n.label}
@@ -212,26 +212,33 @@ function TopBar() {
 
 function Footer() {
   const { t } = useI18n()
+  const links = [
+    { to: '/parcours', label: t('Parcours', 'Path') },
+    { to: '/problemes', label: t('Problèmes', 'Problems') },
+    { to: '/defi', label: t('Défi du jour', 'Daily challenge') },
+    { to: '/classements', label: t('Classements', 'Leaderboards') },
+    { to: '/groupes', label: t('Groupes', 'Groups') },
+    { to: '/a-propos', label: t('Règles et limites du juge', 'Rules and judge limits') },
+  ]
   return (
     <footer className="mt-24 border-t border-line">
-      <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-4 py-10 text-sm text-muted sm:flex-row sm:items-start sm:justify-between sm:px-6">
-        <div className="max-w-sm">
+      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 text-sm sm:px-6 md:grid-cols-[1fr_auto]">
+        <div className="max-w-md">
           <Logo />
-          <p className="mt-3">
+          <p className="mt-3 text-muted">
             {t(
-              'Apprendre la programmation et l’algorithmique en résolvant des problèmes, de la première ligne aux Olympiades.',
-              'Learn programming and algorithms by solving problems, from your first line of code to the Olympiads.',
+              'Ton code s’exécute dans ton navigateur : Python 3.14 avec Pyodide, C++17 avec Clang 22 compilé en WebAssembly.',
+              'Your code runs in your browser: Python 3.14 with Pyodide, C++17 with Clang 22 compiled to WebAssembly.',
             )}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-2">
-          <Link to="/parcours" className="hover:text-ink">{t('Parcours', 'Path')}</Link>
-          <Link to="/classements" className="hover:text-ink">{t('Classements', 'Leaderboards')}</Link>
-          <Link to="/problemes" className="hover:text-ink">{t('Problèmes', 'Problems')}</Link>
-          <Link to="/groupes" className="hover:text-ink">{t('Groupes et classes', 'Groups and classes')}</Link>
-          <Link to="/defi" className="hover:text-ink">{t('Défi du jour', 'Daily challenge')}</Link>
-          <Link to="/a-propos" className="hover:text-ink">{t('Comment ça marche', 'How it works')}</Link>
-        </div>
+        <nav aria-label={t('Pied de page', 'Footer')} className="grid grid-cols-2 gap-x-10 gap-y-2 sm:grid-cols-3">
+          {links.map((l) => (
+            <Link key={l.to} to={l.to} className="text-ink-2 hover:text-ink">
+              {l.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   )
