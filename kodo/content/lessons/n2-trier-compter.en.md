@@ -1,0 +1,129 @@
+Ranking racers, counting the votes of a contest, sorting words into families: sorting and counting are two moves you'll find everywhere. Both languages already do most of the work for you; you just need to know how to use them.
+
+## Sorting a list
+
+In Python, `my_list.sort()` sorts the list in place, from smallest to largest. In C++, you use `sort` on a `vector`, giving the start and the end of what to sort.
+
+```python
+times = [5412, 4987, 5120, 6003]
+times.sort()
+print(times)        # [4987, 5120, 5412, 6003]
+times.sort(reverse=True)
+print(times[0])     # 6003: the largest
+```
+
+```cpp
+vector<int> times = {5412, 4987, 5120, 6003};
+sort(times.begin(), times.end());              // 4987 5120 5412 6003
+sort(times.begin(), times.end(), greater<int>());
+cout << times[0] << "\n";                      // 6003: the largest
+```
+
+Strings are sorted in alphabetical order. So watch out for numbers read as text: `"950"` comes **after** `"1000"`, because `"9"` and `"1"` are compared first. Remember to convert with `int` before sorting.
+
+## Sorting with several criteria
+
+You often sort items that carry several pieces of information, like a name and a time. You store them in **pairs**: a tuple in Python, a `pair` in C++. Two pairs are compared by their first element first, and only if those are equal, by their second element. So you put first whatever should decide the ranking.
+
+To sort by **decreasing** score, then by **increasing** name, here's a trick: sort the pairs `(-score, name)` in the normal increasing order. The highest score has the smallest `-score`, so it comes first.
+
+```python
+teams = [("yeti", 7), ("aigle", 9), ("igloo", 7)]
+ranking = []
+for name, score in teams:
+    ranking.append((-score, name))
+ranking.sort()
+for minus_score, name in ranking:
+    print(name, -minus_score)    # aigle 9, igloo 7, yeti 7
+```
+
+```cpp
+vector<pair<string, int>> teams = {{"yeti", 7}, {"aigle", 9}, {"igloo", 7}};
+vector<pair<int, string>> ranking;
+for (auto& t : teams) {
+    ranking.push_back({-t.second, t.first});
+}
+sort(ranking.begin(), ranking.end());
+for (auto& r : ranking) {
+    cout << r.second << " " << -r.first << "\n";   // aigle 9, igloo 7, yeti 7
+}
+```
+
+## Counting with an array of counters
+
+When the values to count are small integers or letters, an array is enough: cell `k` counts how many times the value `k` appears. For letters, you use 26 cells, and the letter `c` goes into cell `ord(c) - ord("a")` (in C++: `c - 'a'`).
+
+```python
+count = [0] * 26
+for c in "marmotte":
+    count[ord(c) - ord("a")] += 1
+print(count[ord("m") - ord("a")])   # 2
+```
+
+```cpp
+vector<int> count(26, 0);
+string word = "marmotte";
+for (char c : word) {
+    count[c - 'a']++;
+}
+cout << count['m' - 'a'] << "\n";   // 2
+```
+
+## Counting with a dictionary
+
+When the values are words, or numbers too big for an array, you use a **dictionary**: it associates a **value** with each **key**. In Python, you have to create the key before increasing it. In C++, a `map` automatically creates a missing key with the value `0`, and it keeps its keys sorted.
+
+```python
+votes = ["yeti", "aigle", "yeti", "igloo", "yeti"]
+count = {}
+for v in votes:
+    if v not in count:
+        count[v] = 0
+    count[v] += 1
+for name in sorted(count):
+    print(name, count[name])   # aigle 1, igloo 1, yeti 3
+```
+
+```cpp
+vector<string> votes = {"yeti", "aigle", "yeti", "igloo", "yeti"};
+map<string, int> count;
+for (string v : votes) {
+    count[v]++;
+}
+for (auto& p : count) {
+    cout << p.first << " " << p.second << "\n";   // aigle 1, igloo 1, yeti 3
+}
+```
+
+In Python, you go through a dictionary in the order in which the keys were added: `sorted(count)` gives the keys in alphabetical order. In C++, `unordered_map` is used like `map` and is a bit faster, but its keys are not kept in any particular order.
+
+## Grouping
+
+A dictionary can also hold **lists**: you put together the items that share the same property, called the key. Here, we group words by their length:
+
+```python
+groups = {}
+for word in ["lac", "col", "piolet", "neige", "luge"]:
+    key = len(word)
+    if key not in groups:
+        groups[key] = []
+    groups[key].append(word)
+print(groups[3])   # ['lac', 'col']
+```
+
+```cpp
+map<int, vector<string>> groups;
+for (string word : {"lac", "col", "piolet", "neige", "luge"}) {
+    groups[word.size()].push_back(word);
+}
+cout << groups[3][0] << " " << groups[3][1] << "\n";   // lac col
+```
+
+The whole art of grouping is choosing the right key: a value you compute for each item, which is the same for two items exactly when they belong in the same group.
+
+## Key takeaways
+
+- `sort` puts a list in increasing order; strings are compared in alphabetical order.
+- Pairs are sorted by their first element first: put the main criterion there, and use `-score` for a decreasing order.
+- To count letters or small integers, an array of counters is enough; for words, use a dictionary.
+- A dictionary of lists groups together the items that have the same key.
