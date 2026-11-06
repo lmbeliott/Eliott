@@ -121,9 +121,9 @@ function GuestOnly({ children }: { children: ReactNode }) {
 function PageSkeleton() {
   return (
     <div aria-busy="true" aria-label="Chargement" className="animate-pulse">
-      <div className="h-9 w-64 rounded-lg bg-surface-2" />
+      <div className="h-9 w-64 rounded-md bg-surface-2" />
       <div className="mt-3 h-4 w-96 max-w-full rounded bg-surface-2" />
-      <div className="mt-8 h-64 rounded-2xl bg-surface-2" />
+      <div className="mt-8 h-64 rounded-xl bg-surface-2" />
     </div>
   )
 }

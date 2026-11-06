@@ -9,18 +9,19 @@ import { cn, hueFrom } from '../lib/util'
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'water'
 type Size = 'sm' | 'md' | 'lg'
 
-const base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap transition duration-150 ease-out active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none select-none'
+// Boutons « carrés » : action principale pleine à angles vifs, action secondaire en lien souligné.
+const base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap rounded-[2px] transition duration-150 ease-out active:translate-y-px disabled:opacity-50 disabled:pointer-events-none select-none'
 const variants: Record<Variant, string> = {
-  primary: 'bg-btn text-btn-ink hover:bg-btn-hover',
-  water: 'bg-water text-white hover:brightness-110 dark:text-[#04212c]',
-  secondary: 'bg-surface text-ink border border-line-strong hover:bg-surface-2',
-  ghost: 'text-ink-2 hover:bg-surface-2 hover:text-ink',
-  danger: 'bg-rope text-white hover:brightness-110 dark:text-[#2a0d08]',
+  primary: 'bg-btn text-btn-ink hover:bg-btn-hover shadow-[inset_0_-2px_0_rgb(0_0_0/0.18)]',
+  water: 'bg-btn text-btn-ink hover:bg-btn-hover shadow-[inset_0_-2px_0_rgb(0_0_0/0.18)]',
+  secondary: 'link-action px-1.5 bg-transparent',
+  ghost: 'px-3 text-ink-2 hover:bg-surface-2 hover:text-ink',
+  danger: 'bg-rope text-white hover:brightness-110 shadow-[inset_0_-2px_0_rgb(0_0_0/0.2)] dark:text-[#2a0d08]',
 }
 const sizes: Record<Size, string> = {
-  sm: 'h-8 px-3 text-[13px] rounded-md',
-  md: 'h-10 px-4 text-sm rounded-lg',
-  lg: 'h-12 px-6 text-[15px] rounded-xl',
+  sm: 'h-8 px-3 text-[14px]',
+  md: 'h-10 px-4 text-[15px]',
+  lg: 'h-12 px-6 text-[16.5px]',
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -34,7 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   { variant = 'primary', size = 'md', icon: Icon, full, className, children, type = 'button', ...rest }, ref,
 ) {
   return (
-    <button ref={ref} type={type} className={cn(base, variants[variant], sizes[size], full && 'w-full', className)} {...rest}>
+    <button ref={ref} type={type} className={cn(base, sizes[size], variants[variant], full && 'w-full', className)} {...rest}>
       {Icon && <Icon aria-hidden className={size === 'sm' ? 'size-3.5' : 'size-4'} strokeWidth={2.25} />}
       {children}
     </button>
@@ -43,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
 export function ButtonLink({ variant = 'primary', size = 'md', icon: Icon, className, children, full, ...rest }: LinkProps & { variant?: Variant; size?: Size; icon?: LucideIcon; full?: boolean }) {
   return (
-    <Link className={cn(base, variants[variant], sizes[size], full && 'w-full', className)} {...rest}>
+    <Link className={cn(base, sizes[size], variants[variant], full && 'w-full', className)} {...rest}>
       {Icon && <Icon aria-hidden className={size === 'sm' ? 'size-3.5' : 'size-4'} strokeWidth={2.25} />}
       {children}
     </Link>
@@ -56,7 +57,7 @@ export function IconButton({ label, icon: Icon, className, size = 'md', ...rest 
       type="button"
       aria-label={label}
       title={label}
-      className={cn('inline-flex items-center justify-center rounded-lg text-ink-2 hover:bg-surface-2 hover:text-ink transition duration-150 active:scale-95', size === 'sm' ? 'size-8' : 'size-10', className)}
+      className={cn('inline-flex items-center justify-center rounded-[3px] text-ink-2 hover:bg-surface-2 hover:text-ink transition duration-150 active:translate-y-px', size === 'sm' ? 'size-8' : 'size-10', className)}
       {...rest}
     >
       <Icon aria-hidden className="size-[18px]" strokeWidth={2} />
@@ -66,7 +67,7 @@ export function IconButton({ label, icon: Icon, className, size = 'md', ...rest 
 
 // ---------------------------------------------------------------- formulaires
 
-const control = 'w-full rounded-lg border border-field-line bg-surface px-3 text-[15px] text-ink placeholder:text-muted transition-colors hover:border-ink-2/80 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20 disabled:bg-surface-2 disabled:text-muted aria-[invalid=true]:border-rope'
+const control = 'w-full rounded-[3px] border border-field-line bg-surface px-3 text-[15px] text-ink placeholder:text-muted transition-colors hover:border-ink-2/80 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20 disabled:bg-surface-2 disabled:text-muted aria-[invalid=true]:border-rope'
 
 /** Relie l'aide ou l'erreur d'un `Field` à son contrôle (`aria-describedby`), sans rien changer chez l'appelant. */
 const FieldDesc = createContext<{ forId?: string; descId?: string }>({})
@@ -131,7 +132,7 @@ export function Checkbox({ label, hint, className, ...rest }: InputHTMLAttribute
 
 export function FormError({ children }: { children?: ReactNode }) {
   if (!children) return null
-  return <div role="alert" className="rounded-lg border border-rope/30 bg-rope-soft px-3.5 py-2.5 text-sm text-rope">{children}</div>
+  return <div role="alert" className="rounded-md border border-rope/30 bg-rope-soft px-3.5 py-2.5 text-sm text-rope">{children}</div>
 }
 
 // ---------------------------------------------------------------- affichage
@@ -147,7 +148,7 @@ const tones: Record<Tone, string> = {
 
 export function Badge({ tone = 'neutral', children, className, dot }: { tone?: Tone; children: ReactNode; className?: string; dot?: boolean }) {
   return (
-    <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 h-6 text-[12.5px] font-semibold whitespace-nowrap', tones[tone], className)}>
+    <span className={cn('inline-flex items-center gap-1.5 rounded-[3px] px-2 h-6 text-[13px] font-semibold whitespace-nowrap', tones[tone], className)}>
       {dot && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
       {children}
     </span>
@@ -172,7 +173,7 @@ export function Panel({ title, description, actions, children, className, bodyCl
   title?: ReactNode; description?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; bodyClassName?: string; id?: string
 }) {
   return (
-    <section id={id} className={cn('rounded-2xl border border-line bg-surface', className)}>
+    <section id={id} className={cn('elev-2 rounded-xl border border-line/70 bg-surface', className)}>
       {(title || actions) && (
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4 pb-3 sm:px-6">
           <div className="min-w-0">
@@ -216,7 +217,7 @@ export function EmptyState({ icon: Icon, title, children, action, compact }: { i
   return (
     <div className={cn('flex flex-col items-center text-center', compact ? 'py-8' : 'py-14')}>
       {Icon && (
-        <span className="mb-3 inline-flex size-11 items-center justify-center rounded-full bg-water-soft text-water">
+        <span className="mb-3 inline-flex size-11 items-center justify-center rounded-md bg-water-soft text-water">
           <Icon aria-hidden className="size-5" />
         </span>
       )}
@@ -253,7 +254,7 @@ export function Tabs({ items }: { items: Array<{ to: string; label: string; coun
               className={({ isActive }) => cn('relative flex h-11 items-center gap-2 px-3 text-sm font-semibold transition-colors duration-200', isActive ? 'text-ink' : 'text-muted hover:text-ink')}
             >
               {it.label}
-              {!!it.count && <span key={it.count} className="badge-bump rounded-full bg-rope px-1.5 text-[11px] font-bold leading-[18px] text-white dark:text-[#2a0d08]">{it.count}</span>}
+              {!!it.count && <span key={it.count} className="badge-bump rounded-[3px] bg-rope px-1.5 text-[11px] font-bold leading-[18px] text-white dark:text-[#2a0d08]">{it.count}</span>}
             </NavLink>
           </li>
         ))}
@@ -283,9 +284,9 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
     requestAnimationFrame(() => wrap.current?.querySelector<HTMLElement>('[aria-checked="true"]')?.focus())
   }
   return (
-    <div ref={wrap} role="radiogroup" aria-label={label} className="relative inline-flex rounded-lg border border-line-strong bg-surface p-0.5"
+    <div ref={wrap} role="radiogroup" aria-label={label} className="relative inline-flex rounded-[3px] border border-line-strong bg-surface p-0.5"
       onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); move(1) } if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); move(-1) } }}>
-      {thumb && <span aria-hidden className="slide-indicator inset-y-0.5 left-0 rounded-md bg-btn" style={{ transform: `translateX(${thumb.x - 2}px)`, width: thumb.w }} />}
+      {thumb && <span aria-hidden className="slide-indicator inset-y-0.5 left-0 rounded-[2px] bg-btn" style={{ transform: `translateX(${thumb.x - 2}px)`, width: thumb.w }} />}
       {options.map((o) => (
         <button
           key={o.value}
@@ -294,7 +295,7 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
           aria-checked={value === o.value}
           tabIndex={value === o.value ? 0 : -1}
           onClick={() => onChange(o.value)}
-          className={cn('relative z-[1] h-8 rounded-md px-3 text-[13px] font-semibold transition-colors duration-300', value === o.value ? (thumb ? 'text-btn-ink' : 'bg-btn text-btn-ink') : 'text-ink-2 hover:text-ink')}
+          className={cn('relative z-[1] h-8 rounded-[2px] px-3 text-[14px] font-semibold transition-colors duration-300', value === o.value ? (thumb ? 'text-btn-ink' : 'bg-btn text-btn-ink') : 'text-ink-2 hover:text-ink')}
         >
           {o.label}
         </button>

@@ -98,7 +98,7 @@ function ConfirmDialog({ title, body, confirmLabel, tone = 'danger', onClose }: 
   return createPortal(
     <div className="fixed inset-0 z-[70] flex items-end justify-center p-4 sm:items-center">
       <div aria-hidden className={cn('absolute inset-0 bg-[#04121b]/50', closing ? 'animate-[fade-out_150ms_ease-in_both]' : 'animate-[overlay-in_180ms_ease-out]')} onClick={() => finish(false)} />
-      <div ref={ref} role="alertdialog" aria-modal="true" aria-labelledby={titleId} className={cn('relative w-full max-w-[440px] rounded-2xl bg-surface p-6 shadow-float', closing ? 'animate-[pop-out_150ms_ease-in_both]' : 'animate-[pop_260ms_var(--ease-spring)]')}>
+      <div ref={ref} role="alertdialog" aria-modal="true" aria-labelledby={titleId} className={cn('relative w-full max-w-[440px] rounded-xl bg-surface p-6 shadow-float', closing ? 'animate-[pop-out_150ms_ease-in_both]' : 'animate-[pop_260ms_var(--ease-spring)]')}>
         <h2 id={titleId} className="text-lg font-bold text-ink">{title}</h2>
         {body && <div className="mt-2 text-[15px] text-ink-2">{body}</div>}
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

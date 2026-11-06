@@ -2,7 +2,7 @@ import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Eye, EyeOff, MailCheck } from 'lucide-react'
 import { Logo } from '../../components/Logo'
-import { PoolScene } from '../../components/PoolScene'
+import { HeroStage } from '../../components/HeroStage'
 import { Button, Checkbox, Field, FormError, Input } from '../../components/ui'
 import { useAction } from '../../components/feedback'
 import { login, loginDemo, register } from '../../data/api'
@@ -25,8 +25,8 @@ function AuthLayout({ title, intro, children }: { title: string; intro?: ReactNo
           <Link to="/confidentialite" className="hover:text-ink">Confidentialité</Link>
         </p>
       </div>
-      <aside aria-hidden className="relative hidden items-center justify-center overflow-hidden bg-water-soft px-12 lg:flex">
-        <PoolScene still className="w-full max-w-[520px]" />
+      <aside aria-hidden className="deep relative hidden items-center justify-center overflow-hidden px-12 lg:flex">
+        <HeroStage still className="w-full max-w-[560px]" />
       </aside>
     </div>
   )

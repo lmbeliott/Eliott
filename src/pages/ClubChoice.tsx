@@ -68,8 +68,8 @@ export default function ClubChoice() {
                 const role = m.isAdmin ? 'Administrateur' : db.roles.find((r) => r.id === m.roleId)?.name ?? 'Éducateur'
                 return (
                   <li key={m.id}>
-                    <button type="button" onClick={() => open(club.id)} className="group flex w-full items-center gap-4 rounded-2xl border border-line bg-surface p-4 text-left transition-colors hover:border-water-bright sm:p-5">
-                      <span aria-hidden className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-ink text-lg font-extrabold text-surface [font-stretch:75%]">
+                    <button type="button" onClick={() => open(club.id)} className="group flex w-full items-center gap-4 rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-water-bright sm:p-5">
+                      <span aria-hidden className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-ink text-lg font-extrabold text-surface">
                         {club.name.split(/\s+/).filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
                       </span>
                       <span className="min-w-0 flex-1">
@@ -84,7 +84,7 @@ export default function ClubChoice() {
               {pending.map((m) => {
                 const club = db.clubs.find((c) => c.id === m.clubId)!
                 return (
-                  <li key={m.id} className="flex items-center gap-4 rounded-2xl border border-dashed border-line-strong bg-surface/60 p-4 sm:p-5">
+                  <li key={m.id} className="flex items-center gap-4 rounded-xl border border-dashed border-line-strong bg-surface/60 p-4 sm:p-5">
                     <Clock aria-hidden className="size-5 shrink-0 text-buoy" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-bold text-ink">{club.name}</span>

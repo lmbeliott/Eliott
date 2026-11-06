@@ -204,7 +204,7 @@ export default function Replacements() {
 function SessionHeader({ a, o, absentName, onOpen, showReason, children }: { a: Absence; o: Occurrence; absentName: string; onOpen: () => void; showReason?: boolean; children?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3.5">
-      <div className="flex w-14 shrink-0 flex-col items-center rounded-lg bg-surface-2 py-1.5">
+      <div className="flex w-14 shrink-0 flex-col items-center rounded-md bg-surface-2 py-1.5">
         <span className="text-[11.5px] font-semibold text-muted">{ucfirst(fmtShort(a.date).split(' ')[0])}</span>
         <span className="display-md text-[22px] text-ink num">{a.date.slice(8)}</span>
       </div>

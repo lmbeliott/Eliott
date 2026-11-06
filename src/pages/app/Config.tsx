@@ -41,7 +41,7 @@ export default function Config() {
 
 export function NoAccess({ what, adminOnly }: { what: string; adminOnly?: boolean }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface">
+    <div className="rounded-xl border border-line bg-surface">
       <EmptyState icon={Lock} title="Accès réservé">
         {adminOnly
           ? <>Cette page est réservée aux administrateurs du club. Un administrateur peut vous donner ce statut depuis Équipe, Membres.</>
@@ -106,7 +106,7 @@ function Slots() {
       )}
 
       {slots.length === 0 ? (
-        <div className="rounded-2xl border border-line bg-surface">
+        <div className="rounded-xl border border-line bg-surface">
           <EmptyState icon={CalendarPlus} title="Aucun créneau" action={<ButtonLink to="/app/configuration/import" variant="secondary" icon={Upload}>Importer depuis Excel</ButtonLink>}>
             Planifiez vos créneaux un par un, ou importez tout le planning de la saison en une fois.
           </EmptyState>
@@ -222,7 +222,7 @@ function SlotForm({ slot, onClose }: { slot: Creneau | 'new' | null; onClose: ()
           <div className="grid grid-cols-7 gap-1">
             {DAYS_SHORT.map((d, i) => (
               <button key={d} type="button" aria-pressed={form.day === i} onClick={() => setForm({ ...form, day: i as Weekday })}
-                className={cn('h-10 rounded-lg border text-[13px] font-semibold transition-colors', form.day === i ? 'border-btn bg-btn text-btn-ink' : 'border-line-strong text-ink-2 hover:bg-surface-2')}>
+                className={cn('h-10 rounded-md border text-[13px] font-semibold transition-colors', form.day === i ? 'border-btn bg-btn text-btn-ink' : 'border-line-strong text-ink-2 hover:bg-surface-2')}>
                 {d}
               </button>
             ))}
@@ -288,7 +288,7 @@ function Pools() {
     <>
       <div className="mb-5 flex justify-end"><Button icon={Plus} onClick={() => setEditing('new')}>Ajouter une piscine</Button></div>
       {pools.length === 0 ? (
-        <div className="rounded-2xl border border-line bg-surface">
+        <div className="rounded-xl border border-line bg-surface">
           <EmptyState icon={Waves} title="Aucune piscine" action={<Button icon={Plus} onClick={() => setEditing('new')}>Ajouter une piscine</Button>}>Commencez par les bassins où votre club a des créneaux.</EmptyState>
         </div>
       ) : (
@@ -297,7 +297,7 @@ function Pools() {
             const groups = db.groupes.filter((g) => g.piscineId === p.id)
             const slots = db.creneaux.filter((c) => c.piscineId === p.id)
             return (
-              <li key={p.id} className="rounded-2xl border border-line bg-surface p-5">
+              <li key={p.id} className="rounded-xl border border-line bg-surface p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="text-[17px] font-bold text-ink">{p.name}</h3>
@@ -314,7 +314,7 @@ function Pools() {
                     }} />
                   </div>
                 </div>
-                <div aria-hidden className="lane-rope lane-rope-on-light my-4" />
+                <div aria-hidden className="my-4 h-px bg-line" />
                 <dl className="flex gap-6 text-sm">
                   <div><dt className="text-muted">Lignes d'eau</dt><dd className="font-semibold text-ink num">{p.lanes ?? '—'}</dd></div>
                   <div><dt className="text-muted">Groupes</dt><dd className="font-semibold text-ink num">{groups.length}</dd></div>
@@ -379,7 +379,7 @@ function Groups() {
       <Panel title="Niveaux du club" description="Ils colorent le planning. Ex. Jardin aquatique, École de natation, Compétition, Masters.">
         <ul className="flex flex-wrap gap-2">
           {levels.map((l) => (
-            <li key={l.id} className="inline-flex h-9 items-center gap-2 rounded-full border border-line bg-bg pl-2 pr-1">
+            <li key={l.id} className="inline-flex h-9 items-center gap-2 rounded-[3px] border border-line bg-bg pl-2 pr-1">
               <label className="relative inline-flex size-5 cursor-pointer items-center justify-center rounded-full has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-bg" style={{ background: l.color }} title="Changer la couleur">
                 <span className="sr-only">Couleur de {l.name}</span>
                 <select className="absolute inset-0 cursor-pointer opacity-0" value={l.color} onChange={(e) => run(() => saveNiveau({ id: l.id, name: l.name, color: e.target.value }))}>
@@ -539,7 +539,7 @@ function Import() {
           className="mt-2 h-44 w-full rounded-xl border border-line-strong bg-bg p-3 font-sans text-[13px] leading-relaxed text-ink placeholder:text-muted focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20"
         />
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-line-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface">
+          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-line-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface">
             <FileUp aria-hidden className="size-4" />Choisir un fichier CSV
             <input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" className="sr-only" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
           </label>

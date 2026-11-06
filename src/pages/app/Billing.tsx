@@ -69,7 +69,7 @@ export default function Billing() {
             <p className="text-sm font-semibold text-ink-2">Accès utilisés</p>
             <p className="font-bold text-ink num">{used} / {ctx.club.capacity}</p>
           </div>
-          <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-surface-2" role="progressbar" aria-valuenow={used} aria-valuemin={0} aria-valuemax={ctx.club.capacity} aria-label="Accès utilisés">
+          <div className="mt-2 h-2.5 overflow-hidden rounded-[2px] bg-surface-2" role="progressbar" aria-valuenow={used} aria-valuemin={0} aria-valuemax={ctx.club.capacity} aria-label="Accès utilisés">
             <div className={pct >= 100 ? 'h-full bg-rope-bright' : pct >= 85 ? 'h-full bg-buoy-bright' : 'h-full bg-water-bright'} style={{ width: `${pct}%` }} />
           </div>
           <form onSubmit={submit} className="mt-6 space-y-4" noValidate>

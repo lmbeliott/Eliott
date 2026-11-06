@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Check, Download, Layers, Menu, ShieldCheck, Smartphone, UserCog, X } from 'lucide-react'
 import { Logo } from '../../components/Logo'
-import { PoolScene } from '../../components/PoolScene'
+import { HeroStage } from '../../components/HeroStage'
 import { InstallGuide } from '../../components/InstallGuide'
 import { Button, ButtonLink, Segmented } from '../../components/ui'
 import { useAction } from '../../components/feedback'
@@ -27,33 +27,35 @@ export default function Landing() {
   })
 
   return (
-    <div className="min-h-dvh bg-bg">
-      <SiteHeader onInstall={() => setInstall(true)} />
+    <div className="min-h-dvh">
+      <SiteHeader onInstall={() => setInstall(true)} overDark />
 
       <main>
-        {/* ------------------------------------------------ Hero */}
-        <section className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 px-4 pb-20 pt-10 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pb-28 lg:pt-16">
+        {/* ------------------------------------------------ Hero : eau profonde */}
+        <div className="deep -mt-16 pt-16">
+        <section className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-14 px-4 pb-20 pt-12 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-10 lg:pb-28 lg:pt-20">
           <div>
-            <h1 className="display text-[52px] text-ink sm:text-[76px] lg:text-[88px]">
+            <h1 className="display text-[54px] text-ink sm:text-[78px] lg:text-[86px]">
               <RisingWords text="Chaque ligne d'eau a son éducateur." delay={150} />
             </h1>
-            <p className="hero-in mt-6 max-w-[54ch] text-[17px] leading-relaxed text-ink-2 sm:text-lg" style={{ animationDelay: '520ms' }}>
+            <p className="hero-in mt-7 max-w-[52ch] text-[18px] leading-relaxed text-ink-2 sm:text-[19px]" style={{ animationDelay: '520ms' }}>
               SwimHub Connect centralise les plannings de votre club de natation, propose chaque absence aux collègues
               diplômés et disponibles, et prépare le relevé d'heures du mois pour la paie.
             </p>
-            <div className="hero-in mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: '640ms' }}>
+            <div className="hero-in mt-9 flex flex-wrap items-center gap-x-7 gap-y-4" style={{ animationDelay: '640ms' }}>
               <ButtonLink to="/inscription" size="lg">Créer mon club</ButtonLink>
               {ownSpace
                 ? <ButtonLink to={ownSpace} size="lg" variant="secondary">Ouvrir mon espace</ButtonLink>
                 : <Button size="lg" variant="secondary" onClick={startDemo}>Explorer la démo</Button>}
             </div>
-            <ul className="hero-in mt-7 flex flex-col gap-2 text-[15px] text-ink-2 sm:flex-row sm:gap-6" style={{ animationDelay: '760ms' }}>
+            <ul className="hero-in mt-9 flex flex-col gap-2 border-t border-line pt-5 text-[15.5px] text-ink-2 sm:flex-row sm:gap-7" style={{ animationDelay: '760ms' }}>
               <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />{PROMO_MONTHS} mois avec {INCLUDED_PROMO} accès pour {euros(BASE_PRICE)} par mois</li>
               <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />Sans engagement</li>
             </ul>
           </div>
-          <PoolScene />
+          <HeroStage />
         </section>
+        </div>
 
         {/* ------------------------------------------------ Parcours d'une absence */}
         <section className="border-y border-line bg-surface" aria-labelledby="parcours">
@@ -103,7 +105,7 @@ export default function Landing() {
         </section>
 
         {/* ------------------------------------------------ Tarifs */}
-        <section id="tarifs" className="scroll-mt-20 border-y border-line bg-surface">
+        <section id="tarifs" className="scroll-mt-20 border-y border-line bg-surface-2/50">
           <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:py-28">
             <Reveal className="max-w-[640px]">
               <h2 className="display-md text-[34px] text-ink sm:text-[44px]">Un prix qui suit la taille de votre équipe.</h2>
@@ -130,18 +132,17 @@ export default function Landing() {
         </section>
 
         {/* ------------------------------------------------ Appel final */}
-        <section className="bg-[#0c2a3e] text-white">
-          <div className="lane-rope rope-drift" aria-hidden />
-          <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-8 px-4 py-16 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:py-20">
+        <section className="deep">
+          <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-8 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:py-24">
             <div>
-              <h2 className="display-md text-[32px] sm:text-[42px]">Testez avec votre vrai planning cette semaine.</h2>
-              <p className="mt-3 text-[17px] text-[#b9d3df]">Six mois avec cinq accès inclus pour {euros(BASE_PRICE)} par mois, sans engagement.</p>
+              <h2 className="display-md text-[34px] text-ink sm:text-[46px]">Testez avec votre vrai planning cette semaine.</h2>
+              <p className="mt-3 text-[18px] text-ink-2">Six mois avec cinq accès inclus pour {euros(BASE_PRICE)} par mois, sans engagement.</p>
             </div>
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <Link to="/inscription" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#3cc4e4] px-6 text-[15px] font-semibold text-[#04212c] hover:bg-[#6fd5ee]">Créer mon club</Link>
+            <div className="flex flex-wrap items-center gap-x-7 gap-y-4">
+              <ButtonLink to="/inscription" size="lg">Créer mon club</ButtonLink>
               {ownSpace
-                ? <Link to={ownSpace} className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-6 text-[15px] font-semibold text-white hover:bg-white/10">Ouvrir mon espace</Link>
-                : <button type="button" onClick={startDemo} className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-6 text-[15px] font-semibold text-white hover:bg-white/10">Explorer la démo</button>}
+                ? <ButtonLink to={ownSpace} size="lg" variant="secondary">Ouvrir mon espace</ButtonLink>
+                : <Button size="lg" variant="secondary" onClick={startDemo}>Explorer la démo</Button>}
             </div>
           </div>
         </section>
@@ -155,7 +156,7 @@ export default function Landing() {
 
 // ---------------------------------------------------------------- en-tête / pied
 
-export function SiteHeader({ onInstall }: { onInstall?: () => void }) {
+export function SiteHeader({ onInstall, overDark }: { onInstall?: () => void; overDark?: boolean }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
@@ -170,20 +171,23 @@ export function SiteHeader({ onInstall }: { onInstall?: () => void }) {
     { href: '/#faq', label: 'Questions' },
   ]
   return (
-    <header className={cn('sticky top-0 z-40 bg-bg transition-[border-color] duration-200', scrolled ? 'border-b border-line' : 'border-b border-transparent')}>
+    <header className={cn(
+      'sticky top-0 z-40 border-b transition-[background-color,border-color,box-shadow] duration-300',
+      overDark && !scrolled && !open ? 'on-deep border-transparent bg-transparent' : 'border-line bg-bg/95 shadow-e1 backdrop-blur-sm supports-[backdrop-filter]:bg-bg/85',
+    )}>
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6">
         <Logo animate />
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
-            <Link key={l.href} to={l.href} className="rounded-md px-3 py-2 text-[15px] font-medium text-ink-2 hover:text-ink">{l.label}</Link>
+            <Link key={l.href} to={l.href} className="rounded-[3px] px-3 py-2 text-[16px] font-medium text-ink-2 transition-colors hover:text-ink">{l.label}</Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           {onInstall && <Button variant="ghost" icon={Download} onClick={onInstall}>Installer</Button>}
           <ButtonLink to="/connexion" variant="secondary">Se connecter</ButtonLink>
           <ButtonLink to="/inscription">Créer mon club</ButtonLink>
         </div>
-        <button type="button" className="inline-flex size-10 items-center justify-center rounded-lg text-ink md:hidden" aria-expanded={open} aria-controls="menu-mobile" aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'} onClick={() => setOpen((o) => !o)}>
+        <button type="button" className="inline-flex size-10 items-center justify-center rounded-md text-ink md:hidden" aria-expanded={open} aria-controls="menu-mobile" aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'} onClick={() => setOpen((o) => !o)}>
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
@@ -195,9 +199,9 @@ export function SiteHeader({ onInstall }: { onInstall?: () => void }) {
             ))}
             {onInstall && <button type="button" onClick={() => { setOpen(false); onInstall() }} className="border-b border-line py-3.5 text-left text-[17px] font-medium text-ink">Installer l'application</button>}
           </nav>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <ButtonLink to="/connexion" variant="secondary">Se connecter</ButtonLink>
+          <div className="mt-5 flex items-center gap-6">
             <ButtonLink to="/inscription">Créer mon club</ButtonLink>
+            <ButtonLink to="/connexion" variant="secondary">Se connecter</ButtonLink>
           </div>
         </div>
       )}
@@ -256,16 +260,18 @@ function StepsLane() {
   const [ref, inView] = useInView<HTMLOListElement>({ threshold: 0.3 })
   return (
     <ol ref={ref} data-shown={inView || undefined} className="relative mt-14 grid gap-10 md:grid-cols-4 md:gap-6">
-      <div aria-hidden className="lane-rope lane-rope-on-light absolute left-0 right-0 top-[18px] hidden md:block" />
-      <div aria-hidden className="swimmer-dot hidden md:block" />
+      {/* Ligne continue qui se remplit d'une étape à l'autre */}
+      <div aria-hidden className="absolute left-0 right-0 top-[21px] hidden h-[2px] bg-line md:block">
+        <div className="steps-fill h-full bg-btn" />
+      </div>
       {STEPS.map((s, i) => (
         <li key={s.title} className="relative flex gap-4 md:block">
-          <span className="step-num relative z-10 flex size-11 shrink-0 items-center justify-center rounded-lg bg-ink text-xl font-extrabold text-surface num [font-stretch:75%]" style={{ '--i': i } as CSSProperties}>
+          <span className="step-num relative z-10 flex size-11 shrink-0 items-center justify-center rounded-[3px] bg-surface text-[19px] font-bold text-ink shadow-[inset_0_0_0_2px_var(--line-strong)] num" style={{ '--i': i } as CSSProperties}>
             {i + 1}
           </span>
-          <div className="reveal md:mt-5" data-shown={inView || undefined} style={{ '--reveal-delay': `${300 + i * 690}ms` } as CSSProperties}>
-            <h3 className="text-[17px] font-bold text-ink">{s.title}</h3>
-            <p className="mt-1.5 text-[15px] leading-relaxed text-ink-2">{s.text}</p>
+          <div className="reveal md:mt-5" data-shown={inView || undefined} style={{ '--reveal-delay': `${300 + i * 700}ms` } as CSSProperties}>
+            <h3 className="text-[19px] font-semibold text-ink">{s.title}</h3>
+            <p className="mt-1.5 text-[16px] leading-relaxed text-ink-2">{s.text}</p>
           </div>
         </li>
       ))}
@@ -288,7 +294,9 @@ function Feature({ title, text, points, visual, reverse }: { title: string; text
           ))}
         </ul>
       </Reveal>
-      <Reveal aria-hidden delay={120} className={cn('mock rounded-2xl border border-line bg-surface p-4 shadow-float sm:p-5', reverse && 'lg:order-1')}>{visual}</Reveal>
+      <Reveal aria-hidden delay={120} className={cn('mock lg:[perspective:1400px]', reverse && 'lg:order-1')}>
+        <div className={cn('elev-3 rounded-xl border border-line/70 bg-surface p-4 sm:p-6', reverse ? 'lg:[transform:rotateY(5deg)_rotateX(2deg)]' : 'lg:[transform:rotateY(-5deg)_rotateX(2deg)]')}>{visual}</div>
+      </Reveal>
     </div>
   )
 }
@@ -305,7 +313,7 @@ function WeekMock() {
     <div>
       <div className="mb-3 flex items-center justify-between">
         <span className="text-sm font-bold text-ink">Semaine du 9 novembre</span>
-        <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[12px] font-semibold text-ink-2">Toutes les piscines</span>
+        <span className="rounded-[3px] bg-surface-2 px-2.5 py-1 text-[12px] font-semibold text-ink-2">Toutes les piscines</span>
       </div>
       <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
         {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'].map((d, i) => (
@@ -346,7 +354,7 @@ function DiplomaMock() {
               <p className="truncate text-[14px] font-semibold text-ink">{r.name}</p>
               <p className="text-[13px] text-muted">{r.d}</p>
             </div>
-            <span className={cn('shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold', tone[r.tone])}>{r.s}</span>
+            <span className={cn('shrink-0 rounded-[3px] px-2.5 py-1 text-[12px] font-semibold', tone[r.tone])}>{r.s}</span>
           </li>
         ))}
       </ul>
@@ -403,7 +411,7 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
   const q = quote(access, period === 'promo')
   return (
     <div className={cn('grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12', !compact && 'mt-12')}>
-      <div className="rounded-2xl border border-line bg-bg p-5 sm:p-7">
+      <div className="elev-2 rounded-xl border border-line/70 bg-surface p-5 sm:p-7">
         <label htmlFor="acces" className="flex items-baseline justify-between gap-4">
           <span className="font-semibold text-ink">Nombre d'accès</span>
           <span className="display-md text-[34px] text-ink num">{access}</span>

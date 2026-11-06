@@ -95,7 +95,7 @@ export default function Planning() {
       </div>
 
       {!hasSlots ? (
-        <div className="rounded-2xl border border-line bg-surface">
+        <div className="rounded-xl border border-line bg-surface">
           <EmptyState icon={CalendarPlus} title="Le planning est vide" action={ctx.can('planning') ? <ButtonLink to="/app/configuration">Créer le premier créneau</ButtonLink> : undefined}>
             {ctx.can('planning') ? 'Ajoutez vos piscines, vos groupes puis vos créneaux, ou importez votre planning Excel.' : "Les responsables du club n'ont pas encore publié de créneaux."}
           </EmptyState>
@@ -157,7 +157,7 @@ function WeekGrid({ days, byDay, me, showPool, onOpen }: { days: string[]; byDay
   }, [])
 
   return (
-    <div ref={scroller} className="max-h-[max(360px,calc(100dvh-12rem))] overflow-auto rounded-2xl border border-line bg-surface">
+    <div ref={scroller} className="max-h-[max(360px,calc(100dvh-12rem))] overflow-auto rounded-xl border border-line bg-surface">
       <div className="min-w-[860px]">
         <div className="sticky top-0 z-10 grid grid-cols-[56px_repeat(7,minmax(0,1fr))] border-b border-line bg-surface">
           <div />
@@ -267,7 +267,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
   }
   return (
     <div>
-      <div role="group" aria-label="Jour de la semaine" className="mb-5 grid grid-cols-7 gap-1 rounded-2xl border border-line bg-surface p-1.5">
+      <div role="group" aria-label="Jour de la semaine" className="mb-5 grid grid-cols-7 gap-1 rounded-xl border border-line bg-surface p-1.5">
         {days.map((d, i) => {
           const active = d === days[idx]
           const count = byDay[i].length
@@ -292,7 +292,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
 
       <div key={days[idx]} className="animate-[rise_320ms_var(--ease-out)]">
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-line bg-surface">
+        <div className="rounded-xl border border-line bg-surface">
           <EmptyState compact title={`Aucune séance ${weekday(fromISO(days[idx])) >= 5 ? 'ce jour-là' : 'ce jour'}`}>Choisissez un autre jour ou affichez tout le club.</EmptyState>
         </div>
       ) : (
@@ -300,7 +300,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
           {[...byPool.entries()].map(([poolName, list]) => (
             <section key={poolName}>
               <h2 className="mb-2.5 text-sm font-bold text-ink-2">{poolName}</h2>
-              <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+              <ul className="overflow-hidden rounded-xl border border-line bg-surface">
                 {list.map((o) => {
                   const coaches = effectiveCoaches(o)
                   const mine = involves(o, me)
@@ -315,7 +315,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
                         <div className="min-w-0 flex-1">
                           <p className="flex items-center gap-2 font-semibold text-ink">
                             <span className="truncate">{o.groupe?.name}</span>
-                            {mine && <span className="shrink-0 rounded-full bg-water-soft px-2 text-[11.5px] font-bold leading-5 text-water">Vous</span>}
+                            {mine && <span className="shrink-0 rounded-[3px] bg-water-soft px-2 text-[11.5px] font-bold leading-5 text-water">Vous</span>}
                           </p>
                           <p className="truncate text-sm text-muted">{o.slot.ligne ?? o.niveau?.name ?? ''}</p>
                           {o.state === 'open' ? (

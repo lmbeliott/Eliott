@@ -103,7 +103,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               <NavLink to={i.to} end={i.end} viewTransition className={({ isActive }) => cn('relative flex h-16 flex-col items-center justify-center gap-1 text-[11.5px] font-semibold transition-colors duration-200 [&>svg]:transition-transform [&>svg]:duration-300 active:[&>svg]:scale-90', isActive ? 'text-water [&>svg]:-translate-y-0.5' : 'text-muted')}>
                 <i.icon aria-hidden className="size-[22px]" strokeWidth={2} />
                 {i.label}
-                {!!i.badge && <span key={i.badge} className="badge-bump absolute left-1/2 top-2 ml-2 rounded-full bg-rope px-1.5 text-[10.5px] font-bold leading-4 text-white dark:text-[#2a0d08]">{i.badge}</span>}
+                {!!i.badge && <span key={i.badge} className="badge-bump absolute left-1/2 top-2 ml-2 rounded-[3px] bg-rope px-1.5 text-[10.5px] font-bold leading-4 text-white dark:text-[#2a0d08]">{i.badge}</span>}
               </NavLink>
             </li>
           ))}
@@ -120,7 +120,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <div className="-mx-2">
           <ClubSwitcher inDrawer />
           {nav}
-          <button type="button" onClick={() => { setMore(false); setInstall(true) }} className="mt-1 flex h-11 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
+          <button type="button" onClick={() => { setMore(false); setInstall(true) }} className="mt-1 flex h-11 w-full items-center gap-3 rounded-md px-3 text-[15px] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
             <Download aria-hidden className="size-[18px]" /> Installer l'application
           </button>
         </div>
@@ -144,7 +144,7 @@ function SidebarNav({ main, manage, footer }: { main: NavItem[]; manage: NavItem
   return (
     <nav ref={ref} aria-label="Navigation de l'application" className="relative flex flex-col gap-5">
       {hl && (
-        <span aria-hidden className="slide-indicator inset-x-0 top-0 rounded-lg bg-water-soft" style={{ transform: `translateY(${hl.y}px)`, height: hl.h }}>
+        <span aria-hidden className="slide-indicator inset-x-0 top-0 rounded-md bg-water-soft" style={{ transform: `translateY(${hl.y}px)`, height: hl.h }}>
           <span className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r bg-water-bright" />
         </span>
       )}
@@ -167,13 +167,13 @@ function NavGroup({ title, items }: { title?: string; items: NavItem[] }) {
               end={i.end}
               viewTransition
               className={({ isActive }) => cn(
-                'relative flex h-10 items-center gap-3 rounded-lg px-3 text-[15px] font-medium transition-colors duration-200',
+                'relative flex h-10 items-center gap-3 rounded-md px-3 text-[15px] font-medium transition-colors duration-200',
                 isActive ? 'text-ink font-semibold' : 'text-ink-2 hover:bg-surface-2/70 hover:text-ink',
               )}
             >
               <i.icon aria-hidden className="size-[18px] shrink-0" strokeWidth={2} />
               <span className="flex-1 truncate">{i.label}</span>
-              {!!i.badge && <span key={i.badge} className="badge-bump rounded-full bg-rope px-1.5 text-[11.5px] font-bold leading-5 text-white dark:text-[#2a0d08]" aria-label={`${i.badge} en attente`}>{i.badge}</span>}
+              {!!i.badge && <span key={i.badge} className="badge-bump rounded-[3px] bg-rope px-1.5 text-[11.5px] font-bold leading-5 text-white dark:text-[#2a0d08]" aria-label={`${i.badge} en attente`}>{i.badge}</span>}
             </NavLink>
           </li>
         ))}
@@ -270,13 +270,13 @@ function Notifications() {
         title="Notifications"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="relative inline-flex size-10 items-center justify-center rounded-lg text-ink-2 hover:bg-surface-2 hover:text-ink"
+        className="relative inline-flex size-10 items-center justify-center rounded-md text-ink-2 hover:bg-surface-2 hover:text-ink"
       >
         <Bell aria-hidden className="size-[18px]" />
         {unread.length > 0 && <span key={unread.length} className="badge-bump absolute right-2 top-2 size-2.5 rounded-full bg-rope-bright ring-2 ring-bg" />}
       </button>
       {open && (
-        <div className="absolute -right-11 top-12 z-40 lg:right-0 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">
+        <div className="absolute -right-11 top-12 z-40 lg:right-0 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-xl border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <p className="font-bold text-ink">Notifications</p>
             {unread.length > 0 && <button type="button" className="text-[13px] font-semibold text-water hover:underline" onClick={() => markNotificationsRead(unread.map((n) => n.id))}>Tout marquer comme lu</button>}

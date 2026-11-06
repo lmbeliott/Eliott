@@ -64,7 +64,7 @@ export default function Dashboard() {
       {ctx.can('planning') && !data.hasSlots && <SetupChecklist />}
 
       {ctx.isManager && data.hasSlots && (
-        <dl className="mb-6 grid grid-cols-2 overflow-hidden rounded-2xl border border-line bg-surface lg:grid-cols-4">
+        <dl className="mb-6 grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-surface lg:grid-cols-4">
           <Kpi to="/app/planning" label="Séances cette semaine" value={data.weekSessions} />
           <Kpi to="/app/remplacements" label="Absences à couvrir (14 j)" value={data.uncovered} alert={data.uncovered > 0} />
           {ctx.can('replacements') && <Kpi to="/app/remplacements" label="Candidatures à valider" value={data.pendingCandidatures} warn={data.pendingCandidatures > 0} />}
@@ -97,7 +97,7 @@ export default function Dashboard() {
                     return (
                       <li key={o.key} className="relative pb-4 pl-5 last:pb-0">
                         <span aria-hidden className={cn('absolute -left-[7px] top-1.5 size-3 rounded-full ring-4 ring-surface', o.state === 'open' || o.state === 'unreplaced' ? 'bg-rope-bright' : o.state === 'replaced' ? 'bg-kelp-bright' : 'bg-water-bright')} />
-                        <button type="button" onClick={() => open(o)} className="w-full rounded-lg text-left hover:bg-surface-2/60 -mx-2 px-2 py-1">
+                        <button type="button" onClick={() => open(o)} className="w-full rounded-md text-left hover:bg-surface-2/60 -mx-2 px-2 py-1">
                           <div className="flex flex-wrap items-baseline gap-x-3">
                             <span className="font-bold text-ink num">{fmtRange(o.slot.start, o.slot.end)}</span>
                             <span className="inline-flex items-center gap-1.5 font-semibold text-ink"><LevelDot color={o.niveau?.color} />{o.groupe?.name}</span>
@@ -197,7 +197,7 @@ function SetupChecklist() {
       <ol className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
         {steps.map((s, i) => (
           <li key={s.title} className={cn('flex flex-col rounded-xl border p-4', i === next ? 'border-water-bright bg-water-soft/50' : 'border-line')}>
-            <span className={cn('flex size-8 items-center justify-center rounded-lg text-[15px] font-extrabold num [font-stretch:75%]', s.done ? 'bg-kelp-soft text-kelp' : 'bg-ink text-surface')}>
+            <span className={cn('flex size-8 items-center justify-center rounded-md text-[15px] font-extrabold num', s.done ? 'bg-kelp-soft text-kelp' : 'bg-ink text-surface')}>
               {s.done ? <Check aria-hidden className="size-4" strokeWidth={3} /> : i + 1}
             </span>
             <p className={cn('mt-3 font-semibold', s.done ? 'text-muted line-through decoration-1' : 'text-ink')}>{s.title}</p>
@@ -224,7 +224,7 @@ function MySessionRow({ o, me, onOpen }: { o: Occurrence; me: string; onOpen: ()
   const covering = o.absences.find((a) => a.replacement?.id === me)
   return (
     <li>
-      <button type="button" onClick={onOpen} className="flex w-full items-center gap-4 rounded-lg px-2 py-3 text-left hover:bg-surface-2/60">
+      <button type="button" onClick={onOpen} className="flex w-full items-center gap-4 rounded-md px-2 py-3 text-left hover:bg-surface-2/60">
         <div className="w-14 shrink-0 text-center">
           <p className="text-[12px] font-semibold text-muted">{relativeDay(o.date) === "aujourd'hui" ? 'Auj.' : ucfirst(fmtShort(o.date).split(' ')[0])}</p>
           <p className="display-md text-[26px] text-ink num">{o.date.slice(8)}</p>

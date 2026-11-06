@@ -1,9 +1,14 @@
 @import "tailwindcss";
-@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource/barlow/400.css";
+@import "@fontsource/barlow/500.css";
+@import "@fontsource/barlow/600.css";
+@import "@fontsource/barlow/700.css";
+@import "@fontsource/barlow/400-italic.css";
 
 /* ------------------------------------------------------------------
-   Tokens — « bassin » : fond de carrelage, lignes de fond marine,
-   bouées rouges (absence non pourvue), jaunes (en attente), vert (remplacé).
+   Tokens. Barlow (esprit signalétique sportive), boutons à angles vifs,
+   profondeur par élévations teintées. Corail = absence non pourvue,
+   ambre = en attente, vert = remplacé.
    ------------------------------------------------------------------ */
 :root {
   color-scheme: light;
@@ -29,13 +34,18 @@
   --kelp: #157350;
   --kelp-bright: #1e9b6b;
   --kelp-soft: #ddf2e8;
-  --btn: #0c2a3e;
+  --btn: #0b6f95;
   --btn-ink: #ffffff;
-  --btn-hover: #133a54;
+  --btn-hover: #095a79;
   --pool-deep: #0a5f7a;
   --pool-mid: #0e86a8;
   --pool-light: #2fb2d1;
-  --shadow: 0 1px 2px rgb(12 42 62 / 0.06), 0 8px 24px -12px rgb(12 42 62 / 0.18);
+  --shadow: 0 2px 4px rgb(12 42 62 / 0.06), 0 12px 24px -8px rgb(12 42 62 / 0.18), 0 40px 80px -24px rgb(11 111 149 / 0.32);
+  /* Élévations : ombres en plusieurs couches, teintées marine/eau, + liseré clair en haut */
+  --e1: 0 1px 2px rgb(12 42 62 / 0.06), 0 2px 6px -2px rgb(12 42 62 / 0.08);
+  --e2: 0 1px 2px rgb(12 42 62 / 0.05), 0 6px 14px -6px rgb(12 42 62 / 0.12), 0 22px 40px -22px rgb(11 111 149 / 0.28);
+  --hl: inset 0 1px 0 rgb(255 255 255 / 0.9);
+  --page: linear-gradient(180deg, #eef4f7 0%, #f4f8fa 420px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,7 +78,11 @@
     --pool-deep: #06384a;
     --pool-mid: #0a5873;
     --pool-light: #12809f;
-    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+    --shadow: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 32px -10px rgb(0 0 0 / 0.55), 0 40px 80px -24px rgb(0 0 0 / 0.6);
+    --e1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --e2: 0 1px 2px rgb(0 0 0 / 0.35), 0 10px 24px -10px rgb(0 0 0 / 0.55);
+    --hl: inset 0 1px 0 rgb(255 255 255 / 0.05);
+    --page: linear-gradient(180deg, #081822 0%, #07141d 420px);
   }
 }
 
@@ -101,11 +115,15 @@
   --pool-deep: #06384a;
   --pool-mid: #0a5873;
   --pool-light: #12809f;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  --shadow: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 32px -10px rgb(0 0 0 / 0.55), 0 40px 80px -24px rgb(0 0 0 / 0.6);
+  --e1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --e2: 0 1px 2px rgb(0 0 0 / 0.35), 0 10px 24px -10px rgb(0 0 0 / 0.55);
+  --hl: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --page: linear-gradient(180deg, #081822 0%, #07141d 420px);
 }
 
 @theme inline {
-  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -134,6 +152,8 @@
   --color-pool-mid: var(--pool-mid);
   --color-pool-light: var(--pool-light);
   --shadow-float: var(--shadow);
+  --shadow-e1: var(--e1);
+  --shadow-e2: var(--e2);
   --ease-swim: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -143,11 +163,12 @@
     scroll-behavior: smooth;
   }
   body {
-    background: var(--bg);
+    background: var(--page), var(--bg);
+    background-repeat: no-repeat;
     color: var(--ink);
     font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 16.5px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "kern", "liga";
   }
@@ -158,7 +179,7 @@
   :focus-visible {
     outline: 2px solid var(--water-bright);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
   input, select, textarea, button {
     font: inherit;
@@ -172,41 +193,85 @@
 }
 
 @layer components {
-  /* Titres « tableau d'affichage » : Archivo condensé, très gras. */
+  /* Titres : Barlow, gras, interlettrage serré */
   .display {
-    font-stretch: 68%;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
   }
   .display-md {
-    font-stretch: 78%;
-    font-weight: 750;
-    letter-spacing: -0.005em;
-    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.06;
   }
   .num {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }
 
-  /* Ligne de nage : flotteurs alternés sur leur câble, comme en bassin. */
-  .lane-rope {
-    --float: 9px;
-    --float-light: #ffffff;
-    height: var(--float);
-    background-image:
-      radial-gradient(circle at center, var(--rope-bright) 0 calc(var(--float) / 2 - 0.5px), transparent calc(var(--float) / 2)),
-      radial-gradient(circle at center, var(--float-light) 0 calc(var(--float) / 2 - 0.5px), transparent calc(var(--float) / 2)),
-      radial-gradient(circle at center, var(--water-bright) 0 calc(var(--float) / 2 - 0.5px), transparent calc(var(--float) / 2)),
-      linear-gradient(var(--rope-cable, rgb(12 42 62 / 0.25)), var(--rope-cable, rgb(12 42 62 / 0.25)));
-    background-size: calc(var(--float) * 6) var(--float), calc(var(--float) * 6) var(--float), calc(var(--float) * 6) var(--float), 100% 1px;
-    background-position: 0 0, calc(var(--float) * 2) 0, calc(var(--float) * 4) 0, 0 50%;
-    background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+  /* Surfaces en relief */
+  .elev-1 { box-shadow: var(--hl), var(--e1); }
+  .elev-2 { box-shadow: var(--hl), var(--e2); }
+  .elev-3 { box-shadow: var(--hl), var(--shadow); }
+
+  /* Action secondaire en lien souligné */
+  .link-action {
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    text-decoration-color: var(--water-bright);
+    transition: text-decoration-color var(--dur-2), text-underline-offset var(--dur-2), color var(--dur-2);
   }
-  /* Sur fond clair, le flotteur blanc prend un gris d'eau pour rester visible. */
-  .lane-rope-on-light {
-    --float-light: var(--line-strong);
+  .link-action:hover { text-decoration-color: currentColor; text-underline-offset: 4px; }
+
+  /* Section « eau profonde » : fond marine-sarcelle, lumière de surface, grain.
+     .on-deep reprend seulement les couleurs (en-tête posé sur le héros). */
+  .deep, .on-deep {
+    --ink: #f2f8fa;
+    --ink-2: #c6d8e0;
+    --muted: #a3bccb;
+    --line: rgb(255 255 255 / 0.14);
+    --line-strong: rgb(255 255 255 / 0.28);
+    --water: #6fd5ee;
+    --water-bright: #3cc4e4;
+    --btn: #3cc4e4;
+    --btn-ink: #04212c;
+    --btn-hover: #7adcf2;
+    --surface: #0f2c3d;
+    --surface-2: rgb(255 255 255 / 0.08);
+    color: var(--ink);
+  }
+  .deep {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(70% 55% at 78% -10%, rgb(60 196 228 / 0.28), transparent 70%),
+      radial-gradient(50% 40% at 10% 110%, rgb(11 143 179 / 0.25), transparent 70%),
+      linear-gradient(180deg, #0a2131 0%, #0c3244 58%, #0e465a 100%);
+  }
+  .deep::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: repeating-linear-gradient(105deg, transparent 0 70px, rgb(255 255 255 / 0.045) 70px 130px, transparent 130px 210px);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
+    filter: blur(10px);
+    animation: shafts 26s linear infinite alternate;
+  }
+  .deep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
@@ -234,13 +299,10 @@
 @keyframes pop-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.96); opacity: 0; } }
 @keyframes toast-out { to { opacity: 0; transform: translateY(8px) scale(0.98); } }
 @keyframes word-up { from { transform: translateY(105%); } to { transform: none; } }
-@keyframes pool-fill { from { clip-path: inset(0 100% 0 0 round 14px); } to { clip-path: inset(0 0 0 0 round 14px); } }
-@keyframes rope-in { from { transform: translateX(-24px); opacity: 0; } to { transform: none; opacity: 0.9; } }
-@keyframes rope-drift { from { background-position-x: 0, calc(var(--float) * 2), calc(var(--float) * 4), 0; } to { background-position-x: calc(var(--float) * 6), calc(var(--float) * 8), calc(var(--float) * 10), 0; } }
-@keyframes lane-card-in { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
-@keyframes caustics { 0% { transform: translate3d(-4%, -3%, 0) scale(1.05); } 50% { transform: translate3d(3%, 2%, 0) scale(1.12); } 100% { transform: translate3d(-4%, -3%, 0) scale(1.05); } }
-@keyframes swim-along { from { left: 0; } to { left: calc(100% - 28px); } }
-@keyframes step-light { to { background: var(--water-bright); color: #04212c; transform: scale(1.06); } }
+@keyframes step-light { to { background: var(--btn); color: var(--btn-ink); } }
+@keyframes track-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes shafts { from { background-position: 0 0; } to { background-position: 240px 0; } }
+@keyframes card-in { from { opacity: 0; translate: 0 26px; scale: 0.97; } to { opacity: 1; translate: 0 0; scale: 1; } }
 @keyframes draw { from { stroke-dashoffset: var(--len, 200); } to { stroke-dashoffset: 0; } }
 @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
 @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(240 86 63 / 0.45); } 100% { box-shadow: 0 0 0 8px rgb(240 86 63 / 0); } }
@@ -279,44 +341,14 @@
   .logo-dot { transition: transform var(--dur-3) var(--ease-spring); }
   .logo-link:hover .logo-mark:not(.logo-anim) .logo-dot { transform: translateX(-2.5px); }
 
-  /* Bassin du héros : se remplit, les lignes s'installent, les créneaux arrivent */
-  .pool-animated:not([data-play]) .pool-water { clip-path: inset(0 100% 0 0 round 14px); }
-  .pool-animated:not([data-play]) :is(.pool-card, .pool-block) { opacity: 0; }
-  .pool-animated[data-play] .pool-water { animation: pool-fill 1000ms var(--ease-in-out) both; }
-  .pool-animated[data-play] .pool-water .lane-rope {
-    animation: rope-in 700ms var(--ease-out) both, rope-drift 16s linear infinite;
-    animation-delay: calc(250ms + var(--i, 0) * 70ms), 1600ms;
-  }
-  .pool-animated[data-play] :is(.pool-card, .pool-block) {
-    animation: lane-card-in 620ms var(--ease-out) both;
-    animation-delay: calc(700ms + var(--i, 0) * 110ms);
-  }
-  .pool-caustics {
-    position: absolute;
-    inset: -20%;
-    pointer-events: none;
-    background:
-      radial-gradient(40% 30% at 30% 30%, rgb(255 255 255 / 0.16), transparent 70%),
-      radial-gradient(35% 25% at 70% 60%, rgb(255 255 255 / 0.12), transparent 70%),
-      radial-gradient(30% 22% at 45% 85%, rgb(255 255 255 / 0.10), transparent 70%);
-    mix-blend-mode: soft-light;
-    animation: caustics 16s var(--ease-in-out) infinite;
-  }
-  .rope-drift { animation: rope-drift 18s linear infinite; }
+  /* Héros : cartes produit qui arrivent l'une après l'autre */
+  .stage:not([data-play]) .stage-card { opacity: 0; }
+  .stage[data-play] .stage-card { animation: card-in 760ms var(--ease-out) both; animation-delay: calc(250ms + var(--i, 0) * 160ms); }
 
-  /* Parcours en 4 étapes : un nageur longe la ligne */
-  .swimmer-dot {
-    position: absolute;
-    top: 13px;
-    height: 18px;
-    width: 28px;
-    border-radius: 999px;
-    background: var(--water-bright);
-    box-shadow: 0 0 0 4px var(--surface);
-    left: 0;
-  }
-  [data-shown] > .swimmer-dot { animation: swim-along 2600ms linear 300ms both; }
-  [data-shown] .step-num { animation: step-light 300ms var(--ease-out) both; animation-delay: calc(300ms + var(--i) * 690ms); }
+  /* Parcours en 4 étapes : la ligne se remplit, les numéros s'allument */
+  .steps-fill { transform: scaleX(0); transform-origin: left; }
+  [data-shown] .steps-fill { animation: track-fill 2400ms var(--ease-in-out) 300ms both; }
+  [data-shown] .step-num { animation: step-light 300ms var(--ease-out) both; animation-delay: calc(300ms + var(--i) * 700ms); }
 
   /* Entrée du héros */
   .hero-in { animation: rise 700ms var(--ease-out) both; }
@@ -332,10 +364,6 @@
     will-change: transform, width;
   }
 
-  /* Boutons : léger enfoncement au clic */
-  .press { transition-property: color, background-color, border-color, box-shadow, transform, filter; }
-  .press:active:not(:disabled) { transform: scale(0.97); }
-
   .badge-bump { animation: bump 420ms var(--ease-spring); }
   .live-dot { animation: pulse-ring 1.6s var(--ease-out) infinite; }
 
@@ -349,31 +377,31 @@
   }
   .range::-webkit-slider-runnable-track {
     height: 6px;
-    border-radius: 999px;
+    border-radius: 2px;
     background: linear-gradient(to right, var(--water-bright) var(--fill), var(--line) var(--fill));
   }
-  .range::-moz-range-track { height: 6px; border-radius: 999px; background: var(--line); }
-  .range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--water-bright); }
+  .range::-moz-range-track { height: 6px; border-radius: 2px; background: var(--line); }
+  .range::-moz-range-progress { height: 6px; border-radius: 2px; background: var(--water-bright); }
   .range::-webkit-slider-thumb {
     -webkit-appearance: none;
     margin-top: -9px;
-    width: 24px;
-    height: 24px;
-    border-radius: 999px;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
     background: var(--surface);
     border: 3px solid var(--water-bright);
     box-shadow: 0 2px 8px -2px rgb(12 42 62 / 0.35);
     transition: transform var(--dur-2) var(--ease-spring);
   }
   .range::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 999px;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
     background: var(--surface);
     border: 3px solid var(--water-bright);
   }
   .range:active::-webkit-slider-thumb { transform: scale(1.15); }
-  .range:focus-visible { outline-offset: 3px; border-radius: 999px; }
+  .range:focus-visible { outline-offset: 3px; border-radius: 4px; }
 
   /* FAQ : ouverture fluide (navigateurs récents), instantanée ailleurs */
   .faq::details-content {
@@ -399,6 +427,6 @@
     scroll-behavior: auto !important;
   }
   .reveal { opacity: 1; transform: none; }
-  .pool-caustics, .rope-drift { animation: none !important; }
+  .deep::before { animation: none !important; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

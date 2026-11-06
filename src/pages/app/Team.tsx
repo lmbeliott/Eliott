@@ -61,7 +61,7 @@ function Members() {
           const role = roles.find((r) => r.id === membership.roleId)
           return (
             <li key={user.id}>
-              <button type="button" onClick={() => setEditing(user)} className="flex w-full items-start gap-3.5 rounded-2xl border border-line bg-surface p-4 text-left transition-colors hover:border-water-bright">
+              <button type="button" onClick={() => setEditing(user)} className="flex w-full items-start gap-3.5 rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-water-bright">
                 <Avatar name={fullName(user)} size={40} />
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-2 font-semibold text-ink">
