@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Route, Routes, useSearchParams } from 'react-router-dom'
+import { Link, Route, Routes, useSearchParams } from 'react-router-dom'
 import { AlertTriangle, CalendarPlus, FileUp, Lock, Pencil, Plus, Trash2, Upload, Waves } from 'lucide-react'
 import {
   Badge, Button, ButtonLink, Drawer, EmptyState, Field, FormError, IconButton, Input, LevelDot, PageHeader, Panel, Select, Table, Tabs,
@@ -98,7 +98,7 @@ function Slots() {
       {missing.length > 0 && (
         <div className="mb-5 flex gap-3 rounded-xl border border-buoy-bright/40 bg-buoy-soft p-4 text-[15px] text-ink">
           <AlertTriangle aria-hidden className="mt-0.5 size-5 shrink-0 text-buoy" />
-          <p>Avant de planifier, créez {missing.map((m, i) => <span key={m.to}>{i > 0 && ' et '}<a href={m.to} className="font-semibold underline underline-offset-2">{m.label}</a></span>)}. Les éducateurs doivent aussi avoir rejoint le club.</p>
+          <p>Avant de planifier, créez {missing.map((m, i) => <span key={m.to}>{i > 0 && ' et '}<Link to={m.to} className="font-semibold underline underline-offset-2">{m.label}</Link></span>)}. Les éducateurs doivent aussi avoir rejoint le club.</p>
         </div>
       )}
 

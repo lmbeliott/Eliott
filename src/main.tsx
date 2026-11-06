@@ -16,8 +16,9 @@ initStore().then(() => {
   )
 })
 
-if (import.meta.env.PROD && 'serviceWorker' in navigator && import.meta.env.BASE_URL === '/') {
+if (import.meta.env.PROD && 'serviceWorker' in navigator && import.meta.env.VITE_HASH_ROUTER !== '1') {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => { /* hors ligne non disponible */ })
+    const base = import.meta.env.BASE_URL
+    navigator.serviceWorker.register(`${base}sw.js`, { scope: base }).catch(() => { /* hors ligne non disponible */ })
   })
 }

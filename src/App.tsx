@@ -66,6 +66,9 @@ function Root() {
 
 const createRouter = import.meta.env.VITE_HASH_ROUTER === '1' ? createHashRouter : createBrowserRouter
 
+// Sous-dossier de déploiement (ex. GitHub Pages : /Eliott/), sans la barre finale.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
+
 const router = createRouter([
   {
     element: <Root />,
@@ -101,7 +104,7 @@ const router = createRouter([
       { path: '*', element: <NotFound /> },
     ],
   },
-])
+], { basename: import.meta.env.VITE_HASH_ROUTER === '1' ? undefined : basename })
 
 export default function App() {
   return <RouterProvider router={router} />
