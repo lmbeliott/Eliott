@@ -16,11 +16,16 @@ export default function Billing() {
   const toast = useToast()
   const [cap, setCap] = useState(String(ctx.club.capacity))
   const [error, setError] = useState<string | null>(null)
-  if (!ctx.isAdmin) return <NoAccess what="l'abonnement du club" />
+  if (!ctx.isAdmin) return <NoAccess adminOnly what="l'abonnement du club" />
 
   const used = approvedMembers(db, ctx.club.id).length
-  const promoEnd = new Date(ctx.club.subscribedAt)
+  // Fin de l'offre : même quantième PROMO_MONTHS mois plus tard, ramené au dernier jour du mois
+  // si besoin (31 août → 28 février, et non 3 mars).
+  const start = new Date(ctx.club.subscribedAt)
+  const promoEnd = new Date(start)
+  promoEnd.setDate(1)
   promoEnd.setMonth(promoEnd.getMonth() + PROMO_MONTHS)
+  promoEnd.setDate(Math.min(start.getDate(), new Date(promoEnd.getFullYear(), promoEnd.getMonth() + 1, 0).getDate()))
   const inPromo = promoEnd.getTime() > Date.now()
   const q = quote(used, inPromo)
   const pct = Math.min(100, Math.round((used / ctx.club.capacity) * 100))

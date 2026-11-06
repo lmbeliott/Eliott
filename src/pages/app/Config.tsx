@@ -9,10 +9,10 @@ import { useAppCtx } from '../../data/hooks'
 import { useWholeDB } from '../../data/store'
 import {
   approvedMembers, deleteCreneau, deleteGroupe, deleteNiveau, deletePiscine, fullName, hasValidQualification, IMPORT_COLUMNS,
-  importSchedule, saveCreneau, saveGroupe, saveNiveau, savePiscine, slotConflicts, type ImportReport, type SlotInput,
+  importSchedule, saveCreneau, saveGroupe, saveNiveau, savePiscine, slotConflicts, staleAbsences, type ImportReport, type SlotInput,
 } from '../../data/api'
-import { DAYS, DAYS_SHORT, fmtRange, minutes, nextOccurrences } from '../../lib/dates'
-import { download, parseTable, toCSV } from '../../lib/csv'
+import { DAYS, DAYS_SHORT, fmtRange, fmtShort, minutes, nextOccurrences } from '../../lib/dates'
+import { download, parseRows, toCSV } from '../../lib/csv'
 import { cn, normalize, pluralize } from '../../lib/util'
 import type { Creneau, Groupe, Piscine, Weekday } from '../../data/types'
 import { LEVEL_COLORS } from '../../data/seed'
@@ -39,11 +39,13 @@ export default function Config() {
   )
 }
 
-export function NoAccess({ what }: { what: string }) {
+export function NoAccess({ what, adminOnly }: { what: string; adminOnly?: boolean }) {
   return (
     <div className="rounded-2xl border border-line bg-surface">
       <EmptyState icon={Lock} title="Accès réservé">
-        Votre rôle ne donne pas accès à {what}. Un administrateur du club peut vous l'attribuer depuis Équipe, Rôles.
+        {adminOnly
+          ? <>Cette page est réservée aux administrateurs du club. Un administrateur peut vous donner ce statut depuis Équipe, Membres.</>
+          : <>Votre rôle ne permet pas d'ouvrir {what}. Un administrateur du club peut vous attribuer un rôle qui le permet.</>}
       </EmptyState>
     </div>
   )
@@ -63,12 +65,13 @@ function Slots() {
   useEffect(() => {
     const id = params.get('modifier')
     if (id) {
-      const s = db.creneaux.find((c) => c.id === id)
+      // Uniquement un créneau du club courant (lien venu d'un autre onglet ou d'un autre club).
+      const s = db.creneaux.find((c) => c.id === id && c.clubId === ctx.club.id)
       if (s) setEditing(s)
       params.delete('modifier')
       setParams(params, { replace: true })
     }
-  }, [params, db.creneaux, setParams])
+  }, [params, db.creneaux, setParams, ctx.club.id])
 
   const clubId = ctx.club.id
   const pools = db.piscines.filter((p) => p.clubId === clubId)
@@ -177,13 +180,16 @@ function SlotForm({ slot, onClose }: { slot: Creneau | 'new' | null; onClose: ()
   const qual = db.qualifications.find((x) => x.id === group?.qualificationId)
   const members = approvedMembers(db, clubId).filter((m) => !q || normalize(fullName(m.user)).includes(normalize(q)))
   const conflicts = form.groupeId && minutes(form.end) > minutes(form.start) ? slotConflicts(db, clubId, form) : []
+  // Absences à venir que l'enregistrement annulera (jour changé ou éducateur absent retiré).
+  const stale = slot && slot !== 'new' ? staleAbsences(db, form) : []
   const nextDate = nextOccurrences(form.day, 1)[0]
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
     try {
       saveCreneau(form)
-      toast(slot === 'new' ? 'Créneau planifié. Les éducateurs affectés sont prévenus.' : 'Créneau mis à jour.')
+      // Seuls les autres éducateurs affectés reçoivent une notification.
+      toast(slot === 'new' ? (form.educatorIds.some((id) => id !== ctx.user.id) ? 'Créneau planifié. Les éducateurs affectés sont prévenus.' : 'Créneau planifié.') : 'Créneau mis à jour.')
       onClose()
     } catch (err) {
       setError((err as Error).message)
@@ -252,6 +258,15 @@ function SlotForm({ slot, onClose }: { slot: Creneau | 'new' | null; onClose: ()
           <div role="alert" className="flex gap-3 rounded-xl bg-rope-soft p-3.5 text-sm text-rope">
             <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0" />
             <div>{conflicts.map((c) => <p key={c}>{c}</p>)}</div>
+          </div>
+        )}
+        {stale.length > 0 && (
+          <div role="status" className="flex gap-3 rounded-xl border border-buoy-bright/40 bg-buoy-soft p-3.5 text-sm text-ink">
+            <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0 text-buoy" />
+            <p>
+              {stale.length > 1 ? `${stale.length} absences déclarées seront annulées` : "L'absence déclarée sera annulée"}
+              {' '}({stale.map((a) => `${fullName(db.users.find((u) => u.id === a.educatorId))}, ${fmtShort(a.date)}`).join(' ; ')}). Les personnes concernées seront prévenues.
+            </p>
           </div>
         )}
       </form>
@@ -365,7 +380,7 @@ function Groups() {
         <ul className="flex flex-wrap gap-2">
           {levels.map((l) => (
             <li key={l.id} className="inline-flex h-9 items-center gap-2 rounded-full border border-line bg-bg pl-2 pr-1">
-              <label className="relative inline-flex size-5 cursor-pointer items-center justify-center rounded-full" style={{ background: l.color }} title="Changer la couleur">
+              <label className="relative inline-flex size-5 cursor-pointer items-center justify-center rounded-full has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-bg" style={{ background: l.color }} title="Changer la couleur">
                 <span className="sr-only">Couleur de {l.name}</span>
                 <select className="absolute inset-0 cursor-pointer opacity-0" value={l.color} onChange={(e) => run(() => saveNiveau({ id: l.id, name: l.name, color: e.target.value }))}>
                   {LEVEL_COLORS.map((c, i) => <option key={c} value={c}>Couleur {i + 1}</option>)}
@@ -374,7 +389,7 @@ function Groups() {
               <span className="text-sm font-semibold text-ink">{l.name}</span>
               <IconButton size="sm" label={`Supprimer le niveau ${l.name}`} icon={Trash2} className="size-7 hover:text-rope" onClick={async () => {
                 const used = groups.filter((g) => g.niveauId === l.id).length
-                if (await confirm({ title: `Supprimer le niveau ${l.name} ?`, body: used ? `${pluralize(used, 'groupe')} n'aura plus de niveau.` : undefined, confirmLabel: 'Supprimer le niveau' })) run(() => deleteNiveau(l.id), 'Niveau supprimé.')
+                if (await confirm({ title: `Supprimer le niveau ${l.name} ?`, body: used ? `${pluralize(used, 'groupe')} n'${used > 1 ? 'auront' : 'aura'} plus de niveau.` : undefined, confirmLabel: 'Supprimer le niveau' })) run(() => deleteNiveau(l.id), 'Niveau supprimé.')
               }} />
             </li>
           ))}
@@ -411,7 +426,7 @@ function Groups() {
                       <div className="flex justify-end gap-1">
                         <IconButton size="sm" label={`Modifier ${g.name}`} icon={Pencil} onClick={() => setEditing(g)} />
                         <IconButton size="sm" label={`Supprimer ${g.name}`} icon={Trash2} className="hover:text-rope" onClick={async () => {
-                          if (await confirm({ title: `Supprimer le groupe ${g.name} ?`, body: count ? `Ses ${pluralize(count, 'créneau', 'créneaux')} seront aussi supprimés.` : undefined, confirmLabel: 'Supprimer le groupe' })) run(() => deleteGroupe(g.id), 'Groupe supprimé.')
+                          if (await confirm({ title: `Supprimer le groupe ${g.name} ?`, body: count ? (count > 1 ? `Ses ${count} créneaux seront aussi supprimés.` : 'Son créneau sera aussi supprimé.') : undefined, confirmLabel: 'Supprimer le groupe' })) run(() => deleteGroupe(g.id), 'Groupe supprimé.')
                         }} />
                       </div>
                     </td>
@@ -490,8 +505,9 @@ function Import() {
   const [text, setText] = useState('')
   const [report, setReport] = useState<ImportReport | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const rows = useMemo(() => (text.trim() ? parseTable(text) : []), [text])
-  const header = rows[0]?.some((c) => ['piscine', 'groupe'].includes(normalize(c)))
+  // Numéros de ligne du tableur (lignes vides comprises) : le rapport d'import pointe la bonne ligne.
+  const rows = useMemo(() => (text.trim() ? parseRows(text) : []), [text])
+  const header = rows[0]?.cells.some((c) => ['piscine', 'groupe'].includes(normalize(c)))
   const body = header ? rows.slice(1) : rows
 
   const onFile = async (file: File) => {
@@ -520,10 +536,10 @@ function Import() {
           value={text}
           onChange={(e) => { setText(e.target.value); setReport(null); setError(null) }}
           placeholder={TEMPLATE.map((r) => r.join('\t')).join('\n')}
-          className="mt-2 h-44 w-full rounded-xl border border-line-strong bg-bg p-3 font-sans text-[13px] leading-relaxed text-ink placeholder:text-muted/70 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20"
+          className="mt-2 h-44 w-full rounded-xl border border-line-strong bg-bg p-3 font-sans text-[13px] leading-relaxed text-ink placeholder:text-muted focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20"
         />
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-line-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2">
+          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-line-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface">
             <FileUp aria-hidden className="size-4" />Choisir un fichier CSV
             <input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" className="sr-only" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
           </label>
@@ -536,7 +552,7 @@ function Import() {
             <Table>
               <thead><tr>{IMPORT_COLUMNS.map((c) => <th key={c}>{c}</th>)}</tr></thead>
               <tbody>
-                {body.slice(0, 6).map((r, i) => <tr key={i}>{IMPORT_COLUMNS.map((_, j) => <td key={j} className="text-ink-2">{r[j] ?? ''}</td>)}</tr>)}
+                {body.slice(0, 6).map((r) => <tr key={r.line}>{IMPORT_COLUMNS.map((_, j) => <td key={j} className="text-ink-2">{r.cells[j] ?? ''}</td>)}</tr>)}
               </tbody>
             </Table>
             {body.length > 6 && <p className="mt-2 text-[13px] text-muted">… et {pluralize(body.length - 6, 'autre ligne', 'autres lignes')}.</p>}
@@ -575,4 +591,4 @@ function Import() {
   )
 }
 
-const COLUMN_HINTS = ['', '', 'facultatif', 'lundi à dimanche', 'ex. 17:00 ou 17h', 'ex. 18:30', 'facultatif', 'séparés par des virgules']
+const COLUMN_HINTS = ['', '', 'facultatif', 'lundi à dimanche', 'ex. 17:00, 17h ou 17:00:00', 'ex. 18:30', 'facultatif', 'séparés par des virgules']

@@ -11,7 +11,7 @@ import { useAction, useConfirm } from './feedback'
 import { useAppCtx } from '../data/hooks'
 import { useWholeDB, resetStore } from '../data/store'
 import { absenceStatus, eligibility, fullName, leaveClubSelection, loginDemo, logout, markNotificationsRead } from '../data/api'
-import { DEMO_ADMIN_EMAIL, DEMO_EDUCATOR_EMAIL } from '../data/seed'
+import { DEMO_ADMIN_ID, DEMO_EDUCATOR_ID } from '../data/seed'
 import { cn } from '../lib/util'
 import type { Permission } from '../data/types'
 
@@ -23,7 +23,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [more, setMore] = useState(false)
   const [install, setInstall] = useState(false)
   const loc = useLocation()
-  useEffect(() => setMore(false), [loc.pathname])
+  // Toute navigation ferme le tiroir, y compris vers la page courante (même chemin, nouvelle clé).
+  useEffect(() => setMore(false), [loc.key])
 
   const counts = useMemo(() => {
     const clubAbs = db.absences.filter((a) => a.clubId === ctx.club.id && absenceStatus(db, a) === 'open')
@@ -221,19 +222,20 @@ function DemoBar() {
   const navigate = useNavigate()
   const run = useAction()
   const confirm = useConfirm()
-  const isEducator = ctx.user.email === DEMO_EDUCATOR_EMAIL
-  const switchTo = (email: string) => run(async () => { await loginDemo(email); navigate('/app') }, email === DEMO_ADMIN_EMAIL ? 'Vous voyez le club comme Camille, responsable.' : 'Vous voyez le club comme Léa, éducatrice.')
+  // Par identifiant : l'e-mail peut avoir été modifié dans Mon compte.
+  const isEducator = ctx.user.id === DEMO_EDUCATOR_ID
+  const switchTo = (id: string) => run(async () => { await loginDemo(id); navigate('/app') }, id === DEMO_ADMIN_ID ? 'Vous voyez le club comme Camille, responsable.' : 'Vous voyez le club comme Léa, éducatrice.')
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-[#0c2a3e] px-4 py-2 text-[13px] text-[#cfe3ec] sm:px-6 lg:px-8">
       <p><span className="font-semibold text-white">Mode démo.</span> Les données restent dans ce navigateur.</p>
       <div className="flex items-center gap-3">
-        <button type="button" onClick={() => switchTo(isEducator ? DEMO_ADMIN_EMAIL : DEMO_EDUCATOR_EMAIL)} className="font-semibold text-[#7fdcf2] hover:underline">
+        <button type="button" onClick={() => switchTo(isEducator ? DEMO_ADMIN_ID : DEMO_EDUCATOR_ID)} className="font-semibold text-[#7fdcf2] hover:underline">
           {isEducator ? 'Voir comme responsable' : 'Voir comme éducatrice'}
         </button>
         <button type="button" onClick={async () => {
-          if (await confirm({ title: 'Réinitialiser la démo ?', body: 'Toutes vos modifications seront effacées et les données d’exemple restaurées.', confirmLabel: 'Réinitialiser' })) {
-            await resetStore(); await loginDemo(ctx.user.email); navigate('/app')
-          }
+          if (!(await confirm({ title: 'Réinitialiser la démo ?', body: 'Les données du club de démonstration seront restaurées et vos modifications de la démo effacées. Les comptes et clubs créés en dehors de la démo sont conservés.', confirmLabel: 'Réinitialiser' }))) return
+          const back = isEducator ? DEMO_EDUCATOR_ID : DEMO_ADMIN_ID
+          await run(async () => { await resetStore(); await loginDemo(back); navigate('/app') }, 'Démo réinitialisée.')
         }} className="inline-flex items-center gap-1 font-semibold text-[#7fdcf2] hover:underline">
           <RotateCcw aria-hidden className="size-3.5" />Réinitialiser
         </button>
@@ -274,7 +276,7 @@ function Notifications() {
         {unread.length > 0 && <span key={unread.length} className="badge-bump absolute right-2 top-2 size-2.5 rounded-full bg-rope-bright ring-2 ring-bg" />}
       </button>
       {open && (
-        <div className="absolute right-0 top-12 z-40 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">
+        <div className="absolute -right-11 top-12 z-40 lg:right-0 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <p className="font-bold text-ink">Notifications</p>
             {unread.length > 0 && <button type="button" className="text-[13px] font-semibold text-water hover:underline" onClick={() => markNotificationsRead(unread.map((n) => n.id))}>Tout marquer comme lu</button>}

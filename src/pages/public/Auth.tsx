@@ -4,9 +4,10 @@ import { Eye, EyeOff, MailCheck } from 'lucide-react'
 import { Logo } from '../../components/Logo'
 import { PoolScene } from '../../components/PoolScene'
 import { Button, Checkbox, Field, FormError, Input } from '../../components/ui'
+import { useAction } from '../../components/feedback'
 import { login, loginDemo, register } from '../../data/api'
 import { getSession } from '../../data/store'
-import { DEMO_ADMIN_EMAIL, DEMO_EDUCATOR_EMAIL, DEMO_PASSWORD } from '../../data/seed'
+import { DEMO_ADMIN_EMAIL, DEMO_ADMIN_ID, DEMO_EDUCATOR_ID, DEMO_PASSWORD } from '../../data/seed'
 
 function AuthLayout({ title, intro, children }: { title: string; intro?: ReactNode; children: ReactNode }) {
   return (
@@ -45,6 +46,9 @@ function PasswordInput({ id, value, onChange, autoComplete, invalid, describedBy
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+/** Page de retour après connexion (?suite=) : uniquement une adresse de l'application. */
+export const safeSuite = (s: string | null) => (s && (s === '/app' || s.startsWith('/app/') || s.startsWith('/app?')) ? s : null)
+
 export function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -52,10 +56,13 @@ export function Login() {
   const [busy, setBusy] = useState(false)
   const navigate = useNavigate()
   const [params] = useSearchParams()
+  const run = useAction()
 
+  // Avec plusieurs clubs, le choix du club passe d'abord par /clubs, qui garde la page demandée.
   const go = () => {
-    const next = params.get('suite')
-    navigate(next && next.startsWith('/app') && getSession()?.clubId ? next : getSession()?.clubId ? '/app' : '/clubs', { replace: true })
+    const next = safeSuite(params.get('suite'))
+    const s = getSession()
+    navigate(s?.clubId ? (next ?? '/app') : next ? `/clubs?suite=${encodeURIComponent(next)}` : '/clubs', { replace: true })
   }
 
   const submit = async (e: FormEvent) => {
@@ -72,10 +79,10 @@ export function Login() {
     }
   }
 
-  const demo = async (who: string) => {
+  const demo = (who: string) => run(async () => {
     await loginDemo(who)
     navigate('/app', { replace: true })
-  }
+  })
 
   return (
     <AuthLayout title="Se connecter" intro="Retrouvez vos plannings et vos remplacements.">
@@ -84,9 +91,14 @@ export function Login() {
         <Field label="E-mail" htmlFor="email">
           <Input id="email" type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(null) }} required />
         </Field>
-        <Field label={<span className="flex items-center justify-between">Mot de passe<Link to="/mot-de-passe-oublie" className="text-[13px] font-semibold text-water hover:underline">Mot de passe oublié ?</Link></span>} htmlFor="password">
+        {/* Le lien reste à côté du libellé, hors du <label> : sinon il s'ajoute au nom du champ. */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <label htmlFor="password" className="text-sm font-semibold text-ink">Mot de passe</label>
+            <Link to="/mot-de-passe-oublie" className="text-[13px] font-semibold text-water hover:underline">Mot de passe oublié ?</Link>
+          </div>
           <PasswordInput id="password" value={password} onChange={(v) => { setPassword(v); setError(null) }} autoComplete="current-password" />
-        </Field>
+        </div>
         <Button type="submit" size="lg" full disabled={busy}>{busy ? 'Connexion…' : 'Se connecter'}</Button>
       </form>
       <p className="mt-6 text-center text-[15px] text-ink-2">
@@ -97,8 +109,8 @@ export function Login() {
         <p className="font-semibold text-ink">Explorer la démo</p>
         <p className="mt-1 text-[13px] text-muted">Un club fictif avec deux piscines, huit éducateurs et des absences en cours. Rien n'est envoyé.</p>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <Button variant="secondary" onClick={() => demo(DEMO_ADMIN_EMAIL)}>Responsable de club</Button>
-          <Button variant="secondary" onClick={() => demo(DEMO_EDUCATOR_EMAIL)}>Éducatrice</Button>
+          <Button variant="secondary" onClick={() => demo(DEMO_ADMIN_ID)}>Responsable de club</Button>
+          <Button variant="secondary" onClick={() => demo(DEMO_EDUCATOR_ID)}>Éducatrice</Button>
         </div>
         <p className="mt-3 text-[12.5px] text-muted">Ou connectez-vous avec <span className="font-semibold text-ink-2">{DEMO_ADMIN_EMAIL}</span>, mot de passe <span className="font-semibold text-ink-2">{DEMO_PASSWORD}</span>.</p>
       </div>

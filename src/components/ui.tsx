@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useId, useLayoutEffect, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import { createContext, forwardRef, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, NavLink, useLocation, type LinkProps } from 'react-router-dom'
 import { X, type LucideIcon } from 'lucide-react'
@@ -66,17 +66,29 @@ export function IconButton({ label, icon: Icon, className, size = 'md', ...rest 
 
 // ---------------------------------------------------------------- formulaires
 
-const control = 'w-full rounded-lg border border-line-strong bg-surface px-3 text-[15px] text-ink placeholder:text-muted/80 transition-colors hover:border-ink-2/50 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20 disabled:bg-surface-2 disabled:text-muted aria-[invalid=true]:border-rope'
+const control = 'w-full rounded-lg border border-field-line bg-surface px-3 text-[15px] text-ink placeholder:text-muted transition-colors hover:border-ink-2/80 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20 disabled:bg-surface-2 disabled:text-muted aria-[invalid=true]:border-rope'
+
+/** Relie l'aide ou l'erreur d'un `Field` à son contrôle (`aria-describedby`), sans rien changer chez l'appelant. */
+const FieldDesc = createContext<{ forId?: string; descId?: string }>({})
+
+/** `aria-describedby` du contrôle : celui passé explicitement, sinon l'aide/erreur du `Field` qui le cible (même id). */
+function useDescribedBy(id: string | undefined, explicit: string | undefined) {
+  const { forId, descId } = useContext(FieldDesc)
+  return explicit ?? (id && id === forId ? descId : undefined)
+}
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className, ...rest }, ref) {
-  return <input ref={ref} className={cn(control, 'h-11', className)} {...rest} />
+  const describedBy = useDescribedBy(rest.id, rest['aria-describedby'])
+  return <input ref={ref} className={cn(control, 'h-11', className)} {...rest} aria-describedby={describedBy} />
 })
 
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(function Select({ className, children, ...rest }, ref) {
+  const describedBy = useDescribedBy(rest.id, rest['aria-describedby'])
   return (
     <select ref={ref} className={cn(control, 'h-11 pr-9 appearance-none bg-[length:16px] bg-[right_10px_center] bg-no-repeat', className)}
-      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23557080' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
+      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234d6878' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
       {...rest}
+      aria-describedby={describedBy}
     >
       {children}
     </select>
@@ -84,20 +96,22 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
 })
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea({ className, ...rest }, ref) {
-  return <textarea ref={ref} className={cn(control, 'py-2.5 min-h-24 leading-relaxed', className)} {...rest} />
+  const describedBy = useDescribedBy(rest.id, rest['aria-describedby'])
+  return <textarea ref={ref} className={cn(control, 'py-2.5 min-h-24 leading-relaxed', className)} {...rest} aria-describedby={describedBy} />
 })
 
 export function Field({ label, hint, error, optional, children, className, htmlFor }: {
   label: ReactNode; hint?: ReactNode; error?: string | null; optional?: boolean; children: ReactNode; className?: string; htmlFor?: string
 }) {
+  const descId = htmlFor && (error || hint) ? `${htmlFor}-desc` : undefined
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <label htmlFor={htmlFor} className="text-sm font-semibold text-ink">
         {label}
         {optional && <span className="ml-1.5 font-normal text-muted">(facultatif)</span>}
       </label>
-      {children}
-      {error ? <p role="alert" className="text-[13px] text-rope">{error}</p> : hint ? <p className="text-[13px] text-muted">{hint}</p> : null}
+      <FieldDesc.Provider value={{ forId: htmlFor, descId }}>{children}</FieldDesc.Provider>
+      {error ? <p id={descId} role="alert" className="text-[13px] text-rope">{error}</p> : hint ? <p id={descId} className="text-[13px] text-muted">{hint}</p> : null}
     </div>
   )
 }
@@ -171,6 +185,16 @@ export function Panel({ title, description, actions, children, className, bodyCl
       <div className={cn(title || actions ? 'px-5 pb-5 sm:px-6' : 'p-5 sm:p-6', bodyClassName)}>{children}</div>
     </section>
   )
+}
+
+const APP_NAME = 'SwimHub Connect'
+const DEFAULT_TITLE = `${APP_NAME} — plannings et remplacements pour clubs de natation`
+
+/** Titre de l'onglet (« Planning · SwimHub Connect ») ; sans titre, celui de l'accueil. */
+export function useDocumentTitle(title?: string) {
+  useEffect(() => {
+    document.title = title ? `${title} · ${APP_NAME}` : DEFAULT_TITLE
+  }, [title])
 }
 
 export function PageHeader({ title, description, actions, children }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; children?: ReactNode }) {
@@ -322,7 +346,10 @@ export function Drawer({ open, onClose, title, description, children, footer, wi
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const t = setTimeout(() => {
-      const first = panel.current?.querySelector<HTMLElement>('input:not([type=hidden]), select, textarea, button:not([data-close])')
+      // Premier champ actif (jamais un bouton : une action, parfois destructive, ne doit pas être présélectionnée),
+      // sinon le panneau lui-même. `data-autofocus` permet de choisir explicitement.
+      const first = panel.current?.querySelector<HTMLElement>('[data-autofocus]')
+        ?? panel.current?.querySelector<HTMLElement>('input:not([type=hidden]):not(:disabled), select:not(:disabled), textarea:not(:disabled)')
       ;(first ?? panel.current)?.focus()
     }, 30)
     const onKey = (e: KeyboardEvent) => {
@@ -375,10 +402,13 @@ export function Drawer({ open, onClose, title, description, children, footer, wi
 export function trapTab(e: KeyboardEvent, root: HTMLElement) {
   const nodes = [...root.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
     .filter((n) => n.offsetParent !== null)
-  if (!nodes.length) return
+  if (!nodes.length) { e.preventDefault(); root.focus(); return }
   const first = nodes[0]; const last = nodes[nodes.length - 1]
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
-  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+  const active = document.activeElement
+  // Focus resté derrière la fenêtre (ou sur le panneau lui-même) : on le ramène dedans.
+  if (!active || active === root || !root.contains(active)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); return }
+  if (e.shiftKey && active === first) { e.preventDefault(); last.focus() }
+  else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus() }
 }
 
 /** Point de couleur du niveau (bande de couloir). */

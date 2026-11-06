@@ -59,7 +59,6 @@ function Members() {
         {members.map(({ user, membership }) => {
           const quals = db.userQualifications.filter((uq) => uq.userId === user.id)
           const role = roles.find((r) => r.id === membership.roleId)
-          const warn = quals.some((uq) => expiryInfo(uq.expiresOn).tone === 'rope' || expiryInfo(uq.expiresOn).tone === 'buoy')
           return (
             <li key={user.id}>
               <button type="button" onClick={() => setEditing(user)} className="flex w-full items-start gap-3.5 rounded-2xl border border-line bg-surface p-4 text-left transition-colors hover:border-water-bright">
@@ -71,15 +70,15 @@ function Members() {
                     {role && <Badge>{role.name}</Badge>}
                   </p>
                   <p className="truncate text-sm text-muted">{user.email}</p>
+                  {user.phone && <p className="truncate text-sm text-muted num">{user.phone}</p>}
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {quals.length === 0 ? <span className="text-[13px] text-muted">Aucun diplôme renseigné</span> : quals.map((uq) => {
                       const qq = db.qualifications.find((x) => x.id === uq.qualificationId)
                       const tone = expiryInfo(uq.expiresOn).tone
-                      return <Badge key={uq.id} tone={tone === 'kelp' || tone === 'neutral' ? 'neutral' : tone}>{qq?.short}</Badge>
+                      return <Badge key={uq.id} tone={tone === 'kelp' || tone === 'neutral' ? 'neutral' : tone}>{qq?.short}{tone === 'rope' ? ', expiré' : tone === 'buoy' ? ', à recycler' : ''}</Badge>
                     })}
                   </div>
                 </div>
-                {warn && <span className="sr-only">Un diplôme est expiré ou à recycler</span>}
               </button>
             </li>
           )
@@ -108,8 +107,8 @@ function MemberDrawer({ user, onClose }: { user: User | null; onClose: () => voi
   const selectedQual = db.qualifications.find((q) => q.id === qualId)
 
   return (
-    <Drawer open onClose={onClose} title={fullName(user)} description={user.email} width={520}
-      footer={ctx.can('team') && !isSelf ? (
+    <Drawer open onClose={onClose} title={fullName(user)} description={user.phone ? <>{user.email}, <a href={`tel:${user.phone.replace(/[^\d+]/g, '')}`} className="text-water hover:underline">{user.phone}</a></> : user.email} width={520}
+      footer={ctx.can('team') && !isSelf && (!membership.isAdmin || ctx.isAdmin) ? (
         <Button variant="ghost" icon={UserMinus} className="mr-auto text-rope" onClick={async () => {
           if (await confirm({ title: `Retirer ${fullName(user)} du club ?`, body: "Ses créneaux n'auront plus de titulaire et son accès au club sera fermé. Son compte personnel est conservé.", confirmLabel: 'Retirer du club' })) {
             run(() => { removeMember(user.id); onClose() }, `${fullName(user)} ne fait plus partie du club.`)
@@ -191,7 +190,7 @@ function Requests() {
   const requests = db.memberships.filter((m) => m.clubId === ctx.club.id && m.status === 'pending').sort((a, b) => a.requestedAt.localeCompare(b.requestedAt))
   const used = approvedMembers(db, ctx.club.id).length
   return (
-    <Panel title="Demandes d'adhésion" description={`${used} accès utilisés sur ${ctx.club.capacity}. Chaque membre accepté compte comme un accès.`}>
+    <Panel title="Demandes d'adhésion" description={`${used} accès utilisé${used > 1 ? 's' : ''} sur ${ctx.club.capacity}. Chaque membre accepté compte comme un accès.`}>
       {requests.length === 0 ? (
         <EmptyState compact icon={UserCheck} title="Aucune demande en attente">Partagez le nom exact du club à vos éducateurs : ils le trouveront après avoir créé leur compte.</EmptyState>
       ) : (
@@ -243,7 +242,7 @@ function Catalog() {
                       <div className="flex justify-end gap-1">
                         <IconButton size="sm" label={`Modifier ${q.short}`} icon={Pencil} onClick={() => setEditing(q)} />
                         <IconButton size="sm" label={`Supprimer ${q.short}`} icon={Trash2} className="hover:text-rope" onClick={async () => {
-                          if (await confirm({ title: `Supprimer ${q.short} du catalogue ?`, body: holders ? `Il sera retiré des ${pluralize(holders, 'profil')} qui le possèdent et des groupes qui l'exigent.` : undefined, confirmLabel: 'Supprimer le diplôme' })) run(() => deleteQualification(q.id), 'Diplôme supprimé.')
+                          if (await confirm({ title: `Supprimer ${q.short} du catalogue ?`, body: holders ? `Il sera retiré ${holders > 1 ? `des ${holders} profils qui le possèdent` : 'du profil qui le possède'} et des groupes qui l'exigent.` : undefined, confirmLabel: 'Supprimer le diplôme' })) run(() => deleteQualification(q.id), 'Diplôme supprimé.')
                         }} />
                       </div>
                     </td>
@@ -317,7 +316,7 @@ function Roles() {
                     <div className="flex gap-1">
                       <IconButton size="sm" label={`Modifier ${r.name}`} icon={Pencil} onClick={() => setEditing(r)} />
                       <IconButton size="sm" label={`Supprimer ${r.name}`} icon={Trash2} className="hover:text-rope" onClick={async () => {
-                        if (await confirm({ title: `Supprimer le rôle ${r.name} ?`, body: count ? `${pluralize(count, 'membre')} redeviendra simple éducateur.` : undefined, confirmLabel: 'Supprimer le rôle' })) run(() => deleteRole(r.id), 'Rôle supprimé.')
+                        if (await confirm({ title: `Supprimer le rôle ${r.name} ?`, body: count ? (count > 1 ? `${count} membres redeviendront simples éducateurs.` : '1 membre redeviendra simple éducateur.') : undefined, confirmLabel: 'Supprimer le rôle' })) run(() => deleteRole(r.id), 'Rôle supprimé.')
                       }} />
                     </div>
                   </div>

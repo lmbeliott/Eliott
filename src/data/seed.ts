@@ -2,10 +2,13 @@ import type { Absence, Creneau, DB, Groupe, Membership, Niveau, Piscine, Qualifi
 import { addDays, startOfWeek, today, toISO, weekday } from '../lib/dates'
 import { sha256 } from '../lib/util'
 
-export const SEED_VERSION = 4
+export const SEED_VERSION = 5
 export const DEMO_PASSWORD = 'demo1234'
 export const DEMO_ADMIN_EMAIL = 'camille.martin@demo.swimhub.fr'
 export const DEMO_EDUCATOR_EMAIL = 'lea.bernard@demo.swimhub.fr'
+/** Comptes de démo repérés par identifiant : l'e-mail peut être modifié dans Mon compte. */
+export const DEMO_ADMIN_ID = 'u_camille'
+export const DEMO_EDUCATOR_ID = 'u_lea'
 
 export const LEVEL_COLORS = ['#7a5ae0', '#0e9c8e', '#2f6fdb', '#e07a1f', '#d2478e', '#6f8f1e', '#0b8fb3', '#8a5a2b']
 
@@ -224,7 +227,7 @@ export async function createSeed(): Promise<DB> {
   const remplacements = [
     { id: 'rp_1', absenceId: 'a_hugo', volunteerId: 'u_chloe', status: 'pending' as const, createdAt: addDays(t, -1).toISOString() },
     { id: 'rp_2', absenceId: 'a_ines_past', volunteerId: 'u_lea', status: 'approved' as const, createdAt: addDays(t, -9).toISOString(), decidedAt: addDays(t, -8).toISOString() },
-    { id: 'rp_3', absenceId: 'a_theo_past', volunteerId: 'u_chloe', status: 'approved' as const, createdAt: addDays(t, -10).toISOString(), decidedAt: addDays(t, -9).toISOString() },
+    { id: 'rp_3', absenceId: 'a_theo_past', volunteerId: 'u_lea', status: 'approved' as const, createdAt: addDays(t, -10).toISOString(), decidedAt: addDays(t, -9).toISOString() },
     { id: 'rp_4', absenceId: 'a_lea', volunteerId: 'u_ines', status: 'pending' as const, createdAt: now },
   ]
 

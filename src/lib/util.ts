@@ -36,11 +36,13 @@ export function pluralize(n: number, one: string, many = `${one}s`) {
   return `${n} ${n === 1 ? one : many}`
 }
 
+/** 7.9999… → « 8 h », 1.25 → « 1 h 15 », −0.75 → « −0 h 45 ». Arrondi à la minute avant découpage. */
 export const fmtHours = (h: number) => {
-  const whole = Math.floor(h)
-  const min = Math.round((h - whole) * 60)
-  if (min === 0) return `${whole} h`
-  return `${whole} h ${String(min).padStart(2, '0')}`
+  const total = Math.round(Math.abs(h) * 60)
+  const sign = h < 0 && total > 0 ? '−' : ''
+  const whole = Math.floor(total / 60)
+  const min = total % 60
+  return min === 0 ? `${sign}${whole} h` : `${sign}${whole} h ${String(min).padStart(2, '0')}`
 }
 
 export function safeStorage() {

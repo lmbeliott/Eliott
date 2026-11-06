@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronRight, Clock, LogOut, Search } from 'lucide-react'
 import { Logo } from '../components/Logo'
 import { Badge, Button, EmptyState, Field, FormError, Input, Panel } from '../components/ui'
@@ -9,11 +9,13 @@ import { useCurrentUser } from '../data/hooks'
 import { useWholeDB } from '../data/store'
 import { BASE_PRICE, euros } from '../lib/pricing'
 import { normalize, pluralize } from '../lib/util'
+import { safeSuite } from './public/Auth'
 
 export default function ClubChoice() {
   const db = useWholeDB()
   const user = useCurrentUser()
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const run = useAction()
   const confirm = useConfirm()
   const [query, setQuery] = useState('')
@@ -30,7 +32,8 @@ export default function ClubChoice() {
 
   if (!user) return null
 
-  const open = (clubId: string) => run(() => { selectClub(clubId); navigate('/app') })
+  // Revient sur la page demandée avant la connexion (?suite=), sinon sur le tableau de bord.
+  const open = (clubId: string) => run(() => { selectClub(clubId); navigate(safeSuite(params.get('suite')) ?? '/app') })
   const create = async (e: FormEvent) => {
     e.preventDefault()
     setCreateError(null)

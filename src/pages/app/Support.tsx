@@ -22,13 +22,13 @@ export default function Support() {
     try {
       createTicket(subject, message)
       setSubject(''); setMessage('')
-      toast('Demande envoyée. Réponse sous 48 h ouvrées par e-mail.')
+      toast('Demande enregistrée.')
     } catch (err) { setError((err as Error).message) }
   }
 
   return (
     <>
-      <PageHeader title="Support" description="Un problème, une idée d'amélioration ? Écrivez-nous : chaque demande est lue par l'équipe SwimHub." />
+      <PageHeader title="Support" description="Un problème, une idée d'amélioration ? Décrivez-le ici." />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <Panel title="Nouvelle demande">
           <form onSubmit={submit} className="space-y-5" noValidate>
@@ -38,6 +38,7 @@ export default function Support() {
               <Textarea id="t-message" rows={6} value={message} onChange={(e) => { setMessage(e.target.value); setError(null) }} />
             </Field>
             <Button type="submit">Envoyer la demande</Button>
+            <p className="text-[13px] text-muted">Cette version fonctionne sans serveur : vos demandes restent dans ce navigateur et ne sont pas transmises à l'équipe SwimHub.</p>
           </form>
         </Panel>
         <Panel title="Mes demandes">

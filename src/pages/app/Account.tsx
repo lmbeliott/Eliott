@@ -2,17 +2,25 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Field, FormError, Input, PageHeader, Panel, Segmented } from '../../components/ui'
 import { ExpiryBadge } from '../../components/status'
-import { useConfirm, useToast } from '../../components/feedback'
+import { useAction, useConfirm, useToast } from '../../components/feedback'
 import { useAppCtx } from '../../data/hooks'
 import { resetStore, useWholeDB } from '../../data/store'
 import { changeEmail, changePassword, updateProfile } from '../../data/api'
 import { getTheme, setTheme, type ThemePref } from '../../lib/theme'
 
+// Les formulaires sont initialisés avec le profil courant : on les remonte si la session
+// change de compte (bascule de démo dans un autre onglet) pour ne jamais écrire sur le mauvais profil.
 export default function Account() {
+  const ctx = useAppCtx()
+  return <AccountBody key={ctx.user.id} />
+}
+
+function AccountBody() {
   const ctx = useAppCtx()
   const db = useWholeDB()
   const toast = useToast()
   const confirm = useConfirm()
+  const run = useAction()
   const navigate = useNavigate()
   const [profile, setProfile] = useState({ firstname: ctx.user.firstname, lastname: ctx.user.lastname, phone: ctx.user.phone ?? '' })
   const [profileErr, setProfileErr] = useState<string | null>(null)
@@ -99,7 +107,9 @@ export default function Account() {
             <Panel title="Données de démonstration">
               <p className="text-sm text-ink-2">Les données de la démo sont stockées dans ce navigateur uniquement.</p>
               <Button className="mt-3" variant="danger" onClick={async () => {
-                if (await confirm({ title: 'Réinitialiser la démo ?', body: 'Toutes vos modifications seront effacées.', confirmLabel: 'Réinitialiser la démo' })) { await resetStore(); navigate('/connexion') }
+                if (await confirm({ title: 'Réinitialiser la démo ?', body: 'Les données du club de démonstration seront restaurées et vos modifications de la démo effacées. Les comptes et clubs créés en dehors de la démo sont conservés.', confirmLabel: 'Réinitialiser la démo' })) {
+                  await run(async () => { await resetStore(); navigate('/connexion') })
+                }
               }}>Réinitialiser la démo</Button>
             </Panel>
           )}

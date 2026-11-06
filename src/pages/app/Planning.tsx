@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CalendarPlus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { AlertTriangle, CalendarPlus, Check, ChevronLeft, ChevronRight, UserX } from 'lucide-react'
 import { Button, ButtonLink, EmptyState, IconButton, LevelDot, PageHeader, Segmented, Select } from '../../components/ui'
 import { SessionDrawer } from '../../components/SessionDrawer'
 import { useAppCtx } from '../../data/hooks'
 import { useWholeDB } from '../../data/store'
 import { shortName } from '../../data/api'
 import { effectiveCoaches, involves, layoutColumns, occurrencesOn, type Occurrence } from '../../data/occurrences'
-import { addDays, DAYS_SHORT, fmtRange, fmtTime, fromISO, MONTHS, minutes, nowMinutes, startOfWeek, today, toISO, weekday } from '../../lib/dates'
-import { cn } from '../../lib/util'
+import { addDays, DAYS_SHORT, fmtLong, fmtRange, fmtTime, fromISO, MONTHS, minutes, nowMinutes, startOfWeek, today, toISO, weekday } from '../../lib/dates'
+import { cn, pluralize, ucfirst } from '../../lib/util'
 import type { Creneau } from '../../data/types'
 
 const PX_PER_MIN = 1.05
@@ -26,15 +26,25 @@ export default function Planning() {
     return () => mq.removeEventListener('change', on)
   }, [])
 
-  const focus = params.get('date') ? fromISO(params.get('date')!) : today()
+  // Un ?date= illisible (lien tronqué, saisie à la main) ramène à aujourd'hui.
+  const rawDate = params.get('date')
+  const parsed = rawDate && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? fromISO(rawDate) : null
+  const focus = parsed && !Number.isNaN(parsed.getTime()) ? parsed : today()
   // Sens de navigation : la semaine (ou le jour) suivante arrive par la droite.
-  const prevFocus = useRef(toISO(focus))
+  // Il ne change que lorsque la date affichée change, pas à chaque rendu.
   const focusISO = toISO(focus)
-  const dir = focusISO >= prevFocus.current ? 'next' : 'prev'
-  useEffect(() => { prevFocus.current = focusISO }, [focusISO])
+  const [nav, setNav] = useState<{ focus: string; dir: 'next' | 'prev' }>({ focus: focusISO, dir: 'next' })
+  let dir = nav.dir
+  if (nav.focus !== focusISO) {
+    dir = focusISO > nav.focus ? 'next' : 'prev'
+    setNav({ focus: focusISO, dir })
+  }
   const slideClass = dir === 'next' ? 'animate-[slide-from-right_340ms_var(--ease-out)]' : 'animate-[slide-from-left_340ms_var(--ease-out)]'
   const mineOnly = params.get('vue') === 'moi'
-  const pool = params.get('piscine') ?? ''
+  const pools = db.piscines.filter((p) => p.clubId === ctx.club.id)
+  // Une piscine supprimée ou d'un autre club (favori, retour arrière) ne filtre rien.
+  const rawPool = params.get('piscine') ?? ''
+  const pool = pools.some((p) => p.id === rawPool) ? rawPool : ''
   const [mode, setMode] = useState<'week' | 'day'>(wide ? 'week' : 'day')
   const effectiveMode = wide ? mode : 'day'
 
@@ -46,7 +56,6 @@ export default function Planning() {
 
   const weekStart = startOfWeek(focus)
   const days = Array.from({ length: 7 }, (_, i) => toISO(addDays(weekStart, i)))
-  const pools = db.piscines.filter((p) => p.clubId === ctx.club.id)
   const levels = db.niveaux.filter((n) => n.clubId === ctx.club.id)
 
   const byDay = useMemo(() => {
@@ -98,7 +107,7 @@ export default function Planning() {
       ) : (
         <DayView
           days={days}
-          focus={toISO(focus)}
+          focus={focusISO}
           byDay={byDay}
           me={ctx.user.id}
           onPick={(d) => set({ date: d })}
@@ -109,8 +118,9 @@ export default function Planning() {
       {levels.length > 0 && hasSlots && (
         <ul aria-label="Légende des niveaux" className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-ink-2">
           {levels.map((l) => <li key={l.id} className="inline-flex items-center gap-1.5"><LevelDot color={l.color} />{l.name}</li>)}
-          <li className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-sm bg-rope-bright" />À remplacer</li>
-          <li className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-sm bg-kelp-bright" />Remplacé</li>
+          <li className="inline-flex items-center gap-1.5"><AlertTriangle aria-hidden className="size-3.5 text-rope" />À remplacer</li>
+          <li className="inline-flex items-center gap-1.5"><Check aria-hidden className="size-3.5 text-kelp" strokeWidth={3} />Remplacé</li>
+          <li className="inline-flex items-center gap-1.5"><UserX aria-hidden className="size-3.5 text-muted" />Non remplacé</li>
         </ul>
       )}
 
@@ -137,9 +147,17 @@ function WeekGrid({ days, byDay, me, showPool, onOpen }: { days: string[]; byDay
   const todayISO = toISO(today())
   const [now, setNow] = useState(nowMinutes())
   useEffect(() => { const t = setInterval(() => setNow(nowMinutes()), 60_000); return () => clearInterval(t) }, [])
+  // La grille défile dans sa propre boîte (en-tête des jours collant) : on l'ouvre sur la première séance.
+  const scroller = useRef<HTMLDivElement>(null)
+  const first = all.length ? Math.min(...all.map((o) => minutes(o.slot.start))) : null
+  useEffect(() => {
+    if (scroller.current && first !== null) scroller.current.scrollTop = Math.max(0, (first - minH * 60) * PX_PER_MIN - 12)
+    // Une seule fois par semaine affichée (le parent remonte la grille à chaque changement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+    <div ref={scroller} className="max-h-[max(360px,calc(100dvh-12rem))] overflow-auto rounded-2xl border border-line bg-surface">
       <div className="min-w-[860px]">
         <div className="sticky top-0 z-10 grid grid-cols-[56px_repeat(7,minmax(0,1fr))] border-b border-line bg-surface">
           <div />
@@ -187,7 +205,22 @@ function WeekEvent({ o, me, showPool, minH, onOpen }: { o: Occurrence & { col: n
   const h = Math.max(28, (minutes(o.slot.end) - minutes(o.slot.start)) * PX_PER_MIN - 2)
   const coaches = effectiveCoaches(o)
   const mine = involves(o, me)
-  const tall = h > 70
+  const tall = h >= 56
+  const coachNames = coaches.map((c) => shortName(c.user)).join(', ')
+  // Nom accessible complet : la date et l'état ne se lisent pas autrement dans la grille.
+  const stateLabel = o.state === 'open' ? 'à remplacer'
+    : o.state === 'unreplaced' ? 'non remplacé'
+      : o.state === 'replaced' ? `remplacé, ${coachNames}`
+        : coachNames || 'sans éducateur'
+  const label = [
+    ucfirst(fmtLong(o.date)),
+    o.groupe?.name,
+    fmtRange(o.slot.start, o.slot.end),
+    showPool ? o.piscine?.name : null,
+    stateLabel,
+    coaches.some((c) => c.user.id === me) ? 'vous encadrez' : null,
+  ].filter(Boolean).join(', ')
+  const StateIcon = o.state === 'open' ? AlertTriangle : o.state === 'replaced' ? Check : o.state === 'unreplaced' ? UserX : null
   return (
     <button
       type="button"
@@ -202,16 +235,20 @@ function WeekEvent({ o, me, showPool, minH, onOpen }: { o: Occurrence & { col: n
         height: h,
         left: `calc(${(o.col / o.cols) * 100}% + 2px)`,
         width: `calc(${100 / o.cols}% - 4px)`,
-        borderLeftColor: o.state === 'open' ? 'var(--rope-bright)' : o.niveau?.color ?? 'var(--line-strong)',
+        borderLeftColor: o.state === 'open' ? 'var(--rope-bright)' : o.state === 'unreplaced' ? 'var(--rope)' : o.niveau?.color ?? 'var(--line-strong)',
       }}
-      aria-label={`${o.groupe?.name}, ${fmtRange(o.slot.start, o.slot.end)}${o.state === 'open' ? ', à remplacer' : ''}`}
+      aria-label={label}
     >
-      <p className="text-[11px] font-semibold leading-tight text-muted num">{fmtTime(o.slot.start)}{tall && ` – ${fmtTime(o.slot.end)}`}</p>
+      <p className="flex items-center gap-0.5 text-[11px] font-semibold leading-tight text-muted num">
+        {StateIcon && <StateIcon aria-hidden strokeWidth={o.state === 'replaced' ? 3 : 2} className={cn('size-3 shrink-0', o.state === 'open' ? 'text-rope' : o.state === 'replaced' ? 'text-kelp' : 'text-muted')} />}
+        <span className="truncate">{fmtTime(o.slot.start)}{tall && ` – ${fmtTime(o.slot.end)}`}</span>
+      </p>
       <p className="truncate text-[12.5px] font-bold leading-tight text-ink">{o.groupe?.name}</p>
       {tall && showPool && <p className="truncate text-[11.5px] leading-tight text-muted">{o.piscine?.name}</p>}
       {tall && (
         o.state === 'open' ? <p className="truncate text-[11.5px] font-semibold leading-tight text-rope">À remplacer</p>
-          : <p className={cn('truncate text-[11.5px] leading-tight', o.state === 'replaced' ? 'font-semibold text-kelp' : 'text-ink-2')}>{coaches.map((c) => shortName(c.user)).join(', ') || 'Sans éducateur'}</p>
+          : o.state === 'unreplaced' ? <p className="truncate text-[11.5px] font-semibold leading-tight text-ink-2">Non remplacé</p>
+            : <p className={cn('truncate text-[11.5px] leading-tight', o.state === 'replaced' ? 'font-semibold text-kelp' : 'text-ink-2')}>{coachNames || 'Sans éducateur'}</p>
       )}
     </button>
   )
@@ -230,7 +267,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
   }
   return (
     <div>
-      <div role="tablist" aria-label="Jour de la semaine" className="mb-5 grid grid-cols-7 gap-1 rounded-2xl border border-line bg-surface p-1.5">
+      <div role="group" aria-label="Jour de la semaine" className="mb-5 grid grid-cols-7 gap-1 rounded-2xl border border-line bg-surface p-1.5">
         {days.map((d, i) => {
           const active = d === days[idx]
           const count = byDay[i].length
@@ -238,15 +275,16 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
           return (
             <button
               key={d}
-              role="tab"
-              aria-selected={active}
+              type="button"
+              aria-pressed={active}
+              aria-current={d === todayISO ? 'date' : undefined}
               onClick={() => onPick(d)}
               className={cn('relative flex flex-col items-center rounded-xl py-2 transition-colors', active ? 'bg-btn text-btn-ink' : 'text-ink hover:bg-surface-2')}
             >
               <span className={cn('text-[11.5px] font-semibold', active ? 'opacity-80' : 'text-muted')}>{DAYS_SHORT[i]}</span>
               <span className={cn('display-md text-[20px] num', d === todayISO && !active && 'text-water')}>{fromISO(d).getDate()}</span>
               <span aria-hidden className={cn('mt-0.5 size-1.5 rounded-full', count === 0 ? 'bg-transparent' : alert ? 'bg-rope-bright' : active ? 'bg-btn-ink/70' : 'bg-water-bright')} />
-              <span className="sr-only">{count} séances{alert ? ', dont au moins une à remplacer' : ''}</span>
+              <span className="sr-only">{pluralize(count, 'séance')}{alert ? ', dont au moins une à remplacer' : ''}</span>
             </button>
           )
         })}
@@ -282,6 +320,8 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
                           <p className="truncate text-sm text-muted">{o.slot.ligne ?? o.niveau?.name ?? ''}</p>
                           {o.state === 'open' ? (
                             <p className="mt-1 text-sm font-semibold text-rope">{o.absences.find((a) => a.status === 'open')?.educator?.firstname} absent·e, à remplacer</p>
+                          ) : o.state === 'unreplaced' ? (
+                            <p className="mt-1 text-sm font-semibold text-ink-2">{o.absences.find((a) => a.status === 'unreplaced')?.educator?.firstname} absent·e, non remplacé·e</p>
                           ) : (
                             <p className={cn('mt-1 text-sm', o.state === 'replaced' ? 'text-kelp' : 'text-ink-2')}>
                               {coaches.length ? coaches.map((c) => c.replacing ? `${shortName(c.user)} (remplace ${c.replacing.firstname})` : shortName(c.user)).join(', ') : 'Sans éducateur'}

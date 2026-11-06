@@ -4,8 +4,8 @@ import { Button, EmptyState, Field, FormError, LevelDot, PageHeader, Panel, Sele
 import { AbsenceStatusBadge } from '../../components/status'
 import { useAction, useConfirm, useToast } from '../../components/feedback'
 import { useAppCtx } from '../../data/hooks'
-import { useWholeDB } from '../../data/store'
-import { absenceStatus, approvedReplacement, cancelAbsence, declareAbsence, fullName, userById } from '../../data/api'
+import { getDB, useWholeDB } from '../../data/store'
+import { absenceStatus, approvedReplacement, cancelAbsence, declareAbsence, eligibleVolunteers, fullName, userById } from '../../data/api'
 import { DAYS, fmtLong, fmtRange, fmtShort, isOver, minutes, nextOccurrences, relativeDay } from '../../lib/dates'
 import { cn, ucfirst } from '../../lib/util'
 
@@ -40,8 +40,11 @@ export default function Absences() {
     e.preventDefault()
     setError(null)
     try {
-      declareAbsence(slotId, date, reason)
-      toast('Absence déclarée. Les collègues diplômés et disponibles sont prévenus.')
+      const a = declareAbsence(slotId, date, reason)
+      // Les collègues ne sont prévenus que s'ils ont le diplôme et sont libres : ne pas l'annoncer à tort.
+      toast(eligibleVolunteers(getDB(), a).length > 0
+        ? 'Absence déclarée. Les collègues diplômés et disponibles sont prévenus.'
+        : "Absence déclarée. Aucun collègue diplômé n'est disponible pour l'instant : la séance reste à pourvoir dans Remplacements.")
       setDate(''); setReason('')
     } catch (err) { setError((err as Error).message) }
   }
@@ -112,19 +115,23 @@ export default function Absences() {
                       const lvl = db.niveaux.find((n) => n.id === g?.niveauId)
                       const status = absenceStatus(db, a)
                       const rp = approvedReplacement(db, a.id)
+                      const rpUser = rp && userById(db, rp.volunteerId)
+                      // Annulable tant que la séance n'est pas passée, même si un remplaçant est validé.
+                      const canCancel = status === 'open' || (status === 'replaced' && !!s && !isOver(a.date, s.end))
                       const candidates = db.remplacements.filter((r) => r.absenceId === a.id && r.status === 'pending').length
                       return (
                         <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
                           <div className="min-w-0 flex-1">
                             <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={lvl?.color} />{g?.name ?? 'Créneau supprimé'}</p>
                             <p className="text-sm text-muted"><span className="first-letter:uppercase inline-block">{fmtLong(a.date)}</span>{s && <>, <span className="num">{fmtRange(s.start, s.end)}</span></>}</p>
-                            {rp && <p className="mt-0.5 text-sm text-kelp">Remplacé·e par {fullName(userById(db, rp.volunteerId))}</p>}
+                            {rp && <p className="mt-0.5 text-sm text-kelp">Remplacé·e par {fullName(rpUser)}</p>}
                             {status === 'open' && <p className="mt-0.5 text-sm text-ink-2">{candidates ? `${candidates} volontaire${candidates > 1 ? 's' : ''}, en attente de validation` : 'Aucun volontaire pour le moment'}</p>}
                           </div>
                           <AbsenceStatusBadge status={status} />
-                          {status === 'open' && (
+                          {canCancel && (
                             <Button size="sm" variant="ghost" onClick={async () => {
-                              if (await confirm({ title: 'Annuler cette absence ?', body: `Vous assurerez la séance ${g?.name} du ${fmtLong(a.date)}.`, confirmLabel: "Annuler l'absence", tone: 'primary' })) run(() => cancelAbsence(a.id), 'Absence annulée.')
+                              const body = `Vous assurerez la séance ${g?.name ?? ''} du ${fmtLong(a.date)}.${status === 'replaced' && rpUser ? ` ${rpUser.firstname} sera prévenu·e que son remplacement n'est plus nécessaire.` : ''}`
+                              if (await confirm({ title: 'Annuler cette absence ?', body, confirmLabel: "Annuler l'absence", tone: 'primary' })) run(() => cancelAbsence(a.id), 'Absence annulée.')
                             }}>Annuler</Button>
                           )}
                         </li>

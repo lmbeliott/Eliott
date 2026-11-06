@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Award, Clock, MapPin, Waves } from 'lucide-react'
 import { Badge, Button, Drawer, Field, LevelDot, Textarea, Avatar } from './ui'
-import { useAction, useConfirm } from './feedback'
+import { useAction, useConfirm, useToast } from './feedback'
 import { useAppCtx } from '../data/hooks'
-import { useWholeDB } from '../data/store'
+import { getDB, useWholeDB } from '../data/store'
 import { buildOccurrence } from '../data/occurrences'
-import { cancelAbsence, declareAbsence, decideReplacement, eligibility, fullName, userById, volunteer } from '../data/api'
+import { cancelAbsence, declareAbsence, decideReplacement, eligibility, eligibleVolunteers, fullName, userById, volunteer } from '../data/api'
 import { fmtLong, fmtRange, isOver, relativeDay } from '../lib/dates'
 import type { Creneau } from '../data/types'
 import { AbsenceStatusBadge } from './status'
@@ -18,6 +18,7 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
   const db = useWholeDB()
   const run = useAction()
   const confirm = useConfirm()
+  const toast = useToast()
   const navigate = useNavigate()
   const [declaring, setDeclaring] = useState(false)
   const [reason, setReason] = useState('')
@@ -71,17 +72,33 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
                 <ul className="mt-3 space-y-2 border-t border-line pt-3">
                   {abs.candidates.map((c) => {
                     const v = userById(db, c.volunteerId)
+                    // Motif à la 3e personne : le responsable lit la situation du volontaire, pas la sienne.
+                    const e = eligibility(db, c.volunteerId, abs.absence, 'other')
                     return (
                       <li key={c.id} className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="text-sm text-ink">{fullName(v)} se propose</span>
+                        <span className="min-w-0 text-sm text-ink">
+                          {fullName(v)} se propose
+                          {!e.ok && <span className="block text-[13px] text-rope">{e.reason}</span>}
+                        </span>
                         <span className="flex gap-2">
-                          <Button size="sm" variant="ghost" onClick={() => run(() => decideReplacement(c.id, false), 'Candidature refusée.')}>Refuser</Button>
-                          <Button size="sm" onClick={() => run(() => decideReplacement(c.id, true), `${fullName(v)} remplacera ${u.firstname}.`)}>Valider</Button>
+                          <Button size="sm" variant="ghost" onClick={async () => {
+                            if (await confirm({ title: `Refuser la candidature de ${fullName(v)} ?`, body: 'Cette personne sera prévenue et ne pourra plus se proposer pour ce remplacement.', confirmLabel: 'Refuser' })) run(() => decideReplacement(c.id, false), 'Candidature refusée.')
+                          }}>Refuser</Button>
+                          <Button size="sm" disabled={!e.ok} onClick={() => run(() => decideReplacement(c.id, true), `${fullName(v)} remplacera ${u.firstname}.`)}>Valider</Button>
                         </span>
                       </li>
                     )
                   })}
                 </ul>
+              )}
+              {/* Un responsable peut annuler l'absence d'un collègue (il revient), même si un remplaçant est validé. */}
+              {abs && !past && ctx.can('replacements') && abs.absence.educatorId !== ctx.user.id && (abs.status === 'open' || abs.status === 'replaced') && (
+                <Button size="sm" variant="ghost" className="mt-2 text-rope" onClick={async () => {
+                  const notice = abs.replacement ? ` ${fullName(abs.replacement)} sera prévenu·e que son remplacement est annulé.` : abs.candidates.length ? ' Les volontaires seront prévenus.' : ''
+                  if (await confirm({ title: `Annuler l'absence de ${u.firstname} ?`, body: `${u.firstname} assurera la séance du ${fmtLong(o.date)}.${notice}`, confirmLabel: "Annuler l'absence", tone: 'primary' })) {
+                    run(() => cancelAbsence(abs.absence.id), `Absence annulée. ${u.firstname} reçoit une notification.`)
+                  }
+                }}>Annuler l'absence</Button>
               )}
             </li>
           )
@@ -113,14 +130,23 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
               <Textarea id="motif" rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Maladie, formation, déplacement…" />
             </Field>
             <div className="mt-3 flex gap-2">
-              <Button onClick={() => run(() => { declareAbsence(o.slot.id, o.date, reason); setDeclaring(false); setReason('') }, 'Absence déclarée. Les collègues diplômés et disponibles sont prévenus.')}>Déclarer l'absence</Button>
+              <Button onClick={async () => {
+                const a = await run(() => declareAbsence(o.slot.id, o.date, reason))
+                if (!a) return
+                setDeclaring(false); setReason('')
+                // N'annoncer des collègues prévenus que s'il y en a (diplômés et libres).
+                toast(eligibleVolunteers(getDB(), a).length > 0
+                  ? 'Absence déclarée. Les collègues diplômés et disponibles sont prévenus.'
+                  : "Absence déclarée. Aucun collègue diplômé n'est disponible pour l'instant : la séance reste à pourvoir dans Remplacements.")
+              }}>Déclarer l'absence</Button>
               <Button variant="ghost" onClick={() => setDeclaring(false)}>Annuler</Button>
             </div>
           </div>
         )}
-        {myAbsence && myAbsence.status === 'open' && (
+        {myAbsence && !past && (myAbsence.status === 'open' || myAbsence.status === 'replaced') && (
           <Button variant="ghost" className="text-rope" onClick={async () => {
-            if (await confirm({ title: 'Annuler votre absence ?', body: `Vous assurerez la séance ${o.groupe?.name} du ${fmtLong(o.date)}. Les volontaires éventuels seront prévenus.`, confirmLabel: "Annuler l'absence", tone: 'primary' })) run(() => cancelAbsence(myAbsence.absence.id), 'Absence annulée.')
+            const notice = myAbsence.replacement ? `${fullName(myAbsence.replacement)}, qui devait vous remplacer, sera prévenu·e.` : 'Les volontaires éventuels seront prévenus.'
+            if (await confirm({ title: 'Annuler votre absence ?', body: `Vous assurerez la séance${o.groupe ? ` ${o.groupe.name}` : ''} du ${fmtLong(o.date)}. ${notice}`, confirmLabel: "Annuler l'absence", tone: 'primary' })) run(() => cancelAbsence(myAbsence.absence.id), 'Absence annulée.')
           }}>Annuler mon absence</Button>
         )}
       </div>

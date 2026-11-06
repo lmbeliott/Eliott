@@ -115,7 +115,8 @@ export interface Absence {
   createdAt: string
 }
 
-export type ReplacementStatus = 'pending' | 'approved' | 'refused' | 'withdrawn'
+/** `cancelled` : l'absence a été annulée (ou le créneau modifié) ; distinct d'un retrait par le volontaire. */
+export type ReplacementStatus = 'pending' | 'approved' | 'refused' | 'withdrawn' | 'cancelled'
 
 export interface Remplacement {
   id: ID
@@ -124,6 +125,8 @@ export interface Remplacement {
   status: ReplacementStatus
   createdAt: string
   decidedAt?: string
+  /** Refus automatique parce qu'un autre volontaire a été retenu (id de la candidature validée). */
+  supersededBy?: ID
 }
 
 export type TicketStatus = 'open' | 'resolved'

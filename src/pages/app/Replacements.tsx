@@ -6,11 +6,11 @@ import { SessionDrawer } from '../../components/SessionDrawer'
 import { useAction, useConfirm } from '../../components/feedback'
 import { useAppCtx } from '../../data/hooks'
 import { useWholeDB } from '../../data/store'
-import { absenceStatus, approvedMembers, decideReplacement, eligibility, fullName, userById, volunteer, withdraw } from '../../data/api'
+import { absenceStatus, approvedMembers, cancelAbsence, decideReplacement, eligibility, fullName, hasValidQualification, userById, volunteer, withdraw } from '../../data/api'
 import { buildOccurrence, type Occurrence } from '../../data/occurrences'
 import { fmtLong, fmtRange, fmtShort, isOver, relativeDay } from '../../lib/dates'
 import { cn, pluralize, ucfirst } from '../../lib/util'
-import type { Absence, Creneau } from '../../data/types'
+import type { Absence, Creneau, User } from '../../data/types'
 
 export default function Replacements() {
   const ctx = useAppCtx()
@@ -36,6 +36,18 @@ export default function Replacements() {
 
   const show = (o: Occurrence) => setSelected({ slot: o.slot, date: o.date })
 
+  // Un responsable peut annuler l'absence d'un collègue (il revient finalement, par exemple).
+  const cancel = async (a: Absence, o: Occurrence, absent?: User) => {
+    const who = a.educatorId === ctx.user.id ? 'Vous assurerez' : `${absent?.firstname ?? "L'éducateur"} assurera`
+    const volunteers = db.remplacements.some((r) => r.absenceId === a.id && r.status === 'pending')
+    if (await confirm({
+      title: "Annuler l'absence ?",
+      body: `${who} la séance ${o.groupe?.name ?? ''} du ${fmtLong(a.date)}.${volunteers ? ' Les volontaires seront prévenus.' : ''}`,
+      confirmLabel: "Annuler l'absence",
+      tone: 'primary',
+    })) run(() => cancelAbsence(a.id), 'Absence annulée.')
+  }
+
   return (
     <>
       <PageHeader title="Remplacements" description="Les séances à pourvoir s'affichent selon vos diplômes et vos disponibilités. Un responsable valide chaque remplacement." />
@@ -52,11 +64,13 @@ export default function Replacements() {
                   const absent = o.absences.find((x) => x.absence.id === a.id)?.educator
                   return (
                     <li key={a.id} className="rounded-xl border border-line">
-                      <SessionHeader a={a} o={o} absentName={fullName(absent)} onOpen={() => show(o)} showReason />
+                      <SessionHeader a={a} o={o} absentName={fullName(absent)} onOpen={() => show(o)} showReason>
+                        <Button size="sm" variant="ghost" onClick={() => cancel(a, o, absent)}>Annuler l'absence</Button>
+                      </SessionHeader>
                       <ul className="divide-y divide-line border-t border-line">
                         {candidates.map((c) => {
                           const v = userById(db, c.volunteerId)
-                          const e = eligibility(db, c.volunteerId, a)
+                          const e = eligibility(db, c.volunteerId, a, 'other')
                           return (
                             <li key={c.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                               <Avatar name={fullName(v)} size={32} />
@@ -65,7 +79,10 @@ export default function Replacements() {
                                 <p className={cn('text-[13px]', e.ok ? 'text-muted' : 'text-rope')}>{e.ok ? (o.qualification ? `${o.qualification.short} valide, disponible` : 'Disponible') : e.reason}</p>
                               </div>
                               <div className="flex gap-2">
-                                <Button size="sm" variant="ghost" onClick={() => run(() => decideReplacement(c.id, false), 'Candidature refusée. Le volontaire est prévenu.')}>Refuser</Button>
+                                <Button size="sm" variant="ghost" onClick={async () => {
+                                  // Un refus est définitif : la personne ne pourra plus se proposer pour cette séance.
+                                  if (await confirm({ title: `Refuser la candidature de ${fullName(v)} ?`, body: 'Cette personne sera prévenue et ne pourra plus se proposer pour ce remplacement.', confirmLabel: 'Refuser' })) run(() => decideReplacement(c.id, false), 'Candidature refusée. Le volontaire est prévenu.')
+                                }}>Refuser</Button>
                                 <Button size="sm" disabled={!e.ok} onClick={() => run(() => decideReplacement(c.id, true), `${v?.firstname} remplacera ${absent?.firstname}. Le planning est à jour.`)}>Valider</Button>
                               </div>
                             </li>
@@ -82,14 +99,26 @@ export default function Replacements() {
                 <h3 className="mb-2 text-sm font-bold text-ink">Sans volontaire</h3>
                 <ul className="divide-y divide-line rounded-xl border border-line">
                   {withoutVolunteer.map(({ a, o }) => {
+                    const absent = o.absences.find((x) => x.absence.id === a.id)?.educator
                     const possible = members.filter((m) => eligibility(db, m.user.id, a).ok).length
+                    // Sans candidat possible : dire si c'est le diplôme ou la disponibilité qui manque.
+                    const others = members.filter((m) => m.user.id !== a.educatorId && !o.slot.educatorIds.includes(m.user.id))
+                    const qualified = others.filter((m) => hasValidQualification(db, m.user.id, o.groupe?.qualificationId, a.date)).length
+                    const label = possible
+                      ? `${pluralize(possible, 'éducateur')} éligible${possible > 1 ? 's' : ''}`
+                      : others.length === 0
+                        ? 'Aucun autre éducateur dans le club'
+                        : o.qualification && qualified === 0
+                          ? `Personne d'autre n'a le ${o.qualification.short} valide`
+                          : 'Aucun éducateur disponible'
                     return (
                       <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
                         <button type="button" onClick={() => show(o)} className="min-w-0 flex-1 text-left">
                           <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={o.niveau?.color} />{o.groupe?.name}</p>
-                          <p className="text-sm text-muted">{ucfirst(fmtShort(a.date))}, <span className="num">{fmtRange(o.slot.start, o.slot.end)}</span>, à la place de {fullName(o.absences.find((x) => x.absence.id === a.id)?.educator)}</p>
+                          <p className="text-sm text-muted">{ucfirst(fmtShort(a.date))}, <span className="num">{fmtRange(o.slot.start, o.slot.end)}</span>, à la place de {fullName(absent)}</p>
                         </button>
-                        <Badge tone={possible ? 'buoy' : 'rope'}>{possible ? `${pluralize(possible, 'éducateur')} éligible${possible > 1 ? 's' : ''}` : `Personne n'a le ${o.qualification?.short ?? 'diplôme'}`}</Badge>
+                        <Badge tone={possible ? 'buoy' : 'rope'}>{label}</Badge>
+                        <Button size="sm" variant="ghost" onClick={() => cancel(a, o, absent)}>Annuler l'absence</Button>
                       </li>
                     )
                   })}
@@ -144,17 +173,19 @@ export default function Replacements() {
                 const s = db.creneaux.find((c) => c.id === a.creneauId)
                 const g = db.groupes.find((x) => x.id === s?.groupeId)
                 const future = s && !isOver(a.date, s.start)
+                // Candidature restée en attente alors que la séance n'est plus à pourvoir (passée sans décision).
+                const stale = r.status === 'pending' && absenceStatus(db, a) !== 'open'
                 return (
                   <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3 first:pt-0 last:pb-0">
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-ink">{g?.name}</p>
                       <p className="text-sm text-muted"><span className="first-letter:uppercase inline-block">{fmtLong(a.date)}</span>{s && <>, <span className="num">{fmtRange(s.start, s.end)}</span></>}</p>
                     </div>
-                    <ReplacementStatusBadge status={r.status} />
-                    {future && (r.status === 'pending' || r.status === 'approved') && (
+                    {stale ? <Badge tone="neutral">Sans suite</Badge> : <ReplacementStatusBadge status={r.status} />}
+                    {future && !stale && (r.status === 'pending' || r.status === 'approved') && (
                       <Button size="sm" variant="ghost" onClick={async () => {
-                        if (r.status === 'approved' && !(await confirm({ title: 'Vous désister de ce remplacement ?', body: 'La séance redeviendra à pourvoir et les responsables seront prévenus.', confirmLabel: 'Me désister' }))) return
-                        run(() => withdraw(r.id), r.status === 'approved' ? 'Désistement enregistré. Les responsables sont prévenus.' : 'Candidature retirée.')
+                        if (r.status === 'approved' && !(await confirm({ title: 'Vous désister de ce remplacement ?', body: 'La séance redeviendra à pourvoir. La personne absente et les responsables seront prévenus.', confirmLabel: 'Me désister' }))) return
+                        run(() => withdraw(r.id), r.status === 'approved' ? 'Désistement enregistré. La personne absente et les responsables sont prévenus.' : 'Candidature retirée.')
                       }}>{r.status === 'approved' ? 'Me désister' : 'Retirer'}</Button>
                     )}
                   </li>

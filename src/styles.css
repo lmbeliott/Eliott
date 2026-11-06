@@ -12,13 +12,15 @@
   --surface-2: #e8f0f3;
   --line: #d3e0e6;
   --line-strong: #b4c7d0;
+  /* Contour des champs : ≥ 3:1 sur la surface et le fond (WCAG 1.4.11). */
+  --field-line: #7a909d;
   --ink: #0c2a3e;
   --ink-2: #33505f;
-  --muted: #557080;
+  --muted: #4d6878;
   --water: #08708f;
   --water-bright: #0b8fb3;
   --water-soft: #dcf0f6;
-  --rope: #c9361f;
+  --rope: #b83220;
   --rope-bright: #e0412e;
   --rope-soft: #fbe5e1;
   --buoy: #8a6100;
@@ -44,6 +46,7 @@
     --surface-2: #132a38;
     --line: #1e3a4b;
     --line-strong: #2b4e62;
+    --field-line: #57788b;
     --ink: #e6f1f5;
     --ink-2: #bdd0da;
     --muted: #8fa8b6;
@@ -76,6 +79,7 @@
   --surface-2: #132a38;
   --line: #1e3a4b;
   --line-strong: #2b4e62;
+  --field-line: #57788b;
   --ink: #e6f1f5;
   --ink-2: #bdd0da;
   --muted: #8fa8b6;
@@ -107,6 +111,7 @@
   --color-surface-2: var(--surface-2);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
+  --color-field-line: var(--field-line);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);

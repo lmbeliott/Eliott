@@ -17,6 +17,7 @@ export function ReplacementStatusBadge({ status }: { status: ReplacementStatus }
     case 'approved': return <Badge tone="kelp" dot>Validée</Badge>
     case 'refused': return <Badge tone="neutral">Non retenue</Badge>
     case 'withdrawn': return <Badge tone="neutral">Retirée</Badge>
+    case 'cancelled': return <Badge tone="neutral">Absence annulée</Badge>
   }
 }
 

@@ -37,7 +37,8 @@ export function quote(access: number, promo: boolean): Quote {
     const count = hi >= lo ? hi - lo + 1 : 0
     if (count > 0) {
       lines.push({
-        label: t.to === Infinity ? `Accès ${t.from} et plus` : `Accès ${t.from} à ${t.to}`,
+        // Borne basse effective : en promo, le premier palier commence après les accès inclus.
+        label: t.to === Infinity ? `Accès ${lo} et plus` : `Accès ${lo} à ${t.to}`,
         count,
         unit: t.unit,
         subtotal: round(count * t.unit),

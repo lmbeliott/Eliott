@@ -6,8 +6,9 @@ import type {
 } from './types'
 import { getDB, getSession, mutate, setSession } from './store'
 import { hashPassword, LEVEL_COLORS } from './seed'
-import { DAYS, fmtShort, fmtTime, fromISO, hours, isOver, minutes, overlaps, today, toISO, weekday, datesOfWeekdayInMonth } from '../lib/dates'
+import { DAYS, fmtShort, fmtTime, fromISO, isOver, minutes, overlaps, today, toISO, weekday, datesOfWeekdayInMonth } from '../lib/dates'
 import { normalize, uid } from '../lib/util'
+import type { TableRow } from '../lib/csv'
 
 export class ApiError extends Error {}
 function fail(msg: string): never {
@@ -70,37 +71,55 @@ export function hasValidQualification(db: DB, userId: ID, qualificationId: ID | 
     uq.userId === userId && uq.qualificationId === qualificationId && (!uq.expiresOn || uq.expiresOn >= onDate))
 }
 
-/** Créneaux d'un éducateur un jour donné (titulaire ou remplaçant validé), hors absences. */
-export function educatorBusy(db: DB, userId: ID, clubId: ID, date: string) {
+/** Créneaux d'un éducateur un jour donné, tous clubs confondus (titulaire ou remplaçant validé), hors absences. */
+export function educatorBusy(db: DB, userId: ID, date: string) {
   const day = weekday(fromISO(date))
-  const own = db.creneaux.filter((c) => c.clubId === clubId && c.day === day && c.educatorIds.includes(userId))
+  const own = db.creneaux.filter((c) => c.day === day && c.educatorIds.includes(userId))
     .filter((c) => !db.absences.some((a) => a.creneauId === c.id && a.date === date && a.educatorId === userId && a.status !== 'cancelled'))
   const covering = db.absences
-    .filter((a) => a.clubId === clubId && a.date === date && approvedReplacement(db, a.id)?.volunteerId === userId)
-    .map((a) => db.creneaux.find((c) => c.id === a.creneauId)!)
-    .filter(Boolean)
+    .filter((a) => a.date === date && a.status !== 'cancelled' && approvedReplacement(db, a.id)?.volunteerId === userId)
+    .map((a) => db.creneaux.find((c) => c.id === a.creneauId))
+    .filter((c): c is Creneau => !!c)
   return [...own, ...covering]
 }
 
 export type Eligibility = { ok: true } | { ok: false; reason: string }
 
-export function eligibility(db: DB, userId: ID, absence: Absence): Eligibility {
+/** Qui lit le motif : la personne elle-même (« Vous encadrez déjà… ») ou un responsable à son sujet (« Encadre déjà… »). */
+export type Perspective = 'self' | 'other'
+
+export function eligibility(db: DB, userId: ID, absence: Absence, perspective: Perspective = 'self'): Eligibility {
+  const no = (self: string, other: string): Eligibility => ({ ok: false, reason: perspective === 'self' ? self : other })
   const slot = db.creneaux.find((c) => c.id === absence.creneauId)
   if (!slot) return { ok: false, reason: 'Créneau supprimé' }
-  if (absence.educatorId === userId) return { ok: false, reason: "C'est votre absence" }
-  if (slot.educatorIds.includes(userId)) return { ok: false, reason: 'Vous êtes déjà sur ce créneau' }
+  if (membershipOf(db, userId, absence.clubId)?.status !== 'approved') return no('Vous ne faites plus partie du club', 'Ne fait plus partie du club')
+  if (absence.educatorId === userId) return no("C'est votre absence", "C'est son absence")
+  if (slot.educatorIds.includes(userId)) return no('Vous êtes déjà sur ce créneau', 'Déjà titulaire de ce créneau')
+  // Un refus explicite du responsable est définitif ; un refus parce qu'un autre volontaire a été retenu ne l'est pas.
+  if (db.remplacements.some((r) => r.absenceId === absence.id && r.volunteerId === userId && r.status === 'refused' && !r.supersededBy)) {
+    return no("Votre candidature n'a pas été retenue", 'A déjà été refusé·e pour ce remplacement')
+  }
   const grp = db.groupes.find((g) => g.id === slot.groupeId)
   if (!hasValidQualification(db, userId, grp?.qualificationId, absence.date)) {
     const q = db.qualifications.find((x) => x.id === grp?.qualificationId)
-    return { ok: false, reason: `${q?.short ?? 'Diplôme'} requis (ou expiré)` }
+    return { ok: false, reason: `${q?.short ?? 'Diplôme'} requis ou expiré` }
   }
-  const conflict = educatorBusy(db, userId, absence.clubId, absence.date)
-    .find((c) => c.id !== slot.id && overlaps(c.start, c.end, slot.start, slot.end))
+  // Le créneau lui-même compte : la personne peut déjà y remplacer un autre éducateur absent ce jour-là.
+  const conflict = educatorBusy(db, userId, absence.date).find((c) => overlaps(c.start, c.end, slot.start, slot.end))
   if (conflict) {
-    const g = db.groupes.find((x) => x.id === conflict.groupeId)
-    return { ok: false, reason: `Vous encadrez déjà ${g?.name ?? 'un groupe'} à ${fmtTime(conflict.start)}` }
+    if (conflict.id === slot.id) return no('Vous remplacez déjà un éducateur sur cette séance', 'Remplace déjà un éducateur sur cette séance')
+    const at = fmtTime(conflict.start)
+    // Autre club : rien sur son planning n'est dévoilé.
+    if (conflict.clubId !== absence.clubId) return no(`Vous êtes déjà en séance dans un autre club à ${at}`, `Déjà en séance dans un autre club à ${at}`)
+    const g = db.groupes.find((x) => x.id === conflict.groupeId)?.name ?? 'un groupe'
+    return no(`Vous encadrez déjà ${g} à ${at}`, `Encadre déjà ${g} à ${at}`)
   }
   return { ok: true }
+}
+
+/** Membres du club qui peuvent se proposer pour cette absence (diplômés, libres, encore membres). */
+export function eligibleVolunteers(db: DB, absence: Absence): ID[] {
+  return approvedMembers(db, absence.clubId).map((x) => x.user.id).filter((id) => eligibility(db, id, absence).ok)
 }
 
 export function slotLabel(db: DB, slot: Creneau) {
@@ -147,6 +166,33 @@ function managers(draft: DB, clubId: ID, p: Permission) {
   return draft.memberships.filter((m) => m.clubId === clubId && m.status === 'approved' && permissionsOf(draft, m.userId, clubId).has(p)).map((m) => m.userId)
 }
 
+/** Annule une absence dans le brouillon ; ses candidatures en cours passent à « cancelled ». Renvoie ces candidatures. */
+function cancelInDraft(draft: DB, a: Absence): Remplacement[] {
+  const now = new Date().toISOString()
+  a.status = 'cancelled'
+  const affected = draft.remplacements.filter((r) => r.absenceId === a.id && (r.status === 'pending' || r.status === 'approved'))
+  for (const r of affected) { r.status = 'cancelled'; r.decidedAt = now }
+  return affected
+}
+
+/**
+ * Remet à pourvoir une absence dont le remplaçant validé ne vient plus (sa candidature doit déjà être close),
+ * prévient la personne absente et relance les collègues éligibles. Les responsables sont prévenus par l'appelant.
+ */
+function reopenInDraft(draft: DB, a: Absence, formerId: ID) {
+  a.status = 'open'
+  const slot = draft.creneaux.find((c) => c.id === a.creneauId)
+  const grp = draft.groupes.find((g) => g.id === slot?.groupeId)
+  notify(draft, [a.educatorId], a.clubId, `${fullName(userById(draft, formerId))} ne pourra finalement pas vous remplacer le ${fmtShort(a.date)} : la séance est de nouveau à pourvoir.`, '/app/absences')
+  notify(draft, eligibleVolunteers(draft, a).filter((id) => id !== formerId), a.clubId, `${grp?.name ?? 'Une séance'} (${fmtShort(a.date)}${slot ? `, ${fmtTime(slot.start)}` : ''}) cherche de nouveau un remplaçant.`, '/app/remplacements')
+}
+
+/** Séance encore à venir (fin non dépassée) ? */
+function upcoming(db: DB, a: Absence) {
+  const slot = db.creneaux.find((c) => c.id === a.creneauId)
+  return !!slot && !isOver(a.date, slot.end)
+}
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // ---------------------------------------------------------------- auth
@@ -161,9 +207,10 @@ export async function login(email: string, password: string) {
   return user!
 }
 
-export async function loginDemo(email: string) {
+/** Ouvre un compte de démo par son identifiant fixe (DEMO_ADMIN_ID, DEMO_EDUCATOR_ID), qui ne change pas avec l'e-mail. */
+export async function loginDemo(userId: ID) {
   const db = getDB()
-  const user = db.users.find((u) => u.email === email) ?? fail('Le compte de démonstration est introuvable. Réinitialisez la démo.')
+  const user = userById(db, userId) ?? fail('Le compte de démonstration est introuvable. Réinitialisez la démo.')
   setSession({ userId: user.id, clubId: 'c_cntr', demo: true })
   return user
 }
@@ -284,10 +331,34 @@ export function removeMember(userId: ID) {
   if (userId === s.userId) fail('Vous ne pouvez pas vous retirer vous-même du club.')
   const db = getDB()
   const target = membershipOf(db, userId, clubId)
+  // Retirer un administrateur demande les mêmes droits que lui retirer ce statut.
+  if (target?.isAdmin) requireAdmin()
   if (target?.isAdmin && db.memberships.filter((m) => m.clubId === clubId && m.isAdmin).length <= 1) fail('Le club doit garder au moins un administrateur.')
   mutate((d) => {
     d.memberships = d.memberships.filter((m) => !(m.userId === userId && m.clubId === clubId))
     for (const c of d.creneaux) if (c.clubId === clubId) c.educatorIds = c.educatorIds.filter((id) => id !== userId)
+    // Séances à venir uniquement : l'historique (et donc le relevé d'heures passé) reste intact.
+    const now = new Date().toISOString()
+    for (const a of d.absences) {
+      if (a.clubId !== clubId || a.status === 'cancelled' || !upcoming(d, a)) continue
+      if (a.educatorId === userId) {
+        // Ses absences n'ont plus d'objet : les volontaires sont libérés.
+        const affected = cancelInDraft(d, a)
+        notify(d, affected.map((r) => r.volunteerId), clubId, `L'absence du ${fmtShort(a.date)} est annulée : votre remplacement n'est plus nécessaire.`, '/app/remplacements')
+        continue
+      }
+      // Ses candidatures en cours sont retirées ; une séance qu'il ou elle devait assurer redevient à pourvoir.
+      for (const r of d.remplacements) {
+        if (r.absenceId !== a.id || r.volunteerId !== userId || (r.status !== 'pending' && r.status !== 'approved')) continue
+        const wasApproved = r.status === 'approved'
+        r.status = 'withdrawn'; r.decidedAt = now
+        if (wasApproved) {
+          reopenInDraft(d, a, userId)
+          const grp = d.groupes.find((g) => g.id === d.creneaux.find((c) => c.id === a.creneauId)?.groupeId)
+          notify(d, managers(d, clubId, 'replacements').filter((id) => id !== a.educatorId), clubId, `${fullName(userById(d, userId))} ne fait plus partie du club : ${grp?.name ?? 'la séance'} du ${fmtShort(a.date)} est de nouveau à pourvoir.`, '/app/remplacements')
+        }
+      }
+    }
   })
 }
 
@@ -477,34 +548,61 @@ export interface SlotInput {
   educatorIds: ID[]
 }
 
-/** Conflits d'un créneau : éducateurs déjà occupés au même moment. */
+/** Conflits d'un créneau : éducateurs déjà occupés au même moment (dans ce club ou un autre). */
 export function slotConflicts(db: DB, clubId: ID, input: SlotInput): string[] {
   const out: string[] = []
-  for (const userId of input.educatorIds) {
-    const clash = db.creneaux.find((c) => c.clubId === clubId && c.id !== input.id && c.day === input.day && c.educatorIds.includes(userId) && overlaps(c.start, c.end, input.start, input.end))
-    if (clash) {
-      const g = db.groupes.find((x) => x.id === clash.groupeId)
-      out.push(`${fullName(userById(db, userId))} encadre déjà ${g?.name ?? 'un groupe'} (${fmtTime(clash.start)}–${fmtTime(clash.end)}).`)
+  for (const userId of new Set(input.educatorIds)) {
+    const clash = db.creneaux.find((c) => c.id !== input.id && c.day === input.day && c.educatorIds.includes(userId) && overlaps(c.start, c.end, input.start, input.end))
+    if (!clash) continue
+    if (clash.clubId !== clubId) {
+      // Planning d'un autre club : on n'en dévoile rien.
+      out.push(`${fullName(userById(db, userId))} est déjà en séance dans un autre club à cette heure-là.`)
+      continue
     }
+    const g = db.groupes.find((x) => x.id === clash.groupeId)
+    out.push(`${fullName(userById(db, userId))} encadre déjà ${g?.name ?? 'un groupe'} (${fmtTime(clash.start)}–${fmtTime(clash.end)}).`)
   }
   return out
+}
+
+/**
+ * Absences à venir qu'une modification du créneau rend caduques : jour changé, ou éducateur absent retiré du créneau.
+ * `saveCreneau` les annule ; l'écran peut s'en servir pour prévenir avant d'enregistrer.
+ */
+export function staleAbsences(db: DB, input: Pick<SlotInput, 'id' | 'day' | 'educatorIds'>): Absence[] {
+  const prev = input.id ? db.creneaux.find((c) => c.id === input.id) : undefined
+  if (!prev) return []
+  return db.absences.filter((a) => a.creneauId === prev.id && a.status !== 'cancelled' && !isOver(a.date, prev.end)
+    && (weekday(fromISO(a.date)) !== input.day || !input.educatorIds.includes(a.educatorId)))
 }
 
 export function saveCreneau(input: SlotInput): Creneau {
   requirePermission('planning')
   const clubId = requireClubId()
   const db = getDB()
-  const grp = db.groupes.find((g) => g.id === input.groupeId) ?? fail('Choisissez un groupe.')
+  // Tout est limité au club courant : un formulaire resté ouvert après un changement de club ne peut rien écrire ailleurs.
+  const grp = db.groupes.find((g) => g.id === input.groupeId && g.clubId === clubId) ?? fail('Choisissez un groupe.')
+  if (input.id && !db.creneaux.some((c) => c.id === input.id && c.clubId === clubId)) fail('Créneau introuvable.')
+  const educatorIds = [...new Set(input.educatorIds)]
+  if (educatorIds.some((id) => membershipOf(db, id, clubId)?.status !== 'approved')) fail("Un des éducateurs choisis ne fait plus partie du club. Rouvrez le formulaire et vérifiez la liste.")
   if (!/^\d{2}:\d{2}$/.test(input.start) || !/^\d{2}:\d{2}$/.test(input.end)) fail('Indiquez une heure de début et de fin.')
   if (minutes(input.end) <= minutes(input.start)) fail("L'heure de fin doit être après l'heure de début.")
   const conflicts = slotConflicts(db, clubId, input)
   if (conflicts.length) fail(conflicts.join(' '))
   return mutate((d) => {
-    const data = { groupeId: grp.id, piscineId: grp.piscineId, day: input.day, start: input.start, end: input.end, ligne: input.ligne?.trim() || undefined, educatorIds: [...new Set(input.educatorIds)] }
+    const data = { groupeId: grp.id, piscineId: grp.piscineId, day: input.day, start: input.start, end: input.end, ligne: input.ligne?.trim() || undefined, educatorIds }
     if (input.id) {
       const c = d.creneaux.find((x) => x.id === input.id)!
       const added = data.educatorIds.filter((x) => !c.educatorIds.includes(x))
+      const prevName = d.groupes.find((g) => g.id === c.groupeId)?.name ?? grp.name
+      // À calculer avant la modification (heure de fin d'origine).
+      const stale = staleAbsences(d, { id: c.id, day: data.day, educatorIds: data.educatorIds })
       Object.assign(c, data)
+      for (const a of stale) {
+        const affected = cancelInDraft(d, a)
+        notify(d, [a.educatorId], clubId, `Le créneau ${prevName} a été modifié : votre absence du ${fmtShort(a.date)} est annulée.`, '/app/absences')
+        notify(d, affected.map((r) => r.volunteerId), clubId, `Le créneau ${prevName} a été modifié : le remplacement du ${fmtShort(a.date)} n'est plus nécessaire.`, '/app/remplacements')
+      }
       notify(d, added, clubId, `Vous êtes ajouté·e sur ${grp.name}, ${DAYS[c.day].toLowerCase()} ${fmtTime(c.start)}.`, '/app/planning')
       return c
     }
@@ -536,26 +634,32 @@ export function declareAbsence(creneauId: ID, date: string, reason?: string): Ab
   return mutate((d) => {
     const a: Absence = { id: uid('a'), clubId, creneauId: slot.id, educatorId: user.id, date, reason: reason?.trim() || undefined, status: 'open', createdAt: new Date().toISOString() }
     d.absences.push(a)
-    const eligibleIds = approvedMembers(d, clubId).map((x) => x.user.id).filter((id) => eligibility(d, id, a).ok)
-    notify(d, eligibleIds, clubId, `${grp?.name} (${fmtShort(date)}, ${fmtTime(slot.start)}) cherche un remplaçant.`, '/app/remplacements')
+    notify(d, eligibleVolunteers(d, a), clubId, `${grp?.name} (${fmtShort(date)}, ${fmtTime(slot.start)}) cherche un remplaçant.`, '/app/remplacements')
     notify(d, managers(d, clubId, 'replacements'), clubId, `${fullName(user)} sera absent·e : ${grp?.name}, ${fmtShort(date)}.`, '/app/remplacements')
     return a
   })
 }
 
+/**
+ * Annule une absence : la personne absente (même si un remplaçant est déjà validé) ou un membre ayant la permission
+ * « replacements ». Les volontaires, y compris le remplaçant validé, sont libérés et prévenus.
+ */
 export function cancelAbsence(absenceId: ID) {
   const user = requireUser()
   const db = getDB()
   const a = db.absences.find((x) => x.id === absenceId) ?? fail('Absence introuvable.')
-  const canManage = permissionsOf(db, user.id, a.clubId).has('replacements')
-  if (a.educatorId !== user.id && !canManage) fail('Seul·e la personne absente ou un responsable peut annuler cette absence.')
-  if (approvedReplacement(db, a.id) && !canManage) fail('Un remplaçant est déjà validé : demandez à un responsable d’annuler.')
+  const own = a.educatorId === user.id
+  if (!own && !permissionsOf(db, user.id, a.clubId).has('replacements')) fail('Seul·e la personne absente ou un responsable peut annuler cette absence.')
+  if (a.status === 'cancelled') fail('Cette absence est déjà annulée.')
+  if (!upcoming(db, a)) fail('Cette séance est déjà passée.')
+  const grp = db.groupes.find((g) => g.id === db.creneaux.find((c) => c.id === a.creneauId)?.groupeId)
+  const absent = userById(db, a.educatorId)
   mutate((d) => {
     const x = d.absences.find((y) => y.id === absenceId)!
-    x.status = 'cancelled'
-    const volunteers = d.remplacements.filter((r) => r.absenceId === absenceId && (r.status === 'pending' || r.status === 'approved'))
-    for (const r of volunteers) r.status = 'withdrawn'
-    notify(d, volunteers.map((r) => r.volunteerId), x.clubId, `L'absence du ${fmtShort(x.date)} est annulée : votre remplacement n'est plus nécessaire.`, '/app/remplacements')
+    const affected = cancelInDraft(d, x)
+    notify(d, affected.map((r) => r.volunteerId), x.clubId, `L'absence du ${fmtShort(x.date)} (${grp?.name}) est annulée : votre remplacement n'est plus nécessaire.`, '/app/remplacements')
+    if (!own) notify(d, [x.educatorId], x.clubId, `${fullName(user)} a annulé votre absence du ${fmtShort(x.date)} (${grp?.name}) : vous assurez la séance.`, '/app/absences')
+    notify(d, managers(d, x.clubId, 'replacements').filter((id) => id !== x.educatorId), x.clubId, `${fullName(absent)} assurera finalement ${grp?.name} le ${fmtShort(x.date)}.`, '/app/remplacements')
   })
 }
 
@@ -577,28 +681,38 @@ export function volunteer(absenceId: ID) {
   })
 }
 
+/** Retire sa candidature (en attente, même après la séance) ou se désiste d'un remplacement validé à venir. */
 export function withdraw(remplacementId: ID) {
   const user = requireUser()
+  const db = getDB()
+  const r = db.remplacements.find((x) => x.id === remplacementId && x.volunteerId === user.id) ?? fail('Candidature introuvable.')
+  if (r.status !== 'pending' && r.status !== 'approved') fail('Cette candidature est déjà close.')
+  const a = db.absences.find((x) => x.id === r.absenceId) ?? fail('Absence introuvable.')
+  if (r.status === 'approved' && !upcoming(db, a)) fail('Cette séance est déjà passée.')
   mutate((d) => {
-    const r = d.remplacements.find((x) => x.id === remplacementId && x.volunteerId === user.id) ?? fail('Candidature introuvable.')
-    if (r.status === 'approved') {
-      const a = d.absences.find((x) => x.id === r.absenceId)!
-      a.status = 'open'
-      notify(d, managers(d, a.clubId, 'replacements'), a.clubId, `${fullName(user)} se désiste d'un remplacement validé (${fmtShort(a.date)}).`, '/app/remplacements')
+    const x = d.remplacements.find((y) => y.id === remplacementId)!
+    const wasApproved = x.status === 'approved'
+    x.status = 'withdrawn'
+    x.decidedAt = new Date().toISOString()
+    if (wasApproved) {
+      const abs = d.absences.find((y) => y.id === x.absenceId)!
+      reopenInDraft(d, abs, user.id)
+      notify(d, managers(d, abs.clubId, 'replacements').filter((id) => id !== abs.educatorId), abs.clubId, `${fullName(user)} se désiste d'un remplacement validé (${fmtShort(abs.date)}).`, '/app/remplacements')
     }
-    r.status = 'withdrawn'
   })
 }
 
 export function decideReplacement(remplacementId: ID, approve: boolean) {
   requirePermission('replacements')
+  const clubId = requireClubId()
   const db = getDB()
   const r = db.remplacements.find((x) => x.id === remplacementId) ?? fail('Candidature introuvable.')
-  const a = db.absences.find((x) => x.id === r.absenceId)!
+  const a = db.absences.find((x) => x.id === r.absenceId && x.clubId === clubId) ?? fail('Candidature introuvable.')
+  if (r.status !== 'pending') fail('Cette candidature a déjà été traitée.')
   if (approve) {
     if (absenceStatus(db, a) !== 'open') fail("Ce créneau n'est plus à pourvoir.")
-    const e = eligibility(db, r.volunteerId, a)
-    if (!e.ok) fail(`${fullName(userById(db, r.volunteerId))} n'est plus disponible. ${e.reason}.`)
+    const e = eligibility(db, r.volunteerId, a, 'other')
+    if (!e.ok) fail(`Impossible de valider ${fullName(userById(db, r.volunteerId))}. ${e.reason}.`)
   }
   const slot = db.creneaux.find((c) => c.id === a.creneauId)!
   const grp = db.groupes.find((g) => g.id === slot.groupeId)
@@ -610,7 +724,8 @@ export function decideReplacement(remplacementId: ID, approve: boolean) {
     if (approve) {
       d.absences.find((x) => x.id === a.id)!.status = 'replaced'
       const others = d.remplacements.filter((x) => x.absenceId === a.id && x.id !== remplacementId && x.status === 'pending')
-      for (const o of others) { o.status = 'refused'; o.decidedAt = now }
+      // Refus « par défaut » : ces volontaires pourront se reproposer si le remplaçant retenu se désiste.
+      for (const o of others) { o.status = 'refused'; o.decidedAt = now; o.supersededBy = remplacementId }
       notify(d, [target.volunteerId], a.clubId, `Remplacement validé : ${grp?.name}, ${fmtShort(a.date)} à ${fmtTime(slot.start)}.`, '/app/planning')
       notify(d, others.map((o) => o.volunteerId), a.clubId, `Un autre remplaçant a été retenu pour ${grp?.name} (${fmtShort(a.date)}).`, '/app/remplacements')
       notify(d, [a.educatorId], a.clubId, `${fullName(userById(d, target.volunteerId))} vous remplace le ${fmtShort(a.date)}.`, '/app/absences')
@@ -633,15 +748,17 @@ export interface HoursRow {
 
 /** Décompte mensuel : heures prévues − absences + remplacements effectués. */
 export function hoursReport(db: DB, clubId: ID, year: number, month: number): HoursRow[] {
+  // Cumul en minutes entières, converti en heures à la fin : pas de dérive des flottants (40 min = 0,666…).
   const rows = new Map<ID, HoursRow>()
   for (const { user } of approvedMembers(db, clubId)) rows.set(user.id, { user, planned: 0, absent: 0, replacing: 0, effective: 0, sessions: 0 })
   const slots = db.creneaux.filter((c) => c.clubId === clubId)
+  const length = (s: Creneau) => Math.max(0, minutes(s.end) - minutes(s.start))
   for (const s of slots) {
     const occurrences = datesOfWeekdayInMonth(year, month, s.day).length
     for (const id of s.educatorIds) {
       const r = rows.get(id)
       if (!r) continue
-      r.planned += occurrences * hours(s.start, s.end)
+      r.planned += occurrences * length(s)
       r.sessions += occurrences
     }
   }
@@ -650,14 +767,21 @@ export function hoursReport(db: DB, clubId: ID, year: number, month: number): Ho
     if (a.clubId !== clubId || !a.date.startsWith(prefix) || a.status === 'cancelled') continue
     const s = slots.find((c) => c.id === a.creneauId)
     if (!s) continue
-    const h = hours(s.start, s.end)
+    const m = length(s)
+    // On ne retire que des heures comptées dans le prévu : encore titulaire, et la date tombe le jour du créneau.
     const absentRow = rows.get(a.educatorId)
-    if (absentRow) absentRow.absent += h
+    if (absentRow && s.educatorIds.includes(a.educatorId) && weekday(fromISO(a.date)) === s.day) absentRow.absent += m
+    // Un remplacement validé reste crédité, même si le créneau a changé depuis.
     const rp = approvedReplacement(db, a.id)
     const repRow = rp && rows.get(rp.volunteerId)
-    if (repRow) repRow.replacing += h
+    if (repRow) repRow.replacing += m
   }
-  for (const r of rows.values()) r.effective = r.planned - r.absent + r.replacing
+  for (const r of rows.values()) {
+    r.effective = (r.planned - r.absent + r.replacing) / 60
+    r.planned /= 60
+    r.absent /= 60
+    r.replacing /= 60
+  }
   return [...rows.values()].sort((a, b) => b.effective - a.effective)
 }
 
@@ -674,27 +798,31 @@ const DAY_ALIASES: Record<string, Weekday> = {
   lundi: 0, lun: 0, mardi: 1, mar: 1, mercredi: 2, mer: 2, jeudi: 3, jeu: 3, vendredi: 4, ven: 4, samedi: 5, sam: 5, dimanche: 6, dim: 6,
 }
 
+/** « 17 », « 17h », « 17h30 », « 17.30 », « 17:30 », « 17:30:00 » (Sheets, LibreOffice) → « 17:30 ». */
 function parseTime(v: string): string | null {
-  const m = v.trim().toLowerCase().replace(/\s/g, '').match(/^(\d{1,2})(?:[:h](\d{2})?)?$/)
+  const m = v.trim().toLowerCase().replace(/\s/g, '').match(/^(\d{1,2})(?:[:h.](\d{2})(?::\d{2})?|[:h])?$/)
   if (!m) return null
   const h = Number(m[1]); const min = Number(m[2] ?? 0)
   if (h > 23 || min > 59) return null
   return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
 }
 
-export function importSchedule(rows: string[][]): ImportReport {
+/**
+ * Importe des créneaux. Passez de préférence les lignes de `parseRows` : les numéros de ligne du rapport
+ * suivent alors le tableur, lignes vides comprises. Avec un simple `string[][]`, ils suivent la position.
+ */
+export function importSchedule(rows: Array<string[] | TableRow>): ImportReport {
   requirePermission('planning')
   const clubId = requireClubId()
   const report: ImportReport = { created: { piscines: 0, groupes: 0, niveaux: 0, creneaux: 0 }, skipped: [] }
-  const header = rows[0]?.map((h) => normalize(h)) ?? []
+  const records: TableRow[] = rows.map((r, i) => (Array.isArray(r) ? { line: i + 1, cells: r } : r))
+  const header = records[0]?.cells.map((h) => normalize(h)) ?? []
   const hasHeader = header.includes('piscine') || header.includes('groupe')
-  const body = hasHeader ? rows.slice(1) : rows
-  const offset = hasHeader ? 2 : 1
+  const body = hasHeader ? records.slice(1) : records
   mutate((d) => {
     const members = approvedMembers(d, clubId)
-    body.forEach((cols, i) => {
-      const line = i + offset
-      const [piscineName = '', groupeName = '', niveauName = '', jour = '', debut = '', fin = '', ligne = '', emails = ''] = cols
+    body.forEach(({ line, cells }) => {
+      const [piscineName = '', groupeName = '', niveauName = '', jour = '', debut = '', fin = '', ligne = '', emails = ''] = cells
       if (!piscineName || !groupeName) return report.skipped.push({ line, reason: 'Piscine ou groupe manquant' })
       const day = DAY_ALIASES[normalize(jour).replace('.', '')]
       if (day === undefined) return report.skipped.push({ line, reason: `Jour « ${jour} » non reconnu` })
@@ -704,12 +832,19 @@ export function importSchedule(rows: string[][]): ImportReport {
       for (const email of emails.split(/[,\s]+/).filter(Boolean)) {
         const found = members.find((x) => x.user.email.toLowerCase() === email.toLowerCase())
         if (!found) return report.skipped.push({ line, reason: `${email} n'est pas membre du club` })
-        educatorIds.push(found.user.id)
+        if (!educatorIds.includes(found.user.id)) educatorIds.push(found.user.id)
       }
-      let p = d.piscines.find((x) => x.clubId === clubId && normalize(x.name) === normalize(piscineName))
+      // Tous les contrôles avant toute création : une ligne refusée ne laisse ni piscine, ni niveau, ni groupe vide.
+      const existingPool = d.piscines.find((x) => x.clubId === clubId && normalize(x.name) === normalize(piscineName))
+      const existingGroup = existingPool && d.groupes.find((x) => x.clubId === clubId && x.piscineId === existingPool.id && normalize(x.name) === normalize(groupeName))
+      if (existingGroup && d.creneaux.some((c) => c.clubId === clubId && c.groupeId === existingGroup.id && c.day === day && c.start === start)) return report.skipped.push({ line, reason: 'Créneau déjà présent' })
+      const conflicts = slotConflicts(d, clubId, { groupeId: existingGroup?.id ?? '', day, start, end, ligne, educatorIds })
+      if (conflicts.length) return report.skipped.push({ line, reason: conflicts[0] })
+      let p = existingPool
       if (!p) { p = { id: uid('p'), clubId, name: piscineName }; d.piscines.push(p); report.created.piscines++ }
       let n: Niveau | undefined
-      if (niveauName) {
+      // Le niveau ne sert qu'à un groupe créé ici.
+      if (niveauName && !existingGroup) {
         n = d.niveaux.find((x) => x.clubId === clubId && normalize(x.name) === normalize(niveauName))
         if (!n) {
           const used = d.niveaux.filter((x) => x.clubId === clubId).length
@@ -717,12 +852,8 @@ export function importSchedule(rows: string[][]): ImportReport {
           d.niveaux.push(n); report.created.niveaux++
         }
       }
-      let g = d.groupes.find((x) => x.clubId === clubId && x.piscineId === p!.id && normalize(x.name) === normalize(groupeName))
+      let g = existingGroup
       if (!g) { g = { id: uid('g'), clubId, piscineId: p.id, niveauId: n?.id, name: groupeName }; d.groupes.push(g); report.created.groupes++ }
-      const input: SlotInput = { groupeId: g.id, day, start, end, ligne, educatorIds }
-      const conflicts = slotConflicts(d, clubId, input)
-      if (conflicts.length) return report.skipped.push({ line, reason: conflicts[0] })
-      if (d.creneaux.some((c) => c.clubId === clubId && c.groupeId === g!.id && c.day === day && c.start === start)) return report.skipped.push({ line, reason: 'Créneau déjà présent' })
       d.creneaux.push({ id: uid('s'), clubId, piscineId: p.id, groupeId: g.id, day, start, end, ligne: ligne || undefined, educatorIds })
       report.created.creneaux++
     })

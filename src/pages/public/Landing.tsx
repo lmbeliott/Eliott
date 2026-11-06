@@ -5,9 +5,11 @@ import { Logo } from '../../components/Logo'
 import { PoolScene } from '../../components/PoolScene'
 import { InstallGuide } from '../../components/InstallGuide'
 import { Button, ButtonLink, Segmented } from '../../components/ui'
+import { useAction } from '../../components/feedback'
 import { loginDemo } from '../../data/api'
-import { DEMO_ADMIN_EMAIL } from '../../data/seed'
-import { BASE_PRICE, euros, quote } from '../../lib/pricing'
+import { DEMO_ADMIN_ID } from '../../data/seed'
+import { useSession } from '../../data/store'
+import { BASE_PRICE, euros, INCLUDED_PROMO, PROMO_MONTHS, quote } from '../../lib/pricing'
 import { cn } from '../../lib/util'
 import { CountUp, Reveal, RisingWords, useInView } from '../../lib/motion'
 import type { CSSProperties } from 'react'
@@ -15,10 +17,14 @@ import type { CSSProperties } from 'react'
 export default function Landing() {
   const [install, setInstall] = useState(false)
   const navigate = useNavigate()
-  const startDemo = async () => {
-    await loginDemo(DEMO_ADMIN_EMAIL)
+  const run = useAction()
+  const session = useSession()
+  // Connecté avec un vrai compte : on ouvre son espace au lieu de remplacer la session par la démo.
+  const ownSpace = session && !session.demo ? (session.clubId ? '/app' : '/clubs') : null
+  const startDemo = () => run(async () => {
+    await loginDemo(DEMO_ADMIN_ID)
     navigate('/app')
-  }
+  })
 
   return (
     <div className="min-h-dvh bg-bg">
@@ -37,10 +43,12 @@ export default function Landing() {
             </p>
             <div className="hero-in mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: '640ms' }}>
               <ButtonLink to="/inscription" size="lg">Créer mon club</ButtonLink>
-              <Button size="lg" variant="secondary" onClick={startDemo}>Explorer la démo</Button>
+              {ownSpace
+                ? <ButtonLink to={ownSpace} size="lg" variant="secondary">Ouvrir mon espace</ButtonLink>
+                : <Button size="lg" variant="secondary" onClick={startDemo}>Explorer la démo</Button>}
             </div>
             <ul className="hero-in mt-7 flex flex-col gap-2 text-[15px] text-ink-2 sm:flex-row sm:gap-6" style={{ animationDelay: '760ms' }}>
-              <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />6 mois avec 5 accès pour {euros(BASE_PRICE)}</li>
+              <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />{PROMO_MONTHS} mois avec {INCLUDED_PROMO} accès pour {euros(BASE_PRICE)} par mois</li>
               <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />Sans engagement</li>
             </ul>
           </div>
@@ -131,7 +139,9 @@ export default function Landing() {
             </div>
             <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
               <Link to="/inscription" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#3cc4e4] px-6 text-[15px] font-semibold text-[#04212c] hover:bg-[#6fd5ee]">Créer mon club</Link>
-              <button type="button" onClick={startDemo} className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-6 text-[15px] font-semibold text-white hover:bg-white/10">Explorer la démo</button>
+              {ownSpace
+                ? <Link to={ownSpace} className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-6 text-[15px] font-semibold text-white hover:bg-white/10">Ouvrir mon espace</Link>
+                : <button type="button" onClick={startDemo} className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-6 text-[15px] font-semibold text-white hover:bg-white/10">Explorer la démo</button>}
             </div>
           </div>
         </section>
