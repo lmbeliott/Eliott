@@ -43,7 +43,7 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
     >
       <dl className="grid gap-3 text-base">
         <Row icon={Clock} label="Horaires"><span className="num">{fmtRange(o.slot.start, o.slot.end)}</span></Row>
-        <Row icon={MapPin} label="Piscine">{o.piscine?.name ?? '—'}{o.slot.ligne ? `, ${o.slot.ligne}` : ''}</Row>
+        <Row icon={MapPin} label="Piscine">{o.piscine?.name ?? '—'}{o.slot.ligne && <>, <span className="whitespace-nowrap">{o.slot.ligne}</span></>}</Row>
         <Row icon={Waves} label="Niveau"><span className="inline-flex items-center gap-2"><LevelDot color={o.niveau?.color} />{o.niveau?.name ?? 'Sans niveau'}</span></Row>
         <Row icon={Award} label="Diplôme requis">{o.qualification ? `${o.qualification.short}` : 'Aucun'}</Row>
       </dl>

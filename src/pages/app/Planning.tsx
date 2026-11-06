@@ -233,7 +233,7 @@ function WeekEvent({ o, me, showPool, minH, onOpen }: { o: Occurrence & { col: n
       type="button"
       onClick={onOpen}
       className={cn(
-        'absolute overflow-hidden rounded-[3px] border-l-[3px] px-1.5 py-1 text-left transition-[filter] hover:brightness-[0.97] focus-visible:z-10',
+        'absolute flex flex-col justify-start overflow-hidden rounded-[3px] border-l-[3px] px-1.5 py-1 text-left transition-[filter] hover:brightness-[0.97] focus-visible:z-10',
         o.state === 'open' ? 'bg-rope-soft' : o.state === 'replaced' ? 'bg-kelp-soft' : 'bg-surface-2',
         mine && 'ring-1 ring-inset ring-water-bright/50',
       )}
