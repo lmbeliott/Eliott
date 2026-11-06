@@ -58,6 +58,8 @@ The screens never touch storage directly. They call `src/data/api.ts`, so a real
 
 ## Deploy
 
+**GitHub Pages (live):** https://lmbeliott.github.io/Eliott/ — `npm run build:pages` builds under `/Eliott/`, adds a `404.html` fallback for deep links, and `.github/workflows/pages.yml` republishes `dist/` to the `gh-pages` branch on every push.
+
 `render.yaml` defines a Render static site (`npm ci && npm run build`, publish `dist/`, SPA rewrite). Netlify works as-is thanks to `public/_redirects`. To serve the build from a sub-path or a static host without rewrites, build with `VITE_HASH_ROUTER=1` (and `VITE_BASE=/sub/path/` if needed).
 
 ## Stack
