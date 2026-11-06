@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Download, FileSpreadsheet } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import { Button, EmptyState, IconButton, PageHeader, Panel, Table } from '../../components/ui'
 import { NoAccess } from './Config'
 import { useAppCtx } from '../../data/hooks'
@@ -43,7 +43,7 @@ export default function Reports() {
         actions={<Button variant="secondary" icon={Download} onClick={exportCSV} disabled={!rows.length}>Exporter pour Excel</Button>}
       >
         {rows.length === 0 ? (
-          <EmptyState compact icon={FileSpreadsheet} title="Aucune donnée pour ce mois">Le relevé se remplit dès que des créneaux sont affectés aux éducateurs.</EmptyState>
+          <EmptyState compact title="Aucune donnée pour ce mois">Le relevé se remplit dès que des créneaux sont affectés aux éducateurs.</EmptyState>
         ) : (
           <Table>
             <thead>
@@ -80,7 +80,7 @@ export default function Reports() {
             </tfoot>
           </Table>
         )}
-        <p className="mt-4 text-[13px] text-muted">Le fichier CSV utilise le point-virgule et la virgule décimale : il s'ouvre directement dans Excel en français.</p>
+        <p className="mt-4 text-sm text-muted">Le fichier CSV utilise le point-virgule et la virgule décimale : il s'ouvre directement dans Excel en français.</p>
       </Panel>
     </>
   )

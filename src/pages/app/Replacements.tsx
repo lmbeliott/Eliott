@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { Inbox, LifeBuoy } from 'lucide-react'
 import { Avatar, Badge, Button, EmptyState, LevelDot, PageHeader, Panel, Segmented } from '../../components/ui'
 import { ReplacementStatusBadge } from '../../components/status'
 import { SessionDrawer } from '../../components/SessionDrawer'
@@ -56,29 +55,30 @@ export default function Replacements() {
         {ctx.can('replacements') && (
           <Panel title="À valider" description={toValidate.length ? `${pluralize(toValidate.length, 'séance')} avec des volontaires` : undefined}>
             {toValidate.length === 0 ? (
-              <EmptyState compact icon={Inbox} title="Aucune candidature en attente">Les volontaires apparaîtront ici dès qu'ils se proposeront.</EmptyState>
+              <EmptyState compact title="Aucune candidature en attente">Les volontaires apparaîtront ici dès qu'ils se proposeront.</EmptyState>
             ) : (
-              <ul className="space-y-4">
+              <ul className="divide-y divide-line">
                 {toValidate.map(({ a, o }) => {
                   const candidates = db.remplacements.filter((r) => r.absenceId === a.id && r.status === 'pending')
                   const absent = o.absences.find((x) => x.absence.id === a.id)?.educator
                   return (
-                    <li key={a.id} className="rounded-xl border border-line">
+                    <li key={a.id} className="py-4 first:pt-0 last:pb-0">
                       <SessionHeader a={a} o={o} absentName={fullName(absent)} onOpen={() => show(o)} showReason>
                         <Button size="sm" variant="ghost" onClick={() => cancel(a, o, absent)}>Annuler l'absence</Button>
                       </SessionHeader>
-                      <ul className="divide-y divide-line border-t border-line">
+                      {/* Aligné sur le texte de la séance (pastille de date w-14 + gap-x-4). */}
+                      <ul className="mt-3.5 ml-[72px] divide-y divide-line border-t border-line">
                         {candidates.map((c) => {
                           const v = userById(db, c.volunteerId)
                           const e = eligibility(db, c.volunteerId, a, 'other')
                           return (
-                            <li key={c.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                            <li key={c.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 py-3 last:pb-0">
                               <Avatar name={fullName(v)} size={32} />
                               <div className="min-w-0 flex-1">
                                 <p className="font-semibold text-ink">{fullName(v)}</p>
-                                <p className={cn('text-[13px]', e.ok ? 'text-muted' : 'text-rope')}>{e.ok ? (o.qualification ? `${o.qualification.short} valide, disponible` : 'Disponible') : e.reason}</p>
+                                <p className={cn('text-sm', e.ok ? 'text-muted' : 'text-rope')}>{e.ok ? (o.qualification ? `${o.qualification.short} valide, disponible` : 'Disponible') : e.reason}</p>
                               </div>
-                              <div className="flex gap-2">
+                              <div className="flex w-full items-center justify-end gap-4 sm:w-auto">
                                 <Button size="sm" variant="ghost" onClick={async () => {
                                   // Un refus est définitif : la personne ne pourra plus se proposer pour cette séance.
                                   if (await confirm({ title: `Refuser la candidature de ${fullName(v)} ?`, body: 'Cette personne sera prévenue et ne pourra plus se proposer pour ce remplacement.', confirmLabel: 'Refuser' })) run(() => decideReplacement(c.id, false), 'Candidature refusée. Le volontaire est prévenu.')
@@ -97,7 +97,7 @@ export default function Replacements() {
             {withoutVolunteer.length > 0 && (
               <div className="mt-6">
                 <h3 className="mb-2 text-sm font-bold text-ink">Sans volontaire</h3>
-                <ul className="divide-y divide-line rounded-xl border border-line">
+                <ul className="divide-y divide-line">
                   {withoutVolunteer.map(({ a, o }) => {
                     const absent = o.absences.find((x) => x.absence.id === a.id)?.educator
                     const possible = members.filter((m) => eligibility(db, m.user.id, a).ok).length
@@ -112,8 +112,8 @@ export default function Replacements() {
                           ? `Personne d'autre n'a le ${o.qualification.short} valide`
                           : 'Aucun éducateur disponible'
                     return (
-                      <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
-                        <button type="button" onClick={() => show(o)} className="min-w-0 flex-1 text-left">
+                      <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3 first:pt-0 last:pb-0">
+                        <button type="button" onClick={() => show(o)} className="min-w-0 flex-[1_1_16rem] text-left">
                           <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={o.niveau?.color} />{o.groupe?.name}</p>
                           <p className="text-sm text-muted">{ucfirst(fmtShort(a.date))}, <span className="num">{fmtRange(o.slot.start, o.slot.end)}</span>, à la place de {fullName(absent)}</p>
                         </button>
@@ -133,27 +133,27 @@ export default function Replacements() {
           actions={<Segmented label="Séances affichées" value={filter} onChange={setFilter} options={[{ value: 'mine', label: 'Pour moi' }, { value: 'all', label: 'Toutes' }]} />}
         >
           {listed.length === 0 ? (
-            <EmptyState compact icon={LifeBuoy} title={filter === 'mine' ? 'Aucune séance ne vous correspond' : 'Aucune séance à pourvoir'}>
+            <EmptyState compact title={filter === 'mine' ? 'Aucune séance ne vous correspond' : 'Aucune séance à pourvoir'}>
               {filter === 'mine' ? 'Seules les séances dont vous avez le diplôme requis et où vous êtes libre sont listées.' : 'Toutes les absences du club sont couvertes.'}
             </EmptyState>
           ) : (
-            <ul className="space-y-3">
+            <ul className="divide-y divide-line">
               {listed.map(({ a, o }) => {
                 const e = eligibility(db, ctx.user.id, a)
                 const applied = db.remplacements.find((r) => r.absenceId === a.id && r.volunteerId === ctx.user.id && r.status === 'pending')
                 const absent = o.absences.find((x) => x.absence.id === a.id)?.educator
                 return (
-                  <li key={a.id} className="rounded-xl border border-line">
+                  <li key={a.id} className="py-4 first:pt-0 last:pb-0">
                     <SessionHeader a={a} o={o} absentName={fullName(absent)} onOpen={() => show(o)}>
                       {applied ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-4">
                           <Badge tone="buoy" dot>Candidature envoyée</Badge>
                           <Button size="sm" variant="ghost" onClick={() => run(() => withdraw(applied.id), 'Candidature retirée.')}>Retirer</Button>
                         </div>
                       ) : e.ok ? (
                         <Button size="sm" onClick={() => run(() => volunteer(a.id), 'Candidature envoyée. Vous serez prévenu·e de la décision.')}>Me proposer</Button>
                       ) : (
-                        <span className="text-[13px] text-muted">{e.reason}</span>
+                        <span className="text-sm text-muted">{e.reason}</span>
                       )}
                     </SessionHeader>
                   </li>
@@ -177,7 +177,7 @@ export default function Replacements() {
                 const stale = r.status === 'pending' && absenceStatus(db, a) !== 'open'
                 return (
                   <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3 first:pt-0 last:pb-0">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-[1_1_16rem]">
                       <p className="font-semibold text-ink">{g?.name}</p>
                       <p className="text-sm text-muted"><span className="first-letter:uppercase inline-block">{fmtLong(a.date)}</span>{s && <>, <span className="num">{fmtRange(s.start, s.end)}</span></>}</p>
                     </div>
@@ -203,19 +203,19 @@ export default function Replacements() {
 
 function SessionHeader({ a, o, absentName, onOpen, showReason, children }: { a: Absence; o: Occurrence; absentName: string; onOpen: () => void; showReason?: boolean; children?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3.5">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
       <div className="flex w-14 shrink-0 flex-col items-center rounded-md bg-surface-2 py-1.5">
-        <span className="text-[11.5px] font-semibold text-muted">{ucfirst(fmtShort(a.date).split(' ')[0])}</span>
-        <span className="display-md text-[22px] text-ink num">{a.date.slice(8)}</span>
+        <span className="text-xs font-semibold text-muted">{ucfirst(fmtShort(a.date).split(' ')[0])}</span>
+        <span className="display-md text-xl text-ink num">{a.date.slice(8)}</span>
       </div>
       <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left">
         <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={o.niveau?.color} /><span className="truncate">{o.groupe?.name}</span></p>
         <p className="text-sm text-ink-2"><span className="num">{fmtRange(o.slot.start, o.slot.end)}</span>, {o.piscine?.name}{o.slot.ligne ? `, ${o.slot.ligne}` : ''}</p>
-        <p className="text-[13px] text-muted">
+        <p className="text-sm text-muted">
           À la place de {absentName}, {relativeDay(a.date)}
           {o.qualification && <>, {o.qualification.short} requis</>}
         </p>
-        {showReason && a.reason && <p className="mt-0.5 text-[13px] text-muted">Motif : {a.reason}</p>}
+        {showReason && a.reason && <p className="mt-0.5 text-sm text-muted">Motif : {a.reason}</p>}
       </button>
       {children && <div className="flex w-full justify-end sm:w-auto">{children}</div>}
     </div>

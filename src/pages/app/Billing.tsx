@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { ExternalLink } from 'lucide-react'
-import { Badge, Button, Field, FormError, Input, PageHeader, Panel } from '../../components/ui'
+import { Button, Field, FormError, Input, PageHeader, Panel } from '../../components/ui'
 import { useToast } from '../../components/feedback'
 import { NoAccess } from './Config'
 import { useAppCtx } from '../../data/hooks'
@@ -43,21 +43,21 @@ export default function Billing() {
     <>
       <PageHeader title="Abonnement" description="Le club est facturé chaque mois selon le nombre de membres actifs." />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <Panel title="Pack Starter" actions={inPromo ? <Badge tone="kelp">Offre de lancement</Badge> : <Badge>Tarif normal</Badge>}>
-          <p className="flex items-baseline gap-2">
-            <span className="display text-[56px] text-ink num">{euros(q.total)}</span>
-            <span className="text-muted">par mois TTC, estimation pour {used} accès</span>
+        <Panel title="Pack Starter" actions={<span className="text-sm text-muted">{inPromo ? 'Offre de lancement' : 'Tarif normal'}</span>}>
+          <p className="flex flex-wrap items-baseline gap-x-2">
+            <span className="display text-5xl text-ink num">{euros(q.total)}</span>
+            <span className="basis-full text-muted sm:basis-auto">par mois TTC, estimation pour {used} accès</span>
           </p>
-          <p className="mt-2 text-[15px] text-ink-2">
+          <p className="mt-2 text-base text-ink-2">
             {inPromo
               ? <>Jusqu'au {fmtLong(promoEnd)}, le socle de {euros(BASE_PRICE)} inclut {q.included} accès.</>
               : <>Le socle de {euros(BASE_PRICE)} inclut {q.included} accès ; les suivants sont facturés par palier.</>}
           </p>
-          <dl className="mt-5 space-y-2 border-t border-line pt-4 text-[15px]">
+          <dl className="mt-5 space-y-2 border-t border-line pt-4 text-base">
             <div className="flex justify-between gap-4"><dt className="text-ink-2">Socle, {q.included} accès inclus</dt><dd className="font-semibold text-ink num">{euros(BASE_PRICE)}</dd></div>
             {q.lines.map((l) => <div key={l.label} className="flex justify-between gap-4"><dt className="text-ink-2">{l.label} : {l.count} × {euros(l.unit)}</dt><dd className="font-semibold text-ink num">{euros(l.subtotal)}</dd></div>)}
           </dl>
-          <div className="mt-6 rounded-xl bg-surface-2 p-4">
+          <div className="mt-6 border-t border-line pt-5">
             <p className="font-semibold text-ink">Factures et moyen de paiement</p>
             <p className="mt-1 text-sm text-ink-2">Téléchargez vos factures, changez de carte bancaire ou résiliez depuis l'espace sécurisé Stripe.</p>
             <Button className="mt-3" variant="secondary" icon={ExternalLink} onClick={() => toast(ctx.demo ? "Le portail Stripe n'est pas disponible en mode démo." : 'Le portail Stripe sera disponible une fois le paiement branché sur le serveur.', 'info')}>Ouvrir le portail Stripe</Button>
@@ -77,7 +77,7 @@ export default function Billing() {
             <Field label="Nouvelle limite d'accès" htmlFor="cap" hint={`Au moins ${used}, le nombre de membres actifs.`}>
               <Input id="cap" type="number" inputMode="numeric" min={used} value={cap} onChange={(e) => { setCap(e.target.value); setError(null) }} className="w-32" />
             </Field>
-            <Button type="submit" variant="secondary">Enregistrer la limite</Button>
+            <Button type="submit">Enregistrer la limite</Button>
           </form>
         </Panel>
       </div>

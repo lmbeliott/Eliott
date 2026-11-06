@@ -69,7 +69,7 @@ function AccountBody() {
                   const q = db.qualifications.find((x) => x.id === uq.qualificationId)
                   return (
                     <li key={uq.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                      <div><p className="font-semibold text-ink">{q?.short}</p><p className="text-[13px] text-muted">{q?.label}</p></div>
+                      <div><p className="font-semibold text-ink">{q?.short}</p><p className="text-sm text-muted">{q?.label}</p></div>
                       <ExpiryBadge expiresOn={uq.expiresOn} />
                     </li>
                   )
@@ -89,7 +89,7 @@ function AccountBody() {
               <FormError>{emailErr}</FormError>
               <Field label="Nouvelle adresse" htmlFor="e-new"><Input id="e-new" type="email" autoComplete="email" value={email.value} onChange={(e) => setEmail({ ...email, value: e.target.value })} /></Field>
               <Field label="Mot de passe actuel" htmlFor="e-pwd" hint="Pour confirmer qu'il s'agit bien de vous."><Input id="e-pwd" type="password" autoComplete="current-password" value={email.password} onChange={(e) => setEmail({ ...email, password: e.target.value })} /></Field>
-              <Button type="submit" variant="secondary" disabled={!email.value || !email.password}>Modifier l'adresse</Button>
+              <Button type="submit" disabled={!email.value || !email.password}>Modifier l'adresse</Button>
             </form>
           </Panel>
 
@@ -99,7 +99,7 @@ function AccountBody() {
               <Field label="Mot de passe actuel" htmlFor="pw-cur"><Input id="pw-cur" type="password" autoComplete="current-password" value={pwd.current} onChange={(e) => setPwd({ ...pwd, current: e.target.value })} /></Field>
               <Field label="Nouveau mot de passe" htmlFor="pw-new" hint="8 caractères minimum."><Input id="pw-new" type="password" autoComplete="new-password" value={pwd.next} onChange={(e) => setPwd({ ...pwd, next: e.target.value })} /></Field>
               <Field label="Confirmer le nouveau mot de passe" htmlFor="pw-conf"><Input id="pw-conf" type="password" autoComplete="new-password" value={pwd.confirm} onChange={(e) => setPwd({ ...pwd, confirm: e.target.value })} /></Field>
-              <Button type="submit" variant="secondary" disabled={!pwd.current || !pwd.next}>Modifier le mot de passe</Button>
+              <Button type="submit" disabled={!pwd.current || !pwd.next}>Modifier le mot de passe</Button>
             </form>
           </Panel>
 

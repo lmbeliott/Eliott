@@ -7,9 +7,9 @@ function LegalLayout({ title, updated, children }: { title: string; updated: str
     <div className="min-h-dvh bg-bg">
       <SiteHeader />
       <main className="mx-auto max-w-[760px] px-4 pb-24 pt-10 sm:px-6">
-        <h1 className="display-md text-[34px] text-ink sm:text-[44px]">{title}</h1>
+        <h1 className="display-md text-3xl text-ink sm:text-4xl">{title}</h1>
         <p className="mt-2 text-sm text-muted">Dernière mise à jour : {updated}</p>
-        <div className="legal mt-10 space-y-8 text-[16px] leading-relaxed text-ink-2 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1 [&_strong]:text-ink [&_ul]:mt-2 [&_ul]:space-y-1.5">
+        <div className="legal mt-10 space-y-8 text-base leading-relaxed text-ink-2 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1 [&_strong]:text-ink [&_ul]:mt-2 [&_ul]:space-y-1.5">
           {children}
         </div>
       </main>
@@ -48,7 +48,7 @@ export function Terms() {
             <li key={t.from}><strong>Palier {i + 1} :</strong> {t.to === Infinity ? `à partir du ${t.from}e accès` : `du ${t.from}e au ${t.to}e accès`} : <strong>{euros(t.unit)}</strong> par accès supplémentaire et par mois.</li>
           ))}
         </ul>
-        <p className="mt-4 text-[15px]"><em>Exemple hors promotion pour un club de 15 accès :</em> {euros(BASE_PRICE)} (incluant 3 accès) {example.lines.map((l) => `+ (${l.count} × ${euros(l.unit)})`).join(' ')} = {euros(example.total)} par mois.</p>
+        <p className="mt-4 text-base"><em>Exemple hors promotion pour un club de 15 accès :</em> {euros(BASE_PRICE)} (incluant 3 accès) {example.lines.map((l) => `+ (${l.count} × ${euros(l.unit)})`).join(' ')} = {euros(example.total)} par mois.</p>
       </section>
       <section>
         <h2>5. Facturation et paiement</h2>

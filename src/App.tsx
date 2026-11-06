@@ -137,8 +137,8 @@ function RouteError({ full }: { full?: boolean }) {
   const loadFailed = error instanceof PageLoadError
   const body = (
     <div role="alert" className="max-w-[520px]">
-      <h1 className="display-md text-[30px] text-ink sm:text-[36px]">Une erreur est survenue</h1>
-      <p className="mt-3 text-[16px] text-ink-2">
+      <h1 className="display-md text-2xl text-ink sm:text-3xl">Une erreur est survenue</h1>
+      <p className="mt-3 text-base text-ink-2">
         {loadFailed
           ? 'Impossible de charger cette page (mise à jour ou connexion perdue). Rechargez pour réessayer.'
           : "Cette page n'a pas pu s'afficher. Rechargez-la pour réessayer."}

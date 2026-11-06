@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { Award, Pencil, Plus, ShieldCheck, Trash2, UserCheck, UserMinus } from 'lucide-react'
+import { Award, Pencil, Plus, Trash2, UserMinus } from 'lucide-react'
 import { Avatar, Badge, Button, Checkbox, Drawer, EmptyState, Field, FormError, IconButton, Input, PageHeader, Panel, Select, Table, Tabs } from '../../components/ui'
 import { ExpiryBadge, expiryInfo } from '../../components/status'
 import { useAction, useConfirm, useToast } from '../../components/feedback'
@@ -72,7 +72,7 @@ function Members() {
                   <p className="truncate text-sm text-muted">{user.email}</p>
                   {user.phone && <p className="truncate text-sm text-muted num">{user.phone}</p>}
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    {quals.length === 0 ? <span className="text-[13px] text-muted">Aucun diplôme renseigné</span> : quals.map((uq) => {
+                    {quals.length === 0 ? <span className="text-sm text-muted">Aucun diplôme renseigné</span> : quals.map((uq) => {
                       const qq = db.qualifications.find((x) => x.id === uq.qualificationId)
                       const tone = expiryInfo(uq.expiresOn).tone
                       return <Badge key={uq.id} tone={tone === 'kelp' || tone === 'neutral' ? 'neutral' : tone}>{qq?.short}{tone === 'rope' ? ', expiré' : tone === 'buoy' ? ', à recycler' : ''}</Badge>
@@ -107,7 +107,7 @@ function MemberDrawer({ user, onClose }: { user: User | null; onClose: () => voi
   const selectedQual = db.qualifications.find((q) => q.id === qualId)
 
   return (
-    <Drawer open onClose={onClose} title={fullName(user)} description={user.phone ? <>{user.email}, <a href={`tel:${user.phone.replace(/[^\d+]/g, '')}`} className="text-water hover:underline">{user.phone}</a></> : user.email} width={520}
+    <Drawer open onClose={onClose} title={fullName(user)} description={user.phone ? <>{user.email}, <a href={`tel:${user.phone.replace(/[^\d+]/g, '')}`} className="link-action">{user.phone}</a></> : user.email} width={520}
       footer={ctx.can('team') && !isSelf && (!membership.isAdmin || ctx.isAdmin) ? (
         <Button variant="ghost" icon={UserMinus} className="mr-auto text-rope" onClick={async () => {
           if (await confirm({ title: `Retirer ${fullName(user)} du club ?`, body: "Ses créneaux n'auront plus de titulaire et son accès au club sera fermé. Son compte personnel est conservé.", confirmLabel: 'Retirer du club' })) {
@@ -149,7 +149,7 @@ function MemberDrawer({ user, onClose }: { user: User | null; onClose: () => voi
                 <li key={uq.id} className="flex flex-wrap items-center gap-3 px-3.5 py-2.5">
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-ink">{q?.short}</p>
-                    <p className="truncate text-[13px] text-muted">{q?.label}</p>
+                    <p className="truncate text-sm text-muted">{q?.label}</p>
                   </div>
                   <ExpiryBadge expiresOn={uq.expiresOn} />
                   {ctx.can('team') && <IconButton size="sm" label={`Retirer ${q?.short}`} icon={Trash2} className="hover:text-rope" onClick={() => run(() => revokeQualification(uq.id), 'Diplôme retiré.')} />}
@@ -172,7 +172,7 @@ function MemberDrawer({ user, onClose }: { user: User | null; onClose: () => voi
                 <Input id="grant-exp" type="date" value={expires} onChange={(e) => setExpires(e.target.value)} className="sm:w-44" />
               </Field>
             </div>
-            {selectedQual?.validityMonths && <p className="mt-2 text-[13px] text-muted">Validité habituelle : {selectedQual.validityMonths} mois.</p>}
+            {selectedQual?.validityMonths && <p className="mt-2 text-sm text-muted">Validité habituelle : {selectedQual.validityMonths} mois.</p>}
             <Button type="submit" size="sm" className="mt-3" disabled={!qualId} icon={Award}>Enregistrer le diplôme</Button>
           </form>
         )}
@@ -192,7 +192,7 @@ function Requests() {
   return (
     <Panel title="Demandes d'adhésion" description={`${used} accès utilisé${used > 1 ? 's' : ''} sur ${ctx.club.capacity}. Chaque membre accepté compte comme un accès.`}>
       {requests.length === 0 ? (
-        <EmptyState compact icon={UserCheck} title="Aucune demande en attente">Partagez le nom exact du club à vos éducateurs : ils le trouveront après avoir créé leur compte.</EmptyState>
+        <EmptyState compact title="Aucune demande en attente">Partagez le nom exact du club à vos éducateurs : ils le trouveront après avoir créé leur compte.</EmptyState>
       ) : (
         <ul className="divide-y divide-line">
           {requests.map((m) => {
@@ -204,7 +204,7 @@ function Requests() {
                   <p className="font-semibold text-ink">{fullName(u)}</p>
                   <p className="text-sm text-muted">{u?.email}, demande du {fmtMedium(m.requestedAt.slice(0, 10))}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex w-full items-center justify-end gap-4 sm:w-auto">
                   <Button size="sm" variant="ghost" onClick={() => run(() => decideMembership(m.id, false), 'Demande refusée.')}>Refuser</Button>
                   <Button size="sm" onClick={() => run(() => decideMembership(m.id, true), `${u?.firstname} a rejoint le club.`)}>Accepter</Button>
                 </div>
@@ -227,7 +227,7 @@ function Catalog() {
   return (
     <>
       <Panel title="Catalogue des diplômes" description="Liste commune aux clubs. Associez un diplôme à un groupe pour filtrer les remplaçants." actions={<Button icon={Plus} onClick={() => setEditing('new')}>Ajouter un diplôme</Button>}>
-        {db.qualifications.length === 0 ? <EmptyState compact icon={Award} title="Catalogue vide">Ajoutez par exemple BNSSA, BPJEPS AAN ou PSE1.</EmptyState> : (
+        {db.qualifications.length === 0 ? <EmptyState compact title="Catalogue vide">Ajoutez par exemple BNSSA, BPJEPS AAN ou PSE1.</EmptyState> : (
           <Table>
             <thead><tr><th>Diplôme</th><th>Validité</th><th>Titulaires</th><th className="w-24"><span className="sr-only">Actions</span></th></tr></thead>
             <tbody>
@@ -235,7 +235,7 @@ function Catalog() {
                 const holders = db.userQualifications.filter((uq) => uq.qualificationId === q.id).length
                 return (
                   <tr key={q.id}>
-                    <td><p className="font-semibold text-ink">{q.short}</p><p className="text-[13px] text-muted">{q.label}</p></td>
+                    <td><p className="font-semibold text-ink">{q.short}</p><p className="text-sm text-muted">{q.label}</p></td>
                     <td className="text-ink-2">{q.validityMonths ? `${q.validityMonths} mois` : 'Permanent'}</td>
                     <td className="text-ink-2 num">{holders}</td>
                     <td>
@@ -302,7 +302,7 @@ function Roles() {
   return (
     <>
       <Panel title="Rôles et accès" description="Déléguez une partie de la gestion sans donner tous les droits. Les administrateurs ont toujours tous les accès." actions={<Button icon={Plus} onClick={() => setEditing('new')}>Créer un rôle</Button>}>
-        {roles.length === 0 ? <EmptyState compact icon={ShieldCheck} title="Aucun rôle personnalisé">Ex. « Coordination bassin » pour gérer le planning et valider les remplacements.</EmptyState> : (
+        {roles.length === 0 ? <EmptyState compact title="Aucun rôle personnalisé">Ex. « Coordination bassin » pour gérer le planning et valider les remplacements.</EmptyState> : (
           <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {roles.map((r) => {
               const count = db.memberships.filter((m) => m.roleId === r.id && m.clubId === ctx.club.id).length
@@ -321,7 +321,7 @@ function Roles() {
                     </div>
                   </div>
                   <ul className="mt-3 flex flex-wrap gap-1.5">
-                    {r.permissions.length === 0 ? <li className="text-[13px] text-muted">Aucun droit</li> : r.permissions.map((p) => <li key={p}><Badge tone="water">{PERMISSIONS.find((x) => x.key === p)?.label}</Badge></li>)}
+                    {r.permissions.length === 0 ? <li className="text-sm text-muted">Aucun droit</li> : r.permissions.map((p) => <li key={p}><Badge tone="water">{PERMISSIONS.find((x) => x.key === p)?.label}</Badge></li>)}
                   </ul>
                 </li>
               )

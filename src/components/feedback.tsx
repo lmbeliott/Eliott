@@ -43,14 +43,14 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
       <ConfirmCtx.Provider value={ask}>
         {children}
         {createPortal(
-          <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 p-4 pb-[max(16px,env(safe-area-inset-bottom))] sm:items-end">
+          <div aria-live="polite" className="toast-stack pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 px-4 pt-4 sm:items-end">
             {toasts.map((t) => {
               const Icon = t.tone === 'success' ? CheckCircle2 : t.tone === 'error' ? AlertTriangle : Info
               return (
                 <div
                   key={t.id}
                   role={t.tone === 'error' ? 'alert' : 'status'}
-                  className={cn('pointer-events-auto flex max-w-[420px] items-start gap-2.5 rounded-xl bg-[#0c2a3e] px-4 py-3 text-sm text-white shadow-float dark:bg-[#e6f1f5] dark:text-[#0c2a3e]', t.leaving ? 'animate-[toast-out_260ms_var(--ease-in-out)_both]' : 'animate-[pop_320ms_var(--ease-spring)]')}
+                  className={cn('pointer-events-auto flex max-w-[420px] items-start gap-2.5 rounded-lg bg-[#0c2a3e] px-4 py-3 text-sm text-white shadow-float dark:bg-[#e6f1f5] dark:text-[#0c2a3e]', t.leaving ? 'animate-[toast-out_260ms_var(--ease-in-out)_both]' : 'animate-[pop_320ms_var(--ease-spring)]')}
                 >
                   <Icon aria-hidden className={cn('mt-0.5 size-4 shrink-0', t.tone === 'success' && 'text-[#5fe0a8] dark:text-[#157350]', t.tone === 'error' && 'text-[#ff9a88] dark:text-[#c9361f]', t.tone === 'info' && 'text-[#7fdcf2] dark:text-[#08708f]')} />
                   <span>{t.text}</span>
@@ -98,11 +98,11 @@ function ConfirmDialog({ title, body, confirmLabel, tone = 'danger', onClose }: 
   return createPortal(
     <div className="fixed inset-0 z-[70] flex items-end justify-center p-4 sm:items-center">
       <div aria-hidden className={cn('absolute inset-0 bg-[#04121b]/50', closing ? 'animate-[fade-out_150ms_ease-in_both]' : 'animate-[overlay-in_180ms_ease-out]')} onClick={() => finish(false)} />
-      <div ref={ref} role="alertdialog" aria-modal="true" aria-labelledby={titleId} className={cn('relative w-full max-w-[440px] rounded-xl bg-surface p-6 shadow-float', closing ? 'animate-[pop-out_150ms_ease-in_both]' : 'animate-[pop_260ms_var(--ease-spring)]')}>
+      <div ref={ref} role="alertdialog" aria-modal="true" aria-labelledby={titleId} className={cn('relative w-full max-w-[440px] rounded-lg bg-surface p-6 shadow-float', closing ? 'animate-[pop-out_150ms_ease-in_both]' : 'animate-[pop_260ms_var(--ease-spring)]')}>
         <h2 id={titleId} className="text-lg font-bold text-ink">{title}</h2>
-        {body && <div className="mt-2 text-[15px] text-ink-2">{body}</div>}
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Button data-cancel variant="secondary" onClick={() => finish(false)}>Annuler</Button>
+        {body && <div className="mt-2 text-base text-ink-2">{body}</div>}
+        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-6">
+          <Button data-cancel variant="ghost" onClick={() => finish(false)}>Annuler</Button>
           <Button variant={tone === 'danger' ? 'danger' : 'primary'} onClick={() => finish(true)}>{confirmLabel}</Button>
         </div>
       </div>

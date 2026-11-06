@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarCheck2, Check, ChevronRight, Sun } from 'lucide-react'
+import { Check, ChevronRight } from 'lucide-react'
 import { Badge, Button, ButtonLink, EmptyState, LevelDot, PageHeader, Panel } from '../../components/ui'
 import { SessionDrawer } from '../../components/SessionDrawer'
 import { ExpiryBadge } from '../../components/status'
@@ -28,6 +28,7 @@ export default function Dashboard() {
       .filter((o) => !isOver(o.date, o.slot.end))
       .slice(0, 6)
     const todayAll = occurrencesOn(db, clubId, toISO(t))
+    const nextClub = todayAll.length ? undefined : days.slice(1).flatMap((d) => occurrencesOn(db, clubId, d))[0]
 
     const openAbsences = db.absences.filter((a) => a.clubId === clubId && absenceStatus(db, a) === 'open').sort((a, b) => a.date.localeCompare(b.date))
     const forMe = openAbsences
@@ -48,7 +49,7 @@ export default function Dashboard() {
     const myQuals = db.userQualifications.filter((uq) => uq.userId === ctx.user.id && uq.expiresOn && daysUntil(uq.expiresOn) <= 60)
 
     const hasSlots = db.creneaux.some((c) => c.clubId === clubId)
-    return { hasSlots, mineUpcoming, todayAll, forMe, weekSessions, uncovered, pendingCandidatures, pendingMembers, expiring, myQuals }
+    return { hasSlots, mineUpcoming, todayAll, nextClub, forMe, weekSessions, uncovered, pendingCandidatures, pendingMembers, expiring, myQuals }
   }, [db, clubId, ctx.user.id, t])
 
   const open = (o: Occurrence) => setSelected({ slot: o.slot, date: o.date })
@@ -64,9 +65,9 @@ export default function Dashboard() {
       {ctx.can('planning') && !data.hasSlots && <SetupChecklist />}
 
       {ctx.isManager && data.hasSlots && (
-        <dl className="mb-6 grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-surface lg:grid-cols-4">
+        <dl className="elev-2 mb-6 grid grid-cols-2 overflow-hidden rounded-lg border border-line/70 bg-surface lg:grid-cols-4">
           <Kpi to="/app/planning" label="Séances cette semaine" value={data.weekSessions} />
-          <Kpi to="/app/remplacements" label="Absences à couvrir (14 j)" value={data.uncovered} alert={data.uncovered > 0} />
+          <Kpi to="/app/remplacements" label={'Absences à couvrir (14\u00a0j)'} value={data.uncovered} alert={data.uncovered > 0} />
           {ctx.can('replacements') && <Kpi to="/app/remplacements" label="Candidatures à valider" value={data.pendingCandidatures} warn={data.pendingCandidatures > 0} />}
           {ctx.can('team') && <Kpi to="/app/equipe/demandes" label="Adhésions en attente" value={data.pendingMembers} warn={data.pendingMembers > 0} />}
         </dl>
@@ -74,9 +75,9 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="space-y-6">
-          <Panel title="Mes prochaines séances" actions={<Link to="/app/planning?vue=moi" className="text-sm font-semibold text-water hover:underline">Tout voir</Link>}>
+          <Panel title="Mes prochaines séances" actions={<Link to="/app/planning?vue=moi" className="link-action text-sm">Tout voir</Link>}>
             {data.mineUpcoming.length === 0 ? (
-              <EmptyState compact icon={CalendarCheck2} title="Aucune séance dans les 7 prochains jours">
+              <EmptyState compact title="Aucune séance dans les 7 prochains jours">
                 Vos créneaux apparaîtront ici dès qu'un responsable vous aura affecté·e.
               </EmptyState>
             ) : (
@@ -89,7 +90,11 @@ export default function Dashboard() {
           {ctx.isManager && data.hasSlots && (
             <Panel title="Aujourd'hui au bassin" description={`${data.todayAll.length} séance${data.todayAll.length > 1 ? 's' : ''} programmée${data.todayAll.length > 1 ? 's' : ''}`}>
               {data.todayAll.length === 0 ? (
-                <EmptyState compact icon={Sun} title="Pas de séance aujourd'hui">Profitez-en pour préparer la semaine prochaine.</EmptyState>
+                <EmptyState compact title="Pas de séance aujourd'hui">
+                  {data.nextClub
+                    ? <>Prochaine séance : {fmtShort(data.nextClub.date)}, <span className="num">{fmtRange(data.nextClub.slot.start, data.nextClub.slot.end)}</span>, {data.nextClub.groupe?.name}.</>
+                    : 'Aucune autre séance programmée dans les 7 prochains jours.'}
+                </EmptyState>
               ) : (
                 <ol className="relative ml-1 border-l-2 border-line">
                   {data.todayAll.map((o) => {
@@ -118,17 +123,17 @@ export default function Dashboard() {
         </div>
 
         <div className="space-y-6">
-          <Panel title="Remplacements pour vous" actions={<Link to="/app/remplacements" className="text-sm font-semibold text-water hover:underline">Tout voir</Link>}>
+          <Panel title="Remplacements pour vous" actions={<Link to="/app/remplacements" className="link-action text-sm">Tout voir</Link>}>
             {data.forMe.length === 0 ? (
               <p className="text-sm text-muted">Aucun créneau à pourvoir ne correspond à vos diplômes et disponibilités pour le moment.</p>
             ) : (
-              <ul className="space-y-3">
+              <ul className="divide-y divide-line">
                 {data.forMe.slice(0, 3).map(({ a, o, applied }) => (
-                  <li key={a.id} className="rounded-xl border border-line p-3.5">
+                  <li key={a.id} className="py-3.5 first:pt-0 last:pb-0">
                     <button type="button" onClick={() => open(o)} className="block w-full text-left">
                       <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={o.niveau?.color} />{o.groupe?.name}</p>
                       <p className="mt-0.5 text-sm text-ink-2">{ucfirst(fmtShort(a.date))}, <span className="num">{fmtRange(o.slot.start, o.slot.end)}</span></p>
-                      <p className="text-[13px] text-muted">{o.piscine?.name}, à la place de {shortName(o.absences.find((x) => x.absence.id === a.id)?.educator)}</p>
+                      <p className="text-sm text-muted">{o.piscine?.name}, à la place de {shortName(o.absences.find((x) => x.absence.id === a.id)?.educator)}</p>
                     </button>
                     <div className="mt-3">
                       {applied ? <Badge tone="buoy" dot>Candidature envoyée</Badge>
@@ -154,7 +159,7 @@ export default function Dashboard() {
           )}
 
           {ctx.can('team') && (
-            <Panel title="Diplômes de l'équipe" description="Expirés ou à recycler dans les 60 jours" actions={<Link to="/app/equipe" className="text-sm font-semibold text-water hover:underline">Équipe</Link>}>
+            <Panel title="Diplômes de l'équipe" description="Expirés ou à recycler dans les 60 jours" actions={<Link to="/app/equipe" className="link-action text-sm">Équipe</Link>}>
               {data.expiring.length === 0 ? <p className="text-sm text-muted">Tous les diplômes sont à jour.</p> : (
                 <ul className="divide-y divide-line">
                   {data.expiring.map((uq) => {
@@ -163,7 +168,7 @@ export default function Dashboard() {
                       <li key={uq.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold text-ink">{fullName(u)}</p>
-                          <p className="text-[13px] text-muted">{db.qualifications.find((q) => q.id === uq.qualificationId)?.short}</p>
+                          <p className="text-sm text-muted">{db.qualifications.find((q) => q.id === uq.qualificationId)?.short}</p>
                         </div>
                         <ExpiryBadge expiresOn={uq.expiresOn} />
                       </li>
@@ -197,7 +202,7 @@ function SetupChecklist() {
       <ol className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
         {steps.map((s, i) => (
           <li key={s.title} className={cn('flex flex-col rounded-xl border p-4', i === next ? 'border-water-bright bg-water-soft/50' : 'border-line')}>
-            <span className={cn('flex size-8 items-center justify-center rounded-md text-[15px] font-extrabold num', s.done ? 'bg-kelp-soft text-kelp' : 'bg-ink text-surface')}>
+            <span className={cn('flex size-8 items-center justify-center rounded-md text-base font-bold num', s.done ? 'bg-kelp-soft text-kelp' : 'bg-ink text-surface')}>
               {s.done ? <Check aria-hidden className="size-4" strokeWidth={3} /> : i + 1}
             </span>
             <p className={cn('mt-3 font-semibold', s.done ? 'text-muted line-through decoration-1' : 'text-ink')}>{s.title}</p>
@@ -213,8 +218,8 @@ function SetupChecklist() {
 function Kpi({ to, label, value, alert, warn }: { to: string; label: string; value: number; alert?: boolean; warn?: boolean }) {
   return (
     <Link to={to} className="group border-b border-r border-line px-5 py-4 transition-colors hover:bg-surface-2/60 [&:nth-child(2n)]:border-r-0 lg:border-b-0 lg:[&:nth-child(2n)]:border-r lg:last:border-r-0">
-      <dt className="text-[13px] font-medium text-muted">{label}</dt>
-      <dd className={cn('display-md mt-1 text-[34px]', alert ? 'text-rope' : warn ? 'text-buoy' : 'text-ink')}><CountUp value={value} startOnView duration={800} /></dd>
+      <dt className={cn('text-sm font-medium text-muted', warn && 'before:mr-1.5 before:inline-block before:size-2 before:rounded-full before:bg-buoy-bright before:align-[1px]')}>{label}</dt>
+      <dd className={cn('display-md mt-1 text-3xl', alert ? 'text-rope' : 'text-ink')}><CountUp value={value} startOnView duration={800} /></dd>
     </Link>
   )
 }
@@ -226,8 +231,8 @@ function MySessionRow({ o, me, onOpen }: { o: Occurrence; me: string; onOpen: ()
     <li>
       <button type="button" onClick={onOpen} className="flex w-full items-center gap-4 rounded-md px-2 py-3 text-left hover:bg-surface-2/60">
         <div className="w-14 shrink-0 text-center">
-          <p className="text-[12px] font-semibold text-muted">{relativeDay(o.date) === "aujourd'hui" ? 'Auj.' : ucfirst(fmtShort(o.date).split(' ')[0])}</p>
-          <p className="display-md text-[26px] text-ink num">{o.date.slice(8)}</p>
+          <p className="text-xs font-semibold text-muted">{relativeDay(o.date) === "aujourd'hui" ? 'Auj.' : ucfirst(fmtShort(o.date).split(' ')[0])}</p>
+          <p className="display-md text-2xl text-ink num">{o.date.slice(8)}</p>
         </div>
         <span aria-hidden className="h-10 w-1 shrink-0 rounded-full" style={{ background: o.niveau?.color ?? 'var(--line-strong)' }} />
         <div className="min-w-0 flex-1">

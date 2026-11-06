@@ -2,7 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronRight, Clock, LogOut, Search } from 'lucide-react'
 import { Logo } from '../components/Logo'
-import { Badge, Button, EmptyState, Field, FormError, Input, Panel } from '../components/ui'
+import { Button, EmptyState, Field, FormError, Input, Panel } from '../components/ui'
 import { useAction, useConfirm } from '../components/feedback'
 import { approvedMembers, cancelJoinRequest, createClub, logout, requestJoin, selectClub } from '../data/api'
 import { useCurrentUser } from '../data/hooks'
@@ -54,13 +54,13 @@ export default function ClubChoice() {
         </div>
       </header>
       <main className="mx-auto max-w-[1100px] px-4 py-10 sm:px-6 sm:py-14">
-        <h1 className="display-md text-[34px] text-ink sm:text-[42px]">Bonjour {user.firstname}, choisissez votre club</h1>
-        <p className="mt-2 text-[15px] text-ink-2">Un seul compte pour tous vos clubs : les plannings restent séparés.</p>
+        <h1 className="display-md text-3xl text-ink sm:text-4xl">Bonjour {user.firstname}, choisissez votre club</h1>
+        <p className="mt-2 text-base text-ink-2">Un seul compte pour tous vos clubs : les plannings restent séparés.</p>
 
         <section aria-labelledby="mes-clubs" className="mt-10">
           <h2 id="mes-clubs" className="text-lg font-bold text-ink">Mes clubs</h2>
           {approved.length === 0 && pending.length === 0 ? (
-            <p className="mt-3 text-[15px] text-muted">Vous n'êtes inscrit dans aucun club pour l'instant. Rejoignez celui de votre structure ou créez le vôtre ci-dessous.</p>
+            <p className="mt-3 text-base text-muted">Vous n'êtes inscrit dans aucun club pour l'instant. Rejoignez celui de votre structure ou créez le vôtre ci-dessous.</p>
           ) : (
             <ul className="mt-4 grid gap-3 md:grid-cols-2">
               {approved.map((m) => {
@@ -69,7 +69,7 @@ export default function ClubChoice() {
                 return (
                   <li key={m.id}>
                     <button type="button" onClick={() => open(club.id)} className="group flex w-full items-center gap-4 rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-water-bright sm:p-5">
-                      <span aria-hidden className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-ink text-lg font-extrabold text-surface">
+                      <span aria-hidden className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-ink text-lg font-bold text-surface">
                         {club.name.split(/\s+/).filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
                       </span>
                       <span className="min-w-0 flex-1">
@@ -134,9 +134,9 @@ export default function ClubChoice() {
               <Field label="Ville" htmlFor="club-city" optional>
                 <Input id="club-city" value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" />
               </Field>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <Button type="submit">Créer le club</Button>
-                <Badge tone="water">Sans engagement</Badge>
+                <span className="text-sm text-muted">Sans engagement, résiliable en ligne</span>
               </div>
             </form>
           </Panel>

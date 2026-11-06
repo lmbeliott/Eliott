@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { LifeBuoy } from 'lucide-react'
 import { Badge, Button, EmptyState, Field, FormError, Input, PageHeader, Panel, Textarea } from '../../components/ui'
 import { useToast } from '../../components/feedback'
 import { useAppCtx } from '../../data/hooks'
@@ -38,11 +37,11 @@ export default function Support() {
               <Textarea id="t-message" rows={6} value={message} onChange={(e) => { setMessage(e.target.value); setError(null) }} />
             </Field>
             <Button type="submit">Envoyer la demande</Button>
-            <p className="text-[13px] text-muted">Cette version fonctionne sans serveur : vos demandes restent dans ce navigateur et ne sont pas transmises à l'équipe SwimHub.</p>
+            <p className="text-sm text-muted">Cette version fonctionne sans serveur : vos demandes restent dans ce navigateur et ne sont pas transmises à l'équipe SwimHub.</p>
           </form>
         </Panel>
         <Panel title="Mes demandes">
-          {tickets.length === 0 ? <EmptyState compact icon={LifeBuoy} title="Aucune demande">Vos échanges avec le support apparaîtront ici.</EmptyState> : (
+          {tickets.length === 0 ? <EmptyState compact title="Aucune demande">Vos échanges avec le support apparaîtront ici.</EmptyState> : (
             <ul className="divide-y divide-line">
               {tickets.map((t) => (
                 <li key={t.id} className="py-3 first:pt-0 last:pb-0">
@@ -51,7 +50,7 @@ export default function Support() {
                     {t.status === 'open' ? <Badge tone="buoy" dot>En cours</Badge> : <Badge tone="kelp">Résolue</Badge>}
                   </div>
                   <p className="mt-0.5 line-clamp-2 text-sm text-ink-2">{t.message}</p>
-                  <p className="mt-1 text-[13px] text-muted">Envoyée le {fmtMedium(t.createdAt.slice(0, 10))}</p>
+                  <p className="mt-1 text-sm text-muted">Envoyée le {fmtMedium(t.createdAt.slice(0, 10))}</p>
                 </li>
               ))}
             </ul>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Check, Download, Layers, Menu, ShieldCheck, Smartphone, UserCog, X } from 'lucide-react'
+import { Download, Menu, X } from 'lucide-react'
 import { Logo } from '../../components/Logo'
 import { HeroStage } from '../../components/HeroStage'
 import { InstallGuide } from '../../components/InstallGuide'
@@ -35,10 +35,10 @@ export default function Landing() {
         <div className="deep -mt-16 pt-16">
         <section className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-14 px-4 pb-20 pt-12 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-10 lg:pb-28 lg:pt-20">
           <div>
-            <h1 className="display text-[54px] text-ink sm:text-[78px] lg:text-[86px]">
+            <h1 className="display text-5xl text-ink sm:text-6xl lg:text-7xl">
               <RisingWords text="Chaque ligne d'eau a son éducateur." delay={150} />
             </h1>
-            <p className="hero-in mt-7 max-w-[52ch] text-[18px] leading-relaxed text-ink-2 sm:text-[19px]" style={{ animationDelay: '520ms' }}>
+            <p className="hero-in mt-7 max-w-[52ch] text-lg leading-relaxed text-ink-2" style={{ animationDelay: '520ms' }}>
               SwimHub Connect centralise les plannings de votre club de natation, propose chaque absence aux collègues
               diplômés et disponibles, et prépare le relevé d'heures du mois pour la paie.
             </p>
@@ -48,10 +48,9 @@ export default function Landing() {
                 ? <ButtonLink to={ownSpace} size="lg" variant="secondary">Ouvrir mon espace</ButtonLink>
                 : <Button size="lg" variant="secondary" onClick={startDemo}>Explorer la démo</Button>}
             </div>
-            <ul className="hero-in mt-9 flex flex-col gap-2 border-t border-line pt-5 text-[15.5px] text-ink-2 sm:flex-row sm:gap-7" style={{ animationDelay: '760ms' }}>
-              <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />{PROMO_MONTHS} mois avec {INCLUDED_PROMO} accès pour {euros(BASE_PRICE)} par mois</li>
-              <li className="flex items-center gap-2"><Check aria-hidden className="size-4 text-water" strokeWidth={3} />Sans engagement</li>
-            </ul>
+            <p className="hero-in mt-9 border-t border-line pt-5 text-base text-ink-2 num" style={{ animationDelay: '760ms' }}>
+              Les {PROMO_MONTHS} premiers mois : {INCLUDED_PROMO} accès inclus pour {euros(BASE_PRICE)} par mois, sans engagement.
+            </p>
           </div>
           <HeroStage />
         </section>
@@ -61,8 +60,8 @@ export default function Landing() {
         <section className="border-y border-line bg-surface" aria-labelledby="parcours">
           <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:py-24">
             <Reveal className="max-w-[640px]">
-              <h2 id="parcours" className="display-md text-[34px] text-ink sm:text-[44px]">De l'absence au remplaçant, sans message de groupe.</h2>
-              <p className="mt-4 text-[17px] text-ink-2">Fini les relances sur WhatsApp à 22 h. Le créneau ne s'affiche qu'aux personnes qui peuvent vraiment le prendre.</p>
+              <h2 id="parcours" className="display-md text-3xl text-ink sm:text-4xl">De l'absence au remplaçant, sans message de groupe.</h2>
+              <p className="mt-4 text-lg text-ink-2">Fini les relances sur WhatsApp à 22 h. Le créneau ne s'affiche qu'aux personnes qui peuvent vraiment le prendre.</p>
             </Reveal>
             <StepsLane />
           </div>
@@ -70,7 +69,7 @@ export default function Landing() {
 
         {/* ------------------------------------------------ Fonctionnalités */}
         <section id="fonctionnalites" className="mx-auto max-w-[1200px] scroll-mt-20 px-4 py-20 sm:px-6 lg:py-28">
-          <Reveal as="h2" className="display-md max-w-[720px] text-[34px] text-ink sm:text-[44px]">Pensé par et pour le monde de la natation.</Reveal>
+          <Reveal as="h2" className="display-md max-w-[720px] text-3xl text-ink sm:text-4xl">Planning, diplômes, heures : les trois tableurs du club, enfin reliés.</Reveal>
           <div className="mt-16 space-y-24">
             <Feature
               title="Le planning de la semaine, bassin par bassin"
@@ -93,12 +92,11 @@ export default function Landing() {
             />
           </div>
 
-          <ul className="mt-24 grid gap-x-8 gap-y-8 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
-            {EXTRAS.map(({ icon: Icon, title, text }, i) => (
-              <Reveal as="li" key={title} delay={i * 90}>
-                <Icon aria-hidden className="size-5 text-water" />
-                <h3 className="mt-3 font-bold text-ink">{title}</h3>
-                <p className="mt-1 text-[15px] text-ink-2">{text}</p>
+          <ul className="mt-24 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+            {EXTRAS.map(({ title, text }, i) => (
+              <Reveal as="li" key={title} delay={i * 90} className="border-t-2 border-ink pt-4">
+                <h3 className="text-lg font-semibold leading-tight text-ink">{title}</h3>
+                <p className="mt-2 text-base text-ink-2">{text}</p>
               </Reveal>
             ))}
           </ul>
@@ -108,8 +106,8 @@ export default function Landing() {
         <section id="tarifs" className="scroll-mt-20 border-y border-line bg-surface-2/50">
           <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:py-28">
             <Reveal className="max-w-[640px]">
-              <h2 className="display-md text-[34px] text-ink sm:text-[44px]">Un prix qui suit la taille de votre équipe.</h2>
-              <p className="mt-4 text-[17px] text-ink-2">Un seul forfait, payé par le club. Les éducateurs créent leur compte gratuitement.</p>
+              <h2 className="display-md text-3xl text-ink sm:text-4xl">Un prix qui suit la taille de votre équipe.</h2>
+              <p className="mt-4 text-lg text-ink-2">Un seul forfait, payé par le club. Les éducateurs créent leur compte gratuitement.</p>
             </Reveal>
             <PricingCalculator />
           </div>
@@ -117,28 +115,28 @@ export default function Landing() {
 
         {/* ------------------------------------------------ FAQ */}
         <section id="faq" className="mx-auto max-w-[860px] scroll-mt-20 px-4 py-20 sm:px-6 lg:py-28">
-          <Reveal as="h2" className="display-md text-[34px] text-ink sm:text-[44px]">Questions fréquentes</Reveal>
+          <Reveal as="h2" className="display-md text-3xl text-ink sm:text-4xl">Questions fréquentes</Reveal>
           <div className="mt-10 divide-y divide-line border-y border-line">
             {FAQ.map((f) => (
               <details key={f.q} className="faq group py-1">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md py-4 text-[17px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md py-4 text-lg font-semibold text-ink [&::-webkit-details-marker]:hidden">
                   {f.q}
                   <span aria-hidden className="relative size-4 shrink-0 transition-transform duration-300 ease-[var(--ease-out)] group-open:rotate-180 before:absolute before:inset-x-0 before:top-1/2 before:h-0.5 before:-translate-y-1/2 before:bg-ink-2 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 after:-translate-x-1/2 after:bg-ink-2 after:transition-transform after:duration-300 group-open:after:scale-y-0" />
                 </summary>
-                <p className="max-w-[68ch] pb-5 text-[15px] leading-relaxed text-ink-2">{f.a}</p>
+                <p className="max-w-[68ch] pb-5 text-base leading-relaxed text-ink-2">{f.a}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* ------------------------------------------------ Appel final */}
-        <section className="deep">
+        <section className="deep deep-plain">
           <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-8 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:py-24">
             <div>
-              <h2 className="display-md text-[34px] text-ink sm:text-[46px]">Testez avec votre vrai planning cette semaine.</h2>
-              <p className="mt-3 text-[18px] text-ink-2">Six mois avec cinq accès inclus pour {euros(BASE_PRICE)} par mois, sans engagement.</p>
+              <h2 className="display-md text-3xl text-ink sm:text-4xl">Testez avec votre vrai planning cette semaine.</h2>
+              <p className="mt-3 text-lg text-ink-2">Six mois avec cinq accès inclus pour {euros(BASE_PRICE)} par mois, sans engagement.</p>
             </div>
-            <div className="flex flex-wrap items-center gap-x-7 gap-y-4">
+            <div className="flex shrink-0 flex-wrap items-center gap-x-7 gap-y-4 lg:flex-nowrap">
               <ButtonLink to="/inscription" size="lg">Créer mon club</ButtonLink>
               {ownSpace
                 ? <ButtonLink to={ownSpace} size="lg" variant="secondary">Ouvrir mon espace</ButtonLink>
@@ -159,12 +157,22 @@ export default function Landing() {
 export function SiteHeader({ onInstall, overDark }: { onInstall?: () => void; overDark?: boolean }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [pastHero, setPastHero] = useState(!overDark)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    // Trois états : transparent en haut, marine opaque tant qu'on survole le héros, clair au-delà.
+    const onScroll = () => {
+      const heroEnd = overDark ? (document.querySelector('.deep') as HTMLElement | null)?.offsetHeight ?? 0 : 0
+      setScrolled(window.scrollY > 8)
+      setPastHero(window.scrollY > heroEnd - 64)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [overDark])
   const links = [
     { href: '/#fonctionnalites', label: 'Fonctionnalités' },
     { href: '/#tarifs', label: 'Tarifs' },
@@ -173,17 +181,19 @@ export function SiteHeader({ onInstall, overDark }: { onInstall?: () => void; ov
   return (
     <header className={cn(
       'sticky top-0 z-40 border-b transition-[background-color,border-color,box-shadow] duration-300',
-      overDark && !scrolled && !open ? 'on-deep border-transparent bg-transparent' : 'border-line bg-bg/95 shadow-e1 backdrop-blur-sm supports-[backdrop-filter]:bg-bg/85',
+      overDark && !open && !scrolled ? 'on-deep border-transparent bg-transparent'
+        : overDark && !open && !pastHero ? 'on-deep border-white/10 bg-[#0a2131]/90 shadow-[0_8px_24px_-12px_rgb(0_0_0/0.5)] backdrop-blur-md'
+          : 'border-line bg-bg/95 shadow-e1 backdrop-blur-md supports-[backdrop-filter]:bg-bg/90',
     )}>
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6">
         <Logo animate />
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
-            <Link key={l.href} to={l.href} className="rounded-[3px] px-3 py-2 text-[16px] font-medium text-ink-2 transition-colors hover:text-ink">{l.label}</Link>
+            <Link key={l.href} to={l.href} className="rounded-[3px] px-3 py-2 text-base font-medium text-ink-2 transition-colors hover:text-ink">{l.label}</Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-4 md:flex">
-          {onInstall && <Button variant="ghost" icon={Download} onClick={onInstall}>Installer</Button>}
+        <div className="hidden items-center gap-7 md:flex">
+          {onInstall && <button type="button" onClick={onInstall} className="rounded-[3px] py-2 text-base font-medium text-ink-2 transition-colors hover:text-ink">Installer</button>}
           <ButtonLink to="/connexion" variant="secondary">Se connecter</ButtonLink>
           <ButtonLink to="/inscription">Créer mon club</ButtonLink>
         </div>
@@ -195,9 +205,9 @@ export function SiteHeader({ onInstall, overDark }: { onInstall?: () => void; ov
         <div id="menu-mobile" className="border-t border-line bg-bg px-4 pb-5 pt-2 md:hidden">
           <nav aria-label="Navigation mobile" className="flex flex-col">
             {links.map((l) => (
-              <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="border-b border-line py-3.5 text-[17px] font-medium text-ink">{l.label}</Link>
+              <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="border-b border-line py-3.5 text-lg font-medium text-ink">{l.label}</Link>
             ))}
-            {onInstall && <button type="button" onClick={() => { setOpen(false); onInstall() }} className="border-b border-line py-3.5 text-left text-[17px] font-medium text-ink">Installer l'application</button>}
+            {onInstall && <button type="button" onClick={() => { setOpen(false); onInstall() }} className="border-b border-line py-3.5 text-left text-lg font-medium text-ink">Installer l'application</button>}
           </nav>
           <div className="mt-5 flex items-center gap-6">
             <ButtonLink to="/inscription">Créer mon club</ButtonLink>
@@ -217,14 +227,16 @@ export function SiteFooter({ onInstall }: { onInstall?: () => void }) {
           <Logo />
           <p className="mt-3 max-w-[40ch] text-sm text-muted">Plannings, absences et remplacements pour les clubs de natation.</p>
         </div>
-        <nav aria-label="Liens du pied de page" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-2">
+        <nav aria-label="Liens du pied de page" className="flex flex-wrap content-start items-start self-start gap-x-6 gap-y-2 text-sm text-ink-2">
           <Link to="/cgv" className="hover:text-ink">Conditions générales (CGV / CGU)</Link>
           <Link to="/confidentialite" className="hover:text-ink">Confidentialité (RGPD)</Link>
           {onInstall && <button type="button" onClick={onInstall} className="hover:text-ink">Installer l'application</button>}
           <Link to="/connexion" className="hover:text-ink">Se connecter</Link>
         </nav>
       </div>
-      <div className="mx-auto max-w-[1200px] border-t border-line px-4 py-6 text-[13px] text-muted sm:px-6">© {new Date().getFullYear()} SwimHub Connect. Tous droits réservés.</div>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <p className="border-t border-line py-6 text-sm text-muted">© {new Date().getFullYear()} SwimHub Connect. Tous droits réservés.</p>
+      </div>
     </footer>
   )
 }
@@ -239,10 +251,10 @@ const STEPS = [
 ]
 
 const EXTRAS = [
-  { icon: Layers, title: 'Plusieurs clubs, un compte', text: 'Un éducateur qui travaille pour deux clubs passe de l’un à l’autre en un clic.' },
-  { icon: UserCog, title: 'Rôles sur mesure', text: 'Coordination bassin, secrétariat : déléguez sans donner tous les droits.' },
-  { icon: Smartphone, title: "S'installe comme une app", text: 'Sur iPhone, Android ou ordinateur, sans passer par une boutique.' },
-  { icon: ShieldCheck, title: 'Données en Union européenne', text: 'Hébergement européen, mots de passe chiffrés, conforme au RGPD.' },
+  { title: 'Plusieurs clubs, un compte', text: 'Un éducateur qui travaille pour deux clubs passe de l’un à l’autre en un clic.' },
+  { title: 'Rôles sur mesure', text: 'Coordination bassin, secrétariat : déléguez sans donner tous les droits.' },
+  { title: "S'installe comme une app", text: 'Sur iPhone, Android ou ordinateur, sans passer par une boutique.' },
+  { title: 'Données en Union européenne', text: 'Hébergement européen, mots de passe chiffrés, conforme au RGPD.' },
 ]
 
 const FAQ = [
@@ -266,12 +278,12 @@ function StepsLane() {
       </div>
       {STEPS.map((s, i) => (
         <li key={s.title} className="relative flex gap-4 md:block">
-          <span className="step-num relative z-10 flex size-11 shrink-0 items-center justify-center rounded-[3px] bg-surface text-[19px] font-bold text-ink shadow-[inset_0_0_0_2px_var(--line-strong)] num" style={{ '--i': i } as CSSProperties}>
+          <span className="step-num relative z-10 flex size-11 shrink-0 items-center justify-center rounded-[3px] bg-surface text-lg font-bold text-ink shadow-[inset_0_0_0_2px_var(--line-strong)] num" style={{ '--i': i } as CSSProperties}>
             {i + 1}
           </span>
           <div className="reveal md:mt-5" data-shown={inView || undefined} style={{ '--reveal-delay': `${300 + i * 700}ms` } as CSSProperties}>
-            <h3 className="text-[19px] font-semibold text-ink">{s.title}</h3>
-            <p className="mt-1.5 text-[16px] leading-relaxed text-ink-2">{s.text}</p>
+            <h3 className="text-lg font-semibold leading-snug text-ink md:min-h-[2lh]">{s.title}</h3>
+            <p className="mt-1.5 text-base leading-relaxed text-ink-2">{s.text}</p>
           </div>
         </li>
       ))}
@@ -283,14 +295,11 @@ function Feature({ title, text, points, visual, reverse }: { title: string; text
   return (
     <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
       <Reveal className={cn(reverse && 'lg:order-2')}>
-        <h3 className="display-md text-[28px] text-ink sm:text-[32px]">{title}</h3>
-        <p className="mt-4 max-w-[52ch] text-[17px] leading-relaxed text-ink-2">{text}</p>
-        <ul className="mt-6 space-y-2.5">
+        <h3 className="display-md text-2xl text-ink sm:text-3xl">{title}</h3>
+        <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-ink-2">{text}</p>
+        <ul className="mt-6 max-w-[52ch] border-b border-line">
           {points.map((p) => (
-            <li key={p} className="flex gap-2.5 text-[15px] text-ink">
-              <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-water" strokeWidth={3} />
-              {p}
-            </li>
+            <li key={p} className="border-t border-line py-2.5 text-base text-ink">{p}</li>
           ))}
         </ul>
       </Reveal>
@@ -313,19 +322,19 @@ function WeekMock() {
     <div>
       <div className="mb-3 flex items-center justify-between">
         <span className="text-sm font-bold text-ink">Semaine du 9 novembre</span>
-        <span className="rounded-[3px] bg-surface-2 px-2.5 py-1 text-[12px] font-semibold text-ink-2">Toutes les piscines</span>
+        <span className="rounded-[3px] bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2">Toutes les piscines</span>
       </div>
       <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
         {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'].map((d, i) => (
           <div key={d}>
-            <p className="mb-1.5 text-center text-[12px] font-semibold text-muted">{d}</p>
+            <p className="mb-1.5 text-center text-xs font-semibold text-muted">{d}</p>
             <div className="space-y-1.5">
               {cols[i].map((s, j) => (
                 <div key={s.t + s.g} className={cn('mock-cell rounded-md border-l-[3px] bg-surface-2 px-1.5 py-1.5 sm:px-2', 'abs' in s && s.abs && 'bg-rope-soft', 'rep' in s && s.rep && 'bg-kelp-soft')} style={{ borderColor: s.c, '--i': i * 3 + j } as CSSProperties}>
-                  <p className="text-[11px] font-semibold text-muted num sm:text-[12px]">{s.t}</p>
-                  <p className="truncate text-[11.5px] font-bold text-ink sm:text-[13px]">{s.g}</p>
-                  {'abs' in s && s.abs && <p className="text-[10.5px] font-semibold text-rope sm:text-[11.5px]">À remplacer</p>}
-                  {'rep' in s && s.rep && <p className="text-[10.5px] font-semibold text-kelp sm:text-[11.5px]">Remplacé</p>}
+                  <p className="text-xs font-semibold text-muted num">{s.t}</p>
+                  <p className="truncate text-xs font-bold text-ink sm:text-sm">{s.g}</p>
+                  {'abs' in s && s.abs && <p className="text-xs font-semibold text-rope">À remplacer</p>}
+                  {'rep' in s && s.rep && <p className="text-xs font-semibold text-kelp">Remplacé</p>}
                 </div>
               ))}
             </div>
@@ -351,10 +360,10 @@ function DiplomaMock() {
         {rows.map((r, i) => (
           <li key={r.name + r.d} className="mock-cell flex items-center justify-between gap-3 py-2.5" style={{ '--i': i * 2 } as CSSProperties}>
             <div className="min-w-0">
-              <p className="truncate text-[14px] font-semibold text-ink">{r.name}</p>
-              <p className="text-[13px] text-muted">{r.d}</p>
+              <p className="truncate text-sm font-semibold text-ink">{r.name}</p>
+              <p className="text-sm text-muted">{r.d}</p>
             </div>
-            <span className={cn('shrink-0 rounded-[3px] px-2.5 py-1 text-[12px] font-semibold', tone[r.tone])}>{r.s}</span>
+            <span className={cn('shrink-0 rounded-[3px] px-2.5 py-1 text-xs font-semibold', tone[r.tone])}>{r.s}</span>
           </li>
         ))}
       </ul>
@@ -373,10 +382,10 @@ function HoursMock() {
     <div>
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-bold text-ink">Novembre 2026</p>
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-line-strong px-2.5 py-1 text-[12px] font-semibold text-ink"><Download className="size-3.5" />Exporter</span>
+        <span className="link-action inline-flex items-center gap-1.5 text-xs"><Download className="size-3.5" />Exporter</span>
       </div>
       <div className="overflow-hidden">
-        <table className="w-full text-[12.5px] sm:text-[13.5px]">
+        <table className="w-full text-xs sm:text-sm">
           <thead>
             <tr className="text-left text-muted">
               <th className="py-1.5 font-semibold">Éducateur</th>
@@ -411,10 +420,10 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
   const q = quote(access, period === 'promo')
   return (
     <div className={cn('grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12', !compact && 'mt-12')}>
-      <div className="elev-2 rounded-xl border border-line/70 bg-surface p-5 sm:p-7">
+      <div className={cn(compact ? 'rounded-[4px] border border-line bg-surface-2/40 p-5' : 'elev-2 rounded-xl border border-line/70 bg-surface p-5 sm:p-7')}>
         <label htmlFor="acces" className="flex items-baseline justify-between gap-4">
           <span className="font-semibold text-ink">Nombre d'accès</span>
-          <span className="display-md text-[34px] text-ink num">{access}</span>
+          <span className="display-md text-3xl text-ink num">{access}</span>
         </label>
         <input
           id="acces"
@@ -427,7 +436,7 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
           style={{ '--fill': `${((access - 1) / 39) * 100}%` } as CSSProperties}
           aria-describedby="acces-aide"
         />
-        <p id="acces-aide" className="mt-2 text-[13px] text-muted">1 accès = 1 compte actif (responsable ou éducateur).</p>
+        <p id="acces-aide" className="mt-2 text-sm text-muted">1 accès = 1 compte actif (responsable ou éducateur).</p>
         <div className="mt-6">
           <Segmented
             label="Période"
@@ -436,7 +445,7 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
             options={[{ value: 'promo', label: 'Les 6 premiers mois' }, { value: 'normal', label: 'Ensuite' }]}
           />
         </div>
-        <dl className="mt-6 space-y-2 border-t border-line pt-4 text-[15px]">
+        <dl className="mt-6 space-y-2 border-t border-line pt-4 text-base">
           <div className="flex justify-between gap-4">
             <dt className="text-ink-2">Pack Starter, {q.included} accès inclus</dt>
             <dd className="font-semibold text-ink num">{euros(BASE_PRICE)}</dd>
@@ -452,24 +461,21 @@ export function PricingCalculator({ compact }: { compact?: boolean }) {
 
       <div className="flex flex-col justify-between">
         <div>
-          <p className="text-[15px] font-semibold text-ink-2">Votre club paiera</p>
-          <p className="mt-1 flex items-baseline gap-2">
-            <CountUp value={q.total} format={euros} duration={420} className="display text-[64px] text-ink sm:text-[80px]" />
-            <span className="text-[17px] text-muted">par mois TTC</span>
+          <p className="text-base font-semibold text-ink-2">Votre club paiera</p>
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2">
+            <CountUp value={q.total} format={euros} duration={420} className={cn('display text-ink', compact ? 'text-5xl' : 'text-6xl sm:text-7xl')} />
+            <span className="whitespace-nowrap text-lg text-muted">par mois TTC</span>
           </p>
-          <ul className="mt-6 space-y-2.5">
+          <ul className="mt-6 border-b border-line">
             {['Planning, absences et remplacements illimités', 'Diplômes, rôles et relevé d’heures', 'Support par tickets intégré', 'Sans engagement, résiliable en ligne'].map((p) => (
-              <li key={p} className="flex gap-2.5 text-[15px] text-ink">
-                <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-water" strokeWidth={3} />
-                {p}
-              </li>
+              <li key={p} className="border-t border-line py-2.5 text-base text-ink">{p}</li>
             ))}
           </ul>
         </div>
         {!compact && (
           <div className="mt-8">
             <ButtonLink to="/inscription" size="lg">Créer mon club</ButtonLink>
-            <p className="mt-3 text-[13px] text-muted">Détail des paliers dans les <Link to="/cgv" className="underline underline-offset-2 hover:text-ink">conditions générales</Link>.</p>
+            <p className="mt-3 text-sm text-muted">Détail des paliers dans les <Link to="/cgv" className="underline underline-offset-2 hover:text-ink">conditions générales</Link>.</p>
           </div>
         )}
       </div>

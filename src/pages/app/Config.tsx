@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, Route, Routes, useSearchParams } from 'react-router-dom'
-import { AlertTriangle, CalendarPlus, FileUp, Lock, Pencil, Plus, Trash2, Upload, Waves } from 'lucide-react'
+import { AlertTriangle, CalendarPlus, FileUp, Pencil, Plus, Trash2, Upload } from 'lucide-react'
 import {
   Badge, Button, ButtonLink, Drawer, EmptyState, Field, FormError, IconButton, Input, LevelDot, PageHeader, Panel, Select, Table, Tabs,
 } from '../../components/ui'
@@ -42,7 +42,7 @@ export default function Config() {
 export function NoAccess({ what, adminOnly }: { what: string; adminOnly?: boolean }) {
   return (
     <div className="rounded-xl border border-line bg-surface">
-      <EmptyState icon={Lock} title="Accès réservé">
+      <EmptyState title="Accès réservé">
         {adminOnly
           ? <>Cette page est réservée aux administrateurs du club. Un administrateur peut vous donner ce statut depuis Équipe, Membres.</>
           : <>Votre rôle ne permet pas d'ouvrir {what}. Un administrateur du club peut vous attribuer un rôle qui le permet.</>}
@@ -99,7 +99,7 @@ function Slots() {
       </div>
 
       {missing.length > 0 && (
-        <div className="mb-5 flex gap-3 rounded-xl border border-buoy-bright/40 bg-buoy-soft p-4 text-[15px] text-ink">
+        <div className="mb-5 flex gap-3 rounded-xl border border-buoy-bright/40 bg-buoy-soft p-4 text-base text-ink">
           <AlertTriangle aria-hidden className="mt-0.5 size-5 shrink-0 text-buoy" />
           <p>Avant de planifier, créez {missing.map((m, i) => <span key={m.to}>{i > 0 && ' et '}<Link to={m.to} className="font-semibold underline underline-offset-2">{m.label}</Link></span>)}. Les éducateurs doivent aussi avoir rejoint le club.</p>
         </div>
@@ -107,49 +107,54 @@ function Slots() {
 
       {slots.length === 0 ? (
         <div className="rounded-xl border border-line bg-surface">
-          <EmptyState icon={CalendarPlus} title="Aucun créneau" action={<ButtonLink to="/app/configuration/import" variant="secondary" icon={Upload}>Importer depuis Excel</ButtonLink>}>
+          <EmptyState title="Aucun créneau" action={<ButtonLink to="/app/configuration/import" variant="secondary" icon={Upload}>Importer depuis Excel</ButtonLink>}>
             Planifiez vos créneaux un par un, ou importez tout le planning de la saison en une fois.
           </EmptyState>
         </div>
       ) : (
-        <div className="space-y-5">
-          {DAYS.map((dayName, day) => {
-            const list = slots.filter((s) => s.day === day).sort((a, b) => minutes(a.start) - minutes(b.start))
-            if (!list.length) return null
-            return (
-              <Panel key={dayName} title={dayName} description={pluralize(list.length, 'créneau', 'créneaux')}>
-                <Table>
-                  <thead>
-                    <tr><th>Horaires</th><th>Groupe</th><th>Piscine</th><th>Éducateurs</th><th className="w-24"><span className="sr-only">Actions</span></th></tr>
-                  </thead>
-                  <tbody>
-                    {list.map((s) => {
-                      const g = groups.find((x) => x.id === s.groupeId)
-                      const lvl = db.niveaux.find((n) => n.id === g?.niveauId)
-                      const p = pools.find((x) => x.id === s.piscineId)
-                      return (
-                        <tr key={s.id}>
-                          <td className="font-semibold text-ink num whitespace-nowrap">{fmtRange(s.start, s.end)}</td>
-                          <td><span className="inline-flex items-center gap-2 font-semibold text-ink"><LevelDot color={lvl?.color} />{g?.name}</span></td>
-                          <td className="text-ink-2">{p?.name}{s.ligne && <span className="block text-[13px] text-muted">{s.ligne}</span>}</td>
-                          <td className="text-ink-2">{s.educatorIds.length ? s.educatorIds.map((id) => fullName(members.find((m) => m.user.id === id)?.user)).join(', ') : <Badge tone="buoy">À affecter</Badge>}</td>
-                          <td>
-                            <div className="flex justify-end gap-1">
-                              <IconButton size="sm" label={`Modifier ${g?.name} ${dayName}`} icon={Pencil} onClick={() => setEditing(s)} />
-                              <IconButton size="sm" label={`Supprimer ${g?.name} ${dayName}`} icon={Trash2} className="hover:text-rope" onClick={async () => {
-                                if (await confirm({ title: `Supprimer ${g?.name}, ${dayName.toLowerCase()} ${fmtRange(s.start, s.end)} ?`, body: 'Le créneau disparaît du planning de la semaine, ainsi que ses absences et remplacements.', confirmLabel: 'Supprimer le créneau' })) run(() => deleteCreneau(s.id), 'Créneau supprimé.')
-                              }} />
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </Table>
-              </Panel>
-            )
-          })}
-        </div>
+        // Une seule grille pour la semaine : colonnes fixes, un groupe de lignes par jour.
+        <Panel bodyClassName="p-0 sm:p-0">
+          <Table className="mx-0 sm:mx-0 [&_table]:min-w-[720px] [&_table]:table-fixed">
+            <thead>
+              <tr><th className="w-36">Horaires</th><th className="w-[28%]">Groupe</th><th className="w-[24%]">Piscine</th><th>Éducateurs</th><th className="w-24"><span className="sr-only">Actions</span></th></tr>
+            </thead>
+            {DAYS.map((dayName, day) => {
+              const list = slots.filter((s) => s.day === day).sort((a, b) => minutes(a.start) - minutes(b.start))
+              if (!list.length) return null
+              return (
+                <tbody key={dayName}>
+                  <tr>
+                    <th colSpan={5} scope="rowgroup" className="border-t bg-surface-2">
+                      <span className="text-base font-bold text-ink">{dayName}</span>
+                      <span className="ml-2 text-sm font-medium">{pluralize(list.length, 'créneau', 'créneaux')}</span>
+                    </th>
+                  </tr>
+                  {list.map((s) => {
+                    const g = groups.find((x) => x.id === s.groupeId)
+                    const lvl = db.niveaux.find((n) => n.id === g?.niveauId)
+                    const p = pools.find((x) => x.id === s.piscineId)
+                    return (
+                      <tr key={s.id}>
+                        <td className="font-semibold text-ink num whitespace-nowrap">{fmtRange(s.start, s.end)}</td>
+                        <td><span className="inline-flex items-center gap-2 font-semibold text-ink"><LevelDot color={lvl?.color} />{g?.name}</span></td>
+                        <td className="text-ink-2">{p?.name}{s.ligne && <span className="block text-sm text-muted">{s.ligne}</span>}</td>
+                        <td className="text-ink-2">{s.educatorIds.length ? s.educatorIds.map((id) => fullName(members.find((m) => m.user.id === id)?.user)).join(', ') : <Badge tone="buoy">À affecter</Badge>}</td>
+                        <td>
+                          <div className="flex justify-end gap-1">
+                            <IconButton size="sm" label={`Modifier ${g?.name} ${dayName}`} icon={Pencil} onClick={() => setEditing(s)} />
+                            <IconButton size="sm" label={`Supprimer ${g?.name} ${dayName}`} icon={Trash2} className="hover:text-rope" onClick={async () => {
+                              if (await confirm({ title: `Supprimer ${g?.name}, ${dayName.toLowerCase()} ${fmtRange(s.start, s.end)} ?`, body: 'Le créneau disparaît du planning de la semaine, ainsi que ses absences et remplacements.', confirmLabel: 'Supprimer le créneau' })) run(() => deleteCreneau(s.id), 'Créneau supprimé.')
+                            }} />
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              )
+            })}
+          </Table>
+        </Panel>
       )}
 
       <SlotForm slot={editing} onClose={() => setEditing(null)} />
@@ -222,7 +227,7 @@ function SlotForm({ slot, onClose }: { slot: Creneau | 'new' | null; onClose: ()
           <div className="grid grid-cols-7 gap-1">
             {DAYS_SHORT.map((d, i) => (
               <button key={d} type="button" aria-pressed={form.day === i} onClick={() => setForm({ ...form, day: i as Weekday })}
-                className={cn('h-10 rounded-md border text-[13px] font-semibold transition-colors', form.day === i ? 'border-btn bg-btn text-btn-ink' : 'border-line-strong text-ink-2 hover:bg-surface-2')}>
+                className={cn('h-10 rounded-md border text-sm font-semibold transition-colors', form.day === i ? 'border-btn bg-btn text-btn-ink' : 'border-line-strong text-ink-2 hover:bg-surface-2')}>
                 {d}
               </button>
             ))}
@@ -246,7 +251,7 @@ function SlotForm({ slot, onClose }: { slot: Creneau | 'new' | null; onClose: ()
                 <li key={user.id}>
                   <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5 hover:bg-surface-2/60">
                     <input type="checkbox" className="size-[18px] accent-[var(--water)]" checked={checked} onChange={(e) => setForm({ ...form, educatorIds: e.target.checked ? [...form.educatorIds, user.id] : form.educatorIds.filter((x) => x !== user.id) })} />
-                    <span className="flex-1 text-[15px] text-ink">{fullName(user)}</span>
+                    <span className="flex-1 text-base text-ink">{fullName(user)}</span>
                     {lacks && <Badge tone="buoy">Sans {qual?.short}</Badge>}
                   </label>
                 </li>
@@ -289,7 +294,7 @@ function Pools() {
       <div className="mb-5 flex justify-end"><Button icon={Plus} onClick={() => setEditing('new')}>Ajouter une piscine</Button></div>
       {pools.length === 0 ? (
         <div className="rounded-xl border border-line bg-surface">
-          <EmptyState icon={Waves} title="Aucune piscine" action={<Button icon={Plus} onClick={() => setEditing('new')}>Ajouter une piscine</Button>}>Commencez par les bassins où votre club a des créneaux.</EmptyState>
+          <EmptyState title="Aucune piscine" action={<Button icon={Plus} onClick={() => setEditing('new')}>Ajouter une piscine</Button>}>Commencez par les bassins où votre club a des créneaux.</EmptyState>
         </div>
       ) : (
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -300,7 +305,7 @@ function Pools() {
               <li key={p.id} className="rounded-xl border border-line bg-surface p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="text-[17px] font-bold text-ink">{p.name}</h3>
+                    <h3 className="text-lg font-bold text-ink">{p.name}</h3>
                     {p.address && <p className="mt-0.5 text-sm text-muted">{p.address}</p>}
                   </div>
                   <div className="flex shrink-0 gap-1">
@@ -396,7 +401,7 @@ function Groups() {
         </ul>
         <form className="mt-4 flex gap-2" onSubmit={(e) => { e.preventDefault(); run(() => { saveNiveau({ name: levelName }); setLevelName('') }, 'Niveau ajouté.') }}>
           <Input aria-label="Nom du nouveau niveau" placeholder="Nouveau niveau, ex. Pré-compétition" value={levelName} onChange={(e) => setLevelName(e.target.value)} className="h-10 max-w-sm" />
-          <Button type="submit" variant="secondary" icon={Plus} disabled={!levelName.trim()}>Ajouter</Button>
+          <Button type="submit" icon={Plus} disabled={!levelName.trim()}>Ajouter</Button>
         </form>
       </Panel>
 
@@ -404,7 +409,7 @@ function Groups() {
         {!pools.length ? (
           <EmptyState compact title="Créez d'abord une piscine" action={<ButtonLink to="/app/configuration/piscines" variant="secondary">Ajouter une piscine</ButtonLink>} />
         ) : groups.length === 0 ? (
-          <EmptyState compact title="Aucun groupe" action={<Button icon={Plus} onClick={() => setEditing('new')}>Créer un groupe</Button>}>Ex. Bébés nageurs, École de natation 1, Masters.</EmptyState>
+          <EmptyState compact title="Aucun groupe" action={<Button onClick={() => setEditing('new')}>Créer un groupe</Button>}>Ex. Bébés nageurs, École de natation 1, Masters.</EmptyState>
         ) : (
           <Table>
             <thead><tr><th>Groupe</th><th>Piscine</th><th>Diplôme requis</th><th>Créneaux</th><th className="w-24"><span className="sr-only">Actions</span></th></tr></thead>
@@ -417,7 +422,7 @@ function Groups() {
                   <tr key={g.id}>
                     <td>
                       <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={lvl?.color} />{g.name}</p>
-                      <p className="pl-[18px] text-[13px] text-muted">{lvl?.name ?? 'Sans niveau'}</p>
+                      <p className="pl-[18px] text-sm text-muted">{lvl?.name ?? 'Sans niveau'}</p>
                     </td>
                     <td className="text-ink-2">{pools.find((p) => p.id === g.piscineId)?.name}</td>
                     <td>{q ? <Badge tone="water">{q.short}</Badge> : <span className="text-muted">Aucun</span>}</td>
@@ -536,7 +541,7 @@ function Import() {
           value={text}
           onChange={(e) => { setText(e.target.value); setReport(null); setError(null) }}
           placeholder={TEMPLATE.map((r) => r.join('\t')).join('\n')}
-          className="mt-2 h-44 w-full rounded-xl border border-line-strong bg-bg p-3 font-sans text-[13px] leading-relaxed text-ink placeholder:text-muted focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20"
+          className="mt-2 h-44 w-full rounded-[3px] border border-field-line bg-bg p-3 font-sans text-sm leading-relaxed text-ink placeholder:text-muted focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20"
         />
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-line-strong bg-surface px-4 text-sm font-semibold text-ink hover:bg-surface-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface">
@@ -555,7 +560,7 @@ function Import() {
                 {body.slice(0, 6).map((r) => <tr key={r.line}>{IMPORT_COLUMNS.map((_, j) => <td key={j} className="text-ink-2">{r.cells[j] ?? ''}</td>)}</tr>)}
               </tbody>
             </Table>
-            {body.length > 6 && <p className="mt-2 text-[13px] text-muted">… et {pluralize(body.length - 6, 'autre ligne', 'autres lignes')}.</p>}
+            {body.length > 6 && <p className="mt-2 text-sm text-muted">… et {pluralize(body.length - 6, 'autre ligne', 'autres lignes')}.</p>}
           </div>
         )}
 
@@ -576,7 +581,7 @@ function Import() {
       </Panel>
 
       <Panel title="Format attendu">
-        <ol className="space-y-2 text-[15px] text-ink-2">
+        <ol className="space-y-2 text-base text-ink-2">
           {IMPORT_COLUMNS.map((c, i) => (
             <li key={c} className="flex gap-3">
               <span className="w-5 shrink-0 text-right font-bold text-ink num">{String.fromCharCode(65 + i)}</span>

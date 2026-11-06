@@ -41,7 +41,7 @@ export function Logo({ to = '/', className, light, animate }: { to?: string; cla
   return (
     <Link to={to} className={cn('logo-link inline-flex items-center gap-2 rounded-md', className)} aria-label="SwimHub Connect, accueil">
       <LogoMark animate={animate} />
-      <span className={cn('text-[19px] leading-none tracking-[-0.02em]', light ? 'text-white' : 'text-ink')}>
+      <span className={cn('text-lg leading-none tracking-[-0.02em]', light ? 'text-white' : 'text-ink')}>
         <span className="font-bold">SwimHub</span>
         <span className={cn('ml-1 font-normal', light ? 'text-[#b9d3df]' : 'text-muted')}>Connect</span>
       </span>

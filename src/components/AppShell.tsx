@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode }
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight, Bell, CalendarDays, CalendarX2, CreditCard, Download, FileSpreadsheet, Home, LifeBuoy,
-  LogOut, Menu, Repeat, RotateCcw, Settings2, UserRound, Users, type LucideIcon,
+  LogOut, Menu, Repeat, Settings2, UserRound, Users, type LucideIcon,
 } from 'lucide-react'
 import { Logo } from './Logo'
 import { Avatar, Drawer, IconButton } from './ui'
@@ -58,23 +58,21 @@ export default function AppShell({ children }: { children: ReactNode }) {
     return ctx.can(i.perm)
   }
 
-  const nav = (
-    <SidebarNav main={main} manage={manage} footer={footer} />
-  )
-
   return (
     <div className="min-h-dvh bg-bg lg:pl-[264px]">
       {/* Barre latérale (ordinateur) */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[264px] flex-col border-r border-line bg-surface lg:flex">
         <div className="flex h-16 items-center px-5"><Logo to="/app" /></div>
         <ClubSwitcher />
-        <div className="flex-1 overflow-y-auto px-3 pb-4">{nav}</div>
+        <div className="flex-1 overflow-y-auto px-3 pb-4"><SidebarNav main={main} manage={manage} footer={footer} /></div>
         <UserBlock />
       </aside>
 
+      {/* Bandeau démo : défile avec la page, seul l'en-tête reste collé. */}
+      {ctx.demo && <DemoBar />}
+
       {/* En-tête */}
-      <header className="sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur-[2px] supports-[backdrop-filter]:bg-bg/85">
-        {ctx.demo && <DemoBar />}
+      <header className="sticky top-0 z-20 border-b border-line bg-bg">
         <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-2 lg:hidden">
             <Logo to="/app" className="[&>span]:hidden min-[380px]:[&>span]:inline" />
@@ -91,7 +89,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <main className="app-main mx-auto w-full max-w-[1240px] px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8">{children}</main>
 
       {/* Barre d'onglets (mobile) */}
-      <nav aria-label="Navigation rapide" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <nav aria-label="Navigation rapide" className="app-tabbar fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden">
         <ul className="grid grid-cols-5">
           {[
             { to: '/app', label: 'Accueil', icon: Home, end: true },
@@ -100,15 +98,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
             { to: '/app/remplacements', label: 'Remplacer', icon: Repeat, badge: counts.replacements },
           ].map((i) => (
             <li key={i.to}>
-              <NavLink to={i.to} end={i.end} viewTransition className={({ isActive }) => cn('relative flex h-16 flex-col items-center justify-center gap-1 text-[11.5px] font-semibold transition-colors duration-200 [&>svg]:transition-transform [&>svg]:duration-300 active:[&>svg]:scale-90', isActive ? 'text-water [&>svg]:-translate-y-0.5' : 'text-muted')}>
+              <NavLink to={i.to} end={i.end} viewTransition className={({ isActive }) => cn('relative flex h-16 flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors duration-200 [&>svg]:transition-transform [&>svg]:duration-300 active:[&>svg]:scale-90', isActive ? 'text-water [&>svg]:-translate-y-0.5' : 'text-muted')}>
                 <i.icon aria-hidden className="size-[22px]" strokeWidth={2} />
                 {i.label}
-                {!!i.badge && <span key={i.badge} className="badge-bump absolute left-1/2 top-2 ml-2 rounded-[3px] bg-rope px-1.5 text-[10.5px] font-bold leading-4 text-white dark:text-[#2a0d08]">{i.badge}</span>}
+                {!!i.badge && <span key={i.badge} className="badge-bump absolute left-1/2 top-2 ml-2 rounded-[3px] bg-rope px-1.5 text-xs font-bold leading-4 text-rope-ink">{i.badge}</span>}
               </NavLink>
             </li>
           ))}
           <li>
-            <button type="button" onClick={() => setMore(true)} className="flex h-16 w-full flex-col items-center justify-center gap-1 text-[11.5px] font-semibold text-muted">
+            <button type="button" onClick={() => setMore(true)} className="flex h-16 w-full flex-col items-center justify-center gap-1 text-xs font-semibold text-muted">
               <Menu aria-hidden className="size-[22px]" />
               Plus
             </button>
@@ -116,11 +114,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </ul>
       </nav>
 
-      <Drawer open={more} onClose={() => setMore(false)} title={ctx.club.name} width={360}>
+      {/* « Plus » : seulement ce que la barre d'onglets n'affiche pas (le club est déjà dans le sélecteur). */}
+      <Drawer open={more} onClose={() => setMore(false)} title="Menu" width={360}>
         <div className="-mx-2">
           <ClubSwitcher inDrawer />
-          {nav}
-          <button type="button" onClick={() => { setMore(false); setInstall(true) }} className="mt-1 flex h-11 w-full items-center gap-3 rounded-md px-3 text-[15px] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
+          <SidebarNav main={[]} manage={manage} footer={footer} />
+          <button type="button" onClick={() => { setMore(false); setInstall(true) }} className="mt-1 flex h-11 w-full items-center gap-3 rounded-md px-3 text-base font-medium text-ink-2 hover:bg-surface-2 hover:text-ink">
             <Download aria-hidden className="size-[18px]" /> Installer l'application
           </button>
         </div>
@@ -148,7 +147,7 @@ function SidebarNav({ main, manage, footer }: { main: NavItem[]; manage: NavItem
           <span className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r bg-water-bright" />
         </span>
       )}
-      <NavGroup items={main} />
+      {main.length > 0 && <NavGroup items={main} />}
       {manage.length > 0 && <NavGroup title="Gestion du club" items={manage} />}
       <NavGroup items={footer} />
     </nav>
@@ -158,7 +157,7 @@ function SidebarNav({ main, manage, footer }: { main: NavItem[]; manage: NavItem
 function NavGroup({ title, items }: { title?: string; items: NavItem[] }) {
   return (
     <div>
-      {title && <p className="mb-1 px-3 text-[12.5px] font-semibold text-muted">{title}</p>}
+      {title && <p className="mb-1 px-3 text-xs font-semibold text-muted">{title}</p>}
       <ul className="flex flex-col gap-0.5">
         {items.map((i) => (
           <li key={i.to}>
@@ -167,13 +166,13 @@ function NavGroup({ title, items }: { title?: string; items: NavItem[] }) {
               end={i.end}
               viewTransition
               className={({ isActive }) => cn(
-                'relative flex h-10 items-center gap-3 rounded-md px-3 text-[15px] font-medium transition-colors duration-200',
+                'relative flex h-10 items-center gap-3 rounded-md px-3 text-base font-medium transition-colors duration-200',
                 isActive ? 'text-ink font-semibold' : 'text-ink-2 hover:bg-surface-2/70 hover:text-ink',
               )}
             >
               <i.icon aria-hidden className="size-[18px] shrink-0" strokeWidth={2} />
               <span className="flex-1 truncate">{i.label}</span>
-              {!!i.badge && <span key={i.badge} className="badge-bump rounded-[3px] bg-rope px-1.5 text-[11.5px] font-bold leading-5 text-white dark:text-[#2a0d08]" aria-label={`${i.badge} en attente`}>{i.badge}</span>}
+              {!!i.badge && <span key={i.badge} className="badge-bump rounded-[3px] bg-rope px-1.5 text-xs font-bold leading-5 text-rope-ink" aria-label={`${i.badge} en attente`}>{i.badge}</span>}
             </NavLink>
           </li>
         ))}
@@ -189,11 +188,11 @@ function ClubSwitcher({ inDrawer }: { inDrawer?: boolean }) {
   const count = db.memberships.filter((m) => m.userId === ctx.user.id).length
   return (
     <div className={cn(inDrawer ? 'mb-4 px-2' : 'mx-3 mb-4')}>
-      <div className="rounded-xl border border-line bg-bg px-3 py-2.5">
-        <p className="truncate text-[14px] font-bold text-ink">{ctx.club.name}</p>
-        <div className="mt-0.5 flex items-center justify-between gap-2">
-          <p className="truncate text-[12.5px] text-muted">{ctx.isAdmin ? 'Administrateur' : db.roles.find((r) => r.id === ctx.membership.roleId)?.name ?? 'Éducateur'}</p>
-          <button type="button" onClick={() => { leaveClubSelection(); navigate('/clubs') }} className="shrink-0 text-[12.5px] font-semibold text-water hover:underline">
+      <div className="rounded-lg border border-line bg-bg px-3 pt-2.5 pb-3">
+        <p className="truncate text-sm font-bold text-ink">{ctx.club.name}</p>
+        <div className="mt-0.5 flex items-baseline justify-between gap-3">
+          <p className="truncate text-xs text-muted">{ctx.isAdmin ? 'Administrateur' : db.roles.find((r) => r.id === ctx.membership.roleId)?.name ?? 'Éducateur'}</p>
+          <button type="button" onClick={() => { leaveClubSelection(); navigate('/clubs') }} className="link-action shrink-0 text-sm">
             {count > 1 ? 'Changer de club' : 'Mes clubs'}
           </button>
         </div>
@@ -210,7 +209,7 @@ function UserBlock() {
       <Avatar name={name} size={34} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-ink">{name}</p>
-        <p className="truncate text-[12.5px] text-muted">{ctx.user.email}</p>
+        <p className="truncate text-xs text-muted">{ctx.user.email}</p>
       </div>
       <IconButton label="Se déconnecter" icon={LogOut} size="sm" onClick={logout} />
     </div>
@@ -226,18 +225,18 @@ function DemoBar() {
   const isEducator = ctx.user.id === DEMO_EDUCATOR_ID
   const switchTo = (id: string) => run(async () => { await loginDemo(id); navigate('/app') }, id === DEMO_ADMIN_ID ? 'Vous voyez le club comme Camille, responsable.' : 'Vous voyez le club comme Léa, éducatrice.')
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-[#0c2a3e] px-4 py-2 text-[13px] text-[#cfe3ec] sm:px-6 lg:px-8">
-      <p><span className="font-semibold text-white">Mode démo.</span> Les données restent dans ce navigateur.</p>
-      <div className="flex items-center gap-3">
-        <button type="button" onClick={() => switchTo(isEducator ? DEMO_ADMIN_ID : DEMO_EDUCATOR_ID)} className="font-semibold text-[#7fdcf2] hover:underline">
+    <div className="on-deep flex flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-[#0c2a3e] px-4 py-2 text-sm text-ink-2 sm:px-6 lg:px-8">
+      <p><span className="font-semibold text-ink">Mode démo.</span><span className="max-sm:hidden"> Les données restent dans ce navigateur.</span></p>
+      <div className="flex items-center gap-4">
+        <button type="button" onClick={() => switchTo(isEducator ? DEMO_ADMIN_ID : DEMO_EDUCATOR_ID)} className="link-action">
           {isEducator ? 'Voir comme responsable' : 'Voir comme éducatrice'}
         </button>
         <button type="button" onClick={async () => {
           if (!(await confirm({ title: 'Réinitialiser la démo ?', body: 'Les données du club de démonstration seront restaurées et vos modifications de la démo effacées. Les comptes et clubs créés en dehors de la démo sont conservés.', confirmLabel: 'Réinitialiser' }))) return
           const back = isEducator ? DEMO_EDUCATOR_ID : DEMO_ADMIN_ID
           await run(async () => { await resetStore(); await loginDemo(back); navigate('/app') }, 'Démo réinitialisée.')
-        }} className="inline-flex items-center gap-1 font-semibold text-[#7fdcf2] hover:underline">
-          <RotateCcw aria-hidden className="size-3.5" />Réinitialiser
+        }} className="link-action">
+          Réinitialiser
         </button>
       </div>
     </div>
@@ -276,13 +275,13 @@ function Notifications() {
         {unread.length > 0 && <span key={unread.length} className="badge-bump absolute right-2 top-2 size-2.5 rounded-full bg-rope-bright ring-2 ring-bg" />}
       </button>
       {open && (
-        <div className="absolute -right-11 top-12 z-40 lg:right-0 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-xl border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">
-          <div className="flex items-center justify-between border-b border-line px-4 py-3">
+        <div className="absolute -right-11 top-12 z-40 lg:right-0 w-[min(360px,calc(100vw-32px))] overflow-hidden rounded-lg border border-line bg-surface shadow-float animate-[pop_140ms_var(--ease-swim)]">
+          <div className="flex items-baseline justify-between gap-4 border-b border-line px-4 pt-3 pb-3.5">
             <p className="font-bold text-ink">Notifications</p>
-            {unread.length > 0 && <button type="button" className="text-[13px] font-semibold text-water hover:underline" onClick={() => markNotificationsRead(unread.map((n) => n.id))}>Tout marquer comme lu</button>}
+            {unread.length > 0 && <button type="button" className="link-action text-sm" onClick={() => markNotificationsRead(unread.map((n) => n.id))}>Tout marquer comme lu</button>}
           </div>
           {items.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted">Rien de nouveau. Les absences, remplacements et adhésions apparaîtront ici.</p>
+            <p className="px-4 py-6 text-sm text-muted">Rien de nouveau. Vous serez prévenu·e ici des absences, remplacements et adhésions qui vous concernent.</p>
           ) : (
             <ul className="max-h-[60vh] overflow-y-auto">
               {items.map((n) => (
@@ -294,8 +293,8 @@ function Notifications() {
                   >
                     <span aria-hidden className={cn('mt-1.5 size-2 shrink-0 rounded-full', n.read ? 'bg-transparent' : 'bg-water-bright')} />
                     <span className="min-w-0">
-                      <span className={cn('block text-[14px]', n.read ? 'text-ink-2' : 'font-semibold text-ink')}>{n.text}</span>
-                      <span className="mt-0.5 block text-[12.5px] text-muted">{timeAgo(n.createdAt)}</span>
+                      <span className={cn('block text-sm', n.read ? 'text-ink-2' : 'font-semibold text-ink')}>{n.text}</span>
+                      <span className="mt-0.5 block text-xs text-muted">{timeAgo(n.createdAt)}</span>
                     </span>
                   </button>
                 </li>

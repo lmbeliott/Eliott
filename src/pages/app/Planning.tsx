@@ -81,7 +81,7 @@ export default function Planning() {
           <Button variant="secondary" size="sm" onClick={() => set({ date: null })}>Aujourd'hui</Button>
           <IconButton label={effectiveMode === 'week' ? 'Semaine suivante' : 'Jour suivant'} icon={ChevronRight} onClick={() => set({ date: toISO(addDays(focus, step)) })} />
         </div>
-        <p className="text-[15px] font-bold text-ink">{label}</p>
+        <p className="text-base font-bold text-ink">{label}</p>
         <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
           {wide && <Segmented label="Affichage" value={mode} onChange={setMode} options={[{ value: 'week', label: 'Semaine' }, { value: 'day', label: 'Jour' }]} />}
           <Segmented label="Séances affichées" value={mineOnly ? 'moi' : 'club'} onChange={(v) => set({ vue: v === 'moi' ? 'moi' : null })} options={[{ value: 'club', label: 'Tout le club' }, { value: 'moi', label: 'Mes séances' }]} />
@@ -95,8 +95,8 @@ export default function Planning() {
       </div>
 
       {!hasSlots ? (
-        <div className="rounded-xl border border-line bg-surface">
-          <EmptyState icon={CalendarPlus} title="Le planning est vide" action={ctx.can('planning') ? <ButtonLink to="/app/configuration">Créer le premier créneau</ButtonLink> : undefined}>
+        <div className="elev-1 rounded-xl border border-line bg-surface">
+          <EmptyState title="Le planning est vide" action={ctx.can('planning') ? <ButtonLink to="/app/configuration">Créer le premier créneau</ButtonLink> : undefined}>
             {ctx.can('planning') ? 'Ajoutez vos piscines, vos groupes puis vos créneaux, ou importez votre planning Excel.' : "Les responsables du club n'ont pas encore publié de créneaux."}
           </EmptyState>
         </div>
@@ -116,7 +116,7 @@ export default function Planning() {
       )}
 
       {levels.length > 0 && hasSlots && (
-        <ul aria-label="Légende des niveaux" className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-ink-2">
+        <ul aria-label="Légende des niveaux" className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-2">
           {levels.map((l) => <li key={l.id} className="inline-flex items-center gap-1.5"><LevelDot color={l.color} />{l.name}</li>)}
           <li className="inline-flex items-center gap-1.5"><AlertTriangle aria-hidden className="size-3.5 text-rope" />À remplacer</li>
           <li className="inline-flex items-center gap-1.5"><Check aria-hidden className="size-3.5 text-kelp" strokeWidth={3} />Remplacé</li>
@@ -157,7 +157,7 @@ function WeekGrid({ days, byDay, me, showPool, onOpen }: { days: string[]; byDay
   }, [])
 
   return (
-    <div ref={scroller} className="max-h-[max(360px,calc(100dvh-12rem))] overflow-auto rounded-xl border border-line bg-surface">
+    <div ref={scroller} className="max-h-[max(360px,calc(100dvh-12rem))] elev-1 overflow-auto rounded-xl border border-line bg-surface">
       <div className="min-w-[860px]">
         <div className="sticky top-0 z-10 grid grid-cols-[56px_repeat(7,minmax(0,1fr))] border-b border-line bg-surface">
           <div />
@@ -165,8 +165,8 @@ function WeekGrid({ days, byDay, me, showPool, onOpen }: { days: string[]; byDay
             const isToday = d === todayISO
             return (
               <div key={d} className={cn('border-l border-line px-2 py-2.5 text-center', isToday && 'bg-water-soft')}>
-                <p className={cn('text-[12.5px] font-semibold', isToday ? 'text-water' : 'text-muted')}>{DAYS_SHORT[i]}</p>
-                <p className={cn('display-md text-[22px] num', isToday ? 'text-water' : 'text-ink')}>{fromISO(d).getDate()}</p>
+                <p className={cn('text-xs font-semibold', isToday ? 'text-water' : 'text-muted')}>{DAYS_SHORT[i]}</p>
+                <p className={cn('display-md text-xl num', isToday ? 'text-water' : 'text-ink')}>{fromISO(d).getDate()}</p>
               </div>
             )
           })}
@@ -174,7 +174,7 @@ function WeekGrid({ days, byDay, me, showPool, onOpen }: { days: string[]; byDay
         <div className="grid grid-cols-[56px_repeat(7,minmax(0,1fr))]">
           <div className="relative" style={{ height }}>
             {Array.from({ length: maxH - minH }, (_, i) => (
-              <span key={i} className="absolute right-2 -translate-y-1/2 text-[11.5px] font-medium text-muted num" style={{ top: i * 60 * PX_PER_MIN }}>
+              <span key={i} className="absolute right-2 -translate-y-1/2 text-xs font-medium text-muted num" style={{ top: i * 60 * PX_PER_MIN }}>
                 {i === 0 ? '' : `${minH + i}h`}
               </span>
             ))}
@@ -205,7 +205,13 @@ function WeekEvent({ o, me, showPool, minH, onOpen }: { o: Occurrence & { col: n
   const h = Math.max(28, (minutes(o.slot.end) - minutes(o.slot.start)) * PX_PER_MIN - 2)
   const coaches = effectiveCoaches(o)
   const mine = involves(o, me)
-  const tall = h >= 56
+  // Séances qui se chevauchent : colonne étroite, on garde l'heure de début et le nom du groupe en entier
+  // (sur autant de lignes que la hauteur le permet) plutôt qu'une suite de fragments tronqués.
+  // Bloc étroit et court : l'heure se lit déjà sur la grille, la place va au nom (2 lignes).
+  const narrow = o.cols > 1
+  const tall = h >= 56 && !narrow
+  const hideTime = narrow && h < 56
+  const nameLines = narrow ? Math.min(3, Math.floor((h - (hideTime ? 8 : 22)) / 15)) : 1
   const coachNames = coaches.map((c) => shortName(c.user)).join(', ')
   // Nom accessible complet : la date et l'état ne se lisent pas autrement dans la grille.
   const stateLabel = o.state === 'open' ? 'à remplacer'
@@ -221,12 +227,13 @@ function WeekEvent({ o, me, showPool, minH, onOpen }: { o: Occurrence & { col: n
     coaches.some((c) => c.user.id === me) ? 'vous encadrez' : null,
   ].filter(Boolean).join(', ')
   const StateIcon = o.state === 'open' ? AlertTriangle : o.state === 'replaced' ? Check : o.state === 'unreplaced' ? UserX : null
+  const stateIcon = StateIcon && <StateIcon aria-hidden strokeWidth={o.state === 'replaced' ? 3 : 2} className={cn('size-3 shrink-0', o.state === 'open' ? 'text-rope' : o.state === 'replaced' ? 'text-kelp' : 'text-muted')} />
   return (
     <button
       type="button"
       onClick={onOpen}
       className={cn(
-        'absolute overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left transition-[filter] hover:brightness-[0.97] focus-visible:z-10',
+        'absolute overflow-hidden rounded-[3px] border-l-[3px] px-1.5 py-1 text-left transition-[filter] hover:brightness-[0.97] focus-visible:z-10',
         o.state === 'open' ? 'bg-rope-soft' : o.state === 'replaced' ? 'bg-kelp-soft' : 'bg-surface-2',
         mine && 'ring-1 ring-inset ring-water-bright/50',
       )}
@@ -239,16 +246,21 @@ function WeekEvent({ o, me, showPool, minH, onOpen }: { o: Occurrence & { col: n
       }}
       aria-label={label}
     >
-      <p className="flex items-center gap-0.5 text-[11px] font-semibold leading-tight text-muted num">
-        {StateIcon && <StateIcon aria-hidden strokeWidth={o.state === 'replaced' ? 3 : 2} className={cn('size-3 shrink-0', o.state === 'open' ? 'text-rope' : o.state === 'replaced' ? 'text-kelp' : 'text-muted')} />}
-        <span className="truncate">{fmtTime(o.slot.start)}{tall && ` – ${fmtTime(o.slot.end)}`}</span>
+      {!hideTime && (
+        <p className="flex items-center gap-0.5 text-xs font-semibold leading-tight text-muted num">
+          {stateIcon}
+          <span className="truncate">{fmtTime(o.slot.start)}{tall && ` – ${fmtTime(o.slot.end)}`}</span>
+        </p>
+      )}
+      <p className={cn('text-xs font-bold leading-tight text-ink', nameLines >= 3 ? 'line-clamp-3 break-words' : nameLines === 2 ? 'line-clamp-2 break-words' : 'truncate')}>
+        {hideTime && stateIcon && <span className="mr-0.5 inline-block align-[-2px]">{stateIcon}</span>}
+        {o.groupe?.name}
       </p>
-      <p className="truncate text-[12.5px] font-bold leading-tight text-ink">{o.groupe?.name}</p>
-      {tall && showPool && <p className="truncate text-[11.5px] leading-tight text-muted">{o.piscine?.name}</p>}
+      {tall && showPool && h >= 76 && <p className="truncate text-xs leading-tight text-muted">{o.piscine?.name}</p>}
       {tall && (
-        o.state === 'open' ? <p className="truncate text-[11.5px] font-semibold leading-tight text-rope">À remplacer</p>
-          : o.state === 'unreplaced' ? <p className="truncate text-[11.5px] font-semibold leading-tight text-ink-2">Non remplacé</p>
-            : <p className={cn('truncate text-[11.5px] leading-tight', o.state === 'replaced' ? 'font-semibold text-kelp' : 'text-ink-2')}>{coachNames || 'Sans éducateur'}</p>
+        o.state === 'open' ? <p className="truncate text-xs font-semibold leading-tight text-rope">À remplacer</p>
+          : o.state === 'unreplaced' ? <p className="truncate text-xs font-semibold leading-tight text-ink-2">Non remplacé</p>
+            : <p className={cn('truncate text-xs leading-tight', o.state === 'replaced' ? 'font-semibold text-kelp' : 'text-ink-2')}>{coachNames || 'Sans éducateur'}</p>
       )}
     </button>
   )
@@ -267,7 +279,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
   }
   return (
     <div>
-      <div role="group" aria-label="Jour de la semaine" className="mb-5 grid grid-cols-7 gap-1 rounded-xl border border-line bg-surface p-1.5">
+      <div role="group" aria-label="Jour de la semaine" className="elev-1 mb-5 grid grid-cols-7 gap-1 rounded-xl border border-line bg-surface p-1.5">
         {days.map((d, i) => {
           const active = d === days[idx]
           const count = byDay[i].length
@@ -279,10 +291,10 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
               aria-pressed={active}
               aria-current={d === todayISO ? 'date' : undefined}
               onClick={() => onPick(d)}
-              className={cn('relative flex flex-col items-center rounded-xl py-2 transition-colors', active ? 'bg-btn text-btn-ink' : 'text-ink hover:bg-surface-2')}
+              className={cn('relative flex flex-col items-center rounded-[3px] py-2 transition-colors', active ? 'bg-btn text-btn-ink' : 'text-ink hover:bg-surface-2')}
             >
-              <span className={cn('text-[11.5px] font-semibold', active ? 'opacity-80' : 'text-muted')}>{DAYS_SHORT[i]}</span>
-              <span className={cn('display-md text-[20px] num', d === todayISO && !active && 'text-water')}>{fromISO(d).getDate()}</span>
+              <span className={cn('text-xs font-semibold', active ? 'opacity-80' : 'text-muted')}>{DAYS_SHORT[i]}</span>
+              <span className={cn('display-md text-xl num', d === todayISO && !active && 'text-water')}>{fromISO(d).getDate()}</span>
               <span aria-hidden className={cn('mt-0.5 size-1.5 rounded-full', count === 0 ? 'bg-transparent' : alert ? 'bg-rope-bright' : active ? 'bg-btn-ink/70' : 'bg-water-bright')} />
               <span className="sr-only">{pluralize(count, 'séance')}{alert ? ', dont au moins une à remplacer' : ''}</span>
             </button>
@@ -292,7 +304,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
 
       <div key={days[idx]} className="animate-[rise_320ms_var(--ease-out)]">
       {items.length === 0 ? (
-        <div className="rounded-xl border border-line bg-surface">
+        <div className="elev-1 rounded-xl border border-line bg-surface">
           <EmptyState compact title={`Aucune séance ${weekday(fromISO(days[idx])) >= 5 ? 'ce jour-là' : 'ce jour'}`}>Choisissez un autre jour ou affichez tout le club.</EmptyState>
         </div>
       ) : (
@@ -300,7 +312,7 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
           {[...byPool.entries()].map(([poolName, list]) => (
             <section key={poolName}>
               <h2 className="mb-2.5 text-sm font-bold text-ink-2">{poolName}</h2>
-              <ul className="overflow-hidden rounded-xl border border-line bg-surface">
+              <ul className="elev-1 overflow-hidden rounded-xl border border-line bg-surface">
                 {list.map((o) => {
                   const coaches = effectiveCoaches(o)
                   const mine = involves(o, me)
@@ -309,13 +321,13 @@ function DayView({ days, focus, byDay, me, onPick, onOpen }: { days: string[]; f
                       <button type="button" onClick={() => onOpen(o)} className="flex w-full items-stretch gap-3 px-4 py-3.5 text-left hover:bg-surface-2/60">
                         <div className="w-[62px] shrink-0 pt-0.5">
                           <p className="font-bold text-ink num">{fmtTime(o.slot.start)}</p>
-                          <p className="text-[13px] text-muted num">{fmtTime(o.slot.end)}</p>
+                          <p className="text-sm text-muted num">{fmtTime(o.slot.end)}</p>
                         </div>
                         <span aria-hidden className="w-1 shrink-0 rounded-full" style={{ background: o.state === 'open' ? 'var(--rope-bright)' : o.niveau?.color ?? 'var(--line-strong)' }} />
                         <div className="min-w-0 flex-1">
                           <p className="flex items-center gap-2 font-semibold text-ink">
                             <span className="truncate">{o.groupe?.name}</span>
-                            {mine && <span className="shrink-0 rounded-[3px] bg-water-soft px-2 text-[11.5px] font-bold leading-5 text-water">Vous</span>}
+                            {mine && <span className="shrink-0 rounded-[3px] bg-water-soft px-2 text-xs font-bold leading-5 text-water">Vous</span>}
                           </p>
                           <p className="truncate text-sm text-muted">{o.slot.ligne ?? o.niveau?.name ?? ''}</p>
                           {o.state === 'open' ? (

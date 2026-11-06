@@ -41,7 +41,7 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
       description={`${ucfirst(fmtLong(o.date))} (${relativeDay(o.date)})`}
       footer={ctx.can('planning') ? <Button variant="secondary" onClick={() => { close(); navigate(`/app/configuration?modifier=${o.slot.id}`) }}>Modifier le créneau</Button> : undefined}
     >
-      <dl className="grid gap-3 text-[15px]">
+      <dl className="grid gap-3 text-base">
         <Row icon={Clock} label="Horaires"><span className="num">{fmtRange(o.slot.start, o.slot.end)}</span></Row>
         <Row icon={MapPin} label="Piscine">{o.piscine?.name ?? '—'}{o.slot.ligne ? `, ${o.slot.ligne}` : ''}</Row>
         <Row icon={Waves} label="Niveau"><span className="inline-flex items-center gap-2"><LevelDot color={o.niveau?.color} />{o.niveau?.name ?? 'Sans niveau'}</span></Row>
@@ -54,7 +54,7 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
         {o.educators.map((u) => {
           const abs = o.absences.find((a) => a.absence.educatorId === u.id)
           return (
-            <li key={u.id} className="rounded-xl border border-line p-3">
+            <li key={u.id} className="rounded-lg border border-line p-3">
               <div className="flex items-center gap-3">
                 <Avatar name={fullName(u)} size={30} />
                 <span className="min-w-0 flex-1 truncate font-semibold text-ink">{fullName(u)}{u.id === ctx.user.id && <span className="font-normal text-muted"> (vous)</span>}</span>
@@ -65,7 +65,7 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
                 <p className="mt-2 pl-[42px] text-sm text-ink-2">{abs.candidates.length ? `${abs.candidates.length} volontaire${abs.candidates.length > 1 ? 's' : ''} en attente de validation` : 'Aucun volontaire pour le moment'}</p>
               )}
               {abs?.absence.reason && (ctx.can('replacements') || abs.absence.educatorId === ctx.user.id) && (
-                <p className="mt-1 pl-[42px] text-[13px] text-muted">Motif (visible des responsables) : {abs.absence.reason}</p>
+                <p className="mt-1 pl-[42px] text-sm text-muted">Motif (visible des responsables) : {abs.absence.reason}</p>
               )}
               {/* Validation rapide pour les responsables */}
               {abs && abs.status === 'open' && ctx.can('replacements') && abs.candidates.length > 0 && (
@@ -78,9 +78,9 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
                       <li key={c.id} className="flex flex-wrap items-center justify-between gap-2">
                         <span className="min-w-0 text-sm text-ink">
                           {fullName(v)} se propose
-                          {!e.ok && <span className="block text-[13px] text-rope">{e.reason}</span>}
+                          {!e.ok && <span className="block text-sm text-rope">{e.reason}</span>}
                         </span>
-                        <span className="flex gap-2">
+                        <span className="flex items-center gap-4">
                           <Button size="sm" variant="ghost" onClick={async () => {
                             if (await confirm({ title: `Refuser la candidature de ${fullName(v)} ?`, body: 'Cette personne sera prévenue et ne pourra plus se proposer pour ce remplacement.', confirmLabel: 'Refuser' })) run(() => decideReplacement(c.id, false), 'Candidature refusée.')
                           }}>Refuser</Button>
@@ -111,7 +111,7 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
           const e = eligibility(db, ctx.user.id, a.absence)
           const already = a.candidates.some((c) => c.volunteerId === ctx.user.id)
           return (
-            <div key={a.absence.id} className="rounded-xl bg-rope-soft p-4">
+            <div key={a.absence.id} className="rounded-lg bg-rope-soft p-4">
               <p className="font-semibold text-ink">{a.educator?.firstname} cherche un remplaçant</p>
               {already ? <p className="mt-1 text-sm text-ink-2">Votre candidature est envoyée. Un responsable va la valider.</p>
                 : e.ok ? (
@@ -125,11 +125,11 @@ export function SessionDrawer({ slot, date, onClose }: { slot: Creneau | null; d
           <Button variant="secondary" onClick={() => setDeclaring(true)}>Je serai absent·e à cette séance</Button>
         )}
         {mine && declaring && (
-          <div className="rounded-xl border border-line p-4">
+          <div className="rounded-lg border border-line p-4">
             <Field label="Motif" optional hint="Visible uniquement des responsables du club." htmlFor="motif">
               <Textarea id="motif" rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Maladie, formation, déplacement…" />
             </Field>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
               <Button onClick={async () => {
                 const a = await run(() => declareAbsence(o.slot.id, o.date, reason))
                 if (!a) return

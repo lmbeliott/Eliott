@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { CalendarX2, Info } from 'lucide-react'
+import { Info } from 'lucide-react'
 import { Button, EmptyState, Field, FormError, LevelDot, PageHeader, Panel, Select, Textarea } from '../../components/ui'
 import { AbsenceStatusBadge } from '../../components/status'
 import { useAction, useConfirm, useToast } from '../../components/feedback'
@@ -55,7 +55,7 @@ export default function Absences() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <Panel title="Déclarer une absence">
           {mySlots.length === 0 ? (
-            <div className="flex gap-3 rounded-xl bg-surface-2 p-4 text-[15px] text-ink-2">
+            <div className="flex gap-3 rounded-xl bg-surface-2 p-4 text-base text-ink-2">
               <Info aria-hidden className="mt-0.5 size-5 shrink-0 text-water" />
               <p>Aucun créneau n'est encore à votre nom. Demandez à un responsable du club de vous affecter à vos groupes depuis la configuration du planning.</p>
             </div>
@@ -79,13 +79,13 @@ export default function Absences() {
                       const disabled = taken.has(d)
                       return (
                         <label key={d} className={cn(
-                          'flex cursor-pointer flex-col rounded-xl border px-3 py-2.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright',
+                          'flex cursor-pointer flex-col rounded-[3px] border px-3 py-2.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-water-bright',
                           date === d ? 'border-btn bg-btn text-btn-ink' : 'border-line-strong hover:bg-surface-2',
                           disabled && 'cursor-not-allowed opacity-50',
                         )}>
                           <input type="radio" name="abs-date" value={d} checked={date === d} disabled={disabled} onChange={() => { setDate(d); setError(null) }} className="sr-only" />
-                          <span className="text-[14px] font-semibold">{ucfirst(fmtShort(d))}</span>
-                          <span className={cn('text-[12.5px]', date === d ? 'opacity-80' : 'text-muted')}>{disabled ? 'Déjà déclarée' : relativeDay(d)}</span>
+                          <span className="text-sm font-semibold">{ucfirst(fmtShort(d))}</span>
+                          <span className={cn('text-xs', date === d ? 'opacity-80' : 'text-muted')}>{disabled ? 'Déjà déclarée' : relativeDay(d)}</span>
                         </label>
                       )
                     })}
@@ -102,13 +102,15 @@ export default function Absences() {
 
         <Panel title="Suivi de mes absences">
           {history.length === 0 ? (
-            <EmptyState compact icon={CalendarX2} title="Aucune absence déclarée">Vos absences et leurs remplaçants apparaîtront ici.</EmptyState>
+            <EmptyState compact title="Aucune absence déclarée">
+              {mySlots.length > 0 && 'Choisissez un créneau dans « Déclarer une absence » : la séance sera proposée aux collègues diplômés et libres.'}
+            </EmptyState>
           ) : (
             <div className="space-y-6">
               {[{ title: 'À venir', list: upcoming }, { title: 'Passées', list: past }].filter((s) => s.list.length).map((section) => (
                 <div key={section.title}>
-                  <h3 className="mb-2 text-[13px] font-semibold text-muted">{section.title}</h3>
-                  <ul className="divide-y divide-line rounded-xl border border-line">
+                  <h3 className="mb-2 text-sm font-semibold text-muted">{section.title}</h3>
+                  <ul className="divide-y divide-line">
                     {section.list.map((a) => {
                       const s = db.creneaux.find((c) => c.id === a.creneauId)
                       const g = db.groupes.find((x) => x.id === s?.groupeId)
@@ -120,8 +122,8 @@ export default function Absences() {
                       const canCancel = status === 'open' || (status === 'replaced' && !!s && !isOver(a.date, s.end))
                       const candidates = db.remplacements.filter((r) => r.absenceId === a.id && r.status === 'pending').length
                       return (
-                        <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-                          <div className="min-w-0 flex-1">
+                        <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3 first:pt-0 last:pb-0">
+                          <div className="min-w-0 flex-[1_1_16rem]">
                             <p className="flex items-center gap-2 font-semibold text-ink"><LevelDot color={lvl?.color} />{g?.name ?? 'Créneau supprimé'}</p>
                             <p className="text-sm text-muted"><span className="first-letter:uppercase inline-block">{fmtLong(a.date)}</span>{s && <>, <span className="num">{fmtRange(s.start, s.end)}</span></>}</p>
                             {rp && <p className="mt-0.5 text-sm text-kelp">Remplacé·e par {fullName(rpUser)}</p>}

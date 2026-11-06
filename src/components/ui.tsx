@@ -9,19 +9,21 @@ import { cn, hueFrom } from '../lib/util'
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'water'
 type Size = 'sm' | 'md' | 'lg'
 
-// Boutons « carrés » : action principale pleine à angles vifs, action secondaire en lien souligné.
-const base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap rounded-[2px] transition duration-150 ease-out active:translate-y-px disabled:opacity-50 disabled:pointer-events-none select-none'
+// Boutons « carrés » : action principale pleine à angles vifs, action secondaire en lien souligné
+// (sans marge latérale : il s'aligne sur la colonne de texte), lien neutre pour annuler ou refuser.
+const base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap rounded-[2px] transition duration-150 ease-out active:translate-y-px disabled:pointer-events-none select-none'
+const solid = 'bg-btn text-btn-ink hover:bg-btn-hover shadow-[inset_0_-2px_0_rgb(0_0_0/0.18)] disabled:bg-surface-2 disabled:text-muted disabled:shadow-none'
 const variants: Record<Variant, string> = {
-  primary: 'bg-btn text-btn-ink hover:bg-btn-hover shadow-[inset_0_-2px_0_rgb(0_0_0/0.18)]',
-  water: 'bg-btn text-btn-ink hover:bg-btn-hover shadow-[inset_0_-2px_0_rgb(0_0_0/0.18)]',
-  secondary: 'link-action px-1.5 bg-transparent',
-  ghost: 'px-3 text-ink-2 hover:bg-surface-2 hover:text-ink',
-  danger: 'bg-rope text-white hover:brightness-110 shadow-[inset_0_-2px_0_rgb(0_0_0/0.2)] dark:text-[#2a0d08]',
+  primary: solid,
+  water: solid,
+  secondary: 'link-action px-0 bg-transparent disabled:opacity-50',
+  ghost: 'link-action link-quiet px-0 bg-transparent disabled:opacity-50',
+  danger: 'bg-rope text-rope-ink hover:brightness-110 shadow-[inset_0_-2px_0_rgb(0_0_0/0.2)] disabled:opacity-50',
 }
 const sizes: Record<Size, string> = {
-  sm: 'h-8 px-3 text-[14px]',
-  md: 'h-10 px-4 text-[15px]',
-  lg: 'h-12 px-6 text-[16.5px]',
+  sm: 'h-8 px-3 text-sm',
+  md: 'h-10 px-4 text-base',
+  lg: 'h-12 px-6 text-lg',
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -67,7 +69,7 @@ export function IconButton({ label, icon: Icon, className, size = 'md', ...rest 
 
 // ---------------------------------------------------------------- formulaires
 
-const control = 'w-full rounded-[3px] border border-field-line bg-surface px-3 text-[15px] text-ink placeholder:text-muted transition-colors hover:border-ink-2/80 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20 disabled:bg-surface-2 disabled:text-muted aria-[invalid=true]:border-rope'
+const control = 'w-full rounded-[3px] border border-field-line bg-surface px-3 text-base text-ink placeholder:text-muted transition-colors hover:border-ink-2/80 focus:border-water-bright focus:outline-none focus:ring-3 focus:ring-water-bright/20 disabled:bg-surface-2 disabled:text-muted aria-[invalid=true]:border-rope'
 
 /** Relie l'aide ou l'erreur d'un `Field` à son contrôle (`aria-describedby`), sans rien changer chez l'appelant. */
 const FieldDesc = createContext<{ forId?: string; descId?: string }>({})
@@ -87,7 +89,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   const describedBy = useDescribedBy(rest.id, rest['aria-describedby'])
   return (
     <select ref={ref} className={cn(control, 'h-11 pr-9 appearance-none bg-[length:16px] bg-[right_10px_center] bg-no-repeat', className)}
-      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234d6878' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
+      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a909d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
       {...rest}
       aria-describedby={describedBy}
     >
@@ -112,7 +114,7 @@ export function Field({ label, hint, error, optional, children, className, htmlF
         {optional && <span className="ml-1.5 font-normal text-muted">(facultatif)</span>}
       </label>
       <FieldDesc.Provider value={{ forId: htmlFor, descId }}>{children}</FieldDesc.Provider>
-      {error ? <p id={descId} role="alert" className="text-[13px] text-rope">{error}</p> : hint ? <p id={descId} className="text-[13px] text-muted">{hint}</p> : null}
+      {error ? <p id={descId} role="alert" className="text-sm text-rope">{error}</p> : hint ? <p id={descId} className="text-sm text-muted">{hint}</p> : null}
     </div>
   )
 }
@@ -124,7 +126,7 @@ export function Checkbox({ label, hint, className, ...rest }: InputHTMLAttribute
       <input id={id} type="checkbox" className="mt-0.5 size-[18px] shrink-0 rounded accent-[var(--water)] cursor-pointer" {...rest} />
       <span className="text-sm leading-snug">
         <span className="font-medium text-ink">{label}</span>
-        {hint && <span className="block text-[13px] text-muted mt-0.5">{hint}</span>}
+        {hint && <span className="block text-sm text-muted mt-0.5">{hint}</span>}
       </span>
     </label>
   )
@@ -148,7 +150,7 @@ const tones: Record<Tone, string> = {
 
 export function Badge({ tone = 'neutral', children, className, dot }: { tone?: Tone; children: ReactNode; className?: string; dot?: boolean }) {
   return (
-    <span className={cn('inline-flex items-center gap-1.5 rounded-[3px] px-2 h-6 text-[13px] font-semibold whitespace-nowrap', tones[tone], className)}>
+    <span className={cn('inline-flex items-center gap-1.5 rounded-[3px] px-2 h-6 text-xs font-semibold whitespace-nowrap', tones[tone], className)}>
       {dot && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
       {children}
     </span>
@@ -157,12 +159,13 @@ export function Badge({ tone = 'neutral', children, className, dot }: { tone?: T
 
 export function Avatar({ name, size = 32, className }: { name: string; size?: number; className?: string }) {
   const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join('')
+  // Teintes de l'eau seulement (sarcelle → marine) : les noms se distinguent par la nuance.
   const h = hueFrom(name)
   return (
     <span
       aria-hidden
       className={cn('inline-flex shrink-0 items-center justify-center rounded-full font-bold text-white', className)}
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.38), background: `oklch(0.52 0.11 ${h})` }}
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.38), background: `oklch(${0.42 + (h % 3) * 0.04} 0.08 ${195 + (h % 50)})` }}
     >
       {initials}
     </span>
@@ -173,14 +176,14 @@ export function Panel({ title, description, actions, children, className, bodyCl
   title?: ReactNode; description?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; bodyClassName?: string; id?: string
 }) {
   return (
-    <section id={id} className={cn('elev-2 rounded-xl border border-line/70 bg-surface', className)}>
+    <section id={id} className={cn('elev-2 rounded-lg border border-line/70 bg-surface', className)}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4 pb-3 sm:px-6">
+        <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 px-5 pt-4 pb-3 sm:px-6">
           <div className="min-w-0">
-            {title && <h2 className="text-[17px] font-bold text-ink">{title}</h2>}
+            {title && <h2 className="text-lg font-bold text-ink">{title}</h2>}
             {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}
           </div>
-          {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+          {actions && <div className="flex shrink-0 items-center gap-4">{actions}</div>}
         </header>
       )}
       <div className={cn(title || actions ? 'px-5 pb-5 sm:px-6' : 'p-5 sm:p-6', bodyClassName)}>{children}</div>
@@ -203,27 +206,29 @@ export function PageHeader({ title, description, actions, children }: { title: R
     <div className="mb-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="display-md text-[30px] sm:text-[36px] text-ink">{title}</h1>
-          {description && <p className="mt-1.5 max-w-[62ch] text-[15px] text-ink-2">{description}</p>}
+          <h1 className="display-md text-2xl sm:text-3xl text-ink">{title}</h1>
+          {description && <p className="mt-1.5 max-w-[62ch] text-base text-ink-2">{description}</p>}
         </div>
-        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+        {actions && <div className="flex flex-wrap items-center gap-x-4 gap-y-2">{actions}</div>}
       </div>
       {children}
     </div>
   )
 }
 
-export function EmptyState({ icon: Icon, title, children, action, compact }: { icon?: LucideIcon; title: string; children?: ReactNode; action?: ReactNode; compact?: boolean }) {
+/** État vide : une phrase qui dit quoi faire ensuite, alignée sur la colonne de texte. */
+export function EmptyState({ title, children, action, compact }: {
+  /** @deprecated Ignoré : plus de pictogramme dans les états vides. */
+  icon?: LucideIcon
+  title: string; children?: ReactNode; action?: ReactNode; compact?: boolean
+}) {
   return (
-    <div className={cn('flex flex-col items-center text-center', compact ? 'py-8' : 'py-14')}>
-      {Icon && (
-        <span className="mb-3 inline-flex size-11 items-center justify-center rounded-md bg-water-soft text-water">
-          <Icon aria-hidden className="size-5" />
-        </span>
-      )}
-      <p className="font-semibold text-ink">{title}</p>
-      {children && <p className="mt-1 max-w-[46ch] text-sm text-muted">{children}</p>}
-      {action && <div className="mt-4">{action}</div>}
+    <div className={compact ? 'py-4' : 'py-6'}>
+      <div className="flex flex-col items-start border-l-2 border-line pl-4">
+        <p className="font-semibold text-ink">{title}</p>
+        {children && <p className="mt-1 max-w-[60ch] text-sm text-muted">{children}</p>}
+        {action && <div className="mt-4">{action}</div>}
+      </div>
     </div>
   )
 }
@@ -235,7 +240,7 @@ export function Tabs({ items }: { items: Array<{ to: string; label: string; coun
   useLayoutEffect(() => {
     const measure = () => {
       const el = list.current?.querySelector<HTMLElement>('a[aria-current="page"]')
-      setBar(el ? { x: el.offsetLeft + 8, w: el.offsetWidth - 16 } : null)
+      setBar(el ? { x: el.offsetLeft, w: el.offsetWidth } : null)
     }
     measure()
     document.fonts?.ready.then(measure).catch(() => {})
@@ -244,17 +249,17 @@ export function Tabs({ items }: { items: Array<{ to: string; label: string; coun
   }, [pathname, items.length])
   return (
     <nav aria-label="Sections" className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <ul ref={list} className="relative flex min-w-max gap-1 border-b border-line">
+      <ul ref={list} className="relative flex min-w-max gap-6 border-b border-line">
         {items.map((it) => (
           <li key={it.to}>
             <NavLink
               to={it.to}
               end={it.end}
               viewTransition
-              className={({ isActive }) => cn('relative flex h-11 items-center gap-2 px-3 text-sm font-semibold transition-colors duration-200', isActive ? 'text-ink' : 'text-muted hover:text-ink')}
+              className={({ isActive }) => cn('relative flex h-11 items-center gap-2 text-sm font-semibold transition-colors duration-200', isActive ? 'text-ink' : 'text-muted hover:text-ink')}
             >
               {it.label}
-              {!!it.count && <span key={it.count} className="badge-bump rounded-[3px] bg-rope px-1.5 text-[11px] font-bold leading-[18px] text-white dark:text-[#2a0d08]">{it.count}</span>}
+              {!!it.count && <span key={it.count} className="badge-bump rounded-[3px] bg-rope px-1.5 text-xs font-bold leading-[18px] text-rope-ink">{it.count}</span>}
             </NavLink>
           </li>
         ))}
@@ -284,7 +289,7 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
     requestAnimationFrame(() => wrap.current?.querySelector<HTMLElement>('[aria-checked="true"]')?.focus())
   }
   return (
-    <div ref={wrap} role="radiogroup" aria-label={label} className="relative inline-flex rounded-[3px] border border-line-strong bg-surface p-0.5"
+    <div ref={wrap} role="radiogroup" aria-label={label} className="relative inline-flex rounded-[3px] border border-field-line bg-surface p-0.5"
       onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); move(1) } if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); move(-1) } }}>
       {thumb && <span aria-hidden className="slide-indicator inset-y-0.5 left-0 rounded-[2px] bg-btn" style={{ transform: `translateX(${thumb.x - 2}px)`, width: thumb.w }} />}
       {options.map((o) => (
@@ -295,7 +300,7 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
           aria-checked={value === o.value}
           tabIndex={value === o.value ? 0 : -1}
           onClick={() => onChange(o.value)}
-          className={cn('relative z-[1] h-8 rounded-[2px] px-3 text-[14px] font-semibold transition-colors duration-300', value === o.value ? (thumb ? 'text-btn-ink' : 'bg-btn text-btn-ink') : 'text-ink-2 hover:text-ink')}
+          className={cn('relative z-[1] h-8 rounded-[2px] px-3 text-sm font-semibold transition-colors duration-300', value === o.value ? (thumb ? 'text-btn-ink' : 'bg-btn text-btn-ink') : 'text-ink-2 hover:text-ink')}
         >
           {o.label}
         </button>
@@ -307,7 +312,7 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
 export function Table({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div className={cn('relative -mx-5 overflow-x-auto sm:-mx-6', className)}>
-      <table className="w-full min-w-[560px] border-collapse text-sm [&_th]:h-10 [&_th]:px-3 [&_th]:text-left [&_th]:text-[12.5px] [&_th]:font-semibold [&_th]:text-muted [&_th]:border-b [&_th]:border-line [&_th:first-child]:pl-5 sm:[&_th:first-child]:pl-6 [&_th:last-child]:pr-5 sm:[&_th:last-child]:pr-6 [&_td]:px-3 [&_td]:py-3 [&_td]:border-b [&_td]:border-line [&_td]:align-middle [&_td:first-child]:pl-5 sm:[&_td:first-child]:pl-6 [&_td:last-child]:pr-5 sm:[&_td:last-child]:pr-6 [&_tbody_tr:last-child_td]:border-b-0">
+      <table className="w-full min-w-[560px] border-collapse text-sm [&_th]:h-10 [&_th]:px-3 [&_th:not(.text-right)]:text-left [&_th]:text-xs [&_th]:font-semibold [&_th]:text-muted [&_th]:border-b [&_th]:border-line [&_th:first-child]:pl-5 sm:[&_th:first-child]:pl-6 [&_th:last-child]:pr-5 sm:[&_th:last-child]:pr-6 [&_td]:px-3 [&_td]:py-3 [&_td]:border-b [&_td]:border-line [&_td]:align-middle [&_td:first-child]:pl-5 sm:[&_td:first-child]:pl-6 [&_td:last-child]:pr-5 sm:[&_td:last-child]:pr-6 [&_tbody_tr:last-child_td]:border-b-0">
         {children}
       </table>
     </div>
@@ -393,7 +398,7 @@ export function Drawer({ open, onClose, title, description, children, footer, wi
           <IconButton data-close label="Fermer" icon={X} onClick={onClose} className="-mr-2 -mt-1" />
         </header>
         <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">{c.children}</div>
-        {c.footer && <footer className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3.5 sm:px-6 pb-[max(14px,env(safe-area-inset-bottom))]">{c.footer}</footer>}
+        {c.footer && <footer className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 border-t border-line px-5 py-3.5 sm:px-6 pb-[max(14px,env(safe-area-inset-bottom))]">{c.footer}</footer>}
       </div>
     </div>,
     document.body,

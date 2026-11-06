@@ -5,6 +5,18 @@
 @import "@fontsource/barlow/700.css";
 @import "@fontsource/barlow/400-italic.css";
 
+/* `dark:` suit le même choix que les jetons : thème forcé (data-theme), sinon l'OS. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
 /* ------------------------------------------------------------------
    Tokens. Barlow (esprit signalétique sportive), boutons à angles vifs,
    profondeur par élévations teintées. Corail = absence non pourvue,
@@ -28,6 +40,8 @@
   --rope: #b83220;
   --rope-bright: #e0412e;
   --rope-soft: #fbe5e1;
+  /* Texte posé sur le corail plein (pastilles, bouton danger). */
+  --rope-ink: #ffffff;
   --buoy: #8a6100;
   --buoy-bright: #f2b824;
   --buoy-soft: #fcf1d2;
@@ -52,8 +66,8 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
     --bg: #07141d;
-    --surface: #0d1f2b;
-    --surface-2: #132a38;
+    --surface: #11283a;
+    --surface-2: #183445;
     --line: #1e3a4b;
     --line-strong: #2b4e62;
     --field-line: #57788b;
@@ -66,6 +80,7 @@
     --rope: #ff8a78;
     --rope-bright: #f0563f;
     --rope-soft: #3a1a17;
+    --rope-ink: #2a0d08;
     --buoy: #f7cf62;
     --buoy-bright: #f2b824;
     --buoy-soft: #382c0c;
@@ -81,7 +96,7 @@
     --shadow: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 32px -10px rgb(0 0 0 / 0.55), 0 40px 80px -24px rgb(0 0 0 / 0.6);
     --e1: 0 1px 2px rgb(0 0 0 / 0.4);
     --e2: 0 1px 2px rgb(0 0 0 / 0.35), 0 10px 24px -10px rgb(0 0 0 / 0.55);
-    --hl: inset 0 1px 0 rgb(255 255 255 / 0.05);
+    --hl: inset 0 1px 0 rgb(255 255 255 / 0.08);
     --page: linear-gradient(180deg, #081822 0%, #07141d 420px);
   }
 }
@@ -89,8 +104,8 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #07141d;
-  --surface: #0d1f2b;
-  --surface-2: #132a38;
+  --surface: #11283a;
+  --surface-2: #183445;
   --line: #1e3a4b;
   --line-strong: #2b4e62;
   --field-line: #57788b;
@@ -103,6 +118,7 @@
   --rope: #ff8a78;
   --rope-bright: #f0563f;
   --rope-soft: #3a1a17;
+  --rope-ink: #2a0d08;
   --buoy: #f7cf62;
   --buoy-bright: #f2b824;
   --buoy-soft: #382c0c;
@@ -118,7 +134,7 @@
   --shadow: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 32px -10px rgb(0 0 0 / 0.55), 0 40px 80px -24px rgb(0 0 0 / 0.6);
   --e1: 0 1px 2px rgb(0 0 0 / 0.4);
   --e2: 0 1px 2px rgb(0 0 0 / 0.35), 0 10px 24px -10px rgb(0 0 0 / 0.55);
-  --hl: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --hl: inset 0 1px 0 rgb(255 255 255 / 0.08);
   --page: linear-gradient(180deg, #081822 0%, #07141d 420px);
 }
 
@@ -139,6 +155,7 @@
   --color-rope: var(--rope);
   --color-rope-bright: var(--rope-bright);
   --color-rope-soft: var(--rope-soft);
+  --color-rope-ink: var(--rope-ink);
   --color-buoy: var(--buoy);
   --color-buoy-bright: var(--buoy-bright);
   --color-buoy-soft: var(--buoy-soft);
@@ -157,6 +174,40 @@
   --ease-swim: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Angles : 2px pour les commandes, 4px pour les surfaces, jamais plus de 6px.
+   Seuls les avatars et les pastilles d'état restent ronds (rounded-full). */
+@theme {
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 6px;
+  --radius-3xl: 6px;
+  --radius-4xl: 6px;
+
+  /* Échelle typographique : pas de tailles intermédiaires (text-[13px], 15,5px…). */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.25;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 1.15;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 1.1;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 1.05;
+  /* Grands titres d'affichage (héros, prix). */
+  --text-5xl: 3.5rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 4.5rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 5.25rem;
+  --text-7xl--line-height: 1;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -167,7 +218,7 @@
     background-repeat: no-repeat;
     color: var(--ink);
     font-family: var(--font-sans);
-    font-size: 16.5px;
+    font-size: var(--text-base);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "kern", "liga";
@@ -185,6 +236,7 @@
     font: inherit;
   }
   h1, h2, h3, h4 {
+    line-height: 1.15;
     text-wrap: balance;
   }
   p {
@@ -194,12 +246,15 @@
 
 @layer components {
   /* Titres : Barlow, gras, interlettrage serré */
+  /* --tw-leading : l'interlignage serré l'emporte aussi sur celui de l'échelle (text-3xl…). */
   .display {
+    --tw-leading: 0.98;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 0.98;
   }
   .display-md {
+    --tw-leading: 1.06;
     font-weight: 600;
     letter-spacing: -0.015em;
     line-height: 1.06;
@@ -225,6 +280,15 @@
     transition: text-decoration-color var(--dur-2), text-underline-offset var(--dur-2), color var(--dur-2);
   }
   .link-action:hover { text-decoration-color: currentColor; text-underline-offset: 4px; }
+  /* Variante neutre (annuler, refuser, retirer) : soulignement discret, plein au survol. */
+  .link-quiet { color: var(--ink-2); text-decoration-color: var(--line-strong); }
+  .link-quiet:hover { color: var(--ink); text-decoration-color: currentColor; }
+
+  /* Pile de toasts : au-dessus de la barre d'onglets mobile quand l'application l'affiche. */
+  .toast-stack { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+  @media (width < 64rem) {
+    body:has(.app-tabbar) .toast-stack { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  }
 
   /* Section « eau profonde » : fond marine-sarcelle, lumière de surface, grain.
      .on-deep reprend seulement les couleurs (en-tête posé sur le héros). */
@@ -257,12 +321,14 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: repeating-linear-gradient(105deg, transparent 0 70px, rgb(255 255 255 / 0.045) 70px 130px, transparent 130px 210px);
+    background: repeating-linear-gradient(105deg, transparent 0 70px, rgb(255 255 255 / 0.025) 70px 130px, transparent 130px 210px);
     -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
     mask-image: linear-gradient(180deg, #000 0%, transparent 75%);
     filter: blur(10px);
     animation: shafts 26s linear infinite alternate;
   }
+  /* Bande sans faisceaux (appel final) : les rayures floues y feraient des taches. */
+  .deep-plain::before { content: none; }
   .deep::after {
     content: "";
     position: absolute;

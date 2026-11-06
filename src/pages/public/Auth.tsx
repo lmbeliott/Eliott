@@ -15,11 +15,11 @@ function AuthLayout({ title, intro, children }: { title: string; intro?: ReactNo
       <div className="flex flex-col px-4 py-6 sm:px-10">
         <Logo />
         <main className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-12">
-          <h1 className="display-md text-[34px] text-ink sm:text-[40px]">{title}</h1>
-          {intro && <p className="mt-2 text-[15px] text-ink-2">{intro}</p>}
+          <h1 className="display-md text-3xl text-ink">{title}</h1>
+          {intro && <p className="mt-2 text-base text-ink-2">{intro}</p>}
           <div className="mt-8">{children}</div>
         </main>
-        <p className="text-center text-[13px] text-muted">
+        <p className="text-center text-sm text-muted">
           <Link to="/cgv" className="hover:text-ink">Conditions générales</Link>
           <span className="mx-2" aria-hidden>/</span>
           <Link to="/confidentialite" className="hover:text-ink">Confidentialité</Link>
@@ -95,24 +95,24 @@ export function Login() {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between gap-2">
             <label htmlFor="password" className="text-sm font-semibold text-ink">Mot de passe</label>
-            <Link to="/mot-de-passe-oublie" className="text-[13px] font-semibold text-water hover:underline">Mot de passe oublié ?</Link>
+            <Link to="/mot-de-passe-oublie" className="link-action text-sm">Mot de passe oublié ?</Link>
           </div>
           <PasswordInput id="password" value={password} onChange={(v) => { setPassword(v); setError(null) }} autoComplete="current-password" />
         </div>
         <Button type="submit" size="lg" full disabled={busy}>{busy ? 'Connexion…' : 'Se connecter'}</Button>
       </form>
-      <p className="mt-6 text-center text-[15px] text-ink-2">
-        Pas encore de compte ? <Link to="/inscription" className="font-semibold text-water hover:underline">Créer un compte</Link>
+      <p className="mt-6 text-center text-base text-ink-2">
+        Pas encore de compte ? <Link to="/inscription" className="link-action">Créer un compte</Link>
       </p>
 
       <div className="mt-10 rounded-xl border border-line bg-surface p-4">
         <p className="font-semibold text-ink">Explorer la démo</p>
-        <p className="mt-1 text-[13px] text-muted">Un club fictif avec deux piscines, huit éducateurs et des absences en cours. Rien n'est envoyé.</p>
-        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <p className="mt-1 text-sm text-muted">Un club fictif avec deux piscines, huit éducateurs et des absences en cours. Rien n'est envoyé.</p>
+        <div className="mt-3 flex flex-wrap items-center gap-x-7 gap-y-1">
           <Button variant="secondary" onClick={() => demo(DEMO_ADMIN_ID)}>Responsable de club</Button>
           <Button variant="secondary" onClick={() => demo(DEMO_EDUCATOR_ID)}>Éducatrice</Button>
         </div>
-        <p className="mt-3 text-[12.5px] text-muted">Ou connectez-vous avec <span className="font-semibold text-ink-2">{DEMO_ADMIN_EMAIL}</span>, mot de passe <span className="font-semibold text-ink-2">{DEMO_PASSWORD}</span>.</p>
+        <p className="mt-3 text-xs text-muted">Ou connectez-vous avec <span className="font-semibold text-ink-2">{DEMO_ADMIN_EMAIL}</span>, mot de passe <span className="font-semibold text-ink-2">{DEMO_PASSWORD}</span>.</p>
       </div>
     </AuthLayout>
   )
@@ -176,12 +176,12 @@ export function Register() {
             onChange={(e) => setAccepted(e.target.checked)}
             label={<>J'accepte les <Link to="/cgv" target="_blank" className="text-water underline underline-offset-2">conditions générales</Link> et la <Link to="/confidentialite" target="_blank" className="text-water underline underline-offset-2">politique de confidentialité</Link>.</>}
           />
-          {touched.terms && !accepted && <p role="alert" className="mt-1.5 text-[13px] text-rope">Acceptez les conditions pour créer votre compte.</p>}
+          {touched.terms && !accepted && <p role="alert" className="mt-1.5 text-sm text-rope">Acceptez les conditions pour créer votre compte.</p>}
         </div>
         <Button type="submit" size="lg" full disabled={busy}>{busy ? 'Création…' : 'Créer mon compte'}</Button>
       </form>
-      <p className="mt-6 text-center text-[15px] text-ink-2">
-        Déjà inscrit ? <Link to="/connexion" className="font-semibold text-water hover:underline">Se connecter</Link>
+      <p className="mt-6 text-center text-base text-ink-2">
+        Déjà inscrit ? <Link to="/connexion" className="link-action">Se connecter</Link>
       </p>
     </AuthLayout>
   )
@@ -202,8 +202,8 @@ export function ForgotPassword() {
         <div className="rounded-xl border border-line bg-surface p-5">
           <MailCheck aria-hidden className="size-6 text-kelp" />
           <p className="mt-3 font-semibold text-ink">Vérifiez votre boîte de réception</p>
-          <p className="mt-1 text-[15px] text-ink-2">Si un compte est associé à {email.trim()}, un e-mail de réinitialisation vient de partir. Le lien reste valable une heure.</p>
-          <p className="mt-3 text-[13px] text-muted">En mode démonstration, aucun e-mail n'est réellement envoyé.</p>
+          <p className="mt-1 text-base text-ink-2">Si un compte est associé à {email.trim()}, un e-mail de réinitialisation vient de partir. Le lien reste valable une heure.</p>
+          <p className="mt-3 text-sm text-muted">En mode démonstration, aucun e-mail n'est réellement envoyé.</p>
         </div>
       ) : (
         <form onSubmit={submit} noValidate className="space-y-5">
@@ -213,8 +213,8 @@ export function ForgotPassword() {
           <Button type="submit" size="lg" full>Envoyer le lien</Button>
         </form>
       )}
-      <p className="mt-6 text-center text-[15px]">
-        <Link to="/connexion" className="font-semibold text-water hover:underline">Retour à la connexion</Link>
+      <p className="mt-6 text-center text-base">
+        <Link to="/connexion" className="link-action">Retour à la connexion</Link>
       </p>
     </AuthLayout>
   )
