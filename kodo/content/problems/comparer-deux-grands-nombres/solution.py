@@ -13,8 +13,10 @@ else:
     if neg_a:
         va = a[1:]
         vb = b[1:]
-    if len(va) != len(vb):
-        compare = -1 if len(va) < len(vb) else 1   # plus de chiffres : plus grand
+    if len(va) < len(vb):                           # moins de chiffres : plus petit
+        compare = -1
+    elif len(va) > len(vb):
+        compare = 1
     elif va == vb:
         compare = 0
     elif va < vb:                                   # même longueur : ordre des chaînes

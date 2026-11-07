@@ -19,8 +19,10 @@ int main() {
             vb = b.substr(1);
         }
         int compare;
-        if (va.size() != vb.size()) {
-            compare = va.size() < vb.size() ? -1 : 1;   // plus de chiffres : plus grand
+        if (va.size() < vb.size()) {                    // moins de chiffres : plus petit
+            compare = -1;
+        } else if (va.size() > vb.size()) {
+            compare = 1;
         } else if (va == vb) {
             compare = 0;
         } else if (va < vb) {                           // même longueur : ordre des chaînes
