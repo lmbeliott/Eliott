@@ -58,4 +58,4 @@ Pourquoi les idées simples échouent :
 
 Pièges :
 - Avec `K = 1`, la réponse est `0`.
-- En C++, les coûts dépassent 2³¹ : utilise `long long`, et une valeur « infinie » dont le double ne déborde pas (par exemple 2⁶⁰).
+- En C++, une jonction additionne deux coûts qui peuvent chacun approcher 10⁹, et la valeur « infinie » s'additionne elle aussi : utilise `long long`, et une valeur « infinie » dont le double ne déborde pas (par exemple 2⁶⁰).

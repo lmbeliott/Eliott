@@ -53,4 +53,4 @@ Why simple ideas fail:
 
 Traps:
 - With `K = 1`, the answer is `0`.
-- In C++, the costs exceed 2³¹: use `long long`, and an "infinite" value whose double does not overflow (for example 2⁶⁰).
+- In C++, a meeting adds two costs that can each approach 10⁹, and the "infinite" value gets added too: use `long long`, and an "infinite" value whose double does not overflow (for example 2⁶⁰).
