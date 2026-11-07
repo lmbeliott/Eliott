@@ -19,7 +19,6 @@ const CodeEditor = lazy(() => import('../components/CodeEditor').then((m) => ({ 
 
 const FIRST_ID = 'somme-de-deux-nombres'
 const first = problemById(FIRST_ID) ?? problemList[0]
-const last = problemList[problemList.length - 1]
 const firstChapter = chapterById(first.chapter)
 /** Durée des cours, de la plus courte à la plus longue (minutes). */
 const minutes = chapters.map((c) => c.lessonMinutes).filter((m): m is number => !!m)
@@ -694,18 +693,18 @@ export function Landing() {
           <SectionHeading
             id="programme"
             title={t(
-              `${problemList.length} problèmes, de ${problemTitle(lang, problemList[0])} à ${problemTitle(lang, last)}`,
-              `${problemList.length} problems, from ${problemTitle(lang, problemList[0])} to ${problemTitle(lang, last)}`,
+              `${problemList.length} problèmes, ${chapters.length} chapitres, ${levels.length} niveaux`,
+              `${problemList.length} problems, ${chapters.length} chapters, ${levels.length} levels`,
             )}
             lead={t(
-              `${chapters.length} chapitres en ${levels.length} niveaux, une case par problème. Un problème rapporte ${levelPoints
+              `Une case par problème. Un problème rapporte ${levelPoints
                 .map((x) => formatNumber(lang, x))
                 .join(', ')
-                .replace(/, (?=[^,]*$)/, ' ou ')} pts selon son niveau ; les ${problemList.length} rapportent ${pts(lang, totalPoints)}.`,
-              `${chapters.length} chapters in ${levels.length} levels, one square per problem. A problem is worth ${levelPoints
+                .replace(/, (?=[^,]*$)/, ' ou ')} pts selon son niveau, ${pts(lang, totalPoints)} au total.`,
+              `One square per problem. A problem is worth ${levelPoints
                 .map((x) => formatNumber(lang, x))
                 .join(', ')
-                .replace(/, (?=[^,]*$)/, ' or ')} pts depending on its level; all ${problemList.length} add up to ${pts(lang, totalPoints)}.`,
+                .replace(/, (?=[^,]*$)/, ' or ')} pts depending on its level, ${pts(lang, totalPoints)} in total.`,
             )}
             action={
               <LinkButton to="/parcours" variant="secondary">

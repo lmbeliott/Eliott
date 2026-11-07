@@ -6,7 +6,7 @@ import { Cell } from '../components/Cell'
 import { DifficultyMark, LinkButton, Panel, cx } from '../components/ui'
 import { chapters, chapterSummary, chapterTitle, levels, levelSummary, levelTitle, problemById, problemList, problemTitle, totalPoints, type Level } from '../lib/content'
 import { useAuth } from '../lib/auth'
-import { formatNumber, formatPoints, plural, useI18n, type UiLang } from '../lib/i18n'
+import { formatNumber, formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
 
 /** « 3 ou 4 », « 4 » : bornes réelles tirées du catalogue. */
@@ -172,10 +172,6 @@ export function Path() {
       </div>
 
       <p className="mt-12 border-t border-line pt-6 text-sm text-muted">
-        {t(
-          `${plural(lang, total, ['problème', 'problèmes'], ['problem', 'problems'])}, de ${problemTitle(lang, problemList[0])} à ${problemTitle(lang, problemList[total - 1])}. `,
-          `${plural(lang, total, ['problème', 'problèmes'], ['problem', 'problems'])}, from ${problemTitle(lang, problemList[0])} to ${problemTitle(lang, problemList[total - 1])}. `,
-        )}
         <Link to="/problemes" className="font-medium text-ink underline underline-offset-2 hover:text-accent">
           {t(`Voir les ${total} problèmes en tableau`, `See all ${total} problems as a table`)}
         </Link>
