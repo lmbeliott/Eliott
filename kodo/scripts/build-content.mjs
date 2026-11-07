@@ -184,8 +184,9 @@ for (const dirName of problemDirs) {
   const dir = join(CONTENT, 'problems', dirName)
   const where = `problems/${dirName}`
   if (!existsSync(join(dir, 'problem.md'))) {
-    // Avec --filter, un dossier en cours d'écriture par quelqu'un d'autre n'est pas une erreur.
-    if (!FILTER || matches(dirName)) err(where, 'problem.md manquant')
+    // Sans problem.md, le dossier est un brouillon en cours d'écriture : il est ignoré
+    // (il n'apparaît nulle part sur le site) et ne bloque pas un déploiement.
+    if (!FILTER || matches(dirName)) warn(where, 'brouillon ignoré (problem.md pas encore écrit)')
     continue
   }
   const [fm, body] = splitFrontmatter(readFileSync(join(dir, 'problem.md'), 'utf8'), where)
@@ -381,7 +382,8 @@ const catalog = {
     titleEn: level.title_en,
     summary: level.summary,
     summaryEn: level.summary_en,
-    chapters: level.chapters.map((ch) => ({
+    // Un chapitre sans problème publié (encore en écriture) n'est pas affiché.
+    chapters: level.chapters.filter((ch) => byChapter(ch.id).length > 0).map((ch) => ({
       id: ch.id,
       title: ch.title,
       titleEn: ch.title_en,

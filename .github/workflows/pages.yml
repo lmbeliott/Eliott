@@ -27,7 +27,7 @@ jobs:
             package-lock.json
             kodo/package-lock.json
       - run: npm ci
-      - name: Construire Kodo (vérifie aussi les 60 problèmes avec Python et g++)
+      - name: Construire Kodo (vérifie aussi chaque problème avec Python et g++)
         if: hashFiles('kodo/package.json') != ''
         working-directory: kodo
         env:

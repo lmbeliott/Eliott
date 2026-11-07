@@ -158,7 +158,7 @@ export function Dashboard() {
           <NextProblem problem={next.problem} tried={next.tried} isDaily={dailyIds.has(next.problem.id)} solved={progress.solved} />
         ) : (
           <Panel className="p-6">
-            <h2 className="display text-xl">{t('Les 60 problèmes sont réussis', 'All 60 problems solved')}</h2>
+            <h2 className="display text-xl">{t(`Les ${problemList.length} problèmes sont réussis`, `All ${problemList.length} problems solved`)}</h2>
             <p className="mt-2 text-ink-2">{t(`Tu as ${formatPoints(lang, profile.xp)}. Ton rang se joue maintenant au défi du jour et au classement de la semaine.`, `You have ${formatPoints(lang, profile.xp)}. Your rank now depends on the daily challenge and this week’s leaderboard.`)}</p>
             <LinkButton to="/classements" variant="secondary" className="mt-5">
               {t('Voir le classement', 'View the leaderboard')}

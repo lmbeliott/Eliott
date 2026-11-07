@@ -177,7 +177,7 @@ export function Path() {
           `${plural(lang, total, ['problème', 'problèmes'], ['problem', 'problems'])}, from ${problemTitle(lang, problemList[0])} to ${problemTitle(lang, problemList[total - 1])}. `,
         )}
         <Link to="/problemes" className="font-medium text-ink underline underline-offset-2 hover:text-accent">
-          {t('Voir les 60 problèmes en tableau', 'See all 60 problems as a table')}
+          {t(`Voir les ${total} problèmes en tableau`, `See all ${total} problems as a table`)}
         </Link>
       </p>
     </div>
