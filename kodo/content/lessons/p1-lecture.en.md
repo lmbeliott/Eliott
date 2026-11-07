@@ -73,7 +73,7 @@ In C++, the conversion is automatic: since `a` is declared with type `int`, `cin
 
 Often, several values are written on the same line, separated by spaces, for example `3 4`. A single `input()` then gives the string `"3 4"`, which cannot be converted at once: `int("3 4")` raises an error, because `"3 4"` is not how an integer is written.
 
-The `split()` method cuts a string into **pieces**, at every space. `"3 4".split()` gives the two pieces `"3"` and `"4"`. When you know how many pieces there are, you store them in as many variables, separated by commas:
+The `split()` method cuts a string into **pieces**, at every space. `"3 4".split()` gives the two pieces `"3"` and `"4"`. Several spaces in a row count as a single cut, and spaces at the start or end of the line are ignored: `"  3   4 ".split()` also gives `"3"` and `"4"`. When you know how many pieces there are, you store them in as many variables, separated by commas:
 
 ```python
 a, b = input().split()
@@ -117,7 +117,32 @@ int main() {
 
 In C++, nothing changes: `cin >>` skips spaces as well as line breaks. Whether the three numbers are on one line or on three lines, `cin >> a >> b >> c` reads them the same way. In Python, on the contrary, you must know exactly what is on each line: one `input()` per line, and a `split()` as soon as a line holds several values.
 
-You can also mix a word and a number on one line: `word, n = input().split()` stores both pieces, then `n = int(n)` converts only the second one.
+A line can also mix a word and a number. In that case, you cannot use `map(int, ...)`, since the word is not an integer: you split the line, then convert only the piece that must be a number. In C++, you simply declare one variable of each type.
+
+```python
+word, n = input().split()
+n = int(n)
+for i in range(n):
+    print(word)
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string word;
+    int n;
+    cin >> word >> n;
+    for (int i = 0; i < n; i++) {
+        cout << word << "\n";
+    }
+    return 0;
+}
+```
+
+With the input `ha 3`, this program prints three lines `ha`. If you forgot `n = int(n)`, `range(n)` would receive the string `"3"` and Python would stop with `TypeError: 'str' object cannot be interpreted as an integer`.
 
 ## Reading N values
 
@@ -193,6 +218,76 @@ int main() {
 With the input `3` then `5 -2 10`, this program also prints `13`. The C++ program is exactly the same as in the first case: this is one of the advantages of `cin`. In Python, be careful: the line `for piece in input().split():` reads the line **only once**, before the first iteration, not at every iteration.
 
 Notice that the Python program does not use the value of `n`: the number of iterations is the number of pieces. You still have to read the first line, otherwise the next `input()` would read `3` instead of the line of values.
+
+Third case: each of the `N` lines holds several values. You combine both techniques: a loop of `N` iterations, and in each iteration one `input()` split with `split()`. The program below reads `N` lines of two integers and prints, for each line, the sum of the two.
+
+```python
+n = int(input())
+for i in range(n):
+    a, b = map(int, input().split())
+    print(a + b)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int a, b;
+        cin >> a >> b;
+        cout << a + b << "\n";
+    }
+    return 0;
+}
+```
+
+With the input below, the program prints `3`, `6` and `0`, on three lines.
+
+```text
+3
+1 2
+10 -4
+0 0
+```
+
+The program prints a result before it has read the whole input. This is not a problem: the input and the output are two separate texts. Only the complete output matters, compared with the expected output once the program has finished.
+
+## Remembering the previous value
+
+Processing values as they come has a consequence: when you read a value, the previous ones are lost. If the computation needs the value read just before, you must keep it in a variable, often called `previous`. You read the first value **before** the loop, then the loop reads the `N − 1` remaining values. At the end of each iteration, the value just read becomes the previous value for the next iteration.
+
+The program below reads `N` integers, one per line, and prints the difference between each value and the previous one.
+
+```python
+n = int(input())
+previous = int(input())
+for i in range(n - 1):
+    x = int(input())
+    print(x - previous)
+    previous = x
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, previous;
+    cin >> n >> previous;
+    for (int i = 0; i < n - 1; i++) {
+        int x;
+        cin >> x;
+        cout << x - previous << "\n";
+        previous = x;
+    }
+    return 0;
+}
+```
+
+With `N = 4` and the values `10`, `13`, `13`, `7`, the program prints `3`, `0` then `-6`. There are `N − 1` differences for `N` values. The order of the last two instructions of the body matters: if you wrote `previous = x` before printing, you would compute `x - x`, and the program would only print `0`s.
 
 ## Common mistakes
 
@@ -277,5 +372,6 @@ It is also worth testing an edge case: with `N = 1` and the single value `0`, th
 - `input()` reads a whole line and gives a string; `int()` converts it to an integer. In C++, `cin >> x` directly reads a value of the type of `x`.
 - Several values on one line: `a, b = map(int, input().split())` in Python, `cin >> a >> b` in C++.
 - To read `N` values, read `N`, then a loop reads and processes one value per iteration. In Python, one `input()` per iteration if the values are one per line, `for piece in input().split():` if they are all on one line.
+- To use the value read just before, keep it in a variable `previous`: the first value is read before the loop, and `previous = x` ends each iteration.
 - Read exactly what the statement describes, in order: no extra line, no forgotten line.
 - Print only what is asked: no message inside `input()`.

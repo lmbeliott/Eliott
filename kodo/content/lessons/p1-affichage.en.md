@@ -256,7 +256,7 @@ In Python, the shift at the start of a line has a precise meaning, which you wil
 error: expected ';' before 'cout'
 ```
 
-Just add the semicolon at the end of the instruction just before the one shown.
+Just add the semicolon at the end of the instruction that comes before this `cout`.
 
 **Using curly quotes.** The quotes `“ ”` or `« »` that a word processor inserts automatically are not recognised. You need the straight quotes `"` of the keyboard.
 

@@ -79,7 +79,7 @@ int main() {
 
 Avec `14`, le reste de la division par 2 est 0 : le programme affiche `PAIR`. Avec `7`, le reste est 1, la condition est fausse, et le programme affiche `IMPAIR`. Dans tous les cas, **un seul** des deux blocs est exécuté, jamais les deux, jamais aucun.
 
-Ce test fonctionne aussi pour les nombres négatifs, en Python comme en C++ : `-6 % 2` vaut 0 dans les deux langages. En revanche, `-7 % 2` vaut `1` en Python et `-1` en C++. C'est pourquoi on teste `n % 2 == 0` (pair) plutôt que `n % 2 == 1` (impair), qui serait faux en C++ pour un nombre négatif.
+Ce test fonctionne aussi pour les nombres négatifs, en Python comme en C++ : `-6 % 2` vaut 0 dans les deux langages. En revanche, `-7 % 2` vaut `1` en Python et `-1` en C++. C'est pourquoi on teste `n % 2 == 0` (pair) plutôt que `n % 2 == 1` (impair), qui serait faux en C++ pour un nombre négatif. Pour tester qu'un nombre est impair, on écrit `n % 2 != 0`, qui est juste dans les deux langages.
 
 ## `elif` : plusieurs cas
 
@@ -187,9 +187,9 @@ int main() {
 }
 ```
 
-Avec `14` puis `150`, les deux conditions sont vraies : `ACCES`. Avec `14` puis `130`, la première est vraie mais pas la seconde : `TROP PETIT`. Avec `10`, la taille n'est même pas examinée : `TROP JEUNE`. En Python, c'est l'indentation qui indique à quel `if` appartient chaque `else` ; il faut donc la soigner.
+Avec `14` puis `150`, les deux conditions sont vraies : `ACCES`. Avec `14` puis `130`, la première est vraie mais pas la seconde : `TROP PETIT`. Avec `10` puis `150`, la première condition est fausse : le `if` intérieur n'est même pas examiné, et le programme affiche `TROP JEUNE`, quelle que soit la taille. La taille est tout de même lue, puisque sa lecture est placée avant le `if`. En Python, c'est l'indentation qui indique à quel `if` appartient chaque `else` ; il faut donc la soigner.
 
-## Décider dans une boucle : le maximum courant
+## Décider dans une boucle : maximum courant et compteur
 
 En plaçant un `if` dans une boucle, on peut prendre une décision pour chaque valeur lue. L'exemple le plus important est la recherche du **maximum** d'une suite de valeurs, lues une par une. On garde dans une variable `meilleur` la plus grande valeur vue **jusqu'ici** : c'est le **maximum courant**. À chaque nouvelle valeur `x`, une seule question se pose : `x` est-elle plus grande que `meilleur` ? Si oui, `x` devient le nouveau maximum courant.
 
@@ -226,13 +226,45 @@ int main() {
 
 Avec `N = 4` et les valeurs `-5`, `-2`, `-9`, `-3` : `meilleur` vaut d'abord `-5`. Puis `-2 > -5`, donc `meilleur` devient `-2`. Ensuite `-9` et `-3` ne sont pas plus grands que `-2`, rien ne change. Le programme affiche `-2`. Le minimum se trouve de la même façon, en remplaçant `>` par `<`.
 
-Le même schéma permet de **compter** : un compteur part de 0, et un `if` dans la boucle l'augmente de 1 chaque fois que la valeur lue vérifie la condition voulue.
+Le même schéma permet de **compter**. Un **compteur** est une variable qui part de 0, et qu'un `if` placé dans la boucle augmente de 1 chaque fois que la valeur lue vérifie la condition voulue. Le programme suivant compte les valeurs paires parmi `N` entiers écrits sur une même ligne.
+
+```python
+n = int(input())
+pairs = 0
+for morceau in input().split():
+    x = int(morceau)
+    if x % 2 == 0:
+        pairs = pairs + 1
+print(pairs)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int pairs = 0;
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        if (x % 2 == 0) {
+            pairs = pairs + 1;
+        }
+    }
+    cout << pairs << "\n";
+    return 0;
+}
+```
+
+Avec `N = 5` et la ligne `3 8 -4 7 0`, le compteur augmente pour `8`, `-4` et `0` : le programme affiche `3`. Ce test reste juste avec des nombres négatifs, en Python comme en C++, alors qu'un calcul qui additionnerait les restes `x % 2` serait faux en C++ dès qu'une valeur est négative et impaire (son reste vaut `-1`).
 
 ## Erreurs fréquentes
 
-**Confondre `=` et `==`.** En Python, `if x = 0:` est refusé avant même l'exécution : `SyntaxError: invalid syntax`, avec souvent l'indication *Maybe you meant '==' instead of '='?*. La correction est `if x == 0:`. En C++, c'est plus dangereux : `if (x = 0)` est accepté par le compilateur. Cette instruction range 0 dans `x`, puis considère la condition comme fausse. Le programme tourne mais donne un résultat faux, et `x` a perdu sa valeur. Il faut écrire `if (x == 0)`.
+**Confondre `=` et `==`.** En Python, `if x = 0:` est refusé avant même l'exécution : `SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?`. La correction est `if x == 0:`. En C++, c'est plus dangereux : `if (x = 0)` est accepté par le compilateur, au mieux avec un simple avertissement. Cette instruction range 0 dans `x`, puis considère la condition comme fausse. Le programme tourne mais donne un résultat faux, et `x` a perdu sa valeur. Il faut écrire `if (x == 0)`.
 
-**Oublier les deux-points ou l'indentation.** `if x > 0` sans `:` donne `SyntaxError: expected ':'`. Un bloc non indenté donne `IndentationError: expected an indented block after 'if' statement`. En C++, l'oubli des accolades est silencieux : sans elles, seule la première instruction après le `if` est contrôlée par la condition, les suivantes sont toujours exécutées. On met donc toujours les accolades.
+**Oublier les deux-points ou l'indentation.** `if x > 0` sans `:` donne `SyntaxError: expected ':'`. Un bloc non indenté donne `IndentationError: expected an indented block after 'if' statement on line …`, avec le numéro de la ligne du `if`. En C++, l'oubli des accolades est silencieux : sans elles, seule la première instruction après le `if` est contrôlée par la condition, les suivantes sont toujours exécutées. On met donc toujours les accolades.
 
 **Des cas qui se recouvrent, dans le mauvais ordre.** Avec `elif`, seul le premier cas vrai compte. Dans le programme ci-dessous, une note de 17 vérifie la première condition et affiche `PASSABLE` : le cas `note >= 16` n'est jamais atteint.
 
@@ -268,7 +300,7 @@ La correction consiste à tester le cas le plus exigeant en premier, comme dans 
 
 **Oublier un cas.** Pour comparer deux nombres `a` et `b`, il y a trois possibilités : `a < b`, `a > b` et `a == b`. Un programme qui ne prévoit que les deux premières se trompe sur les égalités. Il faut toujours se demander ce qui se passe quand deux valeurs sont égales.
 
-## Exemple complet
+## Un exemple complet
 
 **Énoncé.** On relève la température pendant `N` jours (une valeur par ligne). Afficher la plus forte hausse d'un jour au lendemain, c'est-à-dire la plus grande valeur de « température du jour moins température de la veille ». Si la température n'a jamais augmenté, afficher `0`.
 
@@ -318,6 +350,6 @@ Un cas limite : avec des températures toujours décroissantes, comme `9`, `4`, 
 - Une comparaison (`<`, `>`, `<=`, `>=`, `==`, `!=`) est vraie ou fausse. L'égalité s'écrit `==` ; un seul `=` est une affectation.
 - `if` exécute un bloc seulement si sa condition est vraie ; `else` traite le cas contraire. Un seul des deux blocs est exécuté.
 - Avec `elif` (`else if` en C++), les cas sont testés dans l'ordre et seul le premier cas vrai est exécuté : on place les cas les plus exigeants en premier.
-- Un `if` dans une boucle permet de traiter chaque valeur lue : maximum courant, minimum, comptage.
+- Un `if` dans une boucle permet de traiter chaque valeur lue : maximum courant, minimum, compteur qui part de 0 et augmente de 1 quand la condition est vraie.
 - Un maximum courant part de la première valeur lue, pas de 0.
 - Il faut toujours penser aux égalités et aux cas limites.

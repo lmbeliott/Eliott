@@ -79,7 +79,7 @@ int main() {
 
 Ce programme affiche 3, 2 et 0. En Python, le quotient s'écrit `//` (deux barres) ; en C++, il s'écrit `/`, et le résultat est entier dès que les deux nombres sont des entiers. Dans les deux langages, le reste s'écrit `%` (on dit « modulo »). Pour un nombre positif, le reste de la division par `b` est toujours compris entre 0 et b − 1, et il vaut 0 exactement quand le nombre est un multiple de `b`.
 
-Le quotient et le reste ont la même priorité que la multiplication : ils passent avant `+` et `-`. Quand plusieurs de ces opérateurs se suivent, l'expression est évaluée **de gauche à droite**. Ainsi `2026 // 10 % 10` se calcule comme `(2026 // 10) % 10`, c'est-à-dire 202 % 10 = 2, et `7 * 9 // 5` comme `(7 * 9) // 5` = 63 // 5 = 12, alors que `7 * (9 // 5)` vaut 7 × 1 = 7. En cas de doute, on ajoute des parenthèses.
+Le quotient et le reste ont la même priorité que la multiplication : ils passent avant `+` et `-`. Quand plusieurs de ces opérateurs se suivent, l'expression est évaluée **de gauche à droite**. Ainsi `2026 // 10 % 10` (en C++, `2026 / 10 % 10`) se calcule comme `(2026 // 10) % 10`, c'est-à-dire 202 % 10 = 2, et `7 * 9 // 5` comme `(7 * 9) // 5` = 63 // 5 = 12, alors que `7 * (9 // 5)` vaut 7 × 1 = 7. En cas de doute, on ajoute des parenthèses.
 
 Dans ce chapitre, on n'utilise le quotient et le reste qu'avec des nombres positifs. Avec des nombres négatifs, Python et C++ ne donnent pas toujours le même résultat (`-7 // 2` vaut −4 en Python, `-7 / 2` vaut −3 en C++) ; ils coïncident seulement quand la division tombe juste.
 
@@ -275,7 +275,7 @@ NameError: name 'total' is not defined
 
 En C++, une variable non déclarée provoque `error: 'total' was not declared in this scope`. Plus traître : une variable déclarée sans valeur (`int total;`) contient une valeur quelconque, et le résultat est faux sans message. On écrit toujours `int total = 0;`.
 
-**Initialiser l'accumulateur dans la boucle.** Si `somme = 0` est indenté dans le corps, la somme est remise à zéro à chaque tour, et on obtient à la fin seulement le dernier terme. L'initialisation se place **avant** la boucle.
+**Initialiser l'accumulateur dans la boucle.** Si `somme = 0` est indenté dans le corps, la somme est remise à zéro à chaque tour, et on obtient à la fin seulement le dernier terme. L'initialisation se place **avant** la boucle. En C++, écrire `int somme = 0;` dans le corps a le même effet, et en plus la variable n'existe plus après la boucle : `cout << somme` y provoque `error: 'somme' was not declared in this scope`.
 
 **Afficher dans la boucle au lieu d'après.** Si `print(somme)` est indenté, le programme affiche toutes les sommes intermédiaires au lieu du seul résultat final. Il faut se demander, pour chaque ligne, si elle doit s'exécuter à chaque tour ou une seule fois.
 
@@ -320,7 +320,7 @@ int main() {
 
 ## À retenir
 
-- Les opérateurs sur les entiers sont `+`, `-`, `*`, le quotient `//` (Python) ou `/` (C++), et le reste `%`. La multiplication passe avant l'addition ; les parenthèses imposent un ordre.
+- Les opérateurs sur les entiers sont `+`, `-`, `*`, le quotient `//` (Python) ou `/` (C++), et le reste `%`. `*`, `//` et `%` passent avant `+` et `-` ; à priorité égale, on calcule de gauche à droite ; les parenthèses imposent un ordre.
 - Une **variable** stocke une valeur sous un nom. `x = expression` évalue d'abord l'expression avec les valeurs actuelles, puis range le résultat dans `x`. En C++, on déclare la variable avec son type (`int`, `long long`).
 - `x = x + 1` met à jour une variable à partir de son ancienne valeur ; pour plusieurs variables liées, on passe par une variable temporaire.
 - Un **accumulateur** s'initialise avant la boucle (0 pour une somme, 1 pour un produit), se met à jour dans la boucle, et s'utilise après.

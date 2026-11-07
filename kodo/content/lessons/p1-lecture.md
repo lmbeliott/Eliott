@@ -73,7 +73,7 @@ En C++, la conversion est automatique : comme `a` est déclarée de type `int`, 
 
 Souvent, plusieurs valeurs sont écrites sur la même ligne, séparées par des espaces, par exemple `3 4`. Un seul `input()` donne alors la chaîne `"3 4"`, qu'on ne peut pas convertir d'un coup : `int("3 4")` provoque une erreur, car `"3 4"` n'est pas l'écriture d'un entier.
 
-La méthode `split()` découpe une chaîne en **morceaux**, en coupant à chaque espace. `"3 4".split()` donne les deux morceaux `"3"` et `"4"`. Quand on connaît le nombre de morceaux, on les range dans autant de variables, séparées par des virgules :
+La méthode `split()` découpe une chaîne en **morceaux**, en coupant à chaque espace. `"3 4".split()` donne les deux morceaux `"3"` et `"4"`. Plusieurs espaces à la suite comptent comme une seule coupure, et les espaces au début ou à la fin de la ligne sont ignorés : `"  3   4 ".split()` donne aussi `"3"` et `"4"`. Quand on connaît le nombre de morceaux, on les range dans autant de variables, séparées par des virgules :
 
 ```python
 a, b = input().split()
@@ -117,7 +117,32 @@ int main() {
 
 En C++, rien ne change : `cin >>` saute les espaces comme les retours à la ligne. Que les trois nombres soient sur une ligne ou sur trois lignes, `cin >> a >> b >> c` les lit de la même manière. En Python, au contraire, il faut savoir précisément ce qui se trouve sur chaque ligne : un `input()` par ligne, et un `split()` dès qu'une ligne contient plusieurs valeurs.
 
-On peut aussi mélanger un mot et un nombre sur une même ligne : `mot, n = input().split()` range les deux morceaux, puis `n = int(n)` convertit seulement le second.
+Une ligne peut aussi mélanger un mot et un nombre. Dans ce cas, on ne peut pas utiliser `map(int, ...)`, car le mot n'est pas un entier : on découpe la ligne, puis on convertit seulement le morceau qui doit être un nombre. En C++, il suffit de déclarer une variable de chaque type.
+
+```python
+mot, n = input().split()
+n = int(n)
+for i in range(n):
+    print(mot)
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string mot;
+    int n;
+    cin >> mot >> n;
+    for (int i = 0; i < n; i++) {
+        cout << mot << "\n";
+    }
+    return 0;
+}
+```
+
+Avec l'entrée `ha 3`, ce programme affiche trois lignes `ha`. Si on oubliait `n = int(n)`, `range(n)` recevrait la chaîne `"3"` et Python s'arrêterait avec `TypeError: 'str' object cannot be interpreted as an integer`.
 
 ## Lire N valeurs
 
@@ -194,6 +219,76 @@ Avec l'entrée `3` puis `5 -2 10`, ce programme affiche aussi `13`. Le programme
 
 On remarque que le programme Python n'utilise pas la valeur de `n` : le nombre de tours est donné par le nombre de morceaux. Il faut quand même lire la première ligne, sinon le `input()` suivant lirait `3` au lieu de la ligne des valeurs.
 
+Troisième cas : chacune des `N` lignes contient plusieurs valeurs. On combine les deux techniques : une boucle de `N` tours, et à chaque tour un `input()` découpé avec `split()`. Le programme suivant lit `N` lignes de deux entiers et affiche, pour chaque ligne, la somme des deux.
+
+```python
+n = int(input())
+for i in range(n):
+    a, b = map(int, input().split())
+    print(a + b)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int a, b;
+        cin >> a >> b;
+        cout << a + b << "\n";
+    }
+    return 0;
+}
+```
+
+Avec l'entrée ci-dessous, le programme affiche `3`, `6` et `0`, sur trois lignes.
+
+```text
+3
+1 2
+10 -4
+0 0
+```
+
+Le programme affiche un résultat avant d'avoir lu toute l'entrée. Ce n'est pas un problème : l'entrée et la sortie sont deux textes séparés. Seule compte la sortie complète, comparée à la sortie attendue une fois le programme terminé.
+
+## Se souvenir de la valeur précédente
+
+Traiter les valeurs au fur et à mesure a une conséquence : quand on lit une valeur, les précédentes sont perdues. Si le calcul a besoin de la valeur lue juste avant, il faut la garder dans une variable, souvent appelée `precedent`. On lit la première valeur **avant** la boucle, puis la boucle lit les `N − 1` valeurs restantes. À la fin de chaque tour, la valeur qu'on vient de lire devient la précédente du tour suivant.
+
+Le programme suivant lit `N` entiers, un par ligne, et affiche la différence entre chaque valeur et la précédente.
+
+```python
+n = int(input())
+precedent = int(input())
+for i in range(n - 1):
+    x = int(input())
+    print(x - precedent)
+    precedent = x
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, precedent;
+    cin >> n >> precedent;
+    for (int i = 0; i < n - 1; i++) {
+        int x;
+        cin >> x;
+        cout << x - precedent << "\n";
+        precedent = x;
+    }
+    return 0;
+}
+```
+
+Avec `N = 4` et les valeurs `10`, `13`, `13`, `7`, le programme affiche `3`, `0` puis `-6`. Il y a `N − 1` différences pour `N` valeurs. L'ordre des deux dernières instructions du corps compte : si on écrivait `precedent = x` avant l'affichage, on calculerait `x - x`, et le programme n'afficherait que des `0`.
+
 ## Erreurs fréquentes
 
 **Oublier `int()`.** Sans conversion, Python garde des chaînes. Le symbole `+` entre deux chaînes les colle bout à bout : c'est la **concaténation**. Le programme suivant, avec l'entrée `3` puis `4`, affiche `34` au lieu de `7`.
@@ -227,7 +322,7 @@ Si on ajoute une chaîne et un nombre, par exemple `input() + 1`, Python s'arrê
 
 **Afficher un message d'invite.** On voit parfois `input("Entrez un nombre : ")`. Le texte entre parenthèses est **affiché** sur la sortie avant la lecture. Pour un humain devant son clavier, c'est pratique ; pour les tests, ce texte s'ajoute à la sortie, qui ne correspond plus à la sortie attendue. Dans les exercices, on écrit toujours `input()` sans rien entre les parenthèses, et on n'affiche que ce que demande l'énoncé.
 
-## Exemple complet
+## Un exemple complet
 
 **Énoncé.** La première ligne contient un entier `N`. La deuxième ligne contient `N` entiers séparés par des espaces. Afficher, sur deux lignes, la somme de ces entiers, puis la somme de leurs carrés (le carré de `x` est `x × x`).
 
@@ -277,5 +372,6 @@ Il est utile de tester aussi un cas limite : avec `N = 1` et la seule valeur `0`
 - `input()` lit une ligne entière et donne une chaîne ; `int()` la convertit en entier. En C++, `cin >> x` lit directement une valeur du type de `x`.
 - Plusieurs valeurs sur une ligne : `a, b = map(int, input().split())` en Python, `cin >> a >> b` en C++.
 - Pour lire `N` valeurs, on lit `N`, puis une boucle lit et traite une valeur à chaque tour. En Python, un `input()` par tour si les valeurs sont une par ligne, `for morceau in input().split():` si elles sont toutes sur une ligne.
+- Pour utiliser la valeur lue juste avant, on la garde dans une variable `precedent` : la première valeur est lue avant la boucle, et `precedent = x` termine chaque tour.
 - On lit exactement ce que décrit l'énoncé, dans l'ordre : ni ligne en trop, ni ligne oubliée.
 - On n'affiche que ce qui est demandé : pas de message dans `input()`.

@@ -79,7 +79,7 @@ int main() {
 
 This program prints 3, 2 and 0. In Python, the quotient is written `//` (two slashes); in C++, it is written `/`, and the result is an integer as soon as both numbers are integers. In both languages, the remainder is written `%` (read "modulo"). For a positive number, the remainder of the division by `b` is always between 0 and b − 1, and it is 0 exactly when the number is a multiple of `b`.
 
-The quotient and the remainder have the same priority as multiplication: they come before `+` and `-`. When several of these operators follow one another, the expression is evaluated **from left to right**. So `2026 // 10 % 10` is computed as `(2026 // 10) % 10`, that is 202 % 10 = 2, and `7 * 9 // 5` as `(7 * 9) // 5` = 63 // 5 = 12, whereas `7 * (9 // 5)` is 7 × 1 = 7. When in doubt, add parentheses.
+The quotient and the remainder have the same priority as multiplication: they come before `+` and `-`. When several of these operators follow one another, the expression is evaluated **from left to right**. So `2026 // 10 % 10` (in C++, `2026 / 10 % 10`) is computed as `(2026 // 10) % 10`, that is 202 % 10 = 2, and `7 * 9 // 5` as `(7 * 9) // 5` = 63 // 5 = 12, whereas `7 * (9 // 5)` is 7 × 1 = 7. When in doubt, add parentheses.
 
 In this chapter, the quotient and the remainder are only used with positive numbers. With negative numbers, Python and C++ do not always give the same result (`-7 // 2` is −4 in Python, `-7 / 2` is −3 in C++); they only agree when the division is exact.
 
@@ -175,6 +175,8 @@ After the loop, `somme` is 10 = 1 + 2 + 3 + 4. The pattern is always the same:
 1. **initialise** the accumulator before the loop, with the value that fits an empty total (0 for a sum);
 2. update it in the body of the loop;
 3. use it after the loop.
+
+In C++, a variable can also be declared between the braces of the loop body. It then exists only during one iteration: it is created again at each iteration and disappears when the loop ends. This is fine for an intermediate result that belongs to one iteration; an accumulator, which must keep its value from one iteration to the next and be used after the loop, is always declared **before** the loop.
 
 For a product, initialise to 1 and not 0, otherwise the result would always stay 0:
 
@@ -273,7 +275,7 @@ NameError: name 'total' is not defined
 
 In C++, an undeclared variable causes `error: 'total' was not declared in this scope`. More treacherous: a variable declared without a value (`int total;`) contains an arbitrary value, and the result is wrong without any message. Always write `int total = 0;`.
 
-**Initialising the accumulator inside the loop.** If `somme = 0` is indented in the body, the sum is reset to zero at each iteration, and at the end you only get the last term. Initialisation goes **before** the loop.
+**Initialising the accumulator inside the loop.** If `somme = 0` is indented in the body, the sum is reset to zero at each iteration, and at the end you only get the last term. Initialisation goes **before** the loop. In C++, writing `int somme = 0;` in the body has the same effect, and moreover the variable no longer exists after the loop: `cout << somme` there causes `error: 'somme' was not declared in this scope`.
 
 **Printing inside the loop instead of after.** If `print(somme)` is indented, the program prints every intermediate sum instead of the final result only. For each line, ask yourself whether it must run at each iteration or only once.
 
@@ -318,7 +320,7 @@ int main() {
 
 ## Key takeaways
 
-- The operators on integers are `+`, `-`, `*`, the quotient `//` (Python) or `/` (C++), and the remainder `%`. Multiplication comes before addition; parentheses impose an order.
+- The operators on integers are `+`, `-`, `*`, the quotient `//` (Python) or `/` (C++), and the remainder `%`. `*`, `//` and `%` come before `+` and `-`; with equal priority, you compute from left to right; parentheses impose an order.
 - A **variable** stores a value under a name. `x = expression` first evaluates the expression with the current values, then stores the result in `x`. In C++, declare the variable with its type (`int`, `long long`).
 - `x = x + 1` updates a variable from its old value; for several linked variables, go through a temporary variable.
 - An **accumulator** is initialised before the loop (0 for a sum, 1 for a product), updated in the loop, and used after it.

@@ -256,7 +256,7 @@ En Python, le décalage en début de ligne a un sens précis, qu'on verra au cha
 error: expected ';' before 'cout'
 ```
 
-Il suffit d'ajouter le point-virgule à la fin de l'instruction indiquée juste avant.
+Il suffit d'ajouter le point-virgule à la fin de l'instruction qui précède ce `cout`.
 
 **Utiliser des guillemets typographiques.** Les guillemets français `« »` ou les guillemets penchés `“ ”`, qu'un traitement de texte insère automatiquement, ne sont pas reconnus. Il faut les guillemets droits `"` du clavier.
 

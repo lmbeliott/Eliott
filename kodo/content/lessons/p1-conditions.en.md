@@ -79,7 +79,7 @@ int main() {
 
 With `14`, the remainder of the division by 2 is 0: the program prints `PAIR` (even). With `7`, the remainder is 1, the condition is false, and the program prints `IMPAIR` (odd). In every case, **exactly one** of the two blocks runs, never both, never neither.
 
-This test also works for negative numbers, in Python as in C++: `-6 % 2` is 0 in both languages. However, `-7 % 2` is `1` in Python and `-1` in C++. That is why you test `n % 2 == 0` (even) rather than `n % 2 == 1` (odd), which would be wrong in C++ for a negative number.
+This test also works for negative numbers, in Python as in C++: `-6 % 2` is 0 in both languages. However, `-7 % 2` is `1` in Python and `-1` in C++. That is why you test `n % 2 == 0` (even) rather than `n % 2 == 1` (odd), which would be wrong in C++ for a negative number. To test that a number is odd, write `n % 2 != 0`, which is correct in both languages.
 
 ## `elif`: several cases
 
@@ -187,9 +187,9 @@ int main() {
 }
 ```
 
-With `14` then `150`, both conditions are true: `ACCES`. With `14` then `130`, the first is true but not the second: `TROP PETIT` (too short). With `10`, the height is not even examined: `TROP JEUNE` (too young). In Python, indentation tells which `if` each `else` belongs to, so it must be done carefully.
+With `14` then `150`, both conditions are true: `ACCES`. With `14` then `130`, the first is true but not the second: `TROP PETIT` (too short). With `10` then `150`, the first condition is false: the inner `if` is not even examined, and the program prints `TROP JEUNE` (too young), whatever the height. The height is still read, since reading it comes before the `if`. In Python, indentation tells which `if` each `else` belongs to, so it must be done carefully.
 
-## Deciding inside a loop: the running maximum
+## Deciding inside a loop: running maximum and counter
 
 By putting an `if` inside a loop, you can make a decision for every value read. The most important example is finding the **maximum** of a sequence of values read one by one. A variable `best` holds the largest value seen **so far**: this is the **running maximum**. For each new value `x`, there is only one question: is `x` larger than `best`? If so, `x` becomes the new running maximum.
 
@@ -226,13 +226,45 @@ int main() {
 
 With `N = 4` and the values `-5`, `-2`, `-9`, `-3`: `best` is first `-5`. Then `-2 > -5`, so `best` becomes `-2`. Then `-9` and `-3` are not larger than `-2`, nothing changes. The program prints `-2`. The minimum is found the same way, replacing `>` with `<`.
 
-The same pattern lets you **count**: a counter starts at 0, and an `if` inside the loop adds 1 to it every time the value read satisfies the condition you want.
+The same pattern lets you **count**. A **counter** is a variable that starts at 0, and that an `if` inside the loop increases by 1 every time the value read satisfies the condition you want. The program below counts the even values among `N` integers written on a single line.
+
+```python
+n = int(input())
+evens = 0
+for piece in input().split():
+    x = int(piece)
+    if x % 2 == 0:
+        evens = evens + 1
+print(evens)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int evens = 0;
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        if (x % 2 == 0) {
+            evens = evens + 1;
+        }
+    }
+    cout << evens << "\n";
+    return 0;
+}
+```
+
+With `N = 5` and the line `3 8 -4 7 0`, the counter goes up for `8`, `-4` and `0`: the program prints `3`. This test stays correct with negative numbers, in Python as in C++, whereas a computation that added up the remainders `x % 2` would be wrong in C++ as soon as a value is negative and odd (its remainder is `-1`).
 
 ## Common mistakes
 
-**Mixing up `=` and `==`.** In Python, `if x = 0:` is rejected before running: `SyntaxError: invalid syntax`, often with the hint *Maybe you meant '==' instead of '='?*. The fix is `if x == 0:`. In C++, it is more dangerous: `if (x = 0)` is accepted by the compiler. This statement stores 0 in `x`, then treats the condition as false. The program runs but gives a wrong result, and `x` has lost its value. You must write `if (x == 0)`.
+**Mixing up `=` and `==`.** In Python, `if x = 0:` is rejected before running: `SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?`. The fix is `if x == 0:`. In C++, it is more dangerous: `if (x = 0)` is accepted by the compiler, at best with a mere warning. This statement stores 0 in `x`, then treats the condition as false. The program runs but gives a wrong result, and `x` has lost its value. You must write `if (x == 0)`.
 
-**Forgetting the colon or the indentation.** `if x > 0` without `:` gives `SyntaxError: expected ':'`. A block that is not indented gives `IndentationError: expected an indented block after 'if' statement`. In C++, forgetting the braces is silent: without them, only the first instruction after the `if` is controlled by the condition, the following ones always run. So always write the braces.
+**Forgetting the colon or the indentation.** `if x > 0` without `:` gives `SyntaxError: expected ':'`. A block that is not indented gives `IndentationError: expected an indented block after 'if' statement on line …`, with the line number of the `if`. In C++, forgetting the braces is silent: without them, only the first instruction after the `if` is controlled by the condition, the following ones always run. So always write the braces.
 
 **Overlapping cases, in the wrong order.** With `elif`, only the first true case counts. In the program below, a mark of 17 satisfies the first condition and prints `PASSABLE`: the case `note >= 16` is never reached.
 
@@ -318,6 +350,6 @@ An edge case: with always decreasing temperatures, such as `9`, `4`, `1`, no ris
 - A comparison (`<`, `>`, `<=`, `>=`, `==`, `!=`) is true or false. Equality is written `==`; a single `=` is an assignment.
 - `if` runs a block only if its condition is true; `else` handles the opposite case. Exactly one of the two blocks runs.
 - With `elif` (`else if` in C++), cases are tested in order and only the first true case runs: put the most demanding cases first.
-- An `if` inside a loop handles each value read: running maximum, minimum, counting.
+- An `if` inside a loop handles each value read: running maximum, minimum, a counter that starts at 0 and goes up by 1 when the condition is true.
 - A running maximum starts from the first value read, not from 0.
 - Always think about ties and edge cases.
