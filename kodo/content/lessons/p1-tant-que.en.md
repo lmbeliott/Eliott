@@ -199,6 +199,8 @@ int main() {
 
 With `4072`, the turns add 2, then 7, then 0, then 4, and `n` goes through 407, 40, 4 and 0. The program prints `13`.
 
+The reverse operation is useful too: `r * 10 + c` appends the digit `c` **to the right** of the number `r`. For example, `407 * 10 + 2` is 4072. Starting from `r = 0` and appending digits one by one, you build a number digit by digit, without ever handling text.
+
 Two details matter. First, the loop **destroys** `n`: at the end, `n` is 0. If you still need the original number, copy it into another variable before the loop. Second, the number `0` is a special case: the loop makes no turn. For the sum of the digits it doesn't matter (the sum is indeed 0), but to count the digits you must answer 1, not 0. You then handle that case with an `if` before the loop.
 
 ## Simulating until a condition
@@ -233,6 +235,71 @@ int main() {
 The program prints `11 2098`: the amount becomes 1,070, then 1,144, then 1,224, and so on up to 2,098 in the eleventh year. The condition of the loop is the **opposite** of the stopping condition: you want to stop when the amount exceeds 2,000, so you go on as long as it is less than or equal to 2,000.
 
 To write a simulation, ask yourself three questions: which variables describe the state at a given moment (here, the amount and the number of years)? How do you go from one step to the next? When do you stop?
+
+## Searching for the first value that works
+
+A `while` loop is also used to **search**: you try the values in order, and stop at the first one that works. Here is the smallest divisor of an integer `n ≥ 2`, other than 1:
+
+```python
+n = int(input())
+d = 2
+while n % d != 0:
+    d = d + 1
+print(d)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int d = 2;
+    while (n % d != 0) {
+        d = d + 1;
+    }
+    cout << d << "\n";
+    return 0;
+}
+```
+
+With `91`, `d` tries 2, 3, 4, 5, 6, then 7 divides 91: the program prints `7`. With `13`, no number from 2 to 12 divides 13, and the loop stops at `d = 13`: the smallest divisor of a prime number is the number itself. This loop always stops, because `n` divides itself: `d` cannot go past `n`. Before writing a search, check in the same way that a value that works must exist.
+
+When you are not sure of it, limit the search with `and`. The condition of a `while` is a condition like any other: it can combine `and`, `or` and `not`. To look only for divisors from 2 to 100:
+
+```python
+n = int(input())
+d = 2
+while d <= 100 and n % d != 0:
+    d = d + 1
+if d <= 100:
+    print(d)
+else:
+    print("AUCUN")
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int d = 2;
+    while (d <= 100 && n % d != 0) {
+        d = d + 1;
+    }
+    if (d <= 100) {
+        cout << d << "\n";
+    } else {
+        cout << "AUCUN" << "\n";
+    }
+    return 0;
+}
+```
+
+The loop goes on as long as **both** conditions are true: it stops as soon as one of them becomes false. After the loop, you must therefore find out **which one**. If `d <= 100`, then `n % d` is 0: a divisor was found. Otherwise, every value from 2 to 100 was tried without success. With `1001`, the program prints `7`; with `10007`, which is prime, it prints `AUCUN`.
 
 ## Common mistakes
 
@@ -361,9 +428,9 @@ After the fourth turn, `n` is 0: the condition `n > 0` is false, and the program
 
 ## Key takeaways
 
-- `while condition:` repeats the body as long as the condition is true. It is tested before each turn; if it is false from the start, the body is never run.
+- `while condition:` repeats the body as long as the condition is true. It is tested before each turn; if it is false from the start, the body is never run. After the loop, the condition is false: with an `and`, check which of the two parts stopped the loop.
 - Choose `for` when the number of turns is known in advance, `while` when you only know when to stop.
 - To read until a sentinel: one read before the loop, one read at the end of the body, and the condition compares the value read with the sentinel.
-- `n % 10` gives the last digit, `n // 10` removes it; repeat while `n > 0`, without forgetting the case `n = 0`.
+- `n % 10` gives the last digit, `n // 10` removes it; repeat while `n > 0`, without forgetting the case `n = 0`. `r * 10 + c` appends a digit on the right.
 - Each turn must bring the loop closer to its end: otherwise it's an infinite loop. Counters are initialised before the loop.
 - Always check a loop by tracing it by hand on a small example and on the edge cases.

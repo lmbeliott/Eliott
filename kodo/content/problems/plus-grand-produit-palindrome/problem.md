@@ -2,8 +2,7 @@
 id: plus-grand-produit-palindrome
 title: Plus grand produit palindrome
 chapter: p1-synthese
-order: 10
-synthesis: true
+order: 9
 tags: [boucles, arithmétique]
 samples: 3
 ---

@@ -4,7 +4,15 @@ A loop placed in the body of another loop is called a **nested loop**. This chap
 
 ## Printing without a line break
 
-To build a line character by character, you need to print without moving to the next line. In Python, `print` normally ends with a **line break**; you replace it with something else using `end`. `print("#", end="")` prints `#` and stays on the same line, `print(x, end=" ")` prints `x` followed by a space, and `print()` alone moves to the next line. In C++, `cout` only goes to the next line if you write `"\n"`.
+So far, each `print` printed a complete line. To build a line piece by piece, one character per turn of a loop, you need to be able to print **without** moving to the next line.
+
+In Python, `print` automatically adds a **line break** after what it prints. The **parameter** `end` lets you choose what is added instead. It goes at the end of the parentheses, after a comma, in the form `end=` followed by a string:
+
+- `print("#", end="")` prints `#` and adds nothing: the next output continues on the same line. `""` is the **empty string**, two quotes with nothing between them;
+- `print(x, end=" ")` prints `x` followed by a space, without moving to the next line;
+- `print()`, with nothing between the parentheses, only prints the line break: it ends the current line.
+
+Without `end`, everything happens as if you had written `end="\n"`, where `"\n"` is the line break. In C++, there is nothing new: `cout` never moves to the next line on its own, you have to write `"\n"`. To stay on the same line, simply don't write it.
 
 ```python
 print("#", end="")
@@ -28,7 +36,36 @@ int main() {
 }
 ```
 
-This program prints two lines: `###`, then `1 2`.
+This program prints two lines: `###`, then `1 2`. The first two `print` calls add nothing after their `#`; the third one, without `end`, prints its `#` and then ends the line. The `1` therefore starts a new line, followed by a space, and the `2` completes that line.
+
+With a loop, you print a line of a chosen length. The `print()` placed **after** the loop ends the line:
+
+```python
+n = 5
+for i in range(n):
+    print("*", end="")
+print()
+print("Fin")
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 5;
+    for (int i = 0; i < n; i++) {
+        cout << "*";
+    }
+    cout << "\n";
+    cout << "Fin" << "\n";
+    return 0;
+}
+```
+
+This program prints `*****` on one line, then `Fin` on the next one. Without the `print()` after the loop, `Fin` would be glued to the stars: `*****Fin`.
+
+A remark about spaces. With `print(x, end=" ")` in a loop, every number is followed by a space, including the last one: the line ends with an extra space. This is not a problem on Kodo, because the judge compares the output word by word and ignores extra spaces. On the other hand, `end=""` between two numbers would glue them together: `print(1, end="")` then `print(2)` prints `12`, a single number.
 
 ## A loop inside a loop
 
@@ -256,7 +293,7 @@ int main() {
 }
 ```
 
-The program prints `5`, `14`, `23` and `32`, one per line. Two points are essential. First, the inner loop works on a **copy** `m` of `n`: if it destroyed `n` directly, the outer loop would be disturbed and `print(n)` would print 0. Second, `total` is reset to 0 **at the start of each turn of the outer loop**, just before the inner loop: each number has its own sum.
+The program prints `5`, `14`, `23` and `32`, one per line. Two points are essential. First, the inner loop works on a **copy** `m` of `n`: if it destroyed `n` directly, `n` would be 0 after the inner loop. In Python, `print(n)` would then print 0 (the next turn of the `for` loop does move on to the next number, but the result is wrong). In C++, it is worse: `n` goes back to 0, then `n++` sets it to 1, and the outer loop starts over forever. Second, `total` is reset to 0 **at the start of each turn of the outer loop**, just before the inner loop: each number has its own sum.
 
 ## How many turns?
 
@@ -313,9 +350,11 @@ for (int i = 1; i <= 3; i++) {
 
 You wanted the multiplication table, and you get the line `1 4 9` three times: inside the inner loop, `i` refers to the variable of the inner loop, and the line number is lost. Each loop must have its own variable: `i` for lines, `j` for columns.
 
-### The misplaced line break
+### The misplaced or forgotten line break
 
-If `print()` is indented into the inner loop, it runs after each character: you get a single `#` per line, on 15 lines. If it is forgotten, everything is printed on a single line. Always check the indentation: one line break per turn of the outer loop.
+In the rectangle program, if `print()` is indented into the inner loop, it runs after each character: you get a single `#` per line, on 15 lines. If it is forgotten, the 15 `#` are printed on a single line. And if you forget `end=""` in `print("#", end="")`, each `#` is followed by a line break: you also get 15 lines of a single `#`. Always check the indentation: one line break per turn of the outer loop.
+
+A frequent typo is to forget the comma before `end`: `print("#" end="")`. Python then refuses to run the program and prints `SyntaxError: invalid syntax. Perhaps you forgot a comma?`, pointing at the faulty line.
 
 ### An inner while loop that doesn't start over
 
@@ -391,7 +430,7 @@ int main() {
 ## Key takeaways
 
 - In a nested loop, the inner loop makes all its turns at each turn of the outer loop. The inner body runs (outer turns) × (inner turns) times.
-- The indentation (or the braces) tells which loop each instruction belongs to: one line break per outer turn for a pattern.
+- `print(x, end="")` prints without a line break, `print()` ends the line; in C++, you write `"\n"` only to move to the next line. The indentation (or the braces) tells which loop each instruction belongs to: one line break per outer turn for a pattern.
 - The inner loop can depend on the outer variable: `range(i)` for a triangle, `range(i + 1, n + 1)` for the pairs `i < j`.
 - Enumerating every possibility and counting those that fit (exhaustive search) works as long as the total number of turns stays around a few million.
 - Each loop has its own variable; whatever concerns a single outer turn (sum, counter, `j = 0` of a `while`) is initialised at the start of that turn.

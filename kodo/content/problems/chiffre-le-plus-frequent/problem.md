@@ -2,7 +2,7 @@
 id: chiffre-le-plus-frequent
 title: Chiffre le plus fréquent
 chapter: p1-synthese
-order: 4
+order: 6
 tags: [boucles, arithmétique]
 samples: 2
 ---
@@ -22,7 +22,7 @@ Une seule ligne avec deux entiers séparés par une espace : le chiffre le plus 
 - 0 ≤ N ≤ 10¹⁸ (en C++, utiliser des `long long`)
 
 ## Indices
-1. Sans tableau, on ne peut pas compter les dix chiffres en un seul passage. Mais on peut faire dix passages : un pour chaque chiffre `c` de 0 à 9.
+1. Compter les dix chiffres en un seul passage demanderait dix compteurs. Plus simple : faire dix passages, un pour chaque chiffre `c` de 0 à 9.
 2. Pour un chiffre `c` donné, parcourir les chiffres de `N` avec `% 10` et `// 10` dans une boucle `while`, et compter ceux qui valent `c`. Travailler sur une copie de `N`, car on en a besoin pour chacun des dix passages.
 3. Le nombre `0` s'écrit avec un chiffre `0` : la boucle `while` ne fait alors aucun tour, il faut traiter ce cas à part.
 

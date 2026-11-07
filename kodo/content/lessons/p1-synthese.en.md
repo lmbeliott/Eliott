@@ -1,4 +1,4 @@
-Level 1 is over: you can print, compute, read the input, decide with conditions and repeat with `for` and `while`, including with nested loops. These few tools are already enough to solve real algorithmic problems. The difficulty is no longer writing an instruction, but **choosing** the right ones and putting them together. This chapter offers a method to approach a problem, recalls the patterns that keep coming back, and shows how to test and fix a program.
+Level 1 is over: you can print, compute, read the input, decide with conditions and repeat with `for` and `while`, including with nested loops. These few tools are already enough to solve real algorithmic problems. The difficulty is no longer writing an instruction, but **choosing** the right ones and putting them together. This chapter offers a method to approach a problem, recalls the patterns that keep coming back, shows how to make fewer turns when a program is too slow, then how to test and fix it.
 
 ## A method to read a problem
 
@@ -17,10 +17,11 @@ Most level 1 programs combine a small number of patterns. You must recognise the
 
 - **The counter**: a variable at 0, increased by 1 when a condition is true.
 - **The accumulator**: a variable at 0, to which each value is added.
-- **The best so far**: a variable that keeps the maximum (or minimum) of the values seen. Initialise it with the **first value**, not with 0, otherwise everything fails when the values are negative.
+- **The best so far**: a variable that keeps the maximum (or minimum) of the values seen. Initialise it with the **first value**, not with 0, otherwise everything fails when the values are negative. A fixed starting value only works if it is sure to be beaten, for example 0 for a number of divisors, which is always at least 1.
 - **The previous value**: a variable that keeps the last value read, to compare it with the next one (rise, plateau, change).
 - **The flag**: a boolean that is `True` at the start and becomes `False` as soon as a counterexample is found ("are all the numbers even?", "is this number prime?").
-- **The digits**: `n % 10` and `n // 10` in a `while n > 0` loop.
+- **The digits**: `n % 10` and `n // 10` in a `while n > 0` loop, and `r * 10 + c` to build a number digit by digit.
+- **The last values**: when each term of a sequence depends on the two previous ones, two variables `a` and `b` keep the last two terms. At each turn, compute the next one in `c`, then **shift**: `a = b`, then `b = c`. The order matters: by writing `b = c` first, the old value of `b` would be lost before being copied into `a`.
 
 Here is the best-so-far pattern, with the position of the maximum among `N` values read one per line:
 
@@ -61,6 +62,47 @@ int main() {
 
 With the values `-5`, `-2`, `-9`, `-2`, the program prints `-2 2`. The first value is read before the loop and serves as the starting point; so the loop starts at the second one. The test `>` (and not `>=`) keeps the **first** position in case of a tie.
 
+## Reducing the number of turns
+
+When the estimate gives far too many turns, don't try to make each turn faster: try to make **fewer** turns. Take a question: in how many ways can you pay exactly `N` euros with coins of 1, 2 and 5 euros? A way is given by the numbers `x`, `y` and `z` of coins of each kind, with `x + 2 × y + 5 × z = N`.
+
+**First idea: try everything.** Three nested loops make `x`, `y` and `z` go from 0 to `N`, and you count the triples that work. It is correct, but it makes `(N + 1) × (N + 1) × (N + 1)` turns: a billion for `N = 1,000`.
+
+**Second idea: deduce instead of trying.** Once `z` and `y` are chosen, the number of 1-euro coins is forced: `x = N - 5 × z - 2 × y`. It only has to be non-negative. So you only let `z` and `y` vary, stopping each loop as soon as the amount is exceeded: `z` goes from 0 to `N // 5`, and `y` from 0 to `(N - 5 × z) // 2`. Each pair `(z, y)` then gives exactly one way.
+
+```python
+n = int(input())
+ways = 0
+for z in range(n // 5 + 1):
+    for y in range((n - 5 * z) // 2 + 1):
+        ways = ways + 1     # x = n - 5z - 2y is non-negative
+print(ways)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    long long ways = 0;
+    for (int z = 0; z <= n / 5; z++) {
+        for (int y = 0; y <= (n - 5 * z) / 2; y++) {
+            ways = ways + 1;     // x = n - 5z - 2y is non-negative
+        }
+    }
+    cout << ways << "\n";
+    return 0;
+}
+```
+
+With `N = 10`, the program prints `10`: for `z = 0`, `y` goes from 0 to 5 (6 ways); for `z = 1`, from 0 to 2 (3 ways); for `z = 2`, only 0 (1 way). This version makes about `N × N / 20` turns, that is 50,000 for `N = 1,000` instead of a billion.
+
+**Third idea: count with a computation.** The inner loop only adds 1 a certain number of times: `(n - 5 * z) // 2 + 1` times. So you replace the whole inner loop with a single addition, `ways = ways + (n - 5 * z) // 2 + 1`. Only one loop of `N // 5 + 1` turns is left: even with `N = 10⁶`, it is instantaneous, whereas the two-loop version would make 5 × 10¹⁰ turns.
+
+These ideas come back all the time. You **deduce** a variable from the others instead of trying it. You **bound** the loops with the constraints: stop a loop as soon as the amount is exceeded, stop at `d × d ≤ n` when looking for a divisor, require `a ≤ b` so as not to count the same pair twice. Finally, you **compute** instead of repeating: a loop that only adds 1 is replaced by computing its number of turns, and a process that repeats every `P` seconds is brought back to its first cycle with `% P`.
+
 ## Testing on edge cases
 
 A program that works on the example is not necessarily correct. The judge's tests almost always contain **edge cases**: the extreme situations allowed by the constraints. Before submitting, systematically ask yourself these questions:
@@ -77,7 +119,7 @@ For each of these questions, build a small input, compute the expected answer by
 
 When a program gives a wrong answer, don't change the code at random. Look for **where** it goes wrong.
 
-**Read the error message.** A runtime error gives the line and the cause. For example, `ValueError: invalid literal for int() with base 10: '3 4'` means you read a line containing two numbers with `int(input())`: you needed `split()`. `IndentationError` reports a wrong indentation, and `NameError` a variable used before it got a value, often because of a typo.
+**Read the error message.** An error message gives the faulty line and the cause; read its **last line** first. In Python, `ValueError: invalid literal for int() with base 10: '3 4'` means you read a line containing two numbers with `int(input())`: you needed `split()`. `EOFError: EOF when reading a line` means the program tried to read more lines than the input contains: one read too many, often in a loop that makes one turn too many. `IndentationError` reports a wrong indentation, and `NameError` a variable used before it got a value, often because of a typo. In C++, the compiler rejects the program and gives the line number: `error: expected ',' or ';' before 'cout'` reports a semicolon forgotten **at the end of the previous line**. Always fix the first error shown, because the following ones are often a consequence of it.
 
 **Recognise the verdict.** "Time limit exceeded" almost always comes from an infinite loop (a variable of the condition that doesn't change) or from nested loops that make far too many turns. A "wrong answer" most often comes from a misplaced initialisation, a strict comparison instead of a non-strict one, or a forgotten edge case.
 
@@ -160,5 +202,5 @@ int main() {
 - Before coding: understand the input and the output, solve the example by hand, identify the state variables, choose the loops.
 - `for` when the number of turns is known, `while` when you only know when to stop, two nested loops for pairs and grids.
 - Recognise the patterns: counter, accumulator, best so far (initialised with the first value), previous value, flag, digits.
-- Estimate the number of turns from the constraints, and think of `long long` in C++.
+- Estimate the number of turns from the constraints, and think of `long long` in C++. Too many turns: deduce a variable instead of trying it, bound the loops, replace a loop with a computation.
 - Test the edge cases, then debug by printing the state at each turn and comparing it with the computation done by hand.

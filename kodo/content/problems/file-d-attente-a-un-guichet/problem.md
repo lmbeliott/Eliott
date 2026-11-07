@@ -2,7 +2,7 @@
 id: file-d-attente-a-un-guichet
 title: File d'attente à un guichet
 chapter: p1-synthese
-order: 8
+order: 4
 tags: [simulation]
 samples: 2
 ---

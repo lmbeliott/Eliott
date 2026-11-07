@@ -31,4 +31,4 @@ On teste chaque entier de l'intervalle. Pour un entier `n`, on recopie `n` dans 
 
 Le nombre total de tours est au plus 100 000 × 6 = 600 000 : c'est rapide.
 
-Les pièges sont ceux des boucles imbriquées : découper `n` directement (la boucle `for` est alors perturbée en Python, et le test `n % s` se fait sur 0), ou initialiser `s` une seule fois avant la boucle externe.
+Les pièges sont ceux des boucles imbriquées : découper `n` directement (le test `n % s` se fait alors sur 0, et en C++ la boucle `for` repart de 1 sans fin), ou initialiser `s` une seule fois avant la boucle externe.

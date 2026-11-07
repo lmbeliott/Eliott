@@ -199,6 +199,8 @@ int main() {
 
 Avec `4072`, les tours ajoutent 2, puis 7, puis 0, puis 4, et `n` passe par 407, 40, 4 et 0. Le programme affiche `13`.
 
+L'opération inverse est aussi utile : `r * 10 + c` ajoute le chiffre `c` **à droite** du nombre `r`. Par exemple, `407 * 10 + 2` vaut 4072. En partant de `r = 0` et en ajoutant des chiffres un par un, on construit un nombre chiffre par chiffre, sans jamais manipuler de texte.
+
 Deux détails comptent. D'abord, la boucle **détruit** `n` : à la fin, `n` vaut 0. Si on a encore besoin du nombre de départ, on le recopie dans une autre variable avant la boucle. Ensuite, le nombre `0` est un cas particulier : la boucle ne fait aucun tour. Pour la somme des chiffres, ce n'est pas grave (la somme vaut bien 0), mais pour compter les chiffres, il faut répondre 1 et non 0. On traite alors ce cas avec un `if` avant la boucle.
 
 ## Simuler jusqu'à une condition
@@ -234,11 +236,76 @@ Le programme affiche `11 2098` : la somme vaut 1 070, puis 1 144, puis 1 224, et
 
 Pour écrire une simulation, on se pose trois questions : quelles variables décrivent l'état à un instant donné (ici, la somme et le nombre d'années) ? Comment passer d'une étape à la suivante ? Quand s'arrêter ?
 
+## Chercher la première valeur qui convient
+
+Une boucle `while` sert aussi à **chercher** : on essaie les valeurs dans l'ordre, et on s'arrête à la première qui convient. Voici le plus petit diviseur d'un entier `n ≥ 2`, en dehors de 1 :
+
+```python
+n = int(input())
+d = 2
+while n % d != 0:
+    d = d + 1
+print(d)
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int d = 2;
+    while (n % d != 0) {
+        d = d + 1;
+    }
+    cout << d << "\n";
+    return 0;
+}
+```
+
+Avec `91`, `d` essaie 2, 3, 4, 5, 6, puis 7 divise 91 : le programme affiche `7`. Avec `13`, aucun nombre de 2 à 12 ne divise 13, et la boucle s'arrête à `d = 13` : le plus petit diviseur d'un nombre premier est le nombre lui-même. Cette boucle s'arrête toujours, car `n` se divise lui-même : `d` ne peut pas dépasser `n`. Avant d'écrire une recherche, on vérifie ainsi qu'une valeur qui convient existe forcément.
+
+Quand on n'en est pas sûr, on limite la recherche avec `and`. La condition d'un `while` est une condition comme les autres : elle peut combiner `and`, `or` et `not`. Pour chercher seulement les diviseurs de 2 à 100 :
+
+```python
+n = int(input())
+d = 2
+while d <= 100 and n % d != 0:
+    d = d + 1
+if d <= 100:
+    print(d)
+else:
+    print("AUCUN")
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int d = 2;
+    while (d <= 100 && n % d != 0) {
+        d = d + 1;
+    }
+    if (d <= 100) {
+        cout << d << "\n";
+    } else {
+        cout << "AUCUN" << "\n";
+    }
+    return 0;
+}
+```
+
+La boucle continue tant que les **deux** conditions sont vraies : elle s'arrête dès que l'une des deux devient fausse. À la sortie, il faut donc savoir **laquelle**. Si `d <= 100`, c'est que `n % d` vaut 0 : un diviseur a été trouvé. Sinon, on a essayé toutes les valeurs de 2 à 100 sans succès. Avec `1001`, le programme affiche `7` ; avec `10007`, qui est premier, il affiche `AUCUN`.
+
 ## Les erreurs fréquentes
 
 ### La boucle infinie
 
-Si rien ne change dans le corps de la boucle, la condition reste vraie pour toujours : c'est une **boucle infinie**. Le programme ne s'arrête jamais, et le juge finit par le couper avec le verdict « Temps limite dépassé ».
+Si rien ne change dans le corps de la boucle, la condition reste vraie pour toujours : c'est une **boucle infinie**. Le programme ne s'arrête jamais, et le juge finit par le couper avec le verdict « temps dépassé ».
 
 ```python
 i = 0
@@ -361,9 +428,9 @@ Après le quatrième tour, `n` vaut 0 : la condition `n > 0` est fausse, et le p
 
 ## À retenir
 
-- `while condition:` répète le corps tant que la condition est vraie. Elle est testée avant chaque tour ; si elle est fausse dès le départ, le corps n'est jamais exécuté.
+- `while condition:` répète le corps tant que la condition est vraie. Elle est testée avant chaque tour ; si elle est fausse dès le départ, le corps n'est jamais exécuté. À la sortie, la condition est fausse : avec un `and`, on teste laquelle des deux parties a arrêté la boucle.
 - On choisit `for` quand le nombre de tours est connu à l'avance, `while` quand on sait seulement quand s'arrêter.
 - Pour lire jusqu'à une sentinelle : une lecture avant la boucle, une lecture à la fin du corps, et la condition compare la valeur lue à la sentinelle.
-- `n % 10` donne le dernier chiffre, `n // 10` l'enlève ; on répète tant que `n > 0`, sans oublier le cas `n = 0`.
+- `n % 10` donne le dernier chiffre, `n // 10` l'enlève ; on répète tant que `n > 0`, sans oublier le cas `n = 0`. `r * 10 + c` ajoute un chiffre à droite.
 - Chaque tour doit rapprocher la boucle de sa fin : sinon, c'est une boucle infinie. Les compteurs s'initialisent avant la boucle.
 - On vérifie toujours une boucle en la déroulant à la main sur un petit exemple et sur les cas limites.

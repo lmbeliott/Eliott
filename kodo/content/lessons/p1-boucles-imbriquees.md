@@ -4,7 +4,15 @@ Une boucle placée dans le corps d'une autre boucle s'appelle une **boucle imbri
 
 ## Afficher sans aller à la ligne
 
-Pour construire une ligne caractère par caractère, il faut pouvoir afficher sans passer à la ligne suivante. En Python, `print` termine normalement par un **retour à la ligne** ; on le remplace par autre chose avec `end`. `print("#", end="")` affiche `#` et reste sur la même ligne, `print(x, end=" ")` affiche `x` suivi d'une espace, et `print()` seul passe à la ligne. En C++, `cout` ne va à la ligne que si on écrit `"\n"`.
+Jusqu'ici, chaque `print` affichait une ligne complète. Pour construire une ligne morceau par morceau, un caractère à chaque tour de boucle, il faut pouvoir afficher **sans** passer à la ligne.
+
+En Python, `print` ajoute automatiquement un **retour à la ligne** après ce qu'il affiche. Le **paramètre** `end` permet de choisir ce qui est ajouté à la place. Il s'écrit à la fin des parenthèses, après une virgule, sous la forme `end=` suivi d'une chaîne de caractères :
+
+- `print("#", end="")` affiche `#` et n'ajoute rien : l'affichage suivant continue sur la même ligne. `""` est la **chaîne vide**, deux guillemets sans rien entre eux ;
+- `print(x, end=" ")` affiche `x` suivi d'une espace, sans aller à la ligne ;
+- `print()`, sans rien entre les parenthèses, n'affiche que le retour à la ligne : il termine la ligne en cours.
+
+Sans `end`, tout se passe comme si on avait écrit `end="\n"`, où `"\n"` est le retour à la ligne. En C++, il n'y a rien de nouveau : `cout` ne va jamais à la ligne tout seul, il faut écrire `"\n"`. Pour continuer sur la même ligne, il suffit de ne pas l'écrire.
 
 ```python
 print("#", end="")
@@ -28,7 +36,36 @@ int main() {
 }
 ```
 
-Ce programme affiche deux lignes : `###`, puis `1 2`.
+Ce programme affiche deux lignes : `###`, puis `1 2`. Les deux premiers `print` n'ajoutent rien après leur `#` ; le troisième, sans `end`, affiche son `#` puis termine la ligne. Le `1` commence donc une nouvelle ligne, suivi d'une espace, et le `2` complète cette ligne.
+
+Avec une boucle, on affiche une ligne de longueur choisie. Le `print()` placé **après** la boucle termine la ligne :
+
+```python
+n = 5
+for i in range(n):
+    print("*", end="")
+print()
+print("Fin")
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 5;
+    for (int i = 0; i < n; i++) {
+        cout << "*";
+    }
+    cout << "\n";
+    cout << "Fin" << "\n";
+    return 0;
+}
+```
+
+Ce programme affiche `*****` sur une ligne, puis `Fin` sur la suivante. Sans le `print()` après la boucle, `Fin` serait collé aux étoiles : `*****Fin`.
+
+Une remarque sur les espaces. Avec `print(x, end=" ")` dans une boucle, chaque nombre est suivi d'une espace, y compris le dernier : la ligne se termine par une espace en trop. Ce n'est pas un problème sur Kodo, car le correcteur compare la sortie mot à mot et ignore les espaces en trop. En revanche, `end=""` entre deux nombres les collerait : `print(1, end="")` puis `print(2)` affiche `12`, un seul nombre.
 
 ## Une boucle dans une boucle
 
@@ -256,7 +293,7 @@ int main() {
 }
 ```
 
-Le programme affiche `5`, `14`, `23` et `32`, un par ligne. Deux points sont essentiels. D'abord, la boucle interne travaille sur une **copie** `m` de `n` : si elle détruisait `n` directement, la boucle externe serait perturbée et le `print(n)` afficherait 0. Ensuite, `somme` est remise à 0 **au début de chaque tour de la boucle externe**, juste avant la boucle interne : chaque nombre a sa propre somme.
+Le programme affiche `5`, `14`, `23` et `32`, un par ligne. Deux points sont essentiels. D'abord, la boucle interne travaille sur une **copie** `m` de `n` : si elle détruisait `n` directement, `n` vaudrait 0 après la boucle interne. En Python, `print(n)` afficherait alors 0 (le tour suivant de la boucle `for` reprend bien au nombre suivant, mais le résultat est faux). En C++, c'est pire : `n` repasse à 0, puis `n++` le remet à 1, et la boucle externe recommence sans fin. Ensuite, `somme` est remise à 0 **au début de chaque tour de la boucle externe**, juste avant la boucle interne : chaque nombre a sa propre somme.
 
 ## Combien de tours ?
 
@@ -313,9 +350,11 @@ for (int i = 1; i <= 3; i++) {
 
 On voulait la table de multiplication, et on obtient trois fois la ligne `1 4 9` : dans la boucle interne, `i` désigne la variable de la boucle interne, et la ligne est perdue. Chaque boucle doit avoir sa propre variable : `i` pour les lignes, `j` pour les colonnes.
 
-### Le retour à la ligne mal placé
+### Le retour à la ligne mal placé ou oublié
 
-Si `print()` est décalé dans la boucle interne, il s'exécute après chaque caractère : on obtient un seul `#` par ligne, sur 15 lignes. S'il est oublié, tout s'affiche sur une seule ligne. On vérifie toujours l'indentation : un seul retour à la ligne par tour de la boucle externe.
+Dans le programme du rectangle, si `print()` est décalé dans la boucle interne, il s'exécute après chaque caractère : on obtient un seul `#` par ligne, sur 15 lignes. S'il est oublié, les 15 `#` s'affichent sur une seule ligne. Et si on oublie `end=""` dans `print("#", end="")`, chaque `#` est suivi d'un retour à la ligne : on obtient aussi 15 lignes d'un seul `#`. On vérifie toujours l'indentation : un seul retour à la ligne par tour de la boucle externe.
+
+Une faute de frappe fréquente est d'oublier la virgule avant `end` : `print("#" end="")`. Python refuse alors de lancer le programme et affiche `SyntaxError: invalid syntax. Perhaps you forgot a comma?`, en indiquant la ligne fautive.
 
 ### Une boucle while interne qui ne repart pas de zéro
 
@@ -391,7 +430,7 @@ int main() {
 ## À retenir
 
 - Dans une boucle imbriquée, la boucle interne fait tous ses tours à chaque tour de la boucle externe. Le corps interne s'exécute (tours externes) × (tours internes) fois.
-- L'indentation (ou les accolades) dit à quelle boucle appartient chaque instruction : un seul retour à la ligne par tour externe pour un motif.
+- `print(x, end="")` affiche sans aller à la ligne, `print()` termine la ligne ; en C++, on n'écrit `"\n"` que pour aller à la ligne. L'indentation (ou les accolades) dit à quelle boucle appartient chaque instruction : un seul retour à la ligne par tour externe pour un motif.
 - La boucle interne peut dépendre de la variable externe : `range(i)` pour un triangle, `range(i + 1, n + 1)` pour les paires `i < j`.
 - Énumérer toutes les possibilités et compter celles qui conviennent (recherche exhaustive) marche tant que le nombre total de tours reste de l'ordre de quelques millions.
 - Chaque boucle a sa propre variable ; ce qui concerne un seul tour externe (somme, compteur, `j = 0` d'un `while`) s'initialise au début de ce tour.

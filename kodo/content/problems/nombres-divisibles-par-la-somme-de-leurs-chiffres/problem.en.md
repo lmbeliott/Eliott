@@ -26,4 +26,4 @@ Test each integer of the range. For an integer `n`, copy `n` into `m`, then comp
 
 The total number of turns is at most 100,000 × 6 = 600,000: it's fast.
 
-The traps are those of nested loops: splitting `n` directly (the test `n % s` is then done on 0), or initialising `s` only once before the outer loop.
+The traps are those of nested loops: splitting `n` directly (the test `n % s` is then done on 0, and in C++ the `for` loop starts over from 1 forever), or initialising `s` only once before the outer loop.

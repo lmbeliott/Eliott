@@ -2,7 +2,8 @@
 id: monter-un-escalier
 title: Monter un escalier
 chapter: p1-synthese
-order: 9
+order: 10
+synthesis: true
 tags: [boucles, mathématiques]
 samples: 2
 ---

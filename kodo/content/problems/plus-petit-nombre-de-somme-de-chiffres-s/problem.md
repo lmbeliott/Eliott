@@ -2,7 +2,7 @@
 id: plus-petit-nombre-de-somme-de-chiffres-s
 title: Plus petit nombre de somme de chiffres S
 chapter: p1-synthese
-order: 6
+order: 8
 tags: [arithmétique, glouton]
 samples: 2
 ---

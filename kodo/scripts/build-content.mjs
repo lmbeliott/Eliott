@@ -178,6 +178,10 @@ for (const level of open.levels) {
   for (const ch of level.chapters) chapterInfo.set(ch.id, { level, chapter: ch, track: 'open' })
 }
 const matches = (id) => !FILTER || id.startsWith(FILTER)
+// Niveau en brouillon (« draft »: true dans course.json) : ses exercices et ses cours ne sont ni
+// publiés ni envoyés à la base, et ne sont vérifiés qu'avec --filter (les rédacteurs y travaillent).
+const draftChapters = new Set(course.levels.filter((l) => l.draft).flatMap((l) => l.chapters.map((c) => c.id)))
+let drafted = 0
 
 // ---------------------------------------------------------------- Problèmes
 
@@ -199,6 +203,10 @@ for (const dirName of problemDirs) {
   const [fm, body] = splitFrontmatter(readFileSync(join(dir, 'problem.md'), 'utf8'), where)
   const chapterId = fm.chapter
   if (!matches(dirName) && !(chapterId && matches(chapterId))) continue
+  if (draftChapters.has(chapterId) && !FILTER) {
+    drafted++
+    continue
+  }
 
   // --- métadonnées
   if (fm.id !== dirName) err(where, `id « ${fm.id} » différent du nom du dossier « ${dirName} »`)
@@ -332,6 +340,9 @@ for (const dirName of problemDirs) {
   })
 }
 
+if (drafted) console.log(`${drafted} exercice(s) de niveaux en brouillon, ni vérifiés ni publiés (voir --filter)`)
+// Avec --filter, on vérifie un brouillon sans rien publier : FILTER interrompt de toute façon avant l'écriture.
+
 // ---------------------------------------------------------------- Cours
 
 const lessons = []
@@ -339,6 +350,7 @@ for (const level of course.levels) {
   for (const ch of level.chapters) {
     if (!matches(ch.id)) continue
     const file = join(CONTENT, 'lessons', `${ch.id}.md`)
+    if (draftChapters.has(ch.id) && !FILTER) continue
     if (!existsSync(file)) {
       // Un chapitre pas encore écrit n'a ni cours ni exercices : il est affiché comme indisponible.
       if (problems.some((p) => p.chapter === ch.id)) warn(`lessons/${ch.id}.md`, 'cours manquant pour un chapitre qui a des exercices')

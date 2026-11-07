@@ -17,7 +17,7 @@ A single line with two integers separated by a space: the most frequent digit, t
 - 0 ≤ N ≤ 10¹⁸ (in C++, use `long long`)
 
 ## Hints
-1. Without an array, you can't count the ten digits in a single pass. But you can make ten passes: one for each digit `c` from 0 to 9.
+1. Counting the ten digits in a single pass would need ten counters. Simpler: make ten passes, one for each digit `c` from 0 to 9.
 2. For a given digit `c`, go through the digits of `N` with `% 10` and `// 10` in a `while` loop, and count those equal to `c`. Work on a copy of `N`, since you need it for each of the ten passes.
 3. The number `0` is written with one digit `0`: the `while` loop then makes no turn, so handle that case separately.
 
