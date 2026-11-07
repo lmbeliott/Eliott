@@ -34,6 +34,9 @@ const GroupPage = lazy(() => load(() => import('./pages/Group').then((m) => ({ d
 const SignIn = lazy(() => load(() => import('./pages/Auth').then((m) => ({ default: m.SignIn }))))
 const SignUp = lazy(() => load(() => import('./pages/Auth').then((m) => ({ default: m.SignUp }))))
 const Account = lazy(() => load(() => import('./pages/Account').then((m) => ({ default: m.Account }))))
+const Community = lazy(() => load(() => import('./pages/Community').then((m) => ({ default: m.Community }))))
+const CommunityProblem = lazy(() => load(() => import('./pages/CommunityProblem').then((m) => ({ default: m.CommunityProblem }))))
+const CommunityEditor = lazy(() => load(() => import('./pages/CommunityEditor').then((m) => ({ default: m.CommunityEditor }))))
 const About = lazy(() => load(() => import('./pages/About').then((m) => ({ default: m.About }))))
 
 const wrap = (el: React.ReactNode) => (
@@ -61,6 +64,10 @@ const router = createBrowserRouter(
         { path: '/defi', element: wrap(<Daily />) },
         { path: '/classements', element: wrap(<Leaderboards />) },
         { path: '/profil/:username', element: wrap(<ProfilePage />) },
+        { path: '/communaute', element: wrap(<Community />) },
+        { path: '/communaute/proposer', element: wrap(<CommunityEditor />) },
+        { path: '/communaute/:id', element: wrap(<CommunityProblem />), handle: { bare: true } },
+        { path: '/communaute/:id/modifier', element: wrap(<CommunityEditor />) },
         { path: '/groupes', element: wrap(<Groups />) },
         { path: '/groupes/:id', element: wrap(<GroupPage />) },
         { path: '/rejoindre/:code', element: wrap(<Groups />) },

@@ -94,6 +94,8 @@ export interface ProblemData {
   starter: { fr: { python: string | null; cpp: string | null }; en: { python: string | null; cpp: string | null } }
   samples: { input: string; output: string }[]
   tests: { input: string; hash: string }[]
+  /** Présent pour un problème proposé par la communauté (voir lib/community.ts) */
+  community?: import('./community').CommunityMeta
 }
 export interface LessonData {
   id: string

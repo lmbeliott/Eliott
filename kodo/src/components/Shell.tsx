@@ -19,6 +19,7 @@ function useNav() {
     { to: '/problemes', label: t('Problèmes', 'Problems') },
     { to: '/defi', label: t('Défi du jour', 'Daily') },
     { to: '/classements', label: t('Classements', 'Leaderboards') },
+    { to: '/communaute', label: t('Communauté', 'Community') },
     { to: '/groupes', label: t('Groupes', 'Groups') },
   ]
 }
@@ -218,6 +219,7 @@ function Footer() {
     { to: '/problemes', label: t('Problèmes', 'Problems') },
     { to: '/defi', label: t('Défi du jour', 'Daily challenge') },
     { to: '/classements', label: t('Classements', 'Leaderboards') },
+    { to: '/communaute', label: t('Communauté', 'Community') },
     { to: '/groupes', label: t('Groupes', 'Groups') },
     { to: '/a-propos', label: t('Règles et limites du juge', 'Rules and judge limits') },
   ]

@@ -95,6 +95,10 @@ export function errorText(e: unknown, lang: 'fr' | 'en'): string {
     [/déjà créé 30 groupes/i, 'Tu as déjà créé 30 groupes.', 'You have already created 30 groups.'],
     [/déjà partie de 30 groupes/i, 'Tu fais déjà partie de 30 groupes.', 'You are already in 30 groups.'],
     [/créé un groupe qui a encore des membres/i, 'Tu as créé un groupe qui a encore des membres. Supprime-le d’abord (page du groupe, onglet Membres).', 'You created a group that still has members. Delete it first (group page, Members tab).'],
+    [/déjà proposé 5 problèmes/i, 'Tu as déjà proposé 5 problèmes en 24 heures. Réessaie demain.', 'You have already proposed 5 problems in 24 hours. Try again tomorrow.'],
+    [/masqué par la modération/i, 'Ce problème a été masqué par la modération : il ne peut pas être republié.', 'This problem was hidden by moderators: it cannot be republished.'],
+    [/community_votes_pkey|community_reports_pkey/i, 'C’est déjà fait.', 'Already done.'],
+    [/row-level security.*community_votes/i, 'Tu ne peux pas voter pour ton propre problème.', 'You cannot vote for your own problem.'],
   ]
   for (const [re, fr, en] of map) if (re.test(msg)) return lang === 'en' ? en : fr
   return msg

@@ -54,6 +54,22 @@ Projet `bskgiaejgvbjpixijruk`. Le schéma est dans `supabase/migrations/` :
 python3 scripts/sql.py supabase/migrations/<fichier>.sql   # appliquer une migration
 python3 scripts/sql.py supabase/problems.sql               # synchroniser la table des problèmes
 python3 scripts/sql.py supabase/tests/rls_and_scoring.sql  # 24 vérifications de sécurité et de score (annulées à la fin)
+python3 scripts/sql.py supabase/tests/community.sql        # 18 vérifications des problèmes de la communauté
+```
+
+### Problèmes de la communauté
+
+Tables `community_problems`, `community_references` (solution de référence, privée), `community_votes`, `community_solves`, `community_reports` (migration `20261107000000_community.sql`).
+
+- Un problème est publié dès qu'il est proposé (`/communaute/proposer`), après que la solution de référence de l'auteur a calculé, dans son navigateur, la sortie de chaque test. Les exemples gardent leur sortie en clair, les tests cachés seulement l'empreinte SHA-256 (même format que les problèmes officiels).
+- Pas de points : `community_solves` n'alimente ni `profiles.xp` ni les classements.
+- Limites : 5 problèmes par auteur et par 24 h ; 1 à 5 exemples, 3 à 50 tests cachés, 2 Mo de tests au plus.
+- Trois signalements masquent un problème. Les modérateurs le rétablissent ou le laissent masqué depuis sa page ; la liste `/communaute` leur montre une section « À examiner ».
+
+Nommer un modérateur (par son pseudo) :
+
+```bash
+python3 scripts/sql.py -q "insert into private.moderators (user_id) select id from public.profiles where username = 'pseudo'"
 ```
 
 `scripts/sql.py` passe par l'API de gestion Supabase ; en local, définir `SUPABASE_ACCESS_TOKEN` (jeton personnel `sbp_…`).

@@ -13,7 +13,7 @@ import { locale, pick, plural, useI18n, type UiLang } from '../lib/i18n'
 import { judge, runtimeFor, warmUp, limitFor, type JudgeReport, type JudgeTest, type TestResult } from '../judge/judge'
 import { explainError, trimCompilerOutput } from '../judge/explain'
 import type { Lang } from '../judge/protocol'
-import { loadDraft, saveDraft, useCodeLang, useProgress, useRecordSubmission } from '../lib/progress'
+import { loadDraft, saveDraft, useCodeLang, useProgress, useRecordSubmission, type RecordInput } from '../lib/progress'
 import { useAuth } from '../lib/auth'
 import { errorText, type SubmitResult } from '../lib/supabase'
 import { useProblemStats } from '../lib/queries'
@@ -278,7 +278,7 @@ function ProblemSteps({ index, prev, next }: { index: number; prev?: string; nex
   )
 }
 
-function StatementPanel({
+export function StatementPanel({
   data,
   solved,
   codeLang,
@@ -286,6 +286,8 @@ function StatementPanel({
   index,
   prev,
   next,
+  aside,
+  solversOverride,
 }: {
   data: ProblemData
   solved: boolean
@@ -294,13 +296,18 @@ function StatementPanel({
   index: number
   prev?: string
   next?: string
+  /** Remplace la navigation entre problèmes (problèmes de la communauté) */
+  aside?: ReactNode
+  solversOverride?: number
 }) {
   const { lang, t } = useI18n()
   const [tab, setTab] = useState<LeftTab>(initialTab)
   const text = pick(lang, data.text.fr, data.text.en)
   const chapter = chapterById(data.chapter)
   const stats = useProblemStats()
-  const solvers = stats.data?.get(data.id) ?? 0
+  const community = data.community
+  const solvers = solversOverride ?? stats.data?.get(data.id) ?? 0
+  const statsReady = solversOverride !== undefined || !!stats.data
   const scroller = useRef<HTMLDivElement>(null)
   const prefix = `problem-${data.id}`
   const pickTab = (v: LeftTab) => {
@@ -308,7 +315,7 @@ function StatementPanel({
     scroller.current?.scrollTo({ top: 0 })
   }
 
-  const tabs: { id: LeftTab; label: ReactNode }[] = [
+  const allTabs: { id: LeftTab; label: ReactNode }[] = [
     { id: 'statement', label: t('Énoncé', 'Statement') },
     {
       id: 'hints',
@@ -329,6 +336,8 @@ function StatementPanel({
       ),
     },
   ]
+  // Problème de la communauté : ni indices ni solution publiée.
+  const tabs = community ? allTabs.slice(0, 1) : allTabs
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -345,14 +354,30 @@ function StatementPanel({
               </Link>
             </nav>
           )}
-          <div className="hidden lg:block">
-            <ProblemSteps index={index} prev={prev} next={next} />
-          </div>
+          {community && (
+            <nav aria-label={t('Fil d’Ariane', 'Breadcrumb')} className="flex min-w-0 items-center gap-1 text-sm text-muted">
+              <Link to="/communaute" className="shrink-0 hover:text-ink">
+                {t('Communauté', 'Community')}
+              </Link>
+              <ChevronRight className="size-3.5 shrink-0" aria-hidden />
+              <span className="truncate">
+                {t('proposé par ', 'proposed by ')}
+                <Link to={`/profil/${community.authorUsername}`} className="text-ink-2 hover:text-ink">
+                  {community.authorName}
+                </Link>
+              </span>
+            </nav>
+          )}
+          {aside ?? (
+            <div className="hidden lg:block">
+              <ProblemSteps index={index} prev={prev} next={next} />
+            </div>
+          )}
         </div>
         <h1 className="display mt-1 text-xl leading-tight sm:text-2xl">{text.title}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-ink-2">
           <DifficultyMark difficulty={data.difficulty} />
-          <span>{t(`${data.points} points`, `${data.points} points`)}</span>
+          <span>{community ? t('Sans points', 'No points') : t(`${data.points} points`, `${data.points} points`)}</span>
           <span title={t('Limite par test, selon le langage', 'Limit per test, by language')} className="inline-flex items-center gap-1.5">
             <Clock className="size-3.5 text-muted" aria-hidden />
             {t(
@@ -361,7 +386,7 @@ function StatementPanel({
             )}
           </span>
           <span className="text-muted">
-            {stats.data
+            {statsReady
               ? solvers > 0
                 ? t(`Réussi par ${plural(lang, solvers, ['élève', 'élèves'], ['', ''])}`, `Solved by ${plural(lang, solvers, ['', ''], ['student', 'students'])}`)
                 : t('Personne ne l’a encore réussi', 'Nobody has solved it yet')
@@ -373,13 +398,17 @@ function StatementPanel({
             </span>
           )}
         </div>
-        <Tabs<LeftTab> className="mt-3 -ml-2.5" value={tab} onChange={pickTab} tabs={tabs} label={t('Contenu du problème', 'Problem content')} idPrefix={prefix} />
+        {tabs.length > 1 ? (
+          <Tabs<LeftTab> className="mt-3 -ml-2.5" value={tab} onChange={pickTab} tabs={tabs} label={t('Contenu du problème', 'Problem content')} idPrefix={prefix} />
+        ) : (
+          <div className="h-3" />
+        )}
       </header>
       <div
         ref={scroller}
         id={`${prefix}-panel`}
-        role="tabpanel"
-        aria-labelledby={`${prefix}-tab-${tab}`}
+        role={tabs.length > 1 ? 'tabpanel' : undefined}
+        aria-labelledby={tabs.length > 1 ? `${prefix}-tab-${tab}` : undefined}
         tabIndex={0}
         className="min-h-0 flex-1 overflow-y-auto px-4 pb-12 pt-6 focus-visible:outline-offset-[-2px] sm:px-6"
       >
@@ -400,7 +429,7 @@ function StatementPanel({
             <StatementSection title={data.samples.length > 1 ? t('Exemples', 'Examples') : t('Exemple', 'Example')}>
               <Samples data={data} />
             </StatementSection>
-            {lang === 'en' && !data.text.en && <p className="mt-8 text-sm text-muted">This problem has not been translated into English yet, so it is shown in French.</p>}
+            {lang === 'en' && !data.text.en && !community && <p className="mt-8 text-sm text-muted">This problem has not been translated into English yet, so it is shown in French.</p>}
           </article>
         )}
         {tab === 'hints' && <Hints key={data.id} hints={text.hints} />}
@@ -633,6 +662,28 @@ function SuccessBlock({ o, data, next, onShowSolution }: { o: Outcome; data: Pro
   const rec = o.recorded
   const nextMeta = next ? problemById(next) : undefined
   const title = pick(ui, data.text.fr, data.text.en).title
+  if (data.community) {
+    return (
+      <div className="anim-rise mt-5 border-t border-line pt-5" aria-live="polite">
+        <p className="max-w-[60ch] text-sm text-ink">
+          {!session ? (
+            <>
+              <Link to="/connexion" className="font-medium text-accent underline underline-offset-2">
+                {t('Connecte-toi', 'Sign in')}
+              </Link>{' '}
+              {t('pour que ta réussite compte dans les statistiques de ce problème. Les problèmes de la communauté ne rapportent pas de points.', 'so that your solve counts in this problem’s statistics. Community problems give no points.')}
+            </>
+          ) : o.recordError ? (
+            <span className="text-bad">{o.recordError}</span>
+          ) : o.recorded === undefined ? (
+            <Spinner label={t('Enregistrement de ta réussite…', 'Saving your solve…')} />
+          ) : (
+            t('Réussite enregistrée. Les problèmes de la communauté ne rapportent pas de points.', 'Solve saved. Community problems give no points.')
+          )}
+        </p>
+      </div>
+    )
+  }
   return (
     <div className="anim-rise mt-5 flex flex-col gap-5 border-t border-line pt-5 sm:flex-row sm:items-end sm:justify-between">
       <div aria-live="polite">
@@ -859,7 +910,18 @@ function defaultCode(data: ProblemData, lang: Lang, ui: UiLang) {
   return lang === 'cpp' ? CPP_TEMPLATE : ''
 }
 
-function Workspace({ data, onSolved, onShowSolution }: { data: ProblemData; onSolved: (problemId: string) => void; onShowSolution: () => void }) {
+export function Workspace({
+  data,
+  onSolved,
+  onShowSolution,
+  record: recordOverride,
+}: {
+  data: ProblemData
+  onSolved: (problemId: string) => void
+  onShowSolution: () => void
+  /** Enregistrement d'une soumission (par défaut : submit_result, avec les points) */
+  record?: (r: RecordInput) => Promise<SubmitResult | null>
+}) {
   const { t, lang: ui } = useI18n()
   const [lang, setLang] = useCodeLang()
   const [code, setCode] = useState(() => loadDraft(data.id, lang) ?? defaultCode(data, lang, ui))
@@ -867,13 +929,14 @@ function Workspace({ data, onSolved, onShowSolution }: { data: ProblemData; onSo
   const [showCustom, setShowCustom] = useState(false)
   const [outcome, setOutcome] = useState<Outcome | null>(null)
   const [busy, setBusy] = useState(false)
-  const record = useRecordSubmission()
+  const recordDefault = useRecordSubmission()
+  const record = recordOverride ?? recordDefault
   const toast = useToast()
   const abort = useRef<AbortController | null>(null)
   const customRef = useRef<HTMLTextAreaElement>(null)
   const next = useMemo(() => {
     const i = problemList.findIndex((p) => p.id === data.id)
-    return problemList[i + 1]?.id ?? null
+    return i < 0 ? null : (problemList[i + 1]?.id ?? null)
   }, [data.id])
 
   // Clé de l'exécution en cours : un résultat qui arrive après un changement de problème
@@ -1158,7 +1221,7 @@ export function Problem() {
           </div>
         ) : null
       ) : (
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,44fr)_minmax(0,56fr)]">
+        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,44fr)_minmax(0,56fr)]">
           <div className={cx('min-h-0 border-line bg-bg lg:block lg:border-r', mobilePane === 'statement' ? 'block' : 'hidden')}>
             <StatementPanel
               key={`${id}-${openSolution ? solutionView!.n : 0}`}
