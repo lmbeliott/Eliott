@@ -28,23 +28,25 @@ tests.append(texte(1, []))
 tests.append(texte(1, [(1, 1, -1)]))
 tests.append(texte(2, [(1, 2, -5), (2, 2, 0)]))
 tests.append(texte(4, [(1, 2, 1), (2, 3, 1), (3, 2, -1), (2, 4, 6), (4, 1, -3)]))
+tests.append(texte(4, [(1, 4, 5), (2, 3, -1), (3, 2, 0)]))  # cycle négatif inaccessible depuis 1 : IMPOSSIBLE quand même
 for n, m in [(5, 8), (8, 20), (20, 60)]:
     tests.append(texte(n, depuis_solution(n, m, 20, 3)))
 tests.append(texte(10, alea(10, 25, -3, 10)))
 # grands : longue chaîne d'égalités x[i+1] - x[i] = d, donnée à l'envers (beaucoup de tours)
 n = 300
-d = [random.randint(-10 ** 6, 10 ** 6) for _ in range(n)]
+d = [random.randint(-3 * 10 ** 5, 3 * 10 ** 5) for _ in range(n)]
 cs = []
 for i in range(n - 1, 0, -1):
     cs.append((i, i + 1, d[i]))
     cs.append((i + 1, i, -d[i]))
-cs += depuis_solution(n, 0, 0, 0)
 x = [0] * (n + 1)
 for i in range(1, n):
     x[i + 1] = x[i] + d[i]
-for _ in range(2400):
+while len(cs) < 3000:  # des contraintes larges, vérifiées par la solution x, avec |C| ≤ 10⁶
     a, b = random.randint(1, n), random.randint(1, n)
-    cs.append((a, b, x[b] - x[a] + random.randint(0, 10 ** 6)))
+    c = x[b] - x[a] + random.randint(0, 10 ** 5)
+    if abs(c) <= 10 ** 6:
+        cs.append((a, b, c))
 tests.append(texte(n, cs))
 # grand, avec une solution
 n = 300

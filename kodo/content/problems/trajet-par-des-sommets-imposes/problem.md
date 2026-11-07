@@ -37,8 +37,8 @@ Un seul entier : la longueur minimale, ou `-1`.
 
 **Les distances utiles.** On lance **Dijkstra** depuis le sommet `1` et depuis chacun des `K` sommets imposés. Le graphe étant non orienté, `d(s_K, N)` se lit dans le tableau des distances depuis `s_K`.
 
-**Tous les ordres.** On énumère les `K!` permutations (avec `itertools.permutations` en Python, `next_permutation` en C++, ou un retour sur trace), et pour chacune on additionne `K + 1` distances. Si l'une est infinie, l'ordre est impossible.
+**Tous les ordres.** Un **retour sur trace** énumère les `K!` ordres, comme les permutations du chapitre de récursivité : on choisit le prochain sommet imposé parmi ceux qui ne sont pas encore visités, en ajoutant la distance depuis le précédent. Une distance infinie ferme la branche, et l'on abandonne aussi une branche dont le total atteint déjà le meilleur trajet connu (**élagage**).
 
-**Complexité.** `(K + 1)` Dijkstra en O((N + M) log N), plus `K! × (K + 1) ≈ 360 000` additions. Relancer Dijkstra pour chaque segment de chaque ordre coûterait 40 320 × 9 exécutions.
+**Complexité.** `(K + 1)` Dijkstra en O((N + M) log N), plus au plus `K! × (K + 1) ≈ 360 000` additions pour l'exploration. Relancer Dijkstra pour chaque segment de chaque ordre coûterait 40 320 × 9 exécutions.
 
-**Pièges.** Le sommet `1` ou le sommet `N` peuvent être imposés : la formule reste juste (une distance nulle). Pour `K = 0`, la réponse est `d(1, N)`. Les longueurs se cumulent au-delà de 2³¹ : `long long`, et un « infini » qui ne déborde pas quand on additionne neuf termes : avec 10¹⁸, la somme atteint 9 × 10¹⁸, juste sous la limite des `long long` (environ 9,2 × 10¹⁸) ; avec un terme de plus, il faudrait tester chaque terme avant d'additionner.
+**Pièges.** Le sommet `1` ou le sommet `N` peuvent être imposés : la formule reste juste (une distance nulle). Pour `K = 0`, la réponse est `d(1, N)`. Les longueurs se cumulent au-delà de 2³¹ : `long long`. N'additionner que des distances finies : neuf « infinis » de 10¹⁸ feraient 9 × 10¹⁸, tout près de la limite des `long long`.

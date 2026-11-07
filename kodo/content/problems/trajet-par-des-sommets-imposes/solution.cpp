@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
-#include <numeric>
 #include <queue>
 #include <utility>
 #include <vector>
@@ -30,12 +29,36 @@ vector<long long> dijkstra(int source) {
     return dist;
 }
 
+int k;
+vector<int> imposes;
+vector<vector<long long>> dist;
+vector<bool> utilise;
+long long meilleur = INFINI;
+
+// dernier : indice (dans dist) du dernier point visité ; nb : nombre de sommets imposés déjà visités
+void explorer(int dernier, int nb, long long total) {
+    if (nb == k) {  // tous visités : il reste à aller en N
+        if (dist[dernier][n] < INFINI) meilleur = min(meilleur, total + dist[dernier][n]);
+        return;
+    }
+    for (int i = 1; i <= k; i++) {
+        if (!utilise[i] && dist[dernier][imposes[i - 1]] < INFINI) {
+            long long nouveau = total + dist[dernier][imposes[i - 1]];
+            if (nouveau < meilleur) {  // élagage : inutile de continuer si l'on fait déjà moins bien
+                utilise[i] = true;
+                explorer(i, nb + 1, nouveau);
+                utilise[i] = false;
+            }
+        }
+    }
+}
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    int m, k;
+    int m;
     cin >> n >> m >> k;
-    vector<int> imposes(k);
+    imposes.resize(k);
     for (int& s : imposes) cin >> s;
     voisins.resize(n + 1);
     for (int i = 0; i < m; i++) {
@@ -46,20 +69,12 @@ int main() {
         voisins[b].push_back({a, l});
     }
 
-    // distances depuis le départ et depuis chaque sommet imposé : K + 1 exécutions de Dijkstra
-    vector<long long> depuisDepart = dijkstra(1);
-    vector<vector<long long>> depuis;
-    for (int s : imposes) depuis.push_back(dijkstra(s));
-
-    long long meilleur = INFINI;
-    vector<int> ordre(k);
-    iota(ordre.begin(), ordre.end(), 0);
-    do {  // on essaie tous les ordres de visite
-        long long total = (k > 0) ? depuisDepart[imposes[ordre[0]]] : depuisDepart[n];
-        for (int i = 0; i + 1 < k; i++) total += depuis[ordre[i]][imposes[ordre[i + 1]]];
-        if (k > 0) total += depuis[ordre[k - 1]][n];
-        meilleur = min(meilleur, total);
-    } while (next_permutation(ordre.begin(), ordre.end()));
+    // dist[0] : distances depuis le départ ; dist[i] : depuis le i-ème sommet imposé.
+    // K + 1 exécutions de Dijkstra en tout.
+    dist.push_back(dijkstra(1));
+    for (int s : imposes) dist.push_back(dijkstra(s));
+    utilise.assign(k + 1, false);
+    explorer(0, 0, 0);  // on essaie tous les ordres de visite, par retour sur trace
     cout << (meilleur < INFINI ? meilleur : -1) << "\n";
     return 0;
 }

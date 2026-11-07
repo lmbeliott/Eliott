@@ -25,24 +25,25 @@ n = 200
 ar = [(i, i + 1, 1) for i in range(1, n)] + [(1, n, 10 ** 9)]
 random.shuffle(ar)
 tests.append(texte(n, ar))
-# grand : longue chaîne de poids proches de 10⁹ (les distances dépassent 2³¹), avec des raccourcis chers
-n = 6000
+# grand : longue chaîne de poids proches de 10⁹ (les distances dépassent 2³¹), avec des raccourcis
+# tout est accessible : chercher le minimum parmi tous les sommets à chaque étape fait N² = 64 millions d'étapes
+n = 8000
 ar = [(i, i + 1, random.randint(9 * 10 ** 8, 10 ** 9)) for i in range(1, n)]
 for _ in range(2000):
     a = random.randint(1, n - 1)
     b = random.randint(a + 1, min(n, a + 50))
-    ar.append((a, b, 10 ** 9 * (b - a)))
+    ar.append((a, b, random.randint(9 * 10 ** 8, 10 ** 9)))
 random.shuffle(ar)
 ar = [(b, a, l) if random.random() < 0.5 else (a, b, l) for a, b, l in ar]
 tests.append(texte(n, ar))
-# grand : aléatoire, petits poids
-n = 6000
-ar = [(random.randint(1, n), random.randint(1, n), random.randint(1, 1000)) for _ in range(8000)]
+# grand : aléatoire, petits poids (presque tous les sommets sont accessibles)
+n = 8000
+ar = [(random.randint(1, n), random.randint(1, n), random.randint(1, 100)) for _ in range(10000)]
 tests.append(texte(n, ar))
-# grand : graphe connexe en arbre aléatoire + arêtes
-n = 4000
+# moyen : arbre aléatoire + arêtes
+n = 2000
 ar = [(i, random.randint(1, i - 1), random.randint(1, 10 ** 6)) for i in range(2, n + 1)]
-ar += aleatoire(n, 2500, 10 ** 6)
+ar += aleatoire(n, 1000, 10 ** 6)
 random.shuffle(ar)
 tests.append(texte(n, ar))
 print(json.dumps(tests))

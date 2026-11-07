@@ -34,4 +34,4 @@ If no choice of the `x_i` satisfies all the constraints, print `IMPOSSIBLE`. Oth
 
 **Complexity.** Two runs of Bellman-Ford: O(N × M), at most 900,000 relaxations. Dijkstra does not work, because of negative lengths.
 
-**Pitfalls.** The direction of the arc: `x_B − x_A ≤ C` gives `A → B`. A constraint `x_A − x_A ≤ C` with `C < 0` is a negative cycle of a single arc. If `N = 1`, the answer is `0` (when the system is possible).
+**Pitfalls.** The direction of the arc: `x_B − x_A ≤ C` gives `A → B`. A constraint `x_A − x_A ≤ C` with `C < 0` is a negative cycle of a single arc. A negative cycle that cannot be reached from `1` also makes the system impossible: a Bellman-Ford run only from `1` does not see it. If `N = 1`, the answer is `0` (when the system is possible).

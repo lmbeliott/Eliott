@@ -32,8 +32,8 @@ A single integer: the minimum length, or `-1`.
 
 **The useful distances.** Run **Dijkstra** from vertex `1` and from each of the `K` required vertices. Since the graph is undirected, `d(s_K, N)` is read in the distance array from `s_K`.
 
-**All orders.** Enumerate the `K!` permutations (with `itertools.permutations` in Python, `next_permutation` in C++, or backtracking), and for each add up `K + 1` distances. If one is infinite, the order is impossible.
+**All orders.** **Backtracking** enumerates the `K!` orders, like the permutations of the recursion chapter: choose the next required vertex among those not visited yet, adding the distance from the previous one. An infinite distance closes the branch, and a branch whose total already reaches the best known route is abandoned too (**pruning**).
 
-**Complexity.** `(K + 1)` runs of Dijkstra in O((N + M) log N), plus `K! × (K + 1) ≈ 360,000` additions. Running Dijkstra again for each segment of each order would cost 40,320 × 9 runs.
+**Complexity.** `(K + 1)` runs of Dijkstra in O((N + M) log N), plus at most `K! × (K + 1) ≈ 360,000` additions for the search. Running Dijkstra again for each segment of each order would cost 40,320 × 9 runs.
 
-**Pitfalls.** Vertex `1` or vertex `N` may be required: the formula remains correct (a zero distance). For `K = 0`, the answer is `d(1, N)`. Lengths add up beyond 2³¹: `long long`, and an "infinity" that does not overflow when nine terms are added: with 10¹⁸, the sum reaches 9 × 10¹⁸, just below the `long long` limit (about 9.2 × 10¹⁸); with one more term, each term would have to be tested before adding.
+**Pitfalls.** Vertex `1` or vertex `N` may be required: the formula remains correct (a zero distance). For `K = 0`, the answer is `d(1, N)`. Lengths add up beyond 2³¹: `long long`. Only add finite distances: nine "infinities" of 10¹⁸ would make 9 × 10¹⁸, very close to the `long long` limit.

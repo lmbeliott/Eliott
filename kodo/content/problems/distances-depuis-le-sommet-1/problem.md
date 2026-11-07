@@ -20,8 +20,8 @@ Pour chaque sommet `v`, afficher la longueur d'un plus court chemin du sommet `1
 Une ligne de `N` entiers : les distances des sommets `1`, `2`, …, `N` depuis le sommet `1`.
 
 ## Contraintes
-- 1 ≤ N ≤ 6 000
-- 0 ≤ M ≤ 8 000
+- 1 ≤ N ≤ 8 000
+- 0 ≤ M ≤ 10 000
 - 1 ≤ A, B ≤ N
 - 1 ≤ L ≤ 10⁹
 
@@ -35,6 +35,6 @@ C'est l'algorithme de Dijkstra, appliqué tel quel. On garde `dist[v]`, la plus 
 
 **Pourquoi c'est juste.** Toutes les longueurs étant positives, le sommet non traité de plus petite distance provisoire ne peut pas être atteint plus court en passant par un autre sommet non traité : tout tel détour coûte déjà au moins autant avant même d'arriver. C'est la preuve du cours.
 
-**Complexité.** Chaque arête est relâchée deux fois (une fois par extrémité) et ajoute au plus un couple au tas : O((N + M) log M). Chercher le minimum en parcourant tous les sommets à chaque étape coûterait O(N²), soit 36 millions d'étapes : trop lent en Python.
+**Complexité.** Chaque arête est relâchée deux fois (une fois par extrémité) et ajoute au plus un couple au tas : O((N + M) log M). Chercher le minimum en parcourant tous les sommets à chaque étape coûterait O(N²), soit 64 millions d'étapes : trop lent en Python.
 
-**Pièges.** Les distances dépassent 2³¹ dès qu'un chemin a trois arêtes de longueur 10⁹ (deuxième exemple) : il faut des `long long` en C++, et une valeur « infinie » bien plus grande que toute distance possible (6 000 × 10⁹ = 6 × 10¹²). Les sommets jamais atteints affichent `-1`. Les boucles et les arêtes multiples ne demandent aucun traitement particulier.
+**Pièges.** Les distances dépassent 2³¹ dès qu'un chemin a trois arêtes de longueur 10⁹ (deuxième exemple) : il faut des `long long` en C++, et une valeur « infinie » bien plus grande que toute distance possible (8 000 × 10⁹ = 8 × 10¹²). Les sommets jamais atteints affichent `-1`. Les boucles et les arêtes multiples ne demandent aucun traitement particulier.

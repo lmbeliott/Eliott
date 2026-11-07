@@ -20,14 +20,14 @@ def main():
         return racine
 
     def unir(a, b):
-        nonlocal plus_grande
+        # fusionne les composantes de a et de b, et renvoie la taille de la composante obtenue
         a, b = trouver(a), trouver(b)
         if a != b:
             if taille[a] < taille[b]:
                 a, b = b, a
             parent[b] = a
             taille[a] += taille[b]
-            plus_grande = max(plus_grande, taille[a])
+        return taille[a]
 
     # état final : toutes les liaisons sauf celles qui seront coupées
     coupee = [False] * m
@@ -35,13 +35,13 @@ def main():
         coupee[e] = True
     for e in range(m):
         if not coupee[e]:
-            unir(*aretes[e])
+            plus_grande = max(plus_grande, unir(*aretes[e]))
 
     # on remonte le temps : couper la liaison i, c'est l'ajouter quand on va à l'envers
     reponse = [0] * q
     for i in range(q - 1, -1, -1):
         reponse[i] = plus_grande
-        unir(*aretes[coupures[i]])
+        plus_grande = max(plus_grande, unir(*aretes[coupures[i]]))
     print(" ".join(map(str, reponse)))
 
 

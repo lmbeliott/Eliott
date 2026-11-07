@@ -16,10 +16,10 @@ One line: the integer `N`.
 A single integer: the minimum weight of a spanning tree.
 
 ## Constraints
-- 1 ≤ N ≤ 10,000,000
+- 1 ≤ N ≤ 2,000,000
 
 ## Hints
-1. The graph has about `N ln N` edges, 160 million for `N = 10⁷`: Kruskal on all edges is too slow. Computing the answer by hand or with Kruskal for small `N` helps to guess a formula.
+1. The graph has about `N ln N` edges, about 27 million for `N = 2 × 10⁶`: Kruskal on all edges is too slow. Computing the answer by hand or with Kruskal for small `N` helps to guess a formula.
 2. An edge with a composite weight `k = u × v` (with `u, v ≥ 2`) is the heaviest of a cycle: `a → u a → u v a`. Only prime weights matter.
 3. Each integer `r ≥ 2` can be joined to `r / p`, where `p` is its smallest prime factor, by an edge of weight `p`. This tree is minimal: the answer is the sum of the smallest prime factors of `2, 3, …, N`, which a sieve computes.
 
@@ -30,8 +30,8 @@ A single integer: the minimum weight of a spanning tree.
 
 Write `r = s × u`, where `s` only has prime factors `< t` and `u` only prime factors `≥ t`. An edge of weight `k < t` joins `a` and `k a`, which have the same part `u` since `k` only has factors `< t`. Conversely, `r` is connected to `u` by dividing by the prime factors of `s` one by one (edges of weight `< t`). So the components correspond to the possible values of `u`: `c(t)` is the number of integers `u ≤ N` whose prime factors are all `≥ t` (including `u = 1`). The edges of our tree with weight `≥ t` are those of the `r ≥ 2` with `spf(r) ≥ t`, that is, the `r ≥ 2` whose prime factors are all `≥ t`: there are exactly `c(t) − 1` of them.
 
-**Computation.** A sieve goes through the primes `p` in increasing order; the multiples of `p` not yet marked are exactly the `r` with `spf(r) = p`: add `p` for each, then mark them. In Python, counting and marking a whole slice of a `bytearray` (`marque[p::p].count(0)`, then a slice assignment) does this work without an explicit loop; beyond `√N`, unmarked numbers are prime and are their own smallest factor.
+**Computation.** A sieve computes `spf(r)` for every `r ≤ N`, as in the arithmetic chapter: for each prime `p` with `p² ≤ N`, go through the multiples of `p` from `p²` on and record `p` in those that have no factor yet. The numbers left without a factor are prime and are their own smallest factor. It only remains to add everything up.
 
-**Complexity.** O(N log log N). The result exceeds 3 × 10¹² for `N = 10⁷`: `long long` in C++.
+**Complexity.** O(N log log N). The result exceeds 10¹¹ for `N = 2 × 10⁶`: `long long` in C++.
 
-**Pitfalls.** For `N = 1`, the tree is empty: `0`. Kruskal on all edges, even restricted to prime weights, needs tens of millions of Union-Find operations: far too many in Python.
+**Pitfalls.** For `N = 1`, the tree is empty: `0`. Kruskal on all edges, even restricted to prime weights, needs millions of Union-Find operations (nearly 6 million edges of prime weight): far too many in Python.

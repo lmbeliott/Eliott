@@ -6,7 +6,7 @@ def test(qs):
 
 L = 10**18
 G = 10**9
-tests = [test([(0, 10), (1, 10), (10, 1000), (20, 1000), (90, 1000000000), (10**18, 1000000007)])]
+tests = [test([(0, 10), (1, 10), (10, 1000), (20, 1000), (90, 1000000000), (10**18, 999999937)])]
 tests.append(test([(n, 1000000000) for n in range(0, 91)]))
 tests.append(test([(L, 1), (L, G), (L - 1, G), (L, 2), (L, 3), (0, 1), (1, 1), (2, G), (L, 999999937)]))
 tests.append(test([(random.randint(0, L), random.randint(1, G)) for _ in range(1000)]))

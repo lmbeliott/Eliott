@@ -39,4 +39,4 @@ Si aucun choix des `x_i` ne vérifie toutes les contraintes, afficher `IMPOSSIBL
 
 **Complexité.** Deux Bellman-Ford : O(N × M), soit au plus 900 000 relâchements. Dijkstra ne convient pas, à cause des longueurs négatives.
 
-**Pièges.** Le sens de l'arc : `x_B − x_A ≤ C` donne `A → B`. Une contrainte `x_A − x_A ≤ C` avec `C < 0` est un cycle négatif d'un seul arc. Si `N = 1`, la réponse est `0` (quand le système est possible).
+**Pièges.** Le sens de l'arc : `x_B − x_A ≤ C` donne `A → B`. Une contrainte `x_A − x_A ≤ C` avec `C < 0` est un cycle négatif d'un seul arc. Un cycle négatif que l'on ne peut pas atteindre depuis `1` rend aussi le système impossible : un Bellman-Ford lancé seulement depuis `1` ne le voit pas. Si `N = 1`, la réponse est `0` (quand le système est possible).

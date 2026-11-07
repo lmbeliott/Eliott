@@ -24,13 +24,23 @@ for n, m, k in [(8, 12, 3), (15, 25, 5), (40, 60, 2), (60, 70, 20)]:
 n = 4000
 tests.append(texte(n, list(range(2, n + 1)), [(1, v, 10 ** 9 - random.randint(0, 3)) for v in range(2, n + 1)]))
 # grand : longue chaîne, sommets marqués épars, grandes longueurs
-n = 4000
+n = 3000
 ar = [(i, i + 1, random.randint(5 * 10 ** 8, 10 ** 9)) for i in range(1, n)]
 random.shuffle(ar)
 tests.append(texte(n, random.sample(range(1, n + 1), 3), ar))
+# grand : peigne. Une chaîne de 2 500 sommets non marqués, à petites longueurs, et une dent marquée
+# très éloignée sur chacun : un Dijkstra par sommet marqué, même arrêté au premier sommet marqué
+# atteint, parcourt toute la chaîne à chaque fois.
+n = 5000
+dos = random.sample(range(1, n + 1), n // 2)
+dents = [v for v in range(1, n + 1) if v not in set(dos)]
+ar = [(dos[i], dos[i + 1], random.randint(1, 9)) for i in range(n // 2 - 1)]
+ar += [(dents[i], dos[i], 10 ** 9 - random.randint(0, 10 ** 6)) for i in range(n // 2)]
+random.shuffle(ar)
+tests.append(texte(n, dents, ar))
 # grands aléatoires
 n = 5000
 tests.append(texte(n, random.sample(range(1, n + 1), 2500), alea(n, 5000, 10 ** 6)))
-n = 5000
-tests.append(texte(n, random.sample(range(1, n + 1), 40), alea(n, 5000, 10 ** 9)))
+n = 2000
+tests.append(texte(n, random.sample(range(1, n + 1), 40), alea(n, 2000, 10 ** 9)))
 print(json.dumps(tests))

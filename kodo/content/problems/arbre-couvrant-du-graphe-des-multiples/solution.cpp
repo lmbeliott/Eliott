@@ -3,23 +3,21 @@
 using namespace std;
 
 int main() {
-    long long n;
+    int n;
     cin >> n;
-    // Le poids minimal vaut la somme des plus petits facteurs premiers de 2, 3, ..., N.
-    // marque[r] = 1 quand le plus petit facteur premier de r est déjà compté.
-    vector<char> marque(n + 1, 0);
-    long long total = 0;
-    for (long long p = 2; p <= n; p++) {
-        if (marque[p]) continue;
-        // p n'a pas de facteur plus petit : il est premier, et c'est le plus petit facteur
-        // de chacun de ses multiples pas encore marqués
-        for (long long r = p; r <= n; r += p) {
-            if (!marque[r]) {
-                marque[r] = 1;
-                total += p;
-            }
-        }
+
+    // ppf[r] = plus petit facteur premier de r (0 tant qu'aucun facteur n'est trouvé)
+    vector<int> ppf(n + 1, 0);
+    for (long long p = 2; p * p <= n; p++) {
+        if (ppf[p] != 0) continue;  // p a un facteur plus petit : il n'est pas premier
+        for (long long r = p * p; r <= n; r += p)
+            if (ppf[r] == 0) ppf[r] = p;
     }
+
+    // Le poids minimal vaut la somme des plus petits facteurs premiers de 2, 3, ..., N.
+    // Un r resté sans facteur est premier : c'est son propre plus petit facteur.
+    long long total = 0;
+    for (int r = 2; r <= n; r++) total += (ppf[r] == 0 ? r : ppf[r]);
     cout << total << "\n";
     return 0;
 }

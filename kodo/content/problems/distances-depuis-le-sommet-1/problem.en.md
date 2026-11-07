@@ -15,8 +15,8 @@ For each vertex `v`, print the length of a shortest path from vertex `1` to vert
 One line of `N` integers: the distances of vertices `1`, `2`, …, `N` from vertex `1`.
 
 ## Constraints
-- 1 ≤ N ≤ 6,000
-- 0 ≤ M ≤ 8,000
+- 1 ≤ N ≤ 8,000
+- 0 ≤ M ≤ 10,000
 - 1 ≤ A, B ≤ N
 - 1 ≤ L ≤ 10⁹
 
@@ -30,6 +30,6 @@ This is Dijkstra's algorithm, applied as is. Keep `dist[v]`, the smallest known 
 
 **Why it is correct.** All lengths being positive, the unprocessed vertex with the smallest tentative distance cannot be reached more cheaply through another unprocessed vertex: any such detour already costs at least as much before even arriving. This is the proof from the lesson.
 
-**Complexity.** Each edge is relaxed twice (once from each end) and pushes at most one pair: O((N + M) log M). Finding the minimum by scanning all vertices at each step would cost O(N²), that is 36 million steps: too slow in Python.
+**Complexity.** Each edge is relaxed twice (once from each end) and pushes at most one pair: O((N + M) log M). Finding the minimum by scanning all vertices at each step would cost O(N²), that is 64 million steps: too slow in Python.
 
-**Pitfalls.** Distances exceed 2³¹ as soon as a path has three edges of length 10⁹ (second sample): `long long` is needed in C++, and an "infinite" value much larger than any possible distance (6,000 × 10⁹ = 6 × 10¹²). Vertices never reached print `-1`. Loops and multiple edges need no special care.
+**Pitfalls.** Distances exceed 2³¹ as soon as a path has three edges of length 10⁹ (second sample): `long long` is needed in C++, and an "infinite" value much larger than any possible distance (8,000 × 10⁹ = 8 × 10¹²). Vertices never reached print `-1`. Loops and multiple edges need no special care.
