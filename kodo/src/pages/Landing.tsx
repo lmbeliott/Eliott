@@ -634,7 +634,7 @@ export function Landing() {
       <section className={cx(container, 'grid items-center gap-12 pb-16 pt-12 sm:pb-24 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:gap-12 lg:pt-24')}>
         <div>
           <h1 className="display text-[2rem] leading-[1.1] sm:text-[2.75rem]">
-            {t('Entraînement à la programmation et à l’algorithmique olympique et amateur, en Python et en C++', 'Programming and algorithms training for olympiad contestants and hobbyists, in Python and C++')}
+            {t('S’entraîner à la programmation et à l’algorithmique, en loisir ou pour les Olympiades, en Python et en C++.', 'Practise programming and algorithms, for fun or for the Olympiads, in Python and C++.')}
           </h1>
           <p className="mt-6 max-w-[34rem] text-lg leading-[1.55] text-ink-2">
             {t(
