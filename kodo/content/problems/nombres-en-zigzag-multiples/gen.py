@@ -5,7 +5,7 @@ MAX = 10 ** 18
 
 
 def fmt(m, requetes):
-    return f"{m} {len(requetes)}\n" + "".join(f"{a} {b}\n" for a, b in requetes) 
+    return f"{m} {len(requetes)}\n" + "".join(f"{a} {b}\n" for a, b in requetes)
 
 
 def bornes_aleatoires(nb, maxi):
@@ -32,7 +32,7 @@ tests.append(fmt(13, bornes_aleatoires(40, 10 ** 6)))
 tests.append(fmt(1, [(1, MAX), (MAX, MAX), (MAX - 10 ** 9, MAX), (909090909090909090, 909090909090909091)]))
 tests.append(fmt(2, [(1, MAX), (10 ** 17, MAX), (1, 10 ** 17 - 1)]))
 # Grands tests : beaucoup de requêtes et un grand module
-for m in (499, 500, 343):
+for m in (499, 487, 343):
     tests.append(fmt(m, bornes_aleatoires(2000, MAX)))
 tests.append(fmt(97, [(random.randint(1, 10 ** 17), random.randint(10 ** 17, MAX)) for _ in range(1500)]))
 print(json.dumps(tests))
