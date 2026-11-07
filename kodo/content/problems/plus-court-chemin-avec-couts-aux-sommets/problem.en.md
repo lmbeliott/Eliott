@@ -32,7 +32,7 @@ We move the cost of each vertex onto the edges that **enter** it: taking the edg
 
 These costs are positive: **Dijkstra's algorithm** with a priority queue (a heap) gives the shortest path. We keep `dist[v]`, the best known cost to reach `v`. We take out of the heap the vertex with the smallest distance; its distance is then final, and we try to improve that of each of its neighbours. If a vertex comes out of the heap with a distance larger than `dist`, it is an outdated entry: we ignore it.
 
-Complexity: **O((N + M) log M)**. A Dijkstra without a heap (which finds the minimum by scanning all the vertices) costs O(N²), and the Bellman-Ford algorithm O(N × M), that is tens of millions of operations: too slow in Python. A breadth-first search, on the other hand, is wrong: it minimises the number of edges, not the cost.
+Complexity: **O((N + M) log M)**. A Dijkstra without a heap (which finds the minimum by scanning all the vertices) costs O(N²): about 25 million steps here, which still passes, but it quickly becomes too slow as `N` grows. The Bellman-Ford algorithm, in O(N × M), needs up to 40 million relaxations when the shortest path has thousands of edges: too slow in Python. A breadth-first search, on the other hand, is wrong: it minimises the number of edges, not the cost.
 
 Traps:
 - Vertex `N` costs nothing: on the first example, forgetting this adds `50`.

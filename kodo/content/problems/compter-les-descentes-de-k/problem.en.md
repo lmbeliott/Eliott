@@ -32,9 +32,9 @@ On the example `+--=+-` with K = 1, the heights of points 0 to 6 are `0 1 0 -1 -
 
 **Complexity.** A single loop of N + 1 steps, with constant-time dictionary operations: O(N).
 
-**Why the naive solution is too slow.** Testing every pair of points takes about N²/2 = 5 × 10⁹ comparisons for N = 100 000: hours in Python, and several seconds even in C++.
+**Why the naive solution is too slow.** Testing every pair of points takes about N²/2 = 5 × 10⁹ comparisons for N = 100 000: several minutes in Python, and around the time limit in C++.
 
 **Traps.**
 - The answer can exceed 2³¹ (for example, 45 000 points at height 0 followed by 55 000 points at height −K give almost 2.5 billion pairs): use a `long long` in C++.
-- Heights can be negative. A dictionary has no problem with that; in C++, you can also use an array of size 2N + 1 and shift the indices by N.
+- Heights can be negative. A dictionary has no problem with that; in C++, you can also use an array of size 2N + 1 and shift the indices by N, checking that h + K ≤ N before reading `vues[h + K]` (otherwise there is no possible start).
 - Point 0 counts too: don't forget to add it to the dictionary before the first step.

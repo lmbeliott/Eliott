@@ -8,7 +8,8 @@ bool assez_de_pieces(long long minutes, const vector<long long>& durees, long lo
     long long total = 0;
     for (long long d : durees) {
         total += minutes / d;
-        // on s'arrête dès qu'on a assez : sinon total pourrait dépasser 2^63
+        // on s'arrête dès qu'on a assez : utile si la borne haute est
+        // plus large que min(durees) * m (sinon total pourrait dépasser 2^63)
         if (total >= m) return true;
     }
     return false;

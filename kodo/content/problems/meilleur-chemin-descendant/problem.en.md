@@ -7,14 +7,14 @@ A grid has `R` rows and `C` columns: each cell is forbidden, or contains a digit
 
 A **downward path** starts on any non-forbidden cell of the first row. At each move, it goes down one row: to the cell just below, or diagonally to the cell below on the left or on the right. It never goes over a forbidden cell, never leaves the grid, and finishes on the last row. The **value** of a path is the sum of the digits of all the cells visited, including the first and the last.
 
-Write a program that computes the best possible value and the number of different downward paths that reach it. Two paths are different if they don't go through exactly the same cells.
+Write a program that computes the largest possible value of a downward path and the number of different downward paths that reach it. Two paths are different if they don't go through exactly the same cells.
 
 ## Input
 - The first line contains two integers `R` and `C`.
 - The next `R` lines, from the top row to the bottom row, each contain `C` characters: a digit from `0` to `9`, or `#` for a forbidden cell.
 
 ## Output
-Two integers separated by a space: the best value, then the number of paths that reach it, modulo `1 000 000 007`. If there is no downward path, print only `-1`.
+Two integers separated by a space: the maximum value, then the number of paths that reach it, modulo `1 000 000 007`. If there is no downward path, print only `-1`.
 
 ## Constraints
 - 1 ≤ R, C ≤ 300

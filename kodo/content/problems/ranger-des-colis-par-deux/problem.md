@@ -39,7 +39,7 @@ Il existe donc toujours une solution optimale qui commence comme le glouton. On 
 
 **Complexité.** Le tri coûte O(N log N), puis les deux indices parcourent la liste une seule fois : O(N log N) en tout.
 
-**Pourquoi la solution naïve est trop lente.** Essayer toutes les façons de former les paires est exponentiel. Même la version gloutonne qui, pour chaque colis, cherche son partenaire en parcourant toute la liste coûte O(N²), soit environ 10⁹ opérations pour N = 30 000.
+**Pourquoi la solution naïve est trop lente.** Essayer toutes les façons de former les paires est exponentiel. Même la version gloutonne qui, pour chaque colis, cherche son partenaire en parcourant toute la liste coûte O(N²), soit environ 4,5 × 10⁸ comparaisons pour N = 30 000 : beaucoup trop en Python. En C++, ces comparaisons très simples passent encore, mais le tri suivi des deux pointeurs reste bien plus rapide.
 
 **Pièges.**
 - Apparier les colis voisins après le tri ne marche pas : avec C = 100 et les poids 10, 20, 80, 90, on ferait (10, 20), puis 80 et 90 seuls, soit 3 caisses, alors que (10, 90) et (20, 80) n'en utilisent que 2.

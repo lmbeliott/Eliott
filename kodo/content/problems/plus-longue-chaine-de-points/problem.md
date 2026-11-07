@@ -27,7 +27,7 @@ Un seul entier : le nombre maximal de points d'une chaîne.
 
 ## Indices
 1. Si les points sont triés par `X` croissant, une chaîne est une sous-suite de la liste triée. Que doit-il se passer pour les `Y` le long de cette sous-suite ?
-2. Il reste à trouver la plus longue sous-suite strictement croissante des `Y`. La version en O(N²) est trop lente : garde, pour chaque longueur `k`, la plus petite valeur possible du `Y` du dernier point d'une sous-suite de longueur `k`. Ce tableau est trié, et tu peux le mettre à jour par dichotomie.
+2. Il reste à trouver la plus longue sous-suite strictement croissante des `Y`. La version en O(N²) est trop lente en Python (en C++, elle passe encore à cette taille). Garde plutôt, pour chaque longueur `k`, la plus petite valeur possible du `Y` du dernier point d'une sous-suite de longueur `k`. Ce tableau est trié, et tu peux le mettre à jour par dichotomie.
 3. Attention aux points de même `X` : ils ne peuvent pas se suivre dans une chaîne. Trie-les par `Y` **décroissant** à `X` égal : ainsi, deux d'entre eux ne peuvent jamais former une sous-suite strictement croissante.
 
 ## Solution
@@ -35,7 +35,7 @@ Un seul entier : le nombre maximal de points d'une chaîne.
 
 **L'astuce des égalités.** Deux points de même `X` ne peuvent pas se suivre. Si on les trie par `Y` **décroissant** à `X` égal, leurs `Y` ne forment jamais une suite croissante, donc la LIS ne peut pas en prendre deux. Avec un tri croissant à `X` égal, la LIS pourrait enchaîner `(1500, 2)` puis `(1500, 5)`, ce qui est interdit.
 
-**La LIS en O(N log N).** La programmation dynamique directe (« `lis[i]` = plus longue chaîne finissant par le point `i`, calculée à partir de tous les `j < i` ») coûte O(N²), soit environ 10⁸ comparaisons pour `N = 15 000` : trop lent. On maintient plutôt un tableau `fin`, où `fin[k]` est la plus petite valeur possible du `Y` du dernier point d'une sous-suite strictement croissante de longueur `k + 1`. Ce tableau est strictement croissant. Pour chaque valeur `y`, dans l'ordre :
+**La LIS en O(N log N).** La programmation dynamique directe (« `lis[i]` = plus longue chaîne finissant par le point `i`, calculée à partir de tous les `j < i` ») coûte O(N²), soit environ 10⁸ comparaisons pour `N = 15 000` : trop lent en Python. En C++, cela passe encore à cette taille, mais la méthode en O(N log N) est celle à connaître : elle reste rapide pour des centaines de milliers de points. On maintient un tableau `fin`, où `fin[k]` est la plus petite valeur possible du `Y` du dernier point d'une sous-suite strictement croissante de longueur `k + 1`. Ce tableau est strictement croissant. Pour chaque valeur `y`, dans l'ordre :
 - on cherche par dichotomie la première position `k` telle que `fin[k] ≥ y` ;
 - si elle n'existe pas, `y` prolonge la plus longue sous-suite : on l'ajoute à la fin ;
 - sinon, on remplace `fin[k]` par `y` : on obtient une sous-suite de longueur `k + 1` qui finit plus bas.

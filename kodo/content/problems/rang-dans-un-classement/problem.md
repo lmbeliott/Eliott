@@ -26,7 +26,7 @@ Q lignes, une par temps demandé dans l'ordre de l'entrée : deux entiers sépar
 - Tous les temps sont des entiers entre 1 et 50 000.
 
 ## Indices
-1. Comparer chaque temps demandé à tous les participants fait N × Q = 144 millions de comparaisons : trop lent. Trie d'abord les temps des participants.
+1. Comparer chaque temps demandé à tous les participants fait N × Q = 144 millions de comparaisons : beaucoup trop lent en Python. Trie d'abord les temps des participants.
 2. Dans la liste triée, les participants strictement plus rapides que t forment un bloc au début de la liste. Leur nombre est le premier indice i tel que `temps[i] >= t` : trouve-le par dichotomie.
 3. Le nombre de temps égaux à t, c'est (nombre de temps `< t + 1`) − (nombre de temps `< t`), car les temps sont entiers. Une seule fonction de recherche suffit donc, appelée deux fois.
 

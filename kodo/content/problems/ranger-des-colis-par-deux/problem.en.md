@@ -34,7 +34,7 @@ So there is always an optimal solution that starts like the greedy one. We then 
 
 **Complexity.** Sorting costs O(N log N), then the two indices go through the list only once: O(N log N) in total.
 
-**Why the naive solution is too slow.** Trying every way of forming pairs is exponential. Even the greedy version that, for each parcel, looks for a partner by scanning the whole list costs O(N²), about 10⁹ operations for N = 30 000.
+**Why the naive solution is too slow.** Trying every way of forming pairs is exponential. Even the greedy version that, for each parcel, looks for a partner by scanning the whole list costs O(N²), about 4.5 × 10⁸ comparisons for N = 30 000: far too many in Python. In C++, these very simple comparisons still pass, but sorting followed by two pointers is much faster.
 
 **Traps.**
 - Pairing neighbouring parcels after sorting does not work: with C = 100 and the weights 10, 20, 80, 90, you would make (10, 20), then 80 and 90 alone, so 3 crates, while (10, 90) and (20, 80) only use 2.

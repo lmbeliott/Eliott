@@ -21,7 +21,7 @@ Q lines: for each question, in the order of the input, the sum of the values fro
 - 1 ≤ A ≤ B ≤ N
 
 ## Hints
-1. Adding up the values from A to B for each question can cost up to N × Q = 500 million additions: far too many. You need to do the heavy work only once, before reading the questions.
+1. Adding up the values from A to B for each question can cost up to N × Q = 500 million additions: far too many in Python. In C++, such simple additions still pass here, but it's a bad habit: with more questions, it would be too slow. You need to do the heavy work only once, before reading the questions.
 2. Build an array `cumul` (French for "running total") where `cumul[i]` is the sum of the first i values, with `cumul[0] = 0`.
 3. The sum from day A to day B is the sum of the first B days minus the sum of the first A − 1 days: `cumul[B] - cumul[A - 1]`.
 
@@ -32,7 +32,7 @@ On the example `3015002`, we get `cumul = 0 3 3 4 9 9 9 11`. For the question "d
 
 **Complexity.** O(N) to build `cumul`, then O(1) per question: O(N + Q) in total, about 100 000 operations.
 
-**Why the naive solution is too slow.** Redoing the addition for every question costs up to N operations per question, so N × Q = 5 × 10⁸ operations in the worst case: several tens of seconds in Python. Even `sum(int(c) for c in chiffres[a-1:b])` has to copy and scan hundreds of millions of cells.
+**Why the naive solution is too slow.** Redoing the addition for every question costs up to N operations per question, so N × Q = 5 × 10⁸ operations in the worst case: several tens of seconds in Python. Even `sum(int(c) for c in chiffres[a-1:b])` (*chiffres* means "digits") has to copy and scan hundreds of millions of cells. In C++, such a simple loop of additions is still fast enough on these tests, but it does hundreds of millions of operations where prefix sums do a hundred thousand: that's the bad habit not to pick up.
 
 **Traps.**
 - Days are numbered from 1. Thanks to the cell `cumul[0] = 0`, the formula `cumul[B] − cumul[A − 1]` also works when A = 1, with no special case.

@@ -15,12 +15,12 @@ Write a program that computes the smallest possible weight for the heaviest bag.
 A single integer: the smallest possible weight for the heaviest bag.
 
 ## Constraints
-- 1 ≤ N ≤ 12
+- 1 ≤ N ≤ 14
 - 1 ≤ K ≤ 5
 - 1 ≤ P_i ≤ 1 000
 
 ## Hints
-1. Putting each item into the least loaded bag does not always work: look at the second example. You need to try several distributions. But there are Kᴺ = 5¹² ≈ 244 million of them: you must avoid exploring the useless ones.
+1. Putting each item into the least loaded bag does not always work: look at the second example. You need to try several distributions. But there are Kᴺ = 5¹⁴ ≈ 6.1 billion of them: you must avoid exploring the useless ones.
 2. Write `placer(i)` ("place(i)"), which tries to put item i into each of the bags, then calls `placer(i + 1)`. Keep the best maximum load found so far, and abandon a branch as soon as a bag reaches this value: it can no longer do better.
 3. Two bags with the same load are interchangeable: only try one of them. Place the items from the heaviest to the lightest, and try the least loaded bag first: you quickly find a good distribution, and pruning then cuts almost everything.
 
@@ -36,9 +36,9 @@ Starting with the heavy items and with the least loaded bag means that the very 
 
 **Why the greedy rule alone is not enough.** On the second example (items of 3, 3, 2, 2, 2 and two bags), the greedy rule gives 3 + 2 + 2 = 7 and 3 + 2 = 5, so 7. The best distribution is 3 + 3 = 6 and 2 + 2 + 2 = 6, so 6.
 
-**Complexity.** Exponential in the worst case, but on the tests (N = 12, K = 5), the function `placer` is called fewer than 10 000 times, instead of hundreds of millions.
+**Complexity.** Exponential in the worst case, but on the tests (up to N = 14, K = 5), the function `placer` is called fewer than 40 000 times, instead of billions.
 
-**Why the naive solution is too slow.** Trying the Kᴺ distributions without pruning means 5¹² ≈ 2.4 × 10⁸ complete distributions, each with a maximum to compute: several minutes in Python, and about a second even in C++.
+**Why the naive solution is too slow.** Trying the Kᴺ distributions without pruning means 5¹⁴ ≈ 6.1 × 10⁹ complete distributions, each with a maximum to compute: hours in Python, and more than ten seconds even in C++.
 
 **Traps.**
 - Restore the load of the bag after the recursive call (`charges[j] -= objets[i]`, i.e. "loads" and "items").

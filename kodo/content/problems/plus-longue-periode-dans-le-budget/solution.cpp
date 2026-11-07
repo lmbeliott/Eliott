@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <string>
 #include <algorithm>
 using namespace std;
 
@@ -9,17 +9,17 @@ int main() {
     int n;
     long long budget;
     cin >> n >> budget;
-    vector<long long> prix(n);
-    for (int i = 0; i < n; i++) cin >> prix[i];
+    string prix;   // les prix sont des chiffres collés
+    cin >> prix;
 
     int meilleur = 0;
     int debut = 0;       // la fenêtre contient les jours debut..fin
     long long total = 0; // prix total des jours de la fenêtre
     for (int fin = 0; fin < n; fin++) {
-        total += prix[fin];
+        total += prix[fin] - '0';
         // trop cher : on retire des jours au début
         while (total > budget) {
-            total -= prix[debut];
+            total -= prix[debut] - '0';
             debut++;
         }
         meilleur = max(meilleur, fin - debut + 1);

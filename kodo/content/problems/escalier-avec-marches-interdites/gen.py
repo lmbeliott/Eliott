@@ -19,11 +19,11 @@ tests = [
 ]
 tests.append(fmt(1, [1], "."))
 tests.append(fmt(1, [1], "#"))
-tests.append(fmt(6, [4, 2], "....#."))      # la marche 4 bloque une des deux montées
+tests.append(fmt(6, [4, 2], "...#.."))      # la marche 4 bloque deux des trois montées
 tests.append(fmt(7, [2, 4, 6], "......."))  # sauts pairs, N impair : 0
 tests.append(fmt(10, [10], ".........."))
 tests.append(fmt(30, [1, 2], "." * 29 + "#"))  # dernière marche interdite
-tests.append(fmt(12, [1, 3], ".#" * 6))
+tests.append(fmt(12, [1, 3], "..#" * 3 + "..."))  # dernière marche libre, chemins à éviter
 tests.append(fmt(100, [1, 2], "." * 100))      # très grand nombre de montées : le modulo compte
 tests.append(fmt(2000, random.sample(range(1, 30), 5), interdites_aleatoires(2000, 0.1)))
 # Grands cas.

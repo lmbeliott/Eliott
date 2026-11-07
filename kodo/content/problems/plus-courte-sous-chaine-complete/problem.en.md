@@ -36,7 +36,7 @@ Why does `debut` never need to move back? We only move `debut` past a position l
 
 **Complexity.** `fin` and `debut` each move forward at most N times: O(N), with an array of 26 counters.
 
-**Why the naive solution is too slow.** Trying every starting position and moving forward until everything has been seen costs about N × (length of the answer). If two rare letters only appear at the very beginning and at the very end of the string, the substring covers almost everything: about N²/2 = 5 × 10⁹ operations.
+**Why the naive solution is too slow.** Trying every starting position and moving forward until everything has been seen costs up to N²/2 operations: from each start, you may have to scan the whole rest of the string (for example when a rare letter appears only once). For N = 100 000, that's about 5 × 10⁹ operations.
 
 **Traps.**
 - Don't recompute the number of different letters in the window at every step (for example with `len(set(...))`): that is exactly what makes a solution slow. The counter `vues` is updated in constant time.

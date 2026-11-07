@@ -37,9 +37,10 @@ We build a **segment tree** over the array where each node holds the maximum of 
 
 The blocks visited while going up are consecutive, cover everything to the right of `i` in order, and their size only grows: there are O(log N) of them. Going down also costs O(log N). Total complexity: **O(N + K log N)**.
 
+Another approach also works: a binary search on `j`, with a maximum query on `[i, j]` at each step. It costs O(log² N) per query; going straight down the tree is faster and simpler.
+
 Why the other ideas fail:
-- The direct scan costs O(N) per query, that is 10⁸ operations when all the answers are far away or `-1`.
-- A binary search on `j`, with a maximum query on `[i, j]` at each step, works but costs O(log² N) per query: fine in C++, but slow in Python.
+- The direct scan costs O(N) per query, that is 10⁸ operations when all the answers are far away or `-1`: too slow in Python (in C++, it still passes at this size).
 - Precomputing the answers doesn't work: each modification can change all of them.
 
 Traps:

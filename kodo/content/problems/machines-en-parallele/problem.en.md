@@ -37,5 +37,5 @@ On the first example (machines of 2, 3 and 5 minutes, 8 parts): in 8 minutes we 
 
 **Traps.**
 - The answer can reach 10¹⁸: in C++, use `long long` everywhere (bounds, middle, total).
-- Hidden overflow: with t close to 10¹⁸ and 10 000 machines of 1 minute, the sum of the `t / T_i` goes far beyond 2⁶³. You must **stop the sum as soon as it reaches M**: the total then stays below M + 10¹⁸, which fits in a `long long`.
+- Hidden overflow: if you pick an upper bound wider than min(T) × M (for example 10¹⁸), the sum of the `t / T_i` can go beyond 2⁶³: with t ≈ 5 × 10¹⁷ and 10 000 machines of 1 minute, it is 5 × 10²¹. **Stop the sum as soon as it reaches M.** With `suffisant = min(T) × M`, each term is at most M and the sum stays below N × M ≤ 10¹³, but stopping early is still a good habit.
 - Check that the starting bound `suffisant` really is enough, and that `trop_court` really is not: otherwise the binary search may return a wrong value.

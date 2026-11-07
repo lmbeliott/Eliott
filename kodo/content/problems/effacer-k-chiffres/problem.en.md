@@ -35,7 +35,7 @@ You can check it on the first example (`4731592`, K = 3): 7 is erased when the 3
 
 **Complexity.** Each digit is pushed once and popped at most once: O(N), even with the `while` loop inside the `for` loop.
 
-**Why the naive solution is too slow.** Repeating K times "search from the beginning for the first digit larger than its right neighbour, and erase it" gives the right answer, but each search starts again from the beginning and each erasure shifts the whole string: O(N × K), billions of operations for N = 100 000 and K = 50 000. Trying every way of erasing K digits is even worse.
+**Why the naive solution is too slow.** Repeating K times "search from the beginning for the first digit larger than its right neighbour, and erase it (or the last digit if there is none)" gives the right answer, but each search starts again from the beginning and each erasure shifts the whole string: O(N × K) in the worst case. That is far too slow in Python; in C++, these very simple operations on characters still pass on these tests, but the stack does the same work in O(N). Trying every way of erasing K digits is even worse.
 
 **Traps.**
 - Don't pop the stack when the digits are equal: erasing a digit equal to the next one gains nothing, and may waste an erasure that would be useful later.

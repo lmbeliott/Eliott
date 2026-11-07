@@ -3,7 +3,7 @@ title: Connectivity under a threshold
 ---
 
 ## Statement
-You are given an undirected graph with `N` vertices and `M` edges; each edge has a weight. For a threshold `S`, only the edges whose weight is lower than or equal to `S` can be used.
+You are given an undirected graph with `N` vertices and `M` edges; each edge has a weight. For a threshold `S`, only the edges whose weight is at most `S` can be used.
 
 Write a program that answers `Q` questions of the form: "With threshold `S`, can we go from vertex `X` to vertex `Y`, possibly through other vertices?"
 
@@ -13,7 +13,7 @@ Write a program that answers `Q` questions of the form: "With threshold `S`, can
 - Each of the next `Q` lines contains three integers `X`, `Y` and `S`: a question.
 
 ## Output
-`Q` lines: for each question, in input order, `OUI` (French for "yes") if you can go from `X` to `Y` using only edges whose weight is lower than or equal to `S`, and `NON` ("no") otherwise.
+`Q` lines: for each question, in input order, `OUI` (French for "yes") if you can go from `X` to `Y` using only edges whose weight is at most `S`, and `NON` ("no") otherwise.
 
 ## Constraints
 - 1 ≤ N ≤ 5 000
@@ -43,4 +43,4 @@ Traps:
 - The comparison is not strict: an edge of weight exactly `S` is usable. You must add **all** the edges of weight `≤ S` before answering.
 - The answers must be printed in input order: keep the index of each question.
 - If `X = Y`, the answer is always `OUI`.
-- Without union by size, the union-find trees can become very deep, and a recursive `find` may exceed Python's recursion limit. With union by size, the depth stays below log₂ N; writing `find` with a loop avoids the problem anyway.
+- Without union by size, the union-find trees can become very deep, and a recursive `find` may exceed Python's recursion limit. With union by size, the depth stays at most log₂ N; writing `find` with a loop avoids the problem anyway.

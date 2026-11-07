@@ -15,33 +15,39 @@ r = [0, 4, 9, 11, 17, 20, 26]
 D = 10
 stops = 0
 pos = 0                     # index of the station where we are
+possible = True
 while pos < len(r) - 1:
     nxt = pos
     while nxt + 1 < len(r) and r[nxt + 1] - r[pos] <= D:
         nxt += 1            # move on while it is within reach
     if nxt == pos:
-        print("impossible")
+        possible = False    # the next station is too far
         break
     pos = nxt
     if pos < len(r) - 1:
         stops += 1          # we refuel at this station
-print(stops)                # 2: we stop at kilometres 9 and 17
+if possible:
+    print(stops)            # 2: we stop at kilometres 9 and 17
+else:
+    print("impossible")
 ```
 
 ```cpp
 vector<int> r = {0, 4, 9, 11, 17, 20, 26};
 int D = 10;
 int stops = 0, pos = 0;     // pos: index of the station where we are
+bool possible = true;
 while (pos < (int)r.size() - 1) {
     int nxt = pos;
     while (nxt + 1 < (int)r.size() && r[nxt + 1] - r[pos] <= D) {
         nxt++;              // move on while it is within reach
     }
-    if (nxt == pos) { cout << "impossible\n"; break; }
+    if (nxt == pos) { possible = false; break; }  // the next station is too far
     pos = nxt;
     if (pos < (int)r.size() - 1) stops++;    // we refuel at this station
 }
-cout << stops << "\n";      // 2: we stop at kilometres 9 and 17
+if (possible) cout << stops << "\n";        // 2: we stop at kilometres 9 and 17
+else cout << "impossible\n";
 ```
 
 ## The exchange argument
@@ -76,6 +82,39 @@ cout << total << "\n";      // 2 + 7 + 14 = 23
 
 The same ideas help you choose time slots or form pairs: you show that an optimal solution can always start with the greedy choice.
 
+## A stack to fix your choices
+
+Some greedy algorithms read the items one by one and keep the ones they care about in a **stack**: a list where you only add and remove at the end, the **top**. In Python, it is a list with `append`, `pop()` and `stack[-1]`; in C++, a `vector` with `push_back`, `pop_back` and `back()`.
+
+The classic pattern: before pushing a new item, pop from the top every item that is **worse** than it. Example: buildings in a row, with heights given from left to right. Looking from the right, you only see a building if it is strictly taller than every building to its right. When a new building arrives, the ones in the stack that are not taller than it are hidden for good: we pop them.
+
+```python
+h = [5, 3, 8, 2, 4, 1]
+stack = []
+for x in h:
+    while stack and stack[-1] <= x:
+        stack.pop()         # hidden by x: it will never matter again
+    stack.append(x)
+print(stack)                # [8, 4, 1]: the visible buildings
+```
+
+```cpp
+vector<int> h = {5, 3, 8, 2, 4, 1};
+vector<int> stack;
+for (int x : h) {
+    while (!stack.empty() && stack.back() <= x) {
+        stack.pop_back();   // hidden by x: it will never matter again
+    }
+    stack.push_back(x);
+}
+for (int x : stack) cout << x << " ";   // 8 4 1: the visible buildings
+cout << "\n";
+```
+
+There is again a `while` loop inside a `for` loop, but it is O(N): each item is pushed once and popped at most once.
+
+This pattern is often used to build the smallest (or largest) possible number. A useful reminder: two numbers with the same number of digits are compared digit by digit from the left, and the first digit that differs decides. `31999` is smaller than `32000`: so you must first make the first digit as small as possible, then the second one, and so on.
+
 ## Checking your greedy algorithm
 
 Before trusting a greedy algorithm, also write a **brute force** solution that tries every possibility (slow, but safe), and compare the two on hundreds of small random tests. A single disagreement proves that the greedy algorithm is wrong, and the small failing test helps you understand why.
@@ -85,4 +124,5 @@ Before trusting a greedy algorithm, also write a **brute force** solution that t
 - A greedy algorithm makes the best local choice at each step, without going back: it is fast, often O(N log N) because of the sort.
 - A natural greedy idea can be wrong: look for a counterexample before believing it.
 - To prove a greedy algorithm: show that it "stays ahead" of any other solution, or that you can swap elements of an optimal solution to get back the greedy choice without losing anything.
+- A stack lets you go back on your last choices: pop whatever is worse than the new item, in O(N) in total.
 - Always compare your greedy algorithm with a brute force on small random tests.

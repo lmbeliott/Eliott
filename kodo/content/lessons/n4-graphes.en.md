@@ -108,13 +108,60 @@ for (int start = 1; start <= n; start++) {
 }
 ```
 
+This stack-based search marks vertices as soon as they are pushed: it does visit the whole component, but not exactly in the order of a true recursive DFS. That does not matter for counting components.
+
 For components, both BFS and DFS work; for a **distance**, only BFS works.
+
+## Two-colouring
+
+Sometimes you want to give each vertex a label `0` or `1`, so that the two ends of every edge get different labels. A BFS does it: the start gets `0`, and each new neighbour gets the label opposite to the vertex it was reached from. If a neighbour that already has a label carries **the same** label as the current vertex, the graph contains an odd-length cycle: it is impossible.
+
+```python
+colour = [-1] * (n + 1)   # -1: no label yet
+possible = True
+colour[start] = 0
+queue = deque([start])
+while queue:
+    u = queue.popleft()
+    for v in neighbours[u]:
+        if colour[v] == -1:
+            colour[v] = 1 - colour[u]
+            queue.append(v)
+        elif colour[v] == colour[u]:
+            possible = False   # two neighbours with the same label
+```
+
+```cpp
+vector<int> colour(n + 1, -1);   // -1: no label yet
+bool possible = true;
+colour[start] = 0;
+queue<int> q;
+q.push(start);
+while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    for (int v : neighbours[u]) {
+        if (colour[v] == -1) {
+            colour[v] = 1 - colour[u];
+            q.push(v);
+        } else if (colour[v] == colour[u]) {
+            possible = false;   // two neighbours with the same label
+        }
+    }
+}
+```
+
+The label of the start only decides its own component: as when counting components, start a search from each vertex with no label yet, and handle each component separately.
 
 ## Shortest path on a grid
 
 A grid is an implicit graph: each free cell is a vertex linked to its four free neighbours, which we compute on the fly. A BFS from the starting cell gives the distance to every cell.
 
+Be careful in Python: with `sys.stdin.buffer`, each line you read is a `bytes` object, and `line[j]` is a **number**, not a character. The test `line[j] != '#'` would then always be true. Decode the lines with `.decode()`, as below, or compare with `ord('#')`.
+
 ```python
+r, c = int(data[0]), int(data[1])
+grid = [line.decode() for line in data[2:2 + r]]
 dist = [[-1] * c for _ in range(r)]
 dist[si][sj] = 0
 queue = deque([(si, sj)])
@@ -127,6 +174,8 @@ while queue:
 ```
 
 ```cpp
+vector<string> grid(r);
+for (string& line : grid) cin >> line;
 vector<vector<int>> dist(r, vector<int>(c, -1));
 queue<pair<int, int>> q;
 dist[si][sj] = 0;
@@ -147,10 +196,12 @@ while (!q.empty()) {
 
 To get the distance from each cell to the **nearest** of several sources, put all the sources in the queue at the start, at distance `0`, then run a single BFS: this is **multi-source BFS**.
 
+You can also chain two BFS. If something spreads through the grid while you move, a first BFS (often multi-source) computes the minute `t[x]` at which it reaches each cell. The second BFS, from your position, enters a cell at minute `d` only if `d < t[x]`: you get there first.
+
 ## Key takeaways
 
 - A graph is stored as **adjacency lists**: O(N + M) memory.
-- **BFS** (with a queue) gives shortest distances in number of edges, in O(N + M).
-- **DFS** (with a stack) and BFS find the **connected components**: one search per unvisited vertex.
-- On a grid, neighbours are computed on the fly; several sources are handled with a single BFS.
-- Mark vertices as soon as they are added, and avoid deep recursion in Python.
+- **BFS** (with a queue) gives shortest distances in number of edges, in O(N + M); mark vertices as soon as they are added.
+- **DFS** (with a stack, no deep recursion in Python) and BFS find the **connected components**: one search per unvisited vertex.
+- **Two-colouring**: alternate labels `0`/`1` during the search; two neighbours with the same label make it impossible. Handle each component on its own.
+- On a grid, neighbours are computed on the fly; several sources are handled with a single BFS, and two BFS in a row let you stay ahead of something that spreads.

@@ -40,7 +40,7 @@ On peut le vérifier sur le premier exemple (`4731592`, K = 3) : 7 est effacé �
 
 **Complexité.** Chaque chiffre est empilé une fois et dépilé au plus une fois : O(N), même avec la boucle `while` dans la boucle `for`.
 
-**Pourquoi la solution naïve est trop lente.** Répéter K fois « cherche depuis le début le premier chiffre plus grand que son voisin de droite, et efface-le » donne la bonne réponse, mais chaque recherche repart du début et chaque effacement décale toute la chaîne : O(N × K), soit des milliards d'opérations pour N = 100 000 et K = 50 000. Essayer toutes les façons d'effacer K chiffres est encore bien pire.
+**Pourquoi la solution naïve est trop lente.** Répéter K fois « cherche depuis le début le premier chiffre plus grand que son voisin de droite, et efface-le (ou le dernier chiffre s'il n'y en a pas) » donne la bonne réponse, mais chaque recherche repart du début et chaque effacement décale toute la chaîne : O(N × K) dans le pire cas. C'est bien trop lent en Python ; en C++, ces opérations très simples sur des caractères passent encore sur ces tests, mais la pile fait le même travail en O(N). Essayer toutes les façons d'effacer K chiffres est encore bien pire.
 
 **Pièges.**
 - Ne vide pas la pile si les chiffres sont égaux : effacer un chiffre égal au suivant ne fait rien gagner, et peut gaspiller un effacement utile plus loin.

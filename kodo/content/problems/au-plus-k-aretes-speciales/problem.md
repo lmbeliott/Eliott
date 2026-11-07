@@ -23,7 +23,7 @@ Un seul entier : la longueur minimale d'un chemin du sommet `1` au sommet `N` av
 - 1 ≤ N ≤ 5 000
 - 0 ≤ M ≤ 8 000
 - 0 ≤ K ≤ 10
-- 1 ≤ A, B ≤ N et A ≠ B
+- 1 ≤ A, B ≤ N et A ≠ B ; deux sommets peuvent être reliés par plusieurs arêtes, normales ou spéciales
 - 1 ≤ T ≤ 1 000
 
 ## Indices

@@ -14,7 +14,8 @@ tests = [
     test(1000, [1] * 10),
     test(100, [random.randint(1, 50) for _ in range(20)]),
 ]
-# beaucoup de machines très rapides : la somme déborde si on ne s'arrête pas à temps
+# beaucoup de machines très rapides : avec une borne haute trop large
+# (10^18 par exemple), la somme déborde si on ne s'arrête pas à temps
 tests.append(test(10**9, [1] * 9999 + [10**9]))
 tests.append(test(10**9, [random.randint(1, 100) for _ in range(10000)]))
 # tailles maximales

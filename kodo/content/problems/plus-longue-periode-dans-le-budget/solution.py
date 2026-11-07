@@ -3,7 +3,8 @@ import sys
 def main():
     donnees = sys.stdin.read().split()
     n, budget = int(donnees[0]), int(donnees[1])
-    prix = list(map(int, donnees[2:2 + n]))
+    # les prix sont des chiffres collés : on convertit chacun en nombre
+    prix = [int(c) for c in donnees[2]]
 
     meilleur = 0
     debut = 0   # la fenêtre contient les jours debut..fin

@@ -12,14 +12,14 @@ Une grille a `R` lignes et `C` colonnes : chaque case est interdite, ou contient
 
 Un **chemin descendant** commence sur n'importe quelle case non interdite de la première ligne. À chaque mouvement, il descend d'une ligne : vers la case juste en dessous, ou en diagonale vers la case en dessous à gauche ou à droite. Il ne passe jamais sur une case interdite, ne sort jamais de la grille, et termine sur la dernière ligne. La **valeur** d'un chemin est la somme des chiffres de toutes les cases visitées, celles de départ et d'arrivée comprises.
 
-Écris un programme qui calcule la meilleure valeur possible et le nombre de chemins descendants différents qui l'atteignent. Deux chemins sont différents s'ils ne passent pas par exactement les mêmes cases.
+Écris un programme qui calcule la plus grande valeur possible d'un chemin descendant et le nombre de chemins descendants différents qui l'atteignent. Deux chemins sont différents s'ils ne passent pas par exactement les mêmes cases.
 
 ## Entrée
 - La première ligne contient deux entiers `R` et `C`.
 - Les `R` lignes suivantes, de la ligne du haut à celle du bas, contiennent chacune `C` caractères : un chiffre de `0` à `9`, ou `#` pour une case interdite.
 
 ## Sortie
-Deux entiers séparés par une espace : la meilleure valeur, puis le nombre de chemins qui l'atteignent, modulo `1 000 000 007`. S'il n'existe aucun chemin descendant, affiche seulement `-1`.
+Deux entiers séparés par une espace : la valeur maximale, puis le nombre de chemins qui l'atteignent, modulo `1 000 000 007`. S'il n'existe aucun chemin descendant, affiche seulement `-1`.
 
 ## Contraintes
 - 1 ≤ R, C ≤ 300

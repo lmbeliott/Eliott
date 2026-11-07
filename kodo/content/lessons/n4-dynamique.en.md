@@ -76,7 +76,30 @@ for (auto [p, v] : items) {
 }
 ```
 
-Cost: O(N × W). The initialisation decides the meaning of `best[w]`: with `0` everywhere, it is "weight at most `w`"; with `best[0] = 0` and an "impossible" value elsewhere, it is "weight **exactly** `w`".
+Cost: O(N × W). The initialisation decides the meaning of `best[w]`: with `0` everywhere, it is "weight at most `w`"; with `best[0] = 0` and an "impossible" value elsewhere, it is "weight **exactly** `w`". In that case, never extend an impossible state: with `-1` as the impossible value, `best[w - p] + v` would give a value to a weight that cannot be reached. Test it before the update:
+
+```python
+IMPOSSIBLE = -1
+best = [IMPOSSIBLE] * (W + 1)
+best[0] = 0
+for p, v in items:
+    for w in range(W, p - 1, -1):
+        if best[w - p] != IMPOSSIBLE:
+            best[w] = max(best[w], best[w - p] + v)
+```
+
+```cpp
+const long long IMPOSSIBLE = -1;
+vector<long long> best(W + 1, IMPOSSIBLE);
+best[0] = 0;
+for (auto [p, v] : items) {
+    for (int w = W; w >= p; w--) {
+        if (best[w - p] != IMPOSSIBLE) {
+            best[w] = max(best[w], best[w - p] + v);
+        }
+    }
+}
+```
 
 ## Longest increasing subsequence
 

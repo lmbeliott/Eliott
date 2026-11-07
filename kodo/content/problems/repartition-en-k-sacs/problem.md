@@ -20,12 +20,12 @@ On doit répartir N objets dans K sacs : l'objet numéro i pèse P_i kilos, et c
 Un seul entier : le plus petit poids possible pour le sac le plus lourd.
 
 ## Contraintes
-- 1 ≤ N ≤ 12
+- 1 ≤ N ≤ 14
 - 1 ≤ K ≤ 5
 - 1 ≤ P_i ≤ 1 000
 
 ## Indices
-1. Mettre chaque objet dans le sac le moins chargé ne marche pas toujours : regarde le deuxième exemple. Il faut essayer plusieurs répartitions. Mais il y en a Kᴺ = 5¹² ≈ 244 millions : il faut éviter d'explorer celles qui ne servent à rien.
+1. Mettre chaque objet dans le sac le moins chargé ne marche pas toujours : regarde le deuxième exemple. Il faut essayer plusieurs répartitions. Mais il y en a Kᴺ = 5¹⁴ ≈ 6,1 milliards : il faut éviter d'explorer celles qui ne servent à rien.
 2. Écris `placer(i)`, qui essaie de mettre l'objet i dans chacun des sacs, puis appelle `placer(i + 1)`. Garde la meilleure charge maximale trouvée jusqu'ici, et abandonne une branche dès qu'un sac atteint cette valeur : elle ne peut plus faire mieux.
 3. Deux sacs qui ont la même charge sont interchangeables : n'en essaie qu'un. Place les objets du plus lourd au plus léger, et essaie d'abord le sac le moins chargé : tu trouves vite une bonne répartition, et l'élagage coupe alors presque tout.
 
@@ -41,9 +41,9 @@ Commencer par les objets lourds et par le sac le moins chargé fait que la toute
 
 **Pourquoi le glouton seul ne suffit pas.** Sur le deuxième exemple (objets de 3, 3, 2, 2, 2 et deux sacs), le glouton donne 3 + 2 + 2 = 7 et 3 + 2 = 5, soit 7. La meilleure répartition est 3 + 3 = 6 et 2 + 2 + 2 = 6, soit 6.
 
-**Complexité.** Exponentielle dans le pire cas, mais sur les tests (N = 12, K = 5), la fonction `placer` est appelée moins de 10 000 fois, au lieu de centaines de millions.
+**Complexité.** Exponentielle dans le pire cas, mais sur les tests (jusqu'à N = 14, K = 5), la fonction `placer` est appelée moins de 40 000 fois, au lieu de milliards.
 
-**Pourquoi la solution naïve est trop lente.** Essayer les Kᴺ répartitions sans élaguer fait 5¹² ≈ 2,4 × 10⁸ répartitions complètes, chacune avec le calcul d'un maximum : plusieurs minutes en Python, et environ une seconde même en C++.
+**Pourquoi la solution naïve est trop lente.** Essayer les Kᴺ répartitions sans élaguer fait 5¹⁴ ≈ 6,1 × 10⁹ répartitions complètes, chacune avec le calcul d'un maximum : des heures en Python, et plus de dix secondes même en C++.
 
 **Pièges.**
 - Remets la charge du sac à jour après l'appel récursif (`charges[j] -= objets[i]`).

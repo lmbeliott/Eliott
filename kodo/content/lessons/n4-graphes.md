@@ -108,13 +108,60 @@ for (int depart = 1; depart <= n; depart++) {
 }
 ```
 
+Ce parcours avec pile marque les sommets dès l'empilement : il visite bien toute la composante, mais pas exactement dans l'ordre d'un vrai DFS récursif. C'est sans importance pour compter les composantes.
+
 Pour les composantes, BFS et DFS conviennent tous les deux ; pour une **distance**, seul le BFS convient.
+
+## Colorier en deux couleurs
+
+On veut parfois donner à chaque sommet une étiquette `0` ou `1`, de sorte que les deux extrémités de chaque arête aient des étiquettes différentes. Un BFS s'en charge : le départ reçoit `0`, et chaque nouveau voisin reçoit l'étiquette opposée à celle du sommet d'où l'on vient. Si un voisin déjà étiqueté porte **la même** étiquette que le sommet courant, le graphe contient un cycle de longueur impaire : c'est impossible.
+
+```python
+coul = [-1] * (n + 1)   # -1 : pas encore étiqueté
+possible = True
+coul[depart] = 0
+file = deque([depart])
+while file:
+    u = file.popleft()
+    for v in voisins[u]:
+        if coul[v] == -1:
+            coul[v] = 1 - coul[u]
+            file.append(v)
+        elif coul[v] == coul[u]:
+            possible = False   # deux voisins de même étiquette
+```
+
+```cpp
+vector<int> coul(n + 1, -1);   // -1 : pas encore étiqueté
+bool possible = true;
+coul[depart] = 0;
+queue<int> file;
+file.push(depart);
+while (!file.empty()) {
+    int u = file.front();
+    file.pop();
+    for (int v : voisins[u]) {
+        if (coul[v] == -1) {
+            coul[v] = 1 - coul[u];
+            file.push(v);
+        } else if (coul[v] == coul[u]) {
+            possible = false;   // deux voisins de même étiquette
+        }
+    }
+}
+```
+
+L'étiquette du départ ne décide que de sa propre composante : comme pour les compter, lance un parcours depuis chaque sommet pas encore étiqueté, et traite chaque composante séparément.
 
 ## Plus court chemin sur une grille
 
 Une grille est un graphe implicite : chaque case libre est un sommet relié à ses quatre voisines libres, que l'on calcule à la volée. Un BFS depuis la case de départ donne la distance de chaque case.
 
+Attention en Python : avec `sys.stdin.buffer`, chaque ligne lue est un objet `bytes`, et `ligne[j]` est un **nombre**, pas un caractère. Le test `ligne[j] != '#'` serait alors toujours vrai. Décode les lignes avec `.decode()`, comme ci-dessous, ou compare avec `ord('#')`.
+
 ```python
+r, c = int(donnees[0]), int(donnees[1])
+grille = [ligne.decode() for ligne in donnees[2:2 + r]]
 dist = [[-1] * c for _ in range(r)]
 dist[si][sj] = 0
 file = deque([(si, sj)])
@@ -127,6 +174,8 @@ while file:
 ```
 
 ```cpp
+vector<string> grille(r);
+for (string& ligne : grille) cin >> ligne;
 vector<vector<int>> dist(r, vector<int>(c, -1));
 queue<pair<int, int>> file;
 dist[si][sj] = 0;
@@ -147,10 +196,12 @@ while (!file.empty()) {
 
 Pour la distance de chaque case à la **plus proche** de plusieurs sources, mets toutes les sources dans la file au départ, à distance `0`, puis fais un seul BFS : c'est le **BFS à sources multiples**.
 
+On peut aussi enchaîner deux BFS. Si quelque chose se répand dans la grille pendant que tu te déplaces, un premier BFS (souvent à sources multiples) calcule la minute `t[x]` où cela atteint chaque case. Le second BFS, depuis ta position, n'entre dans une case à la minute `d` que si `d < t[x]` : tu y arrives avant.
+
 ## À retenir
 
 - Un graphe se range en **listes d'adjacence** : O(N + M) en mémoire.
-- Le **BFS** (avec une file) donne les plus courtes distances en nombre d'arêtes, en O(N + M).
-- Le **DFS** (avec une pile) et le BFS trouvent les **composantes connexes** : un parcours par sommet non visité.
-- Sur une grille, les voisines se calculent à la volée ; plusieurs sources se traitent en un seul BFS.
-- Marque les sommets dès leur ajout, et évite la récursion profonde en Python.
+- Le **BFS** (avec une file) donne les plus courtes distances en nombre d'arêtes, en O(N + M) ; marque les sommets dès leur ajout.
+- Le **DFS** (avec une pile, sans récursion profonde en Python) et le BFS trouvent les **composantes connexes** : un parcours par sommet non visité.
+- **Deux couleurs** : étiquettes `0`/`1` alternées pendant le parcours ; deux voisins de même étiquette rendent la chose impossible. Chaque composante se traite à part.
+- Sur une grille, les voisines se calculent à la volée ; plusieurs sources se traitent en un seul BFS, et deux BFS à la suite permettent de devancer une propagation.

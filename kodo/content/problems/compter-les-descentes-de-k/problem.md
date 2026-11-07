@@ -37,9 +37,9 @@ Sur l'exemple `+--=+-` avec K = 1, les hauteurs des points 0 à 6 sont `0 1 0 -1
 
 **Complexité.** Une seule boucle de N + 1 tours, avec des opérations en temps constant sur le dictionnaire : O(N).
 
-**Pourquoi la solution naïve est trop lente.** Tester toutes les paires de points fait environ N²/2 = 5 × 10⁹ comparaisons pour N = 100 000 : des heures en Python, plusieurs secondes même en C++.
+**Pourquoi la solution naïve est trop lente.** Tester toutes les paires de points fait environ N²/2 = 5 × 10⁹ comparaisons pour N = 100 000 : plusieurs minutes en Python, et de l'ordre de la limite de temps en C++.
 
 **Pièges.**
 - La réponse peut dépasser 2³¹ (par exemple 45 000 points à la hauteur 0 suivis de 55 000 points à la hauteur −K donnent près de 2,5 milliards de paires) : utilise un `long long` en C++.
-- Les hauteurs peuvent être négatives. Un dictionnaire n'a pas de problème avec ça ; en C++, on peut aussi utiliser un tableau de taille 2N + 1 en décalant les indices de N.
+- Les hauteurs peuvent être négatives. Un dictionnaire n'a pas de problème avec ça ; en C++, on peut aussi utiliser un tableau de taille 2N + 1 en décalant les indices de N, en vérifiant que h + K ≤ N avant de lire `vues[h + K]` (sinon il n'y a aucun départ possible).
 - Le point 0 compte aussi : n'oublie pas de l'ajouter au dictionnaire avant le premier pas.

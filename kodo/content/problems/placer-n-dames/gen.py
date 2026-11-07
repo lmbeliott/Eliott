@@ -26,8 +26,10 @@ tests.append(test(obstacles(9, 0.1)))
 r = libre(10)
 r[4] = "##########"                       # une ligne entièrement bloquée : aucune solution
 tests.append(test(r))
-# tailles maximales
 tests.append(test(libre(11)))
 tests.append(test(obstacles(11, 0.1)))
 tests.append(test(obstacles(11, 0.25)))
+# tailles maximales : 12! permutations, trop pour une recherche sans élagage
+tests.append(test(libre(12)))
+tests.append(test(obstacles(12, 0.05)))
 print(json.dumps(tests))

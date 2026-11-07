@@ -21,7 +21,7 @@ Q lines, one per query time in the order of the input: two integers separated by
 - All times are integers between 1 and 50 000.
 
 ## Hints
-1. Comparing each query time with every participant takes N × Q = 144 million comparisons: too slow. First sort the times of the participants.
+1. Comparing each query time with every participant takes N × Q = 144 million comparisons: far too slow in Python. First sort the times of the participants.
 2. In the sorted list, the participants strictly faster than t form a block at the beginning of the list. Their number is the first index i such that `temps[i] >= t` (*temps* means "times"): find it by binary search.
 3. The number of times equal to t is (number of times `< t + 1`) − (number of times `< t`), because the times are integers. So a single search function is enough, called twice.
 

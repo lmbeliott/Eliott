@@ -27,7 +27,7 @@ Un seul entier : le temps d'attente total minimal, en minutes.
 ## Indices
 1. Commence par deux tâches seulement, a et b. Calcule l'attente totale si a passe avant b, puis si b passe avant a. Qu'est-ce qui change entre les deux ?
 2. Seuls les termes de a et b changent : a avant b coûte `F_b × D_a` de plus aux personnes qui attendent b, b avant a coûte `F_a × D_b` de plus à celles qui attendent a. Il vaut mieux mettre a d'abord si `D_a × F_b < D_b × F_a`.
-3. Trie les tâches selon cette comparaison (c'est trier par `D / F` croissant), puis calcule l'attente totale en une passe. Attention, le total dépasse 2³¹.
+3. Trie les tâches selon cette comparaison (c'est trier par `D / F` croissant), puis calcule l'attente totale en une passe. Attention, le total peut dépasser 2³¹.
 
 ## Solution
 **L'idée gloutonne : trier par `D / F` croissant.** Il faut traiter d'abord les tâches courtes (D petit) et très attendues (F grand). Le bon critère combine les deux : on trie les tâches par rapport `D_i / F_i` croissant, puis on additionne `F_i × T_i`, où T_i est la minute où la tâche i se termine.

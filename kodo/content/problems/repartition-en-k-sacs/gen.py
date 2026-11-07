@@ -16,7 +16,7 @@ tests = [
     test(4, [250] * 12),                     # tout identique
     test(3, [9, 9, 9, 9, 2, 2]),
     test(2, aleatoire(8, 1, 100)),
-    # tailles maximales : 12 objets, jusqu'à 5 sacs
+    # 12 objets, jusqu'à 5 sacs
     test(5, [236, 985, 1, 1, 13, 25, 993, 1000, 441, 43, 142, 1]),
     test(5, [917, 911, 930, 960, 910, 901, 971, 905, 914, 957, 985, 917]),
     test(4, [974, 392, 430, 460, 448, 381, 390, 387, 386, 507, 482, 397]),
@@ -24,5 +24,10 @@ tests = [
     test(3, aleatoire(12, 1, 1000)),
     test(5, aleatoire(12, 300, 700)),
     test(2, aleatoire(12, 990, 1000)),
+    # 14 objets et 5 sacs : 5^14 répartitions, la recherche sans élagage est trop lente
+    test(5, [799, 539, 789, 966, 587, 574, 516, 513, 557, 554, 818, 975, 582, 676]),
+    test(5, [674, 337, 439, 660, 390, 307, 435, 437, 335, 322, 400, 560, 324, 508]),
+    test(5, [921, 984, 911, 942, 900, 982, 961, 938, 919, 933, 912, 913, 930, 914]),
+    test(5, aleatoire(14, 1, 1000)),
 ]
 print(json.dumps(tests))

@@ -22,7 +22,7 @@ A single integer: the minimum total waiting time, in minutes.
 ## Hints
 1. Start with only two tasks, a and b. Compute the total waiting time if a comes before b, then if b comes before a. What changes between the two?
 2. Only the terms for a and b change: a before b costs `F_b × D_a` more to the people waiting for b, b before a costs `F_a × D_b` more to the people waiting for a. It is better to put a first if `D_a × F_b < D_b × F_a`.
-3. Sort the tasks with this comparison (it means sorting by increasing `D / F`), then compute the total waiting time in one pass. Careful, the total goes beyond 2³¹.
+3. Sort the tasks with this comparison (it means sorting by increasing `D / F`), then compute the total waiting time in one pass. Careful, the total can go beyond 2³¹.
 
 ## Solution
 **The greedy idea: sort by increasing `D / F`.** You should first handle the tasks that are short (small D) and that many people are waiting for (large F). The right criterion combines both: we sort the tasks by increasing ratio `D_i / F_i`, then add up `F_i × T_i`, where T_i is the minute when task i finishes.

@@ -42,9 +42,10 @@ On construit un **arbre de segments** du tableau où chaque nœud contient le ma
 
 Les blocs visités pendant la remontée sont consécutifs, couvrent tout ce qui est à droite de `i` dans l'ordre, et leur taille ne fait que croître : il y en a O(log N). La descente coûte aussi O(log N). Complexité totale : **O(N + K log N)**.
 
+Une variante fonctionne aussi : une recherche dichotomique sur `j`, avec une requête de maximum sur `[i, j]` à chaque étape. Elle coûte O(log² N) par question ; la descente directe est plus rapide et plus simple.
+
 Pourquoi les autres idées échouent :
-- Le parcours direct coûte O(N) par question, soit 10⁸ opérations quand toutes les réponses sont lointaines ou `-1`.
-- Une recherche dichotomique sur `j`, avec une requête de maximum sur `[i, j]` à chaque étape, fonctionne mais coûte O(log² N) par question : c'est correct en C++, mais lent en Python.
+- Le parcours direct coûte O(N) par question, soit 10⁸ opérations quand toutes les réponses sont lointaines ou `-1` : trop lent en Python (en C++, cela passe encore à cette taille).
 - Précalculer les réponses ne marche pas : chaque modification peut toutes les changer.
 
 Pièges :

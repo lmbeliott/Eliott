@@ -76,7 +76,30 @@ for (auto [p, v] : objets) {
 }
 ```
 
-Coût : O(N × W). L'initialisation choisit le sens de `best[w]` : avec des `0` partout, c'est « poids au plus `w` » ; avec `best[0] = 0` et une valeur « impossible » ailleurs, c'est « poids **exactement** `w` ».
+Coût : O(N × W). L'initialisation choisit le sens de `best[w]` : avec des `0` partout, c'est « poids au plus `w` » ; avec `best[0] = 0` et une valeur « impossible » ailleurs, c'est « poids **exactement** `w` ». Dans ce cas, il ne faut jamais prolonger un état impossible : avec `-1` comme valeur impossible, `best[w - p] + v` donnerait une valeur à un poids inatteignable. Teste-le avant la mise à jour :
+
+```python
+IMPOSSIBLE = -1
+best = [IMPOSSIBLE] * (W + 1)
+best[0] = 0
+for p, v in objets:
+    for w in range(W, p - 1, -1):
+        if best[w - p] != IMPOSSIBLE:
+            best[w] = max(best[w], best[w - p] + v)
+```
+
+```cpp
+const long long IMPOSSIBLE = -1;
+vector<long long> best(W + 1, IMPOSSIBLE);
+best[0] = 0;
+for (auto [p, v] : objets) {
+    for (int w = W; w >= p; w--) {
+        if (best[w - p] != IMPOSSIBLE) {
+            best[w] = max(best[w], best[w - p] + v);
+        }
+    }
+}
+```
 
 ## Plus longue sous-suite croissante
 

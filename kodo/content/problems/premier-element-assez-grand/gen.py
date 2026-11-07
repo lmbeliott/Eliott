@@ -33,7 +33,22 @@ n = 3000
 ops = [("Q", random.randint(1, 100), random.randint(4000, 5000)) for _ in range(1500)]
 tests.append(fmt([1 + 5000 * i // n for i in range(n)], ops))
 # Grands cas.
-tests.append(aleatoire(10000, 10000, 0.4))
+# Valeurs aléatoires jusqu'à 2500, seuils souvent au-dessus : la plupart des réponses sont -1 ou
+# tout au bout, là où des modifications placent parfois une grande valeur.
+n, q = 10000, 10000
+valeurs = [random.randint(1, 2500) for _ in range(n)]
+ops = []
+for _ in range(q):
+    r = random.random()
+    if r < 0.1:
+        ops.append(("M", random.randint(1, n), random.randint(1, 2500)))
+    elif r < 0.11:
+        ops.append(("M", random.randint(n - 100, n), random.randint(1, 5000)))
+    elif r < 0.15:
+        ops.append(("Q", random.randint(1, n), random.randint(1, 2500)))
+    else:
+        ops.append(("Q", random.randint(1, 100), random.randint(2501, 5000)))
+tests.append(fmt(valeurs, ops))
 # Petites valeurs avec quelques grandes tout à droite : les recherches traversent presque tout.
 n, q = 10000, 10000
 valeurs = [random.randint(1, 1000) for _ in range(n)]

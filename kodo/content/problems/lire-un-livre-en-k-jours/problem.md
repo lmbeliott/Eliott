@@ -20,8 +20,8 @@ Un livre compte N chapitres, et le chapitre i fait L_i pages. Tu veux le lire en
 Un seul entier : la plus petite valeur possible du nombre de pages lues pendant la journée la plus chargée.
 
 ## Contraintes
-- 1 ≤ K ≤ N ≤ 50 000
-- 1 ≤ L_i ≤ 99
+- 1 ≤ K ≤ N ≤ 25 000
+- 1 ≤ L_i ≤ 10 000
 
 ## Indices
 1. Retourne la question : si tu t'interdis de lire plus de D pages par jour, de combien de jours as-tu besoin au minimum ? Ce nombre se calcule en un seul parcours des chapitres.
@@ -39,9 +39,9 @@ La réponse à cette question est « non » pour les petites valeurs de D, puis 
 
 Sur le premier exemple (12 7 9 15 4 8, K = 3), avec D = 24 on obtient 12 + 7 | 9 + 15 | 4 + 8 : trois jours. Avec D = 23, il en faut quatre (12 + 7 | 9 | 15 + 4 | 8). La réponse est 24.
 
-**Complexité.** La dichotomie fait environ log₂(50 000 × 99) ≈ 23 tours, chacun en O(N) : O(N log S), où S est le nombre total de pages. Environ un million d'opérations.
+**Complexité.** La dichotomie fait environ log₂(25 000 × 10 000) ≈ 28 tours, chacun en O(N) : O(N log S), où S est le nombre total de pages. Moins d'un million d'opérations.
 
-**Pourquoi la solution naïve est trop lente.** Essayer D = max(L), max(L) + 1, max(L) + 2… jusqu'à ce que ça marche coûte O(N) par valeur, et la réponse peut dépasser un million quand K est petit : plus de 10¹⁰ opérations. Essayer tous les découpages est encore pire.
+**Pourquoi la solution naïve est trop lente.** Essayer D = max(L), max(L) + 1, max(L) + 2… jusqu'à ce que ça marche coûte O(N) par valeur, et la réponse peut dépasser 10⁸ quand K est petit : plus de 10¹² opérations. Partir de la moyenne ⌈S / K⌉ (la journée la plus chargée en contient au moins autant) ne suffit pas non plus : la réponse peut en être éloignée de plusieurs milliers, et autant d'essais restent trop lents en Python. Essayer tous les découpages est encore pire.
 
 **Pièges.**
 - Commence la recherche à `max(L) − 1`, pas à 0 : avec une limite plus petite qu'un chapitre, le découpage glouton n'a pas de sens.

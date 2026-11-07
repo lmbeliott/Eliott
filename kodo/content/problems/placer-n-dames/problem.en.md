@@ -15,7 +15,7 @@ Write a program that counts the number of ways to place the N queens.
 A single integer: the number of ways to place the N queens. Two ways are different if the sets of cells used are not the same.
 
 ## Constraints
-- 1 ≤ N ≤ 11
+- 1 ≤ N ≤ 12
 
 ## Hints
 1. Since two queens cannot share a row, there is exactly one queen per row. Place them row by row, with a recursive function `placer(ligne)` ("place(row)").
@@ -27,11 +27,11 @@ A single integer: the number of ways to place the N queens. Two ways are differe
 
 Two cells (r₁, c₁) and (r₂, c₂) are on the same "/" diagonal if `r₁ + c₁ = r₂ + c₂`, and on the same "\" diagonal if `r₁ − c₁ = r₂ − c₂`. So we number the diagonals by `ligne + col` (from 0 to 2N − 2) and by `ligne − col + N` (to avoid negative indices).
 
-**Why it is fast: pruning.** As soon as a queen cannot be placed anywhere on a row, we abandon the whole branch, without exploring the following rows. For N = 11 with no blocked cell, the function is called only about 170 000 times, for 2 680 solutions.
+**Why it is fast: pruning.** As soon as a queen cannot be placed anywhere on a row, we abandon the whole branch, without exploring the following rows. For N = 12 with no blocked cell, the function is called only about 860 000 times, for 14 200 solutions.
 
-**Complexity.** Exponential in the worst case, but pruning shrinks the search tree enormously: a few tenths of a second in Python for N = 11.
+**Complexity.** Exponential in the worst case, but pruning shrinks the search tree enormously: about half a second in Python for N = 12.
 
-**Why the naive solution is too slow.** Trying every way of choosing one column per row, then checking, means 11¹¹ ≈ 2.8 × 10¹¹ tries. Even when restricting to permutations (a different column for each row), there are 11! ≈ 40 million cases to check one by one: far too many for Python.
+**Why the naive solution is too slow.** Trying every way of choosing one column per row, then checking, means 12¹² ≈ 8.9 × 10¹² tries. Even when restricting to permutations (a different column for each row), there are 12! ≈ 4.8 × 10⁸ cases to check one by one: far too many for Python, and several seconds even in C++.
 
 **Traps.**
 - Don't forget to free the column and the diagonals after the recursive call, otherwise the following branches think they are still occupied.

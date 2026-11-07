@@ -112,7 +112,7 @@ If questions depend on a threshold ("using edges of weight at most `S`…"), you
 ## Key takeaways
 
 - Dijkstra: a heap, distances final when they leave the heap, outdated entries ignored; weights must be non-negative.
-- Complexity O((N + M) log M), much better than O(N × M) or O(N²).
+- Complexity O((N + M) log M), much better than O(N × M), and than O(N²) when the graph is sparse (M much smaller than N²).
 - A cost on the vertices or a limited resource is modelled by changing the edges or the state.
 - Union-find: `find` and `unite`, with path compression and union by size.
 - Sorting edges and questions lets you handle everything by only adding edges.

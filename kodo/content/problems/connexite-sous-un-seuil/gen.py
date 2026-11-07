@@ -54,10 +54,26 @@ for _ in range(2000):
     questions.append((perm[i - 1], perm[j - 1], 500 + j - 1 + random.randint(-1, 0)))
 tests.append(fmt(n, aretes, questions))
 # Grands cas.
+# Deux grands groupes de 2500 sommets aux arêtes légères, reliés par une seule arête de poids 4800.
+# Chaque question relie les deux groupes avec S = 4799 (NON) ou S = 4800 (OUI) : un parcours
+# par question visite des milliers de sommets à chaque fois.
 n = 5000
-aretes = [(random.randint(1, v - 1), v, poids()) for v in range(2, n + 1)] + [(random.randint(1, n), random.randint(1, n), poids())]
-aretes, _ = melange(n, aretes)
-tests.append(fmt(n, aretes, questions_aleatoires(n, 5000, [h for _, _, h in aretes])))
+moitie = n // 2
+aretes = [(random.randint(1, v - 1), v, 500) for v in range(2, moitie + 1)]
+aretes += [(random.randint(moitie + 1, v - 1), v, 500) for v in range(moitie + 2, n + 1)]
+aretes.append((random.randint(1, moitie), random.randint(moitie + 1, n), 4800))
+while len(aretes) < 5000:
+    aretes.append((random.randint(1, moitie), random.randint(1, moitie), 500))
+aretes, perm = melange(n, aretes)
+questions = []
+for _ in range(5000):
+    x, y = perm[random.randint(1, moitie) - 1], perm[random.randint(moitie + 1, n) - 1]
+    if random.random() < 0.5:
+        x, y = y, x
+    questions.append((x, y, random.choice([4799, 4800])))
+tests.append(fmt(n, aretes, questions))
+# Graphe aléatoire, seuils élevés : la plupart des arêtes sont utilisables et forment un grand groupe.
 aretes = [(random.randint(1, n), random.randint(1, n), poids()) for _ in range(5000)]
-tests.append(fmt(n, aretes, questions_aleatoires(n, 5000, [h for _, _, h in aretes])))
+questions = [(random.randint(1, n), random.randint(1, n), random.randint(4300, 4800)) for _ in range(5000)]
+tests.append(fmt(n, aretes, questions))
 print(json.dumps(tests))

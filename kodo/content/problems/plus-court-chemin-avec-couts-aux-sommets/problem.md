@@ -37,7 +37,7 @@ On reporte le coût de chaque sommet sur les arêtes qui y **entrent** : emprunt
 
 Ces coûts sont positifs : l'**algorithme de Dijkstra** avec une file de priorité (un tas) donne le plus court chemin. On garde `dist[v]`, le meilleur coût connu pour atteindre `v`. On retire du tas le sommet de plus petite distance ; sa distance est alors définitive, et on essaie d'améliorer celle de chacun de ses voisins. Si un sommet sort du tas avec une distance plus grande que `dist`, c'est une entrée périmée : on l'ignore.
 
-Complexité : **O((N + M) log M)**. Un Dijkstra sans tas (qui cherche le minimum en parcourant tous les sommets) coûte O(N²), et l'algorithme de Bellman-Ford O(N × M), soit des dizaines de millions d'opérations : trop lent en Python. Un parcours en largeur, lui, est faux : il minimise le nombre d'arêtes, pas le coût.
+Complexité : **O((N + M) log M)**. Un Dijkstra sans tas (qui cherche le minimum en parcourant tous les sommets) coûte O(N²) : environ 25 millions d'étapes ici, ce qui passe encore, mais devient vite trop lent quand `N` grandit. L'algorithme de Bellman-Ford, en O(N × M), demande jusqu'à 40 millions de relaxations quand le plus court chemin a des milliers d'arêtes : trop lent en Python. Un parcours en largeur, lui, est faux : il minimise le nombre d'arêtes, pas le coût.
 
 Pièges :
 - Le sommet `N` ne coûte rien : sur le premier exemple, l'oublier ajoute `50`.

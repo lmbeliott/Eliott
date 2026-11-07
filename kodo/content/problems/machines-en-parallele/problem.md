@@ -42,5 +42,5 @@ Sur le premier exemple (machines de 2, 3 et 5 minutes, 8 pièces) : en 8 minutes
 
 **Pièges.**
 - La réponse peut atteindre 10¹⁸ : en C++, utilise des `long long` partout (bornes, milieu, total).
-- Débordement caché : avec t proche de 10¹⁸ et 10 000 machines de 1 minute, la somme des `t / T_i` dépasse largement 2⁶³. Il faut **arrêter la somme dès qu'elle atteint M** : le total reste alors inférieur à M + 10¹⁸, ce qui tient dans un `long long`.
+- Débordement caché : si tu prends une borne haute plus large que min(T) × M (par exemple 10¹⁸), la somme des `t / T_i` peut dépasser 2⁶³ : avec t ≈ 5 × 10¹⁷ et 10 000 machines de 1 minute, elle vaut 5 × 10²¹. **Arrête la somme dès qu'elle atteint M.** Avec `suffisant = min(T) × M`, chaque terme vaut au plus M et la somme reste sous N × M ≤ 10¹³, mais l'arrêt anticipé reste une bonne habitude.
 - Vérifie que la borne de départ `suffisant` suffit vraiment, et que `trop_court` ne suffit vraiment pas : sinon la dichotomie peut renvoyer une valeur fausse.

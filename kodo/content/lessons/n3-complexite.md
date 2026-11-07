@@ -8,13 +8,15 @@ On décrit la vitesse d'un algorithme par sa **complexité**, notée O(…) : on
 
 Avant de coder, remplace N par sa valeur maximale :
 
-| N maximal | complexité qui passe |
-| --- | --- |
-| 10 | O(N!), on peut tout essayer |
-| 20 | O(2ᴺ) |
-| 500 | O(N³) |
-| 5 000 | O(N²) |
-| 100 000 et plus | O(N log N) ou O(N) |
+| N maximal | ce qui passe en C++ | ce qui passe en Python |
+| --- | --- | --- |
+| 10 | O(N!), on peut tout essayer | O(N!) |
+| 20 | O(2ᴺ) | O(2ᴺ) |
+| 500 | O(N³) | O(N²) |
+| 5 000 | O(N²) | O(N log N) |
+| 100 000 et plus | O(N log N) ou O(N) | O(N log N) ou O(N) |
+
+Python fait environ dix fois moins d'opérations par seconde : une complexité qui passe tout juste en C++ est souvent trop lente en Python.
 
 Avec N = 50 000, une double boucle fait 2,5 × 10⁹ tours : plusieurs minutes en Python. De grandes contraintes sont un message : il faut une idée plus maligne.
 
@@ -90,6 +92,8 @@ cout << meilleur << "\n";   // 4, par exemple 5 + 1 + 1 + 3 = 10
 Il y a une boucle `while` dans une boucle `for`, et pourtant c'est O(N) : `fin` avance N fois, et `debut` avance au plus N fois **en tout**. Pour compter les opérations, on regarde combien de fois chaque pointeur bouge, pas la forme des boucles.
 
 La même idée marche avec d'autres conditions, par exemple « la fenêtre contient toutes les lettres ». Il suffit de tenir à jour, à chaque pas, ce qu'on sait de la fenêtre (une somme, des compteurs…) au lieu de le recalculer.
+
+Attention au sens de la boucle. Ici, on cherche la plus **longue** fenêtre correcte : on avance `debut` tant que la fenêtre est **incorrecte**, puis on note sa longueur. Pour la plus **courte** fenêtre qui vérifie une condition qui reste vraie quand la fenêtre grandit (comme « contient toutes les lettres »), on inverse : tant que la fenêtre est **correcte**, on note sa longueur, puis on avance `debut`.
 
 ## À retenir
 

@@ -36,16 +36,38 @@ tests.append(fmt(3, [0, 1000, 0], [(1, 2, 1), (2, 3, 1), (1, 3, 1000)]))   # 100
 tests.append(fmt(3, [0, 997, 0], [(1, 2, 1), (2, 3, 1), (1, 3, 1000)]))
 tests.append(connexe(10, 15, 20, 20))
 tests.append(connexe(200, 400, 100, 100))
-# Une chaîne avec des raccourcis longs : le plus court chemin traverse beaucoup de sommets.
-n = 2000
-aretes = [(v, v + 1, random.randint(1, 10)) for v in range(1, n)]
+def chaine_a_rebours(n, tmax, pmax, autres):
+    # Une chaîne 1 - 2 - … - n (numéros mélangés sauf 1 et n), dont les arêtes sont données
+    # en partant de n : Bellman-Ford doit faire environ n passes pour la parcourir.
+    # autres(v) renvoie une arête (a, b, t) inutile, en numérotation de la chaîne.
+    milieu = list(range(2, n))
+    random.shuffle(milieu)
+    perm = [0, 1] + milieu + [n]
+    chaine = [(v + 1, v, random.randint(1, tmax)) for v in range(n - 1, 0, -1)]
+    aretes = [(perm[a], perm[b], t) for a, b, t in chaine]
+    for a, b, t in autres:
+        aretes.insert(random.randint(0, len(aretes)), (perm[a], perm[b], t))
+    return fmt(n, [random.randint(0, pmax) for _ in range(n)], aretes)
+
+
+# Une chaîne avec des raccourcis de longueur 1000 qui ne sautent que 50 sommets au plus :
+# la chaîne coûte moins cher entre leurs extrémités, donc le plus court chemin la suit en entier.
+n = 3000
+raccourcis = []
 for _ in range(1000):
-    a, b = random.sample(range(1, n + 1), 2)
-    aretes.append((a, b, 1000))
-tests.append(fmt(n, [random.randint(0, 5) for _ in range(n)], renumerote(n, aretes)))
+    a = random.randint(1, n - 2)
+    raccourcis.append((a, min(n, a + random.randint(2, 50)), 1000))
+tests.append(chaine_a_rebours(n, 10, 5, raccourcis))
 # Grands cas.
 tests.append(connexe(5000, 8000, 1000, 1000))
-tests.append(connexe(5000, 8000, 50, 1000))
+# Une chaîne de 5000 sommets plus des copies longues de ses arêtes : le plus court chemin
+# a 4999 arêtes, ce qui rend Bellman-Ford beaucoup trop lent.
+n = 5000
+copies = []
+for _ in range(8000 - (n - 1)):
+    v = random.randint(1, n - 1)
+    copies.append((v, v + 1, 1000))
+tests.append(chaine_a_rebours(n, 3, 3, copies))
 # Deux grandes composantes : le sommet N est inaccessible.
 n = 3000
 aretes = []

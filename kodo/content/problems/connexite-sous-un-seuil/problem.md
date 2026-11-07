@@ -48,4 +48,4 @@ Pièges :
 - La comparaison est large : une arête de poids exactement `S` est utilisable. Il faut ajouter **toutes** les arêtes de poids `≤ S` avant de répondre.
 - Les réponses doivent être affichées dans l'ordre de l'entrée : garde l'indice de chaque question.
 - Si `X = Y`, la réponse est toujours `OUI`.
-- Sans l'union par taille, les arbres de l'union-find peuvent devenir très profonds, et un `find` récursif risque de dépasser la limite de récursion de Python. Avec l'union par taille, la profondeur reste inférieure à log₂ N ; écrire `find` avec une boucle évite de toute façon le problème.
+- Sans l'union par taille, les arbres de l'union-find peuvent devenir très profonds, et un `find` récursif risque de dépasser la limite de récursion de Python. Avec l'union par taille, la profondeur reste au plus égale à log₂ N ; écrire `find` avec une boucle évite de toute façon le problème.

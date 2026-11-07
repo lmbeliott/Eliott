@@ -18,7 +18,7 @@ A single integer: the minimum length of a path from vertex `1` to vertex `N` wit
 - 1 ≤ N ≤ 5 000
 - 0 ≤ M ≤ 8 000
 - 0 ≤ K ≤ 10
-- 1 ≤ A, B ≤ N and A ≠ B
+- 1 ≤ A, B ≤ N and A ≠ B; two vertices may be linked by several edges, normal or special
 - 1 ≤ T ≤ 1 000
 
 ## Hints

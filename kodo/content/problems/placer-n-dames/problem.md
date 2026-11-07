@@ -20,7 +20,7 @@ On dispose d'une grille de N × N cases : certaines sont bloquées (`#`), les au
 Un seul entier : le nombre de façons de placer les N dames. Deux façons sont différentes si l'ensemble des cases utilisées n'est pas le même.
 
 ## Contraintes
-- 1 ≤ N ≤ 11
+- 1 ≤ N ≤ 12
 
 ## Indices
 1. Comme deux dames ne peuvent pas partager une ligne, il y a exactement une dame par ligne. Place-les ligne par ligne, avec une fonction récursive `placer(ligne)`.
@@ -32,11 +32,11 @@ Un seul entier : le nombre de façons de placer les N dames. Deux façons sont d
 
 Deux cases (l₁, c₁) et (l₂, c₂) sont sur la même diagonale « / » si `l₁ + c₁ = l₂ + c₂`, et sur la même diagonale « \ » si `l₁ − c₁ = l₂ − c₂`. On numérote donc les diagonales par `ligne + col` (de 0 à 2N − 2) et par `ligne − col + N` (pour éviter les indices négatifs).
 
-**Pourquoi ça va vite : l'élagage.** Dès qu'une dame ne peut être posée nulle part sur une ligne, on abandonne toute la branche, sans explorer les lignes suivantes. Pour N = 11 sans case bloquée, la fonction n'est appelée qu'environ 170 000 fois, pour 2 680 solutions.
+**Pourquoi ça va vite : l'élagage.** Dès qu'une dame ne peut être posée nulle part sur une ligne, on abandonne toute la branche, sans explorer les lignes suivantes. Pour N = 12 sans case bloquée, la fonction n'est appelée qu'environ 860 000 fois, pour 14 200 solutions.
 
-**Complexité.** Exponentielle dans le pire cas, mais l'élagage réduit énormément l'arbre de recherche : quelques dixièmes de seconde en Python pour N = 11.
+**Complexité.** Exponentielle dans le pire cas, mais l'élagage réduit énormément l'arbre de recherche : environ une demi-seconde en Python pour N = 12.
 
-**Pourquoi la solution naïve est trop lente.** Essayer toutes les façons de choisir une colonne par ligne, puis vérifier, fait 11¹¹ ≈ 2,8 × 10¹¹ essais. Même en se limitant aux permutations (une colonne différente par ligne), il y a 11! ≈ 40 millions de cas à vérifier un par un : bien trop pour Python.
+**Pourquoi la solution naïve est trop lente.** Essayer toutes les façons de choisir une colonne par ligne, puis vérifier, fait 12¹² ≈ 8,9 × 10¹² essais. Même en se limitant aux permutations (une colonne différente par ligne), il y a 12! ≈ 4,8 × 10⁸ cas à vérifier un par un : bien trop pour Python, et plusieurs secondes même en C++.
 
 **Pièges.**
 - N'oublie pas de libérer la colonne et les diagonales après l'appel récursif, sinon les branches suivantes les croient encore occupées.

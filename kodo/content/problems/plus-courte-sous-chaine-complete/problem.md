@@ -41,7 +41,7 @@ Pourquoi `debut` n'a-t-il jamais besoin de reculer ? On n'avance `debut` au-del�
 
 **Complexité.** `fin` et `debut` avancent chacun au plus N fois : O(N), avec un tableau de 26 compteurs.
 
-**Pourquoi la solution naïve est trop lente.** Essayer chaque position de départ et avancer jusqu'à avoir tout vu coûte de l'ordre de N × (longueur de la réponse). Si deux lettres rares n'apparaissent qu'au tout début et à la toute fin de la chaîne, la sous-chaîne couvre presque tout : environ N²/2 = 5 × 10⁹ opérations.
+**Pourquoi la solution naïve est trop lente.** Essayer chaque position de départ et avancer jusqu'à avoir tout vu coûte jusqu'à N²/2 opérations : depuis chaque départ, on peut devoir parcourir toute la fin de la chaîne (par exemple quand une lettre rare n'apparaît qu'une fois). Pour N = 100 000, cela fait environ 5 × 10⁹ opérations.
 
 **Pièges.**
 - Ne recalcule pas le nombre de lettres différentes de la fenêtre à chaque étape (par exemple avec `len(set(...))`) : c'est justement ce qui rend la solution lente. Le compteur `vues` se met à jour en temps constant.

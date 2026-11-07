@@ -112,7 +112,7 @@ Si des questions dépendent d'un seuil (« avec les arêtes de poids au plus `S`
 ## À retenir
 
 - Dijkstra : un tas, des distances définitives à la sortie du tas, les entrées périmées ignorées ; poids positifs obligatoires.
-- Complexité O((N + M) log M), bien meilleure que O(N × M) ou O(N²).
+- Complexité O((N + M) log M), bien meilleure que O(N × M), et que O(N²) quand le graphe a peu d'arêtes (M bien plus petit que N²).
 - Un coût sur les sommets ou une ressource limitée se modélise en changeant les arêtes ou l'état.
 - Union-find : `trouve` et `unit`, avec compression des chemins et union par taille.
 - Trier arêtes et questions permet de tout traiter en n'ajoutant que des arêtes.

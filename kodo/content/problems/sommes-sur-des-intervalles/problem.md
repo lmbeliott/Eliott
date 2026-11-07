@@ -27,7 +27,7 @@ Q lignes : pour chaque question, dans l'ordre de l'entrée, la somme des valeurs
 - 1 ≤ A ≤ B ≤ N
 
 ## Indices
-1. Additionner les valeurs de A à B pour chaque question peut coûter jusqu'à N × Q = 500 millions d'additions : beaucoup trop. Il faut faire le gros du travail une seule fois, avant de lire les questions.
+1. Additionner les valeurs de A à B pour chaque question peut coûter jusqu'à N × Q = 500 millions d'additions : beaucoup trop en Python. En C++, ces additions très simples passent encore ici, mais c'est une mauvaise habitude : avec plus de questions, ce serait trop lent. Il faut faire le gros du travail une seule fois, avant de lire les questions.
 2. Construis un tableau `cumul` où `cumul[i]` est la somme des i premières valeurs, avec `cumul[0] = 0`.
 3. La somme du jour A au jour B, c'est celle des B premiers jours moins celle des A − 1 premiers : `cumul[B] - cumul[A - 1]`.
 
@@ -38,7 +38,7 @@ Sur l'exemple `3015002`, on obtient `cumul = 0 3 3 4 9 9 9 11`. Pour la question
 
 **Complexité.** O(N) pour construire `cumul`, puis O(1) par question : O(N + Q) en tout, environ 100 000 opérations.
 
-**Pourquoi la solution naïve est trop lente.** Refaire l'addition pour chaque question coûte jusqu'à N opérations par question, donc N × Q = 5 × 10⁸ opérations dans le pire cas : plusieurs dizaines de secondes en Python. Même `sum(int(c) for c in chiffres[a-1:b])` doit recopier et parcourir des centaines de millions de cases.
+**Pourquoi la solution naïve est trop lente.** Refaire l'addition pour chaque question coûte jusqu'à N opérations par question, donc N × Q = 5 × 10⁸ opérations dans le pire cas : plusieurs dizaines de secondes en Python. Même `sum(int(c) for c in chiffres[a-1:b])` doit recopier et parcourir des centaines de millions de cases. En C++, une boucle d'additions aussi simple reste assez rapide sur ces tests, mais elle fait des centaines de millions d'opérations là où les sommes préfixes en font cent mille : c'est la mauvaise habitude à ne pas prendre.
 
 **Pièges.**
 - Les jours sont numérotés à partir de 1. Grâce à la case `cumul[0] = 0`, la formule `cumul[B] − cumul[A − 1]` marche aussi quand A = 1, sans cas particulier.

@@ -8,13 +8,15 @@ We describe the speed of an algorithm by its **complexity**, written O(…): we 
 
 Before coding, replace N by its maximum value:
 
-| maximum N | complexity that passes |
-| --- | --- |
-| 10 | O(N!), you can try everything |
-| 20 | O(2ᴺ) |
-| 500 | O(N³) |
-| 5 000 | O(N²) |
-| 100 000 and more | O(N log N) or O(N) |
+| maximum N | what passes in C++ | what passes in Python |
+| --- | --- | --- |
+| 10 | O(N!), you can try everything | O(N!) |
+| 20 | O(2ᴺ) | O(2ᴺ) |
+| 500 | O(N³) | O(N²) |
+| 5 000 | O(N²) | O(N log N) |
+| 100 000 and more | O(N log N) or O(N) | O(N log N) or O(N) |
+
+Python does about ten times fewer operations per second: a complexity that only just passes in C++ is often too slow in Python.
 
 With N = 50 000, a double loop makes 2.5 × 10⁹ steps: several minutes in Python. Large constraints are a message: you need a smarter idea.
 
@@ -90,6 +92,8 @@ cout << best << "\n";   // 4, for example 5 + 1 + 1 + 3 = 10
 There is a `while` loop inside a `for` loop, and yet it is O(N): `end` moves forward N times, and `start` moves forward at most N times **in total**. To count operations, look at how many times each pointer moves, not at the shape of the loops.
 
 The same idea works with other conditions, for example "the window contains every letter". At each step, you just keep up to date what you know about the window (a sum, some counters…) instead of recomputing it.
+
+Watch the direction of the loop. Here, we look for the **longest** valid window: we move `start` forward while the window is **invalid**, then we record its length. For the **shortest** window that meets a condition which stays true as the window grows (like "contains every letter"), you swap it: while the window is **valid**, record its length, then move `start` forward.
 
 ## Key takeaways
 
