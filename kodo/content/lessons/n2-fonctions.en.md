@@ -30,6 +30,26 @@ The function is written only once and used twice. If it contains a mistake, you 
 
 In C++, you have to give the **type** of what the function returns (`int`, `bool`, `string`…) and the type of each parameter. The function must be written **before** `main`, otherwise the compiler doesn't know it yet. A function that returns nothing has the type `void`.
 
+A function can also return text. In C++, its type is then `string`, and `to_string(n)` turns a number into text:
+
+```python
+def two_digits(n):
+    if n < 10:
+        return "0" + str(n)   # 7 gives "07"
+    return str(n)
+```
+
+```cpp
+string two_digits(int n) {
+    if (n < 10) {
+        return "0" + to_string(n);   // 7 gives "07"
+    }
+    return to_string(n);
+}
+```
+
+A list is returned the same way, with the type `vector<int>` in C++.
+
 ## Returning is not printing
 
 `return` gives the result back to the code that called the function: it can store it in a variable, compare it, pass it to another function. `print` (or `cout`) writes it on the screen, and the program can't do anything with it any more. In the vast majority of cases, a function should **return** its result, and the main program does the printing.
@@ -114,6 +134,6 @@ A good method: before writing the program, ask yourself "which small questions d
 
 - A function gives a name to a calculation: you write it once, and call it as often as you want.
 - `return` gives back the result and stops the function; the main program does the printing.
-- The variables of a function are local, and its parameters are copies.
+- The variables of a function are local; number and string parameters are copies (a Python list is shared).
 - In C++, you give the return type and the type of each parameter, and you write the function before `main`.
 - For a complicated problem, split it into small functions, and write and check the simplest ones first.

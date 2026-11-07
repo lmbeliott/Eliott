@@ -13,8 +13,15 @@ import sys, io, builtins, traceback, linecache
 _default_limit = sys.getrecursionlimit()
 _real_input = builtins.input
 
+class _Capped(io.BytesIO):
+    # Au-delà de la limite, l'écriture échoue : une boucle d'affichage infinie s'arrête net.
+    def write(self, b):
+        if self.tell() + len(b) > 2_000_000:
+            raise OSError("Sortie trop longue : plus de 2 Mo affichés (boucle infinie ?)")
+        return super().write(b)
+
 def __kodo_run(code, data):
-    out_bytes, err_bytes = io.BytesIO(), io.BytesIO()
+    out_bytes, err_bytes = _Capped(), io.BytesIO()
     stdout = io.TextIOWrapper(out_bytes, encoding="utf-8", write_through=True)
     stderr = io.TextIOWrapper(err_bytes, encoding="utf-8", write_through=True)
     stdin = io.TextIOWrapper(io.BytesIO(data.encode("utf-8")), encoding="utf-8")

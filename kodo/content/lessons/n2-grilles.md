@@ -74,7 +74,7 @@ vector<vector<bool>> vue(h, vector<bool>(w, false));
 vue[1][3] = true;
 ```
 
-En Python, n'écris pas `[[False] * w] * h` : cela crée `h` fois **la même** ligne, et modifier une case modifierait toute la colonne. Autre détail : on ne peut pas changer un caractère d'une chaîne Python. Pour modifier la grille elle-même, lis chaque ligne avec `list(input())`, ce qui donne une liste de caractères. En C++, une `vector<string>` se modifie directement, et on peut aussi utiliser un `vector<vector<char>>`.
+En Python, n'écris pas `[[False] * w] * h` : cela crée `h` fois **la même** ligne, et modifier une case modifierait toute la colonne. Autre détail : on ne peut pas changer un caractère d'une chaîne Python. Pour modifier la grille elle-même, lis chaque ligne avec `list(input())`, ce qui donne une liste de caractères. En C++, un `vector<string>` se modifie directement, et on peut aussi utiliser un `vector<vector<char>>`.
 
 ## Les voisins d'une case
 

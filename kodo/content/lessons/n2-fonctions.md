@@ -30,6 +30,26 @@ La fonction est écrite une seule fois et utilisée deux fois. Si elle contient 
 
 En C++, il faut indiquer le **type** de ce que renvoie la fonction (`int`, `bool`, `string`…) et le type de chaque paramètre. La fonction doit être écrite **avant** `main`, sinon le compilateur ne la connaît pas encore. Une fonction qui ne renvoie rien a le type `void`.
 
+Une fonction peut aussi renvoyer du texte. En C++, son type est alors `string`, et `to_string(n)` transforme un nombre en texte :
+
+```python
+def deux_chiffres(n):
+    if n < 10:
+        return "0" + str(n)   # 7 donne "07"
+    return str(n)
+```
+
+```cpp
+string deux_chiffres(int n) {
+    if (n < 10) {
+        return "0" + to_string(n);   // 7 donne "07"
+    }
+    return to_string(n);
+}
+```
+
+Une liste se renvoie de la même façon, avec le type `vector<int>` en C++.
+
 ## Renvoyer, ce n'est pas afficher
 
 `return` donne le résultat au programme qui a appelé la fonction : il peut le ranger dans une variable, le comparer, le passer à une autre fonction. `print` (ou `cout`) l'écrit à l'écran, et le programme ne peut plus rien en faire. Dans la très grande majorité des cas, une fonction doit **renvoyer** son résultat, et c'est le programme principal qui affiche.
@@ -114,6 +134,6 @@ Une bonne méthode : avant d'écrire le programme, demande-toi « de quelles pet
 
 - Une fonction donne un nom à un calcul : on l'écrit une fois, on l'appelle autant qu'on veut.
 - `return` renvoie le résultat et arrête la fonction ; c'est le programme principal qui affiche.
-- Les variables d'une fonction sont locales, et ses paramètres sont des copies.
+- Les variables d'une fonction sont locales ; les paramètres nombres et chaînes sont des copies (une liste Python, elle, est partagée).
 - En C++, on précise le type renvoyé et le type des paramètres, et on écrit la fonction avant `main`.
 - Pour un problème compliqué, découpe-le en petites fonctions, écris et vérifie d'abord les plus simples.

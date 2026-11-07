@@ -48,13 +48,9 @@ What's inside a box can change: `pages_read = pages_read + 3` first computes `pa
 
 Here are the operations on whole numbers:
 
-| Python | C++ | Meaning | Example |
-| --- | --- | --- | --- |
-| `+` `-` `*` | `+` `-` `*` | addition, subtraction, multiplication | `3 * 4` gives `12` |
-| `//` | `/` | quotient of the whole-number division | 17 divided by 5 gives `3` |
-| `%` | `%` | remainder of that division | `17 % 5` gives `2` |
-
-The remainder of 17 divided by 5 is 2, because 17 = 3 × 5 + 2.
+- `+`, `-` and `*`: addition, subtraction and multiplication (`*` is the "times" sign);
+- `//` in Python, `/` in C++: the quotient of the whole-number division, for example 17 divided by 5 gives `3`;
+- `%` in both languages: the remainder of that division, for example 17 % 5 gives `2`, because 17 = 3 × 5 + 2.
 
 Just like in math, multiplications and divisions come before additions and subtractions: `2 + 3 * 4` is `14`. Use parentheses to change the order: `(2 + 3) * 4` is `20`.
 
@@ -122,7 +118,7 @@ cout << 3 << " " << 4 << "\n";
 
 Both programs print `Total: 12`, then `3 4` on the next line. In Python, `print` puts a space between the items separated by commas. In C++, `cout` adds nothing: it's up to you to write the spaces.
 
-Your answer is compared word by word with the expected answer. Capital letters and punctuation matter, and nothing else must be printed. So don't write `input("Give me a number: ")`: that message would be printed and your answer would be rejected.
+Your answer is compared word by word with the expected answer. Capital letters and punctuation matter, and nothing else must be printed. So don't write `print("Result:", x)` when only the number is expected: your answer would be rejected. On Kodo, the text between the parentheses of `input(…)` is not printed, but elsewhere it would be: get used to writing `input()` with no message.
 
 ## Key takeaways
 

@@ -13,6 +13,8 @@ Dates are written day first, then month, then year. Watch out for leap years, wh
 - The first line contains an integer `N`: the number of dates.
 - The next `N` lines each contain a date in the form `dd/mm/yyyy` (day, month, year), in chronological order. The same date can appear several times in a row.
 
+To read a date like `14/07/2025`: in Python, `input().split("/")` cuts the line at each `/`. In C++, you can read `cin >> d >> c >> m >> c >> y` with a variable `char c` that takes the `/` characters.
+
 ## Output
 A single integer: the largest number of days between two consecutive dates of the logbook.
 
@@ -38,5 +40,4 @@ This problem shows clearly why functions are useful. In the reference solutions,
 The traps:
 - the century rule: `1900` and `2100` aren't leap years, but `2000` is;
 - for February, what matters is the year **of the date**, not another year;
-- two identical dates are 0 days apart, and that's not a mistake;
-- to read `14/07/2025`: in Python, `input().split("/")` cuts the line at each `/`. In C++, you can read `cin >> d >> c >> m >> c >> y` with a variable `char c` that takes the `/` characters.
+- two identical dates are 0 days apart, and that's not a mistake.

@@ -24,4 +24,4 @@ A single word, in capital letters: exactly `OUI` or `NON`, written as in the sta
 ## Solution
 We read `T`, then test the condition `T >= 8`: if it is true, we print `OUI`, otherwise `NON`.
 
-The classic trap: writing `t > 8` instead of `t >= 8`. Both conditions give the same result for almost every temperature… except at 8 degrees, where the answer is indeed `OUI`! When a statement says "at least", "at most" or "strictly", take the time to choose the right operator, and always test the boundary value.
+The classic trap: writing `T > 8` instead of `T >= 8`. Both conditions give the same result for almost every temperature… except at 8 degrees, where the answer is indeed `OUI`! When a statement says "at least", "at most" or "strictly", take the time to choose the right operator, and always test the boundary value.

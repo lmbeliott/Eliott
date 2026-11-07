@@ -29,7 +29,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s)
       setReady(true)
       if (event === 'PASSWORD_RECOVERY') setRecovering(true)
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') qc.invalidateQueries()
+      // Déconnexion : on efface les données privées du compte précédent (ordinateur partagé).
+      if (event === 'SIGNED_OUT') qc.clear()
+      if (event === 'SIGNED_IN') qc.invalidateQueries()
     })
     return () => data.subscription.unsubscribe()
   }, [qc])

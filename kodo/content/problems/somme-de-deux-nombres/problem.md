@@ -21,7 +21,7 @@ Un seul entier : `A + B`.
 
 ## Indices
 1. Il faut d'abord lire la ligne, puis la découper en deux nombres.
-2. En Python, `input().split()` découpe la ligne en morceaux, et `int(...)` transforme un morceau de texte en nombre.
+2. En Python, `input().split()` découpe la ligne en morceaux, et `int(...)` transforme un morceau de texte en nombre. En C++, `cin >> a >> b;` lit deux entiers d'un coup.
 3. `a, b = map(int, input().split())` lit les deux nombres d'un coup ; il ne reste qu'à afficher `a + b` avec `print`.
 
 ## Solution

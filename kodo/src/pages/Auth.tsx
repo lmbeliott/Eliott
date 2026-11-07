@@ -5,6 +5,9 @@ import { useToast } from '../components/Toast'
 import { useI18n } from '../lib/i18n'
 import { errorText, supabase } from '../lib/supabase'
 
+// Retour après connexion : uniquement un chemin interne (« /… », jamais « //autre-site »).
+const safeBack = (v: string | null, fallback: string) => (v && v.startsWith('/') && !v.startsWith('//') ? v : fallback)
+
 const appUrl = (path: string) => `${window.location.origin}${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
 
 function AuthLayout({ title, lead, children, footer }: { title: string; lead: string; children: React.ReactNode; footer: React.ReactNode }) {
@@ -31,7 +34,7 @@ export function SignIn() {
   const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({})
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState(false)
-  const back = params.get('retour') || '/'
+  const back = safeBack(params.get('retour'), '/')
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -126,6 +129,9 @@ export function SignIn() {
 export function SignUp() {
   const { lang, t } = useI18n()
   const navigate = useNavigate()
+  // Arrivé depuis un lien d'invitation : on y retourne après l'inscription.
+  const [params] = useSearchParams()
+  const back = safeBack(params.get('retour'), '/parcours')
   const toast = useToast()
   const [f, setF] = useState({ name: '', username: '', email: '', password: '' })
   const [errors, setErrors] = useState<Partial<Record<keyof typeof f | 'form', string>>>({})
@@ -172,7 +178,7 @@ export function SignUp() {
     if (error) return setErrors({ form: errorText(error, lang) })
     if (!data.session) return setConfirmSent(true)
     toast(t(`Bienvenue sur Kodo, ${f.name.trim()} !`, `Welcome to Kodo, ${f.name.trim()}!`), 'ok')
-    navigate('/parcours')
+    navigate(back)
   }
 
   if (confirmSent)

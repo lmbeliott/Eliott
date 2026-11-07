@@ -16,7 +16,7 @@ A single integer: `A + B`.
 
 ## Hints
 1. First you need to read the line, then split it into two numbers.
-2. In Python, `input().split()` cuts the line into pieces, and `int(...)` turns a piece of text into a number.
+2. In Python, `input().split()` cuts the line into pieces, and `int(...)` turns a piece of text into a number. In C++, `cin >> a >> b;` reads two integers at once.
 3. `a, b = map(int, input().split())` reads both numbers at once; all that's left is to print `a + b` with `print`.
 
 ## Solution

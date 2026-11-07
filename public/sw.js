@@ -25,6 +25,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return
+  // Kodo est publié dans le sous-dossier kodo/ du même site : ce service worker ne doit jamais
+  // l'intercepter (sinon ses énoncés seraient servis depuis le cache et sa page prise pour celle de SwimHub).
+  if (new URL(request.url).pathname.startsWith(new URL('./kodo/', self.registration.scope).pathname)) return
   // Navigation : réseau d'abord, repli sur le shell (permet les liens profonds hors ligne).
   // Chaque page reçue en ligne remplace le shell en cache : le repli hors ligne pointe vers le dernier build utilisé.
   if (request.mode === 'navigate') {

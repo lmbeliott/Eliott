@@ -37,7 +37,7 @@ Toutes les lettres sont des minuscules sans accents.
 ## Solution
 On lit `P` une seule fois, de gauche à droite, en gardant un indice `j` sur la prochaine lettre du mot à trouver. À chaque lettre de `P`, si elle est égale à `mot[j]`, on la prend et on passe à la lettre suivante du mot (`j` augmente de 1). Sinon, on la saute. Le mot est une sous-suite si, à la fin, toutes ses lettres ont été trouvées, c'est-à-dire si `j` vaut la longueur du mot.
 
-Pourquoi est-ce correct de prendre toujours **la première** lettre qui convient ? Si l'on peut former le mot en utilisant une lettre plus loin dans `P`, on peut aussi utiliser la première lettre identique : elle est encore plus tôt dans `P`, donc toutes les lettres choisies ensuite restent bien après elle.
+Pourquoi est-ce correct de prendre toujours **la première** lettre qui convient ? Si l'on peut former le mot en utilisant une lettre plus loin dans `P`, on peut aussi utiliser la première lettre identique située après la lettre choisie juste avant : elle est encore plus tôt dans `P`, donc toutes les lettres choisies ensuite restent bien après elle.
 
 Les pièges :
 - ne pas chercher chaque lettre du mot depuis le début de `P` : l'ordre compte (`mare` n'est pas une sous-suite de `programmes`), et une lettre de `P` ne sert qu'une fois (`aa` n'en est pas une non plus, car `programmes` n'a qu'un seul `a`) ;

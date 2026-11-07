@@ -24,7 +24,7 @@ Un seul entier : le nombre de matins où la température était strictement nég
 - Chaque température est comprise entre −30 et 30.
 
 ## Indices
-1. C'est comme une somme, sauf qu'au lieu d'ajouter la température, on ajoute 1 à un compteur… mais seulement les matins où la température est négative.
+1. C'est comme une somme, sauf qu'au lieu d'ajouter la température, on ajoute 1 à un compteur… mais seulement les matins où la température est strictement négative.
 2. Dans la boucle, après avoir lu la température `t`, utilise un `if` : si `t < 0`, augmente le compteur de 1.
 3. Un matin à 0 degré ne compte pas : 0 n'est pas strictement négatif.
 

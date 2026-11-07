@@ -21,7 +21,8 @@ tests.append(test(["..D..."], "OOOOEEEEEEEO"))
 tests.append(test(list("..D.#."), "SSSSSSSNNN"))
 tests.append(test(["D." , ".."], "EOEOEOEOEO" * 10))
 tests.append(test(["#####", "#.D.#", "#####"], "NSNSEEEEEOOOOOO"))
-# Grande grille vide parcourue en serpentin : toutes les cases sont visitées.
+# Grande grille vide 50×50 parcourue en serpentin, coupé par la limite de 1 000 ordres :
+# 1001 cases visitées, jamais deux fois la même (réponse = nombre de déplacements + 1).
 serp = ""
 for r in range(50):
     serp += ("E" if r % 2 == 0 else "O") * 49

@@ -21,13 +21,13 @@ A single integer: how many mountain numbers `n` there are such that `A ≤ n ≤
 - 1 ≤ A ≤ B ≤ 100,000
 
 ## Hints
-1. Split the problem. First write a function `digits(n)` that returns the list of the digits of `n` in order (`1352` gives `[1, 3, 5, 2]`). The last digit of `n` is `n % 10`, and `n // 10` removes this last digit.
+1. Split the problem. First write a function `digits(n)` that returns the list of the digits of `n` in order (`1352` gives `[1, 3, 5, 2]`). The last digit of `n` is `n % 10`, and `n // 10` (`n / 10` in C++, between two `int`s) removes this last digit.
 2. Then write a function `is_mountain(n)` that returns true or false. The main program will only have to call it for each number from `A` to `B`.
 3. In `is_mountain`, move an index `i` forward as long as the next digit is bigger: you reach the peak. Check that the peak is neither at the very beginning nor at the very end. Then keep moving forward as long as the next digit is smaller: the number is a mountain if this way you get all the way to the last digit.
 
 ## Solution
 We split the work into two functions. In the reference solutions, they're called `chiffres` ("digits") and `est_montagne` ("is mountain"):
-- `chiffres(n)` gets the digits one by one with `n % 10` (the last digit) and `n // 10` (the number without its last digit). We get them from right to left, so we reverse the list at the end;
+- `chiffres(n)` gets the digits one by one with `n % 10` (the last digit) and `n // 10` (the number without its last digit; `n / 10` in C++). We get them from right to left, so we reverse the list at the end;
 - `est_montagne(n)` goes through this list in two stages. First the climb: we move forward as long as `c[i] < c[i + 1]`. If we haven't moved (`i = 0`), the number doesn't go up; if we're already at the end, it doesn't come down: in both cases, it isn't a mountain. Then the descent: we move forward as long as `c[i] > c[i + 1]`. The number is a mountain if and only if we finish on the last digit.
 
 The main program simply counts the `n` from `A` to `B` for which `est_montagne(n)` is true.

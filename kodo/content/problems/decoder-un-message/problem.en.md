@@ -31,6 +31,6 @@ We go through the message character by character and build the decoded message:
 The modulo is what makes the alphabet "loop": with `K = 3`, the letter `b` (number 1) gives 1 − 3 = −2, and −2 modulo 26 is 24, which is `y`.
 
 The traps:
-- in C++ (and in many other languages), `-2 % 26` is `-2`, not `24`. So we write `(number - K + 26) % 26`: since `K ≤ 25`, the number stays positive. In Python, `%` always gives a positive result when you divide by a positive number;
+- in C++ (and in many other languages), `-2 % 26` is `-2`, not `24`. So we write `(number - K + 26) % 26`: since `K ≤ 25`, the number stays positive. In Python, `%` never gives a negative result when you divide by a positive number (here, always a number between 0 and 25);
 - you must move **back** `K` places, not forward: what you receive is the *coded* message;
 - in C++, after `cin >> k`, there is still an end of line left to read before using `getline` for the message. Otherwise, `getline` returns an empty line.

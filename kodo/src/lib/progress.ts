@@ -168,6 +168,7 @@ export function useGuestSync(onSynced: (count: number) => void) {
     running.current = true
     ;(async () => {
       let count = 0
+      const kept: GuestState = { solved: {}, tried: {} }
       for (const [id, s] of entries) {
         if (!problemById(id)) continue
         const { error } = await supabase.rpc('submit_result', {
@@ -180,8 +181,9 @@ export function useGuestSync(onSynced: (count: number) => void) {
           p_time_ms: 0,
         })
         if (!error) count++
+        else kept.solved[id] = s // échec (réseau…) : on garde la réussite pour la prochaine connexion
       }
-      writeLocal(GUEST_KEY, { solved: {}, tried: {} })
+      writeLocal(GUEST_KEY, kept)
       window.dispatchEvent(new Event('kodo:guest'))
       qc.invalidateQueries()
       running.current = false

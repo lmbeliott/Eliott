@@ -38,4 +38,4 @@ On construit ainsi chaque ligne de la nouvelle grille et on l'affiche.
 Les pièges :
 - **les bords** : en Python, `grille[-1]` ne provoque pas d'erreur mais désigne la dernière ligne ! Le programme se tromperait sans rien dire. En C++, lire en dehors du tableau peut donner n'importe quoi. Le test des bornes est indispensable ;
 - ne pas compter la case elle-même : c'est inutile ici (elle est vide), mais c'est une bonne habitude ;
-- ne pas modifier la grille de départ pendant qu'on la parcourt : un chiffre écrit trop tôt serait relu comme une case. On écrit le résultat dans une nouvelle grille (ou on l'affiche directement).
+- si l'on écrit les chiffres directement dans la grille de départ, il faut tester `== '*'` pour reconnaître une mine : avec `!= '.'`, un chiffre déjà écrit serait compté comme une mine. Le plus sûr est d'écrire le résultat dans une nouvelle grille (ou de l'afficher directement).

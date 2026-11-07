@@ -127,10 +127,14 @@ export function useGroup(groupId: string | undefined) {
         .eq('group_id', groupId!)
       if (e2) throw e2
       const ids = (members ?? []).map((m) => m.user_id)
-      const { data: solves, error: e3 } = ids.length
-        ? await supabase.from('solves').select('user_id, problem_id, solved_at').in('user_id', ids)
-        : { data: [], error: null }
-      if (e3) throw e3
+      // L'API renvoie au plus 1000 lignes par requête : une classe de 30 élèves en dépasse vite.
+      const solves: { user_id: string; problem_id: string; solved_at: string }[] = []
+      for (let from = 0; ids.length; from += 1000) {
+        const { data, error: e3 } = await supabase.from('solves').select('user_id, problem_id, solved_at').in('user_id', ids).order('solved_at').range(from, from + 999)
+        if (e3) throw e3
+        solves.push(...(data ?? []))
+        if (!data || data.length < 1000) break
+      }
       return {
         group: group as Group,
         members: members as unknown as GroupMember[],

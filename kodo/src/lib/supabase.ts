@@ -5,7 +5,8 @@ export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://bskgia
 export const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? 'sb_publishable_v6HxcdZkbMdzIWB0fi_XzQ_AM05NF3A'
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'kodo-auth' },
+  // PKCE : un lien de connexion ne peut pas ouvrir la session de quelqu'un d'autre (pas de jeton dans l'URL).
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'kodo-auth', flowType: 'pkce' },
 })
 
 export interface Profile {

@@ -15,11 +15,11 @@ for (int i = 0; i < 5; i++) {
 
 Ce programme affiche `Bonjour` cinq fois. Le bloc répété est, comme pour `if`, le bloc indenté en Python, ou entre accolades en C++. Chaque passage dans le bloc s'appelle un **tour** de boucle.
 
-La variable `i` est le **compteur** de la boucle : elle vaut `0` au premier tour, `1` au deuxième, et ainsi de suite jusqu'à `4`. En Python, `range(5)` donne les nombres de 0 à 4 : il commence à 0 et s'arrête **avant** 5. En C++, la ligne `for` dit tout : on part de `i = 0`, on continue tant que `i < 5`, et `i++` ajoute 1 à `i` après chaque tour.
+La variable `i` est la **variable de boucle** : elle vaut `0` au premier tour, `1` au deuxième, et ainsi de suite jusqu'à `4`. En Python, `range(5)` donne les nombres de 0 à 4 : il commence à 0 et s'arrête **avant** 5. En C++, la ligne `for` dit tout : on part de `i = 0`, on continue tant que `i < 5`, et `i++` ajoute 1 à `i` après chaque tour.
 
-## Choisir les valeurs du compteur
+## Choisir les valeurs de la variable de boucle
 
-On peut choisir où le compteur commence, où il s'arrête, et de combien il avance :
+On peut choisir où la variable de boucle commence, où elle s'arrête, et de combien elle avance :
 
 ```python
 for i in range(1, 6):

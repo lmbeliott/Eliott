@@ -15,11 +15,11 @@ for (int i = 0; i < 5; i++) {
 
 This program prints `Hello` five times. Just like with `if`, the repeated block is the indented block in Python, or the block between curly braces in C++. Each pass through the block is called a **turn** of the loop.
 
-The variable `i` is the loop **counter**: it's `0` on the first turn, `1` on the second, and so on up to `4`. In Python, `range(5)` gives the numbers from 0 to 4: it starts at 0 and stops **before** 5. In C++, the `for` line says it all: we start at `i = 0`, keep going as long as `i < 5`, and `i++` adds 1 to `i` after each turn.
+The variable `i` is the **loop variable**: it's `0` on the first turn, `1` on the second, and so on up to `4`. In Python, `range(5)` gives the numbers from 0 to 4: it starts at 0 and stops **before** 5. In C++, the `for` line says it all: we start at `i = 0`, keep going as long as `i < 5`, and `i++` adds 1 to `i` after each turn.
 
-## Choosing the counter's values
+## Choosing the loop variable's values
 
-You can choose where the counter starts, where it stops, and by how much it moves:
+You can choose where the loop variable starts, where it stops, and by how much it moves:
 
 ```python
 for i in range(1, 6):

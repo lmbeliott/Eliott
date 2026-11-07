@@ -230,6 +230,9 @@ export async function judge(opts: RunOptions): Promise<JudgeReport> {
   })
 
   const rt = runtimeFor(lang)
+  // Interruption : on arrête le worker qui exécute ce programme, pour qu'il ne bloque
+  // (ni ne fasse échouer) l'exécution suivante. Il sera relancé à la demande.
+  signal?.addEventListener('abort', () => (lang === 'python' ? runtimes.python : runtimes.wasm).kill(), { once: true })
   await rt.start((loaded, total) => onEvent?.({ kind: 'loading', lang, loaded, total }))
 
   // --- compilation (C++)

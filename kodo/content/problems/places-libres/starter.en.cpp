@@ -2,10 +2,7 @@
 using namespace std;
 
 int main() {
-    int c, p;
-    cin >> c >> p;
-
-    // Your turn: compute the number of free seats, then print it.
+    // Read C (first line), then P (second line), then print the number of free seats.
 
     return 0;
 }

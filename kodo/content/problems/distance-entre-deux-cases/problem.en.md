@@ -24,7 +24,7 @@ A single integer: the minimum number of steps to go from `A` to `B`.
 ## Hints
 1. Start by finding the row and the column of `A`, then those of `B`, by going through all the cells with two nested loops.
 2. With no obstacles, you have to make as many vertical steps as the gap between the two rows, and as many horizontal steps as the gap between the two columns.
-3. The gap between two numbers `a` and `b` is `abs(a - b)`: it is always positive, whether `B` is above or below `A`, to the left or to the right.
+3. The gap between two numbers `a` and `b` is `abs(a - b)`: it is never negative, whether `B` is above or below `A`, to the left or to the right.
 
 ## Solution
 We go through the grid with two nested loops: row `i` from `0` to `H - 1` and column `j` from `0` to `W - 1`. When the cell `(i, j)` is `A`, we remember `(i, j)` as the position of `A`; when it is `B`, as the position of `B`. (In the reference solutions, the grid is called `grille`, French for "grid".)

@@ -26,13 +26,13 @@ Un seul entier : la quantité de nombres en montagne `n` tels que `A ≤ n ≤ B
 - 1 ≤ A ≤ B ≤ 100 000
 
 ## Indices
-1. Découpe le problème. Écris d'abord une fonction `chiffres(n)` qui renvoie la liste des chiffres de `n` dans l'ordre (`1352` donne `[1, 3, 5, 2]`). Le dernier chiffre de `n` est `n % 10`, et `n // 10` enlève ce dernier chiffre.
+1. Découpe le problème. Écris d'abord une fonction `chiffres(n)` qui renvoie la liste des chiffres de `n` dans l'ordre (`1352` donne `[1, 3, 5, 2]`). Le dernier chiffre de `n` est `n % 10`, et `n // 10` (`n / 10` en C++, entre deux `int`) enlève ce dernier chiffre.
 2. Écris ensuite une fonction `est_montagne(n)` qui renvoie vrai ou faux. Le programme principal n'aura plus qu'à l'appeler pour chaque nombre de `A` à `B`.
 3. Dans `est_montagne`, avance un indice `i` tant que le chiffre suivant est plus grand : tu arrives au sommet. Vérifie que le sommet n'est ni au tout début ni à la toute fin. Puis continue d'avancer tant que le chiffre suivant est plus petit : le nombre est en montagne si tu arrives ainsi jusqu'au dernier chiffre.
 
 ## Solution
 On sépare le travail en deux fonctions :
-- `chiffres(n)` récupère les chiffres un par un avec `n % 10` (le dernier chiffre) et `n // 10` (le nombre sans son dernier chiffre). On les obtient de droite à gauche, donc on retourne la liste à la fin ;
+- `chiffres(n)` récupère les chiffres un par un avec `n % 10` (le dernier chiffre) et `n // 10` (le nombre sans son dernier chiffre ; `n / 10` en C++). On les obtient de droite à gauche, donc on retourne la liste à la fin ;
 - `est_montagne(n)` parcourt cette liste en deux étapes. D'abord la montée : on avance tant que `c[i] < c[i + 1]`. Si l'on n'a pas bougé (`i = 0`), le nombre ne monte pas ; si l'on est déjà au bout, il ne redescend pas : dans les deux cas, il n'est pas en montagne. Ensuite la descente : on avance tant que `c[i] > c[i + 1]`. Le nombre est en montagne si et seulement si on termine sur le dernier chiffre.
 
 Le programme principal compte simplement les `n` de `A` à `B` pour lesquels `est_montagne(n)` est vrai.

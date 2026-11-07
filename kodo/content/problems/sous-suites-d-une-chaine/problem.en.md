@@ -32,7 +32,7 @@ All letters are lowercase, without accents.
 ## Solution
 We read `P` only once, from left to right, keeping an index `j` on the next letter of the word to find. At each letter of `P`, if it equals `word[j]`, we take it and move on to the next letter of the word (`j` increases by 1). Otherwise, we skip it. The word is a subsequence if, at the end, all its letters have been found, that is, if `j` equals the length of the word. (In the reference solutions, the word is called `mot`.)
 
-Why is it correct to always take **the first** letter that fits? If you can form the word using a letter further on in `P`, you can also use the first identical letter: it is even earlier in `P`, so all the letters chosen afterwards are still after it.
+Why is it correct to always take **the first** letter that fits? If you can form the word using a letter further on in `P`, you can also use the first identical letter that comes after the previously chosen letter: it is even earlier in `P`, so all the letters chosen afterwards are still after it.
 
 The traps:
 - don't look for each letter of the word from the start of `P`: the order matters (`mare` isn't a subsequence of `programmes`), and a letter of `P` can only be used once (`aa` isn't one either, because `programmes` has only one `a`);

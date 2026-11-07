@@ -36,6 +36,6 @@ On parcourt le message caractère par caractère et on construit le message déc
 Le modulo est ce qui fait « boucler » l'alphabet : avec `K = 3`, la lettre `b` (numéro 1) donne 1 − 3 = −2, et −2 modulo 26 vaut 24, c'est-à-dire `y`.
 
 Les pièges :
-- en C++ (et dans beaucoup d'autres langages), `-2 % 26` vaut `-2` et non `24`. On écrit donc `(numero - K + 26) % 26` : comme `K ≤ 25`, le nombre reste positif. En Python, `%` donne toujours un résultat positif quand on divise par un nombre positif ;
+- en C++ (et dans beaucoup d'autres langages), `-2 % 26` vaut `-2` et non `24`. On écrit donc `(numero - K + 26) % 26` : comme `K ≤ 25`, le nombre reste positif. En Python, `%` ne donne jamais un résultat négatif quand on divise par un nombre positif (ici, toujours un nombre entre 0 et 25) ;
 - il faut **reculer** de `K` places, pas avancer : c'est le message *codé* que l'on reçoit ;
 - en C++, après `cin >> k`, il reste un retour à la ligne à lire avant d'utiliser `getline` pour le message. Sinon, `getline` renvoie une ligne vide.

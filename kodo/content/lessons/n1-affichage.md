@@ -118,7 +118,7 @@ cout << 3 << " " << 4 << "\n";
 
 Les deux programmes affichent `Total : 12`, puis `3 4` sur la ligne suivante. En Python, `print` met une espace entre les éléments séparés par des virgules. En C++, `cout` n'ajoute rien : c'est à toi d'écrire les espaces.
 
-Ta réponse est comparée mot à mot avec la réponse attendue. Les majuscules et la ponctuation comptent, et rien d'autre ne doit être affiché. N'écris donc pas `input("Donne un nombre : ")` : ce message s'afficherait et ta réponse serait refusée.
+Ta réponse est comparée mot à mot avec la réponse attendue. Les majuscules et la ponctuation comptent, et rien d'autre ne doit être affiché. N'écris donc pas `print("Résultat :", x)` quand on attend seulement le nombre : ta réponse serait refusée. Sur Kodo, le texte entre les parenthèses de `input(…)` n'est pas affiché, mais ailleurs il le serait : prends l'habitude d'écrire `input()` sans message.
 
 ## À retenir
 

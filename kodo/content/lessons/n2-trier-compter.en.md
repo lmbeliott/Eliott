@@ -121,9 +121,25 @@ cout << groups[4][0] << " " << groups[4][1] << "\n";   // salt rice
 
 The whole art of grouping is choosing the right key: a value you compute for each item, which is the same for two items exactly when they belong in the same group.
 
+The key can be any value computed from the item, including a string built from it. In Python, `sorted` applied to a string gives the **list** of its sorted letters, and `"".join(...)` glues those letters back into a string. In C++, `sort` sorts the letters of a `string` directly.
+
+```python
+letters = sorted("pomme")
+print(letters)            # ['e', 'm', 'm', 'o', 'p']
+print("".join(letters))   # emmop
+```
+
+```cpp
+string s = "pomme";
+sort(s.begin(), s.end());
+cout << s << "\n";        // emmop
+```
+
+Careful: in Python, a dictionary key must be a string, a number or a tuple, never a list (otherwise: `TypeError: unhashable type: 'list'`). Finally, like pairs, two lists (or two `vector`s) are compared element by element: so a list of lists can be sorted with `sort`.
+
 ## Key takeaways
 
 - `sort` puts a list in increasing order; strings are compared in alphabetical order.
 - Pairs are sorted by their first element first: put the main criterion there, and use `-score` for a decreasing order.
 - To count letters or small integers, an array of counters is enough; for words, use a dictionary.
-- A dictionary of lists groups together the items that have the same key.
+- A dictionary of lists groups together the items that have the same key; that key can be a computed string, but not a list.

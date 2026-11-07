@@ -23,7 +23,7 @@ The total time, in the form `hh:mm`: the number of hours, written with at least 
 ## Hints
 1. It's much easier to compute with minutes than with hours and minutes. Write a function `to_minutes(time)` that turns `"08:45"` into `525` (8 × 60 + 45).
 2. In `"08:45"`, the hours are the characters at indices `0` and `1`, and the minutes those at indices `3` and `4`. In Python, `int(time[0:2])` gives the hours. In C++, `(time[0] - '0') * 10 + (time[1] - '0')`.
-3. For the output, write a function `two_digits(n)` that returns `"07"` for `7` and `"45"` for `45`, then a function `to_text(duration)` that uses it twice: for the hours (`duration // 60`) and for the minutes (`duration % 60`).
+3. For the output, write a function `two_digits(n)` that returns `"07"` for `7` and `"45"` for `45`, then a function `to_text(duration)` that uses it twice: for the hours (`duration // 60`, or `duration / 60` in C++) and for the minutes (`duration % 60`).
 
 ## Solution
 We split the problem into three small functions. In the reference solutions, they're called `en_minutes`, `deux_chiffres` and `en_texte`, French for "to minutes", "two digits" and "to text":

@@ -30,7 +30,7 @@ The trick is to convert everything into minutes since midnight:
 - the start is `H * 60 + M` minutes after midnight;
 - the end is `D` minutes after the start.
 
-Then we go back to hours and minutes: the hours are the quotient of the end time by 60 (`// 60` in Python, `/ 60` in C++), and the minutes are the remainder (`% 60`). If the end comes after midnight, that number of hours is 24 or more; but the clock has started again from zero, so we take the remainder of the division by 24.
+Then we go back to hours and minutes: the hours are the end time divided by 60, rounded down (`// 60` in Python, `/ 60` in C++), and the minutes are the remainder (`% 60`). If the end comes after midnight, that number of hours is 24 or more; but the clock has started again from zero, so we take the remainder when dividing by 24.
 
 Example: the start is at 23:10, which is 1,390 minutes after midnight; the machine runs for 125 minutes; so it stops at 1,515 minutes, which is 25 hours and 15 minutes. The clock shows 25 % 24 = 1 hour, so the answer is `1 15`.
 

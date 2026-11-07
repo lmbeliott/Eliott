@@ -56,7 +56,7 @@ export function Groups() {
             <LinkButton to={`/connexion?retour=${encodeURIComponent(window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), ''))}`}>
               {t('Se connecter', 'Sign in')}
             </LinkButton>
-            <LinkButton to="/inscription" variant="secondary">
+            <LinkButton to={`/inscription?retour=${encodeURIComponent(window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), ''))}`} variant="secondary">
               {t('Créer un compte', 'Sign up')}
             </LinkButton>
           </div>

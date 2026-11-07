@@ -24,7 +24,7 @@ if (points >= 30) {
 
 If the condition `points >= 30` is true, the program runs the first block; otherwise, it runs the `else` block. Never both.
 
-In Python, the `if` line ends with a colon `:`, and the block is **shifted to the right** (we say "indented") by 4 spaces. This shift is what tells Python which lines belong to the block. In C++, the condition goes between parentheses and the block between curly braces `{ }`.
+In Python, the `if` and `else` lines end with a colon `:`, and each block is **shifted to the right** (we say "indented") by 4 spaces. This shift is what tells Python which lines belong to the block. In C++, the condition goes between parentheses and the block between curly braces `{ }`.
 
 The `else` is optional: an `if` on its own runs its block when the condition is true, and does nothing otherwise.
 
@@ -32,12 +32,10 @@ The `else` is optional: an `if` on its own runs its block when the condition is 
 
 A condition often compares two values. The operators are the same in Python and in C++:
 
-| Operator | Meaning |
-| --- | --- |
-| `==` | equal to |
-| `!=` | not equal to |
-| `<` and `>` | strictly less than, strictly greater than |
-| `<=` and `>=` | less than or equal to, greater than or equal to |
+- `==`: equal to;
+- `!=`: not equal to;
+- `<` and `>`: strictly less than, strictly greater than;
+- `<=` and `>=`: less than or equal to, greater than or equal to.
 
 Watch out for the double equals sign: `x = 5` stores 5 in `x`, whereas `x == 5` **asks** whether `x` is 5.
 
@@ -92,6 +90,8 @@ if (points < 30) {
 The tests are done **in order**, and only the first true test is run: the following ones are skipped. So when the program reaches `points < 80`, it already knows that `points` is at least 30. The final `else` catches every case that is left.
 
 The order of the tests matters: if we tested `points < 80` first, a test would never be announced as failed.
+
+In Python, the `elif` line also ends with a colon `:`, and its block is indented.
 
 ## Combining conditions
 

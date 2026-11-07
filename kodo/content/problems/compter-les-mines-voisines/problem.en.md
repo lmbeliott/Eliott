@@ -33,4 +33,4 @@ This way, we build each row of the new grid and print it. (In the reference solu
 The traps:
 - **the edges**: in Python, `grid[-1]` doesn't cause an error but means the last row! The program would be wrong without telling you. In C++, reading outside the array can give anything. The bounds check is essential;
 - don't count the cell itself: it makes no difference here (the cell is empty), but it's a good habit;
-- don't change the starting grid while you go through it: a digit written too early would be read again as a cell. Write the result into a new grid (or print it directly).
+- if you write the digits into the starting grid itself, you must test `== '*'` to recognise a mine: with `!= '.'`, a digit already written would be counted as a mine. The safest way is to write the result into a new grid (or print it directly).

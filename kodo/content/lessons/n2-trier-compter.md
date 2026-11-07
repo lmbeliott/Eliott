@@ -121,9 +121,25 @@ cout << groupes[3][0] << " " << groupes[3][1] << "\n";   // sel riz
 
 Tout l'art du regroupement est de bien choisir la clé : une valeur que l'on calcule pour chaque élément, et qui est la même pour deux éléments exactement quand ils doivent être dans le même groupe.
 
+La clé peut être n'importe quelle valeur calculée à partir de l'élément, y compris une chaîne fabriquée à partir de lui. En Python, `sorted` appliqué à une chaîne donne la **liste** de ses lettres triées, et `"".join(...)` recolle ces lettres en une chaîne. En C++, `sort` trie directement les lettres d'une `string`.
+
+```python
+lettres = sorted("pomme")
+print(lettres)            # ['e', 'm', 'm', 'o', 'p']
+print("".join(lettres))   # emmop
+```
+
+```cpp
+string s = "pomme";
+sort(s.begin(), s.end());
+cout << s << "\n";        // emmop
+```
+
+Attention : en Python, une clé de dictionnaire doit être une chaîne, un nombre ou un tuple, jamais une liste (sinon : `TypeError: unhashable type: 'list'`). Enfin, comme les couples, deux listes (ou deux `vector`) se comparent élément par élément : une liste de listes se trie donc avec `sort`.
+
 ## À retenir
 
 - `sort` range une liste dans l'ordre croissant ; les chaînes se comparent dans l'ordre alphabétique.
 - Les couples se trient d'abord par leur premier élément : mets-y le critère principal, et `-score` pour un ordre décroissant.
 - Pour compter des lettres ou des petits entiers, un tableau de compteurs suffit ; pour des mots, utilise un dictionnaire.
-- Un dictionnaire de listes regroupe les éléments qui ont la même clé.
+- Un dictionnaire de listes regroupe les éléments qui ont la même clé ; cette clé peut être une chaîne calculée, mais pas une liste.

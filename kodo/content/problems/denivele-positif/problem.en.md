@@ -26,7 +26,7 @@ A single integer: the elevation gain, in meters.
 ## Solution
 We store the altitudes in a list, then look at each pair of points that follow each other: point `i - 1` and point `i`, for `i` going from `1` to `N - 1`. If `alt[i] > alt[i - 1]`, the route climbs `alt[i] - alt[i - 1]` meters, and we add this climb to the total. Otherwise, we add nothing.
 
-For example, for the altitudes 1,200, 1,500, 1,400, 1,700, 1,650: we go up 300, down 100, up 300, down 50. The elevation gain is 300 + 300 = 600.
+For example, for the altitudes 1200, 1500, 1400, 1700, 1650: we go up 300, down 100, up 300, down 50. The elevation gain is 300 + 300 = 600.
 
 The classic traps:
 - only computing "last altitude minus first altitude": that gives 450 on the example, because the descents have been subtracted;

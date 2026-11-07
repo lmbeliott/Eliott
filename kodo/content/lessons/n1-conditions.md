@@ -24,7 +24,7 @@ if (points >= 30) {
 
 Si la condition `points >= 30` est vraie, le programme exécute le premier bloc ; sinon, il exécute le bloc du `else`. Jamais les deux.
 
-En Python, la ligne du `if` se termine par deux-points `:`, et le bloc est **décalé vers la droite** (on dit « indenté ») de 4 espaces. C'est ce décalage qui indique quelles lignes font partie du bloc. En C++, la condition s'écrit entre parenthèses et le bloc entre accolades `{ }`.
+En Python, les lignes du `if` et du `else` se terminent par deux-points `:`, et chaque bloc est **décalé vers la droite** (on dit « indenté ») de 4 espaces. C'est ce décalage qui indique quelles lignes font partie du bloc. En C++, la condition s'écrit entre parenthèses et le bloc entre accolades `{ }`.
 
 Le `else` est facultatif : un `if` seul exécute son bloc quand la condition est vraie, et ne fait rien sinon.
 
@@ -90,6 +90,8 @@ if (points < 30) {
 Les tests sont faits **dans l'ordre**, et seul le premier test vrai est exécuté : les suivants sont sautés. Quand le programme arrive à `points < 80`, il sait donc déjà que `points` vaut au moins 30. Le `else` final attrape tous les cas qui restent.
 
 L'ordre des tests compte : si on testait `points < 80` en premier, un test ne serait jamais annoncé comme raté.
+
+En Python, la ligne du `elif` se termine aussi par deux-points `:`, et son bloc est indenté.
 
 ## Combiner des conditions
 

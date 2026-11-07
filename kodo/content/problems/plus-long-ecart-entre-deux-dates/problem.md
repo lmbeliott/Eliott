@@ -18,6 +18,8 @@ Attention aux années bissextiles, où février a 29 jours. Une année est bisse
 - La première ligne contient un entier `N` : le nombre de dates.
 - Les `N` lignes suivantes contiennent chacune une date sous la forme `jj/mm/aaaa`, dans l'ordre chronologique. Une même date peut apparaître plusieurs fois à la suite.
 
+Pour lire une date comme `14/07/2025` : en Python, `input().split("/")` découpe la ligne aux `/`. En C++, on peut lire `cin >> j >> c >> m >> c >> a` avec une variable `char c` qui récupère les `/`.
+
 ## Sortie
 Un seul entier : le plus grand nombre de jours entre deux dates consécutives du registre.
 
@@ -43,5 +45,4 @@ Ce problème montre bien l'intérêt des fonctions : `est_bissextile` sert à la
 Les pièges :
 - la règle des siècles : `1900` et `2100` ne sont pas bissextiles, mais `2000` l'est ;
 - pour février, c'est l'année **de la date** qui compte, pas une autre ;
-- deux dates identiques sont à 0 jour d'écart, et ce n'est pas une erreur ;
-- pour lire `14/07/2025` : en Python, `input().split("/")` découpe la ligne aux `/`. En C++, on peut lire `cin >> j >> c >> m >> c >> a` avec une variable `char c` qui récupère les `/`.
+- deux dates identiques sont à 0 jour d'écart, et ce n'est pas une erreur.

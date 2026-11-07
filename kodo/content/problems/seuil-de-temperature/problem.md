@@ -29,4 +29,4 @@ Un seul mot, en majuscules : `OUI` ou `NON`.
 ## Solution
 On lit `T`, puis on teste la condition `T >= 8` : si elle est vraie, on affiche `OUI`, sinon `NON`.
 
-Le piège classique : écrire `t > 8` au lieu de `t >= 8`. Les deux conditions donnent le même résultat pour presque toutes les températures… sauf pour 8 degrés, où la réponse est bien `OUI` ! Quand un énoncé dit « au moins », « au plus », « strictement », prends le temps de choisir le bon opérateur, et teste toujours la valeur limite.
+Le piège classique : écrire `T > 8` au lieu de `T >= 8`. Les deux conditions donnent le même résultat pour presque toutes les températures… sauf pour 8 degrés, où la réponse est bien `OUI` ! Quand un énoncé dit « au moins », « au plus », « strictement », prends le temps de choisir le bon opérateur, et teste toujours la valeur limite.
