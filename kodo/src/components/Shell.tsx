@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useMatches, useNavigate } from 'react-router-dom'
 import { Flame, LogOut, Menu, Moon, Settings, Sun, User, X } from 'lucide-react'
 import { Logo } from './Logo'
+import { CellText } from './CellText'
 import { Avatar, cx, IconButton, LinkButton, Segmented } from './ui'
 import { useAuth } from '../lib/auth'
 import { formatPoints, useI18n, type UiLang } from '../lib/i18n'
@@ -222,10 +223,14 @@ function Footer() {
   ]
   return (
     <footer className="mt-24 border-t border-line">
+      <div className="mx-auto max-w-[1200px] overflow-hidden px-4 pt-12 sm:px-6">
+        {/* Le mot-marque en cellules : trois cases vides allumées, comme des problèmes réussis. */}
+        <CellText text="kodo" cell={14} gap={4} lit={[[0, 5], [3, 11], [6, 17]]} label="Kodo" className="hidden md:inline-grid" />
+        <CellText text="kodo" cell={7} gap={2} lit={[[0, 5], [3, 11], [6, 17]]} label="Kodo" className="md:hidden" />
+      </div>
       <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 text-sm sm:px-6 md:grid-cols-[1fr_auto]">
         <div className="max-w-md">
-          <Logo />
-          <p className="mt-3 text-muted">
+          <p className="text-muted">
             {t(
               'Ton code s’exécute dans ton navigateur : Python 3.14 avec Pyodide, C++17 avec Clang 22 compilé en WebAssembly.',
               'Your code runs in your browser: Python 3.14 with Pyodide, C++17 with Clang 22 compiled to WebAssembly.',
