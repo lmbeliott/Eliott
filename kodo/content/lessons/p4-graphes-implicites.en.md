@@ -377,7 +377,7 @@ A last remark is often decisive. If every transition can be undone (turning a wh
 
 **A visited set stored in a list.** Testing `state in visited` on a Python list scans the whole list: the search becomes quadratic. Use a `set`, a dictionary, or better, an array indexed by the integer code of the state.
 
-**Precedence of bit operators.** In C++, `m >> k & 1 == 1` reads as `m >> k & (1 == 1)`, because the comparison comes before `&`: write `(m >> k & 1) == 1`, or simply `if (m >> k & 1)`. Also in C++, `1 << k` is an `int`: for `k ≥ 31`, use `1LL << k`.
+**Precedence of bit operators.** In C++, the test "`k` is not in `m`" written `if (m >> k & 1 == 0)` reads as `if (m >> k & (1 == 0))`, because the comparison comes before `&`: it is always false. Write `if ((m >> k & 1) == 0)`. Also in C++, `1 << k` is an `int`: for `k ≥ 31`, use `1LL << k`.
 
 **An infinite or too large space.** Without a bound on the values, the search does not stop and ends with `MemoryError`. With a state that is too rich, it is correct but too slow: count the states again before programming.
 

@@ -377,7 +377,7 @@ Une dernière remarque est souvent décisive. Si chaque transition peut être d�
 
 **Un ensemble de visités dans une liste.** Tester `etat in visites` sur une liste Python parcourt toute la liste : le parcours devient quadratique. On utilise un `set`, un dictionnaire, ou mieux, un tableau indexé par le code entier de l'état.
 
-**Les priorités des opérateurs de bits.** En C++, `m >> k & 1 == 1` se lit `m >> k & (1 == 1)`, car la comparaison passe avant le `&` : on écrit `(m >> k & 1) == 1`, ou simplement `if (m >> k & 1)`. En C++ encore, `1 << k` est un `int` : pour `k ≥ 31`, il faut `1LL << k`.
+**Les priorités des opérateurs de bits.** En C++, le test « `k` n'est pas dans `m` » écrit `if (m >> k & 1 == 0)` se lit `if (m >> k & (1 == 0))`, car la comparaison passe avant le `&` : il est toujours faux. On écrit `if ((m >> k & 1) == 0)`. En C++ encore, `1 << k` est un `int` : pour `k ≥ 31`, il faut `1LL << k`.
 
 **Un espace infini ou trop grand.** Sans borne sur les valeurs, le parcours ne s'arrête pas et finit par `MemoryError`. Avec un état trop riche, il est correct mais trop lent : on recompte les états avant de programmer.
 
