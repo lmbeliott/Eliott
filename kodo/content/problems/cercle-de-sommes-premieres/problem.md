@@ -22,7 +22,7 @@ Compter les dispositions valables.
 Un seul entier : le nombre de dispositions valables.
 
 ## Contraintes
-- 3 ≤ N ≤ 12
+- 3 ≤ N ≤ 14
 - chaque entier est entre 1 et 1 000
 
 ## Indices
@@ -35,6 +35,6 @@ Un seul entier : le nombre de dispositions valables.
 
 **Retour sur trace.** Une fonction récursive place un nombre non encore utilisé à la position `i`, à condition que sa somme avec le nombre de la position `i − 1` soit première ; si ce n'est pas le cas, la branche est coupée immédiatement. Quand les `N` positions sont remplies, on vérifie la dernière somme, celle du dernier nombre et de `a₀`, et l'on compte 1. Les tests de primalité se font en temps constant grâce à un crible d'Ératosthène jusqu'à 2 000.
 
-**Taille de l'arbre de recherche.** Sans élagage, il y aurait `11! ≈ 4 × 10⁷` feuilles pour `N = 12`. L'élagage est très efficace : une somme d'impairs est paire et supérieure à 2, donc les nombres pairs et impairs doivent alterner, et parmi les sommes de parités différentes, peu sont premières. Sur les tests, l'arbre compte au plus quelques centaines de milliers de nœuds.
+**Taille de l'arbre de recherche.** Sans élagage, il y aurait `13! ≈ 6 × 10⁹` feuilles pour `N = 14`. L'élagage est très efficace : une somme d'impairs est paire et supérieure à 2, donc les nombres pairs et impairs doivent alterner, et parmi les sommes de parités différentes, peu sont premières. Sur les tests, l'arbre compte au plus quelques centaines de milliers de nœuds.
 
-**Pour aller plus loin.** Avec les nombres de 1 à `N`, l'alternance impose que `N` soit pair (sinon la réponse est 0) ; les réponses pour `N = 2, 4, 6, 8, 10, 12` sont 1, 2, 2, 4, 96 et 1 024.
+**Pour aller plus loin.** Avec les nombres de 1 à `N`, l'alternance impose que `N` soit pair (sinon la réponse est 0) ; les réponses pour `N = 4, 6, 8, 10, 12, 14` sont 2, 2, 4, 96, 1 024 et 2 880.
