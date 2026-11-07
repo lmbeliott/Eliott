@@ -13,7 +13,7 @@ import { locale, pick, plural, useI18n, type UiLang } from '../lib/i18n'
 import { judge, runtimeFor, warmUp, limitFor, type JudgeReport, type JudgeTest, type TestResult } from '../judge/judge'
 import { explainError, trimCompilerOutput } from '../judge/explain'
 import type { Lang } from '../judge/protocol'
-import { clearDraft, loadDraft, saveDraft, useCodeLang, useProgress, useRecordSubmission, type RecordInput } from '../lib/progress'
+import { clearDraft, loadDraft, pointsAfterHints, saveDraft, useCodeLang, useHintUnlocks, useProgress, useRecordSubmission, type HintUnlocks, type RecordInput } from '../lib/progress'
 import { useAuth } from '../lib/auth'
 import { errorText, type SubmitResult } from '../lib/supabase'
 import { useProblemStats } from '../lib/queries'
@@ -158,29 +158,75 @@ function Samples({ data }: { data: ProblemData }) {
   )
 }
 
-function Hints({ hints }: { hints: string[] }) {
+function Hints({ hints, points, solved, state }: { hints: string[]; points: number; solved: boolean; state: HintUnlocks }) {
   const { t, lang } = useI18n()
-  const [shown, setShown] = useState(0)
+  const [confirming, setConfirming] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   if (hints.length === 0) return <p className="text-sm text-ink-2">{t('Ce problème n’a pas d’indice.', 'This problem has no hints.')}</p>
+  const shown = state.opened
+  // Coût de l'indice suivant, en points de base du problème
+  const cost = solved ? 0 : pointsAfterHints(points, shown) - pointsAfterHints(points, shown + 1)
+  const reveal = async () => {
+    setBusy(true)
+    setError(null)
+    try {
+      await state.open(shown + 1)
+      setConfirming(false)
+    } catch (e) {
+      setError(errorText(e, lang))
+    } finally {
+      setBusy(false)
+    }
+  }
   return (
     <div className="max-w-[70ch]">
       <p className="text-sm text-ink-2">
         {t(
           `${plural(lang, hints.length, ['indice', 'indices'], ['', ''])}, du plus léger au plus complet, à ouvrir dans l’ordre.`,
           `${plural(lang, hints.length, ['', ''], ['hint', 'hints'])}, from lightest to most complete, opened in order.`,
-        )}
+        )}{' '}
+        {solved
+          ? t('Problème réussi : les indices sont gratuits.', 'Problem solved: hints are free.')
+          : t(
+              'Chaque indice ouvert avant la réussite réduit les points du problème : −15 % pour un indice, −35 % pour deux, −60 % pour trois.',
+              'Each hint opened before solving lowers the problem’s points: −15% for one hint, −35% for two, −60% for three.',
+            )}
       </p>
+      {state.charged > 0 && (
+        <p className="mt-2 text-sm font-medium text-ink">
+          {t(
+            `Ce problème rapporte maintenant ${pointsAfterHints(points, state.charged)} points au lieu de ${points}.`,
+            `This problem now gives ${pointsAfterHints(points, state.charged)} points instead of ${points}.`,
+          )}
+        </p>
+      )}
       <Panel as="section" className="mt-4">
         <ol className="divide-y divide-line">
           {hints.map((h, i) => (
             <li key={i} className="px-4 py-3.5">
-              <div className="flex min-h-8 items-center justify-between gap-3">
+              <div className="flex min-h-8 flex-wrap items-center justify-between gap-3">
                 <h3 className={cx('text-sm font-medium', i > shown && 'text-muted')}>{t(`Indice ${i + 1}`, `Hint ${i + 1}`)}</h3>
                 {i === shown ? (
-                  <Button variant="secondary" size="sm" onClick={() => setShown((n) => n + 1)}>
-                    <Lightbulb className="size-4" aria-hidden />
-                    {t(`Afficher l’indice ${i + 1}`, `Show hint ${i + 1}`)}
-                  </Button>
+                  state.loading ? (
+                    <Spinner label={t('Chargement…', 'Loading…')} />
+                  ) : confirming && cost > 0 ? (
+                    <span className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => setConfirming(false)} disabled={busy}>
+                        {t('Annuler', 'Cancel')}
+                      </Button>
+                      <Button size="sm" onClick={reveal} disabled={busy}>
+                        <Lightbulb className="size-4" aria-hidden />
+                        {t(`Ouvrir pour −${cost} points`, `Open for −${cost} points`)}
+                      </Button>
+                    </span>
+                  ) : (
+                    <Button variant="secondary" size="sm" onClick={() => (cost > 0 ? setConfirming(true) : reveal())} disabled={busy}>
+                      <Lightbulb className="size-4" aria-hidden />
+                      {t(`Afficher l’indice ${i + 1}`, `Show hint ${i + 1}`)}
+                      {cost > 0 && <span className="tabular text-xs font-normal text-muted">−{cost}</span>}
+                    </Button>
+                  )
                 ) : i > shown ? (
                   <span className="inline-flex items-center gap-1.5 text-xs text-muted">
                     <Lock className="size-3.5" aria-hidden />
@@ -188,6 +234,7 @@ function Hints({ hints }: { hints: string[] }) {
                   </span>
                 ) : null}
               </div>
+              {i === shown && error && <p className="mt-2 text-sm text-bad">{error}</p>}
               {i < shown && <div className="anim-rise prose-kodo mt-1 text-[0.9375rem]" dangerouslySetInnerHTML={{ __html: h }} />}
             </li>
           ))}
@@ -314,6 +361,8 @@ export function StatementPanel({
   const statsReady = community ? solversOverride !== undefined : !!stats.data
   const scroller = useRef<HTMLDivElement>(null)
   const prefix = `problem-${data.id}`
+  const hintState = useHintUnlocks(data.id, solved)
+  const hintCharged = community ? 0 : hintState.charged
   const pickTab = (v: LeftTab) => {
     setTab(v)
     scroller.current?.scrollTo({ top: 0 })
@@ -392,7 +441,18 @@ export function StatementPanel({
         <h1 className="display mt-1 text-xl leading-tight sm:text-2xl">{text.title}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-ink-2">
           <DifficultyMark difficulty={data.difficulty} />
-          <span>{community ? t('Sans points', 'No points') : t(`${data.points} points`, `${data.points} points`)}</span>
+          <span>
+            {community ? (
+              t('Sans points', 'No points')
+            ) : hintCharged > 0 ? (
+              <>
+                <span className="mr-1.5 text-muted line-through">{data.points}</span>
+                {t(`${pointsAfterHints(data.points, hintCharged)} points`, `${pointsAfterHints(data.points, hintCharged)} points`)}
+              </>
+            ) : (
+              t(`${data.points} points`, `${data.points} points`)
+            )}
+          </span>
           {meta?.synthesis && <span className="font-medium text-accent">{t('Problème de synthèse', 'Synthesis problem')}</span>}
           <span title={t('Limite par test, selon le langage', 'Limit per test, by language')} className="inline-flex items-center gap-1.5">
             <Clock className="size-3.5 text-muted" aria-hidden />
@@ -448,7 +508,7 @@ export function StatementPanel({
             {lang === 'en' && !data.text.en && !community && <p className="mt-8 text-sm text-muted">Not yet translated into English: shown in French.</p>}
           </article>
         )}
-        {tab === 'hints' && <Hints key={data.id} hints={text.hints} />}
+        {tab === 'hints' && <Hints key={data.id} hints={text.hints} points={data.points} solved={solved} state={hintState} />}
         {tab === 'solution' && <Solution data={data} solved={solved} lang={codeLang} onOpenHints={() => pickTab('hints')} />}
       </div>
     </div>
@@ -722,6 +782,14 @@ function SuccessBlock({ o, data, next, onShowSolution }: { o: Outcome; data: Pro
                 <>
                   <dt className="text-ink-2">{t('Bonus défi du jour (50 %)', 'Daily challenge bonus (50%)')}</dt>
                   <dd className="tabular text-right">+{Math.floor(data.points / 2)}</dd>
+                </>
+              )}
+              {!!rec.hint_penalty && (
+                <>
+                  <dt className="text-ink-2">{t(`Indices ouverts (−${rec.hint_penalty} %)`, `Hints opened (−${rec.hint_penalty}%)`)}</dt>
+                  <dd className="tabular text-right">
+                    −{data.points + (rec.first_try ? Math.floor(data.points / 5) : 0) + (rec.daily ? Math.floor(data.points / 2) : 0) - rec.xp_gain}
+                  </dd>
                 </>
               )}
               {!!rec.chapter_bonus && (

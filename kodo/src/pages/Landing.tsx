@@ -476,8 +476,8 @@ export function Landing() {
             </h2>
             <p className="mt-3 text-ink-2">
               {t(
-                'Points gagnés depuis lundi, heure de Paris. Un problème rapporte ses points une seule fois, +20 % si la première soumission est acceptée, +50 % s’il fait partie du défi du jour.',
-                'Points earned since Monday, Paris time. A problem pays its points once, +20% if the first submission is accepted, +50% if it is part of the daily challenge.',
+                'Points gagnés depuis lundi, heure de Paris. Un problème rapporte ses points une seule fois, +20 % si la première soumission est acceptée, +50 % s’il fait partie du défi du jour. Chaque indice ouvert avant la réussite en retire une part.',
+                'Points earned since Monday, Paris time. A problem pays its points once, +20% if the first submission is accepted, +50% if it is part of the daily challenge. Each hint opened before solving takes a share away.',
               )}
             </p>
             <Link to="/classements" className="mt-4 inline-block text-sm font-medium text-accent underline-offset-2 hover:underline">

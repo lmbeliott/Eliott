@@ -65,6 +65,8 @@ export interface SubmitResult {
   xp_gain: number
   /** Bonus de fin de chapitre du parcours (0 sinon) */
   chapter_bonus?: number
+  /** Pourcentage retiré pour les indices ouverts avant la réussite */
+  hint_penalty?: number
   first_try: boolean
   daily: boolean
   xp: number

@@ -90,6 +90,9 @@ export function About() {
             ...POINTS_TABLE.map((x) => [lang === 'en' ? x.en : x.fr, `+${formatPoints(lang, x.points)}`] as [ReactNode, ReactNode]),
             [t('Première soumission acceptée', 'First submission accepted'), '+20 %'],
             [t('Problème du défi du jour, réussi le jour même', 'Daily challenge problem, solved that day'), '+50 %'],
+            [t('Un indice ouvert avant la réussite', 'One hint opened before solving'), '−15 %'],
+            [t('Deux indices', 'Two hints'), '−35 %'],
+            [t('Trois indices', 'Three hints'), '−60 %'],
           ]}
         />
       </Section>

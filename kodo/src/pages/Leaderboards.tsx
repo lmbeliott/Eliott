@@ -24,8 +24,8 @@ export function Leaderboards() {
       <PageHeader
         title={t('Classements', 'Leaderboards')}
         lead={t(
-          'Points par problème réussi : 50 en Facile, 100 en Moyen, 200 en Difficile, 400 en Expert. Bonus de 20 % au premier essai, de 50 % pour le défi du jour.',
-          'Points per solved problem: 50 for Easy, 100 for Medium, 200 for Hard, 400 for Expert. 20% bonus on the first try, 50% for the daily challenge.',
+          'Points par problème réussi : 50 en Facile, 100 en Moyen, 200 en Difficile, 400 en Expert. Bonus de 20 % au premier essai, de 50 % pour le défi du jour ; −15 %, −35 % ou −60 % avec 1, 2 ou 3 indices ouverts.',
+          'Points per solved problem: 50 for Easy, 100 for Medium, 200 for Hard, 400 for Expert. 20% bonus on the first try, 50% for the daily challenge; −15%, −35% or −60% with 1, 2 or 3 hints opened.',
         )}
       />
       <div className="mb-4 flex flex-wrap items-center gap-3">

@@ -37,6 +37,8 @@ interface GuestSolve {
 interface GuestState {
   solved: Record<string, GuestSolve>
   tried: Record<string, true>
+  /** Indices ouverts avant la réussite, envoyés au serveur à la connexion */
+  hints?: Record<string, number>
 }
 const GUEST_KEY = 'kodo:guest'
 const readGuest = () => readLocal<GuestState>(GUEST_KEY, { solved: {}, tried: {} })
@@ -178,15 +180,28 @@ export function useGuestSync(onSynced: (count: number) => void) {
       if (doneFor.current !== uid) return // déconnecté entre-temps
       const g = readGuest()
       const entries = Object.entries(g.solved)
-      if (entries.length === 0 && Object.keys(g.tried).length === 0) return
+      const guestHints = Object.entries(g.hints ?? {})
+      if (entries.length === 0 && Object.keys(g.tried).length === 0 && guestHints.length === 0) return
+      // Indices ouverts en invité : enregistrés avant les réussites, pour que leur coût s'applique.
+      const keptHints: Record<string, number> = {}
+      for (const [id, n] of guestHints) {
+        if (!problemById(id)) continue
+        for (let i = 1; i <= n; i++) {
+          const { error } = await supabase.rpc('unlock_hint', { p_problem: id, p_index: i })
+          if (error && error.code !== '22023') {
+            keptHints[id] = n
+            break
+          }
+        }
+      }
       let count = 0
       let sent = 0
       let limited = false
-      const kept: GuestState = { solved: {}, tried: {} }
+      const kept: GuestState = { solved: {}, tried: {}, hints: keptHints }
       for (const [id, s] of entries) {
         if (!problemById(id)) continue
         // Le serveur accepte 20 soumissions par minute : on en garde pour l'élève, le reste part plus tard.
-        if (limited || sent >= GUEST_BATCH) {
+        if (limited || sent >= GUEST_BATCH || keptHints[id]) {
           kept.solved[id] = s
           continue
         }
@@ -213,7 +228,7 @@ export function useGuestSync(onSynced: (count: number) => void) {
       window.dispatchEvent(new Event('kodo:guest'))
       qc.invalidateQueries()
       if (count > 0) notify.current(count)
-      if (Object.keys(kept.solved).length > 0) timer = setTimeout(sync, 61_000)
+      if (Object.keys(kept.solved).length > 0 || Object.keys(keptHints).length > 0) timer = setTimeout(sync, 61_000)
     }
     sync()
     return () => clearTimeout(timer)
@@ -221,6 +236,74 @@ export function useGuestSync(onSynced: (count: number) => void) {
 }
 
 const GUEST_BATCH = 15
+
+// ------------------------------------------------------------------ Indices payants
+
+/** Pourcentage des points retiré selon le nombre d'indices ouverts avant la réussite. */
+const HINT_PENALTY = [0, 15, 35, 60]
+export const hintPenalty = (opened: number) => HINT_PENALTY[Math.min(Math.max(opened, 0), HINT_PENALTY.length - 1)]
+/** Points de base d'un problème après les indices ouverts (même arrondi que le serveur). */
+export const pointsAfterHints = (points: number, opened: number) => Math.floor((points * (100 - hintPenalty(opened))) / 100)
+
+export interface HintUnlocks {
+  /** Indices visibles */
+  opened: number
+  /** Indices qui comptent dans le coût (0 une fois le problème réussi) */
+  charged: number
+  loading: boolean
+  open: (index: number) => Promise<void>
+}
+
+/** Indices ouverts d'un problème. Connecté : stockés sur le serveur (une déconnexion ne rend pas
+ *  les points) ; invité : dans le navigateur, puis envoyés à la connexion. Gratuits après la réussite. */
+export function useHintUnlocks(problemId: string, solved: boolean): HintUnlocks {
+  const { session, ready } = useAuth()
+  const uid = session?.user.id
+  const qc = useQueryClient()
+  const [guestCount, setGuestCount] = useState(() => readGuest().hints?.[problemId] ?? 0)
+  const [free, setFree] = useState(0)
+  useEffect(() => {
+    setGuestCount(readGuest().hints?.[problemId] ?? 0)
+    setFree(0)
+  }, [problemId])
+  const q = useQuery({
+    queryKey: ['hints', uid, problemId],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('hint_unlocks').select('hints').eq('user_id', uid!).eq('problem_id', problemId).maybeSingle()
+      if (error) throw error
+      return (data as { hints: number } | null)?.hints ?? 0
+    },
+  })
+  const recorded = uid ? (q.data ?? 0) : guestCount
+  const open = useCallback(
+    async (index: number) => {
+      if (solved) {
+        setFree((n) => Math.max(n, index))
+        return
+      }
+      if (!uid) {
+        const g = readGuest()
+        g.hints = { ...(g.hints ?? {}), [problemId]: Math.max(g.hints?.[problemId] ?? 0, index) }
+        writeLocal(GUEST_KEY, g)
+        setGuestCount(g.hints[problemId])
+        return
+      }
+      const { data, error } = await supabase.rpc('unlock_hint', { p_problem: problemId, p_index: index })
+      if (error) throw error
+      const r = data as { hints: number; solved: boolean }
+      if (r.solved) setFree((n) => Math.max(n, index))
+      else qc.setQueryData(['hints', uid, problemId], r.hints)
+    },
+    [solved, uid, problemId, qc],
+  )
+  return {
+    opened: Math.max(recorded, free),
+    charged: solved ? 0 : recorded,
+    loading: !ready || (!!uid && q.isLoading),
+    open,
+  }
+}
 
 // ------------------------------------------------------------------ Brouillons et préférences
 
