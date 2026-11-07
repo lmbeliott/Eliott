@@ -1,4 +1,4 @@
-Sur une carte routière, chaque route a une longueur, et l'on cherche le trajet le plus court entre deux villes. Le parcours en largeur ne suffit plus : il minimise le **nombre** de routes empruntées, pas la longueur totale. Deux routes de 2 km valent mieux qu'une seule de 10 km. Ce chapitre présente les trois algorithmes classiques, Dijkstra, Bellman-Ford et Floyd-Warshall, avec leur preuve et leur coût. Les sommets ne seront pas toujours des lieux : ce peuvent être des restes modulo `K` ou des couples (lieu, information).
+Sur une carte, chaque route a une longueur, et l'on cherche le trajet le plus court entre deux villes. Le parcours en largeur ne suffit plus : il minimise le **nombre** de routes empruntées, pas la longueur totale. Deux routes de 2 km valent mieux qu'une seule de 10 km. Ce chapitre présente les trois algorithmes classiques, Dijkstra, Bellman-Ford et Floyd-Warshall, avec leur preuve et leur coût. Les sommets ne seront pas toujours des lieux : ce peuvent être des restes modulo `K` ou des couples (lieu, information).
 
 ## Graphes pondérés et distances
 
@@ -52,7 +52,7 @@ int main() {
 }
 ```
 
-Le programme affiche `2 a`, `2 b`, `5 a` puis `8 c` : les couples sortent dans l'ordre croissant, et à égalité de premier élément, `a` passe avant `b`. On mettra donc toujours la **distance en premier** dans les couples.
+Le programme affiche `2 a`, `2 b`, `5 a` puis `8 c` : les couples sortent dans l'ordre croissant. On mettra donc toujours la **distance en premier**.
 
 ## L'algorithme de Dijkstra
 
@@ -130,7 +130,7 @@ Le programme affiche `0 5 2 6 8`. Le sommet `3` sort avec 2 et améliore `2` de 
 
 **Pourquoi les longueurs négatives cassent tout.** L'argument utilise `d(s, y) ≤ d(s, u)` : la fin du chemin ne peut pas faire diminuer la longueur. Avec les arcs `1 → 2` de longueur 4, `1 → 3` de longueur 5 et `3 → 2` de longueur −3, le sommet `2` sort du tas avec 4 alors que sa vraie distance est 2. Dijkstra rend alors une réponse fausse (si l'on interdit de traiter deux fois un sommet), ou retraite des sommets un nombre de fois qui peut devenir exponentiel.
 
-**Complexité.** Chaque sommet est traité une fois, donc chaque arête est relâchée une fois par extrémité, et chaque relâchement ajoute au plus un couple au tas. Le tas reçoit au plus `M + 1` couples (`2M + 1` pour un graphe non orienté), et chaque opération coûte O(log M) = O(log N), puisque `M ≤ N²`. Au total : **O((N + M) log N)**. Sans tas, chercher le minimum parmi tous les sommets coûte O(N²) : trop lent pour `N = 10⁵`.
+**Complexité.** Chaque sommet est traité une fois, donc chaque arc est relâché une fois et ajoute au plus un couple au tas. Le tas reçoit au plus `M + 1` couples (`2M + 1` pour un graphe non orienté), et chaque opération coûte O(log M) = O(log N), puisque `M ≤ N²`. Au total : **O((N + M) log N)**. Sans tas, chercher le minimum parmi tous les sommets coûte O(N²) : trop lent pour `N = 10⁵`.
 
 ## Retrouver un plus court chemin
 
