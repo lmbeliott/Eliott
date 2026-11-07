@@ -1,0 +1,46 @@
+{
+ "pyodide/pyodide.mjs": {
+  "gz": false,
+  "bytes": 17931
+ },
+ "pyodide/pyodide.asm.mjs": {
+  "gz": false,
+  "bytes": 1250344
+ },
+ "pyodide/pyodide-lock.json": {
+  "gz": false,
+  "bytes": 119077
+ },
+ "pyodide/python_stdlib.zip": {
+  "gz": false,
+  "bytes": 2545637
+ },
+ "pyodide/pyodide.asm.wasm": {
+  "gz": true,
+  "bytes": 3593065
+ },
+ "clang/bundle.js": {
+  "gz": false,
+  "bytes": 253926
+ },
+ "clang/llvm.core.wasm": {
+  "gz": true,
+  "bytes": 22804749
+ },
+ "clang/llvm.core2.wasm": {
+  "gz": false,
+  "bytes": 37626
+ },
+ "clang/llvm.core3.wasm": {
+  "gz": false,
+  "bytes": 5458
+ },
+ "clang/llvm.core4.wasm": {
+  "gz": false,
+  "bytes": 787
+ },
+ "clang/llvm-resources.tar": {
+  "gz": true,
+  "bytes": 4264980
+ }
+}
