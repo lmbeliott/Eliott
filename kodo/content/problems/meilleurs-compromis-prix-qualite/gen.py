@@ -28,7 +28,19 @@ tests.append(test(aleatoire(30, 10, 10)))
 tests.append(test(aleatoire(300, 50, 50)))
 tests.append(test(aleatoire(2000, 1000, 10**6)))
 # grands tests : comparer toutes les paires serait trop lent
-tests.append(test(aleatoire(8000, 1000, 10**6)))
+# 7 000 produits non dépassés (notes et prix croissants ensemble, chaque couple
+# répété 7 fois) mêlés à 1 000 produits dépassés : comparer chaque produit à
+# tous les autres, même en s'arrêtant au premier qui le dépasse, est trop lent
+melange = []
+noms_grand = noms(8000, 5, 9)
+for q in range(1, 1001):
+    for _ in range(7):
+        melange.append((noms_grand[len(melange)], q, q * 900 + 50))
+while len(melange) < 8000:
+    q = random.randint(0, 999)
+    melange.append((noms_grand[len(melange)], q, q * 900 + 50 + random.randint(1, 5000)))
+random.shuffle(melange)
+tests.append(test(melange))
 pts = []
 for i, m in enumerate(noms(8000, 5, 9)):
     p = random.randint(1, 10**6)

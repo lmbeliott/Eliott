@@ -17,7 +17,7 @@ tests.append(test(*melange(5)))
 tests.append(test(*melange(30)))
 tests.append(test(*melange(200)))
 tests.append(test(*melange(300)))
-# grands tests : 300 000 tours avec de grands paquets
+# grands tests : 1 000 000 de tours avec de grands paquets
 tests.append(test(*melange(10000)))
 fort = list(range(10001, 20001)); faible = list(range(1, 10001))
 random.shuffle(fort); random.shuffle(faible)

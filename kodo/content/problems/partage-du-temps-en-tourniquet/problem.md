@@ -21,15 +21,15 @@ La première ligne contient `N` et `Q`. La deuxième ligne contient `D₁, …, 
 Une ligne de `N` entiers : l'instant de fin de la tâche 1, de la tâche 2, …, de la tâche `N`.
 
 ## Contraintes
-- 1 ≤ N ≤ 20 000
+- 1 ≤ N ≤ 40 000
 - 1 ≤ Q ≤ 1 000
 - 1 ≤ Dᵢ ≤ 20 × Q
 
 ## Indices
 1. Simuler avec une file qui contient les numéros des tâches pas encore terminées, et un tableau des temps restants.
-2. Retirer la tête d'une liste Python avec `pop(0)` décale tous les autres éléments : avec 20 000 tâches et des centaines de milliers de passages, c'est trop lent. Utiliser `collections.deque` (en C++, `queue`).
+2. Retirer la tête d'une liste Python avec `pop(0)` décale tous les autres éléments : avec 40 000 tâches et des centaines de milliers de passages, c'est trop lent. Utiliser `collections.deque` (en C++, `queue`).
 
 ## Solution
 On simule exactement le processus. Une file contient les numéros des tâches en attente, un tableau `reste` leur temps restant, et une variable `t` l'instant présent. Tant que la file n'est pas vide, on retire la tâche `i` en tête, on la fait tourner pendant `d = min(Q, reste[i])` unités : `t` augmente de `d` et `reste[i]` diminue de `d`. Si `reste[i]` vaut 0, la tâche se termine à l'instant `t` ; sinon, on la remet en fin de file.
 
-**Terminaison et coût.** Chaque passage diminue d'au moins 1 la somme des temps restants : la simulation s'arrête. Plus précisément, une tâche de durée `Dᵢ` passe en tête au plus `Dᵢ / Q + 1` fois, donc au plus 21 fois ici : moins de 21N = 420 000 passages, chacun en quelques opérations avec une vraie file. Avec `pop(0)` sur une liste, chaque retrait coûte jusqu'à N décalages : des milliards d'opérations.
+**Terminaison et coût.** Chaque passage diminue d'au moins 1 la somme des temps restants : la simulation s'arrête. Plus précisément, une tâche de durée `Dᵢ` passe en tête exactement `Dᵢ / Q` fois, arrondi à l'entier supérieur, donc au plus 20 fois ici : au plus 20N = 800 000 passages, chacun en quelques opérations avec une vraie file. Avec `pop(0)` sur une liste, chaque retrait décale toutes les tâches encore en attente, jusqu'à N = 40 000 : des milliards de déplacements.

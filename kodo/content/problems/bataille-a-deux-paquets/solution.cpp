@@ -19,7 +19,7 @@ int main() {
         p2.push(c);
     }
     int tours = 0;
-    while (!p1.empty() && !p2.empty() && tours < 300000) {
+    while (!p1.empty() && !p2.empty() && tours < 1000000) {
         int a = p1.front();
         p1.pop();
         int b = p2.front();

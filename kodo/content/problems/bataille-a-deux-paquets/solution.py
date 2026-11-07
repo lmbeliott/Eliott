@@ -5,7 +5,7 @@ p1 = deque(map(int, input().split()))   # du dessus (tête) vers le dessous (que
 p2 = deque(map(int, input().split()))
 
 tours = 0
-while len(p1) > 0 and len(p2) > 0 and tours < 300000:
+while len(p1) > 0 and len(p2) > 0 and tours < 1000000:
     a = p1.popleft()
     b = p2.popleft()
     if a > b:
