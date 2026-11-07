@@ -52,8 +52,8 @@ export function Problems() {
       <PageHeader
         title={t('Problèmes', 'Problems')}
         lead={t(
-          `${plural(lang, problemList.length, ['problème', 'problèmes'], ['', ''])}, ${solvedCount} réussi${solvedCount > 1 ? 's' : ''}. Filtres par difficulté, chapitre, notion et statut.`,
-          `${problemList.length} problems, ${solvedCount} solved. Filters by difficulty, chapter, topic and status.`,
+          `${plural(lang, problemList.length, ['problème', 'problèmes'], ['', ''])}${progress.loading ? '' : `, ${solvedCount} réussi${solvedCount > 1 ? 's' : ''}`}. Filtres par difficulté, chapitre, notion et statut.`,
+          `${problemList.length} problems${progress.loading ? '' : `, ${solvedCount} solved`}. Filters by difficulty, chapter, topic and status.`,
         )}
       />
 

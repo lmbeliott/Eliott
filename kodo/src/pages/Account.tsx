@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Button, Field, Input, LinkButton, Notice, PageHeader, Segmented, Skeleton } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { AvatarPicker } from '../components/AvatarPicker'
+import { ProfileError } from '../components/ProfileError'
 import { useAuth } from '../lib/auth'
 import { useI18n, type UiLang } from '../lib/i18n'
 import { useCodeLang } from '../lib/progress'
@@ -13,7 +14,7 @@ import type { Lang } from '../judge/protocol'
 
 export function Account() {
   const { lang, setLang, t } = useI18n()
-  const { session, profile, ready, recovering, clearRecovering } = useAuth()
+  const { session, profile, profileError, ready, recovering, clearRecovering } = useAuth()
   const [codeLang, setCodeLang] = useCodeLang()
   const [theme, toggleTheme] = useTheme()
   const qc = useQueryClient()
@@ -29,9 +30,11 @@ export function Account() {
   const [confirmDelete, setConfirmDelete] = useState('')
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
+  // Une seule fois par compte : un rechargement du profil (nouvel avatar…) n'efface pas la saisie en cours.
   useEffect(() => {
     if (profile) setForm({ display_name: profile.display_name, username: profile.username, school: profile.school ?? '' })
-  }, [profile])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.id])
 
   if (ready && !session)
     return (
@@ -40,6 +43,7 @@ export function Account() {
         <LinkButton to="/connexion">{t('Se connecter', 'Sign in')}</LinkButton>
       </div>
     )
+  if (!profile && profileError) return <ProfileError />
   if (!profile)
     return (
       <div className="mx-auto max-w-2xl px-4 py-14 sm:px-6">

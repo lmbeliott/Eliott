@@ -13,7 +13,7 @@ import { locale, pick, plural, useI18n, type UiLang } from '../lib/i18n'
 import { judge, runtimeFor, warmUp, limitFor, type JudgeReport, type JudgeTest, type TestResult } from '../judge/judge'
 import { explainError, trimCompilerOutput } from '../judge/explain'
 import type { Lang } from '../judge/protocol'
-import { loadDraft, saveDraft, useCodeLang, useProgress, useRecordSubmission, type RecordInput } from '../lib/progress'
+import { clearDraft, loadDraft, saveDraft, useCodeLang, useProgress, useRecordSubmission, type RecordInput } from '../lib/progress'
 import { useAuth } from '../lib/auth'
 import { errorText, type SubmitResult } from '../lib/supabase'
 import { useProblemStats } from '../lib/queries'
@@ -306,8 +306,9 @@ export function StatementPanel({
   const chapter = chapterById(data.chapter)
   const stats = useProblemStats()
   const community = data.community
-  const solvers = solversOverride ?? stats.data?.get(data.id) ?? 0
-  const statsReady = solversOverride !== undefined || !!stats.data
+  // Problème de la communauté : seul son propre décompte compte (jamais celui des problèmes officiels).
+  const solvers = solversOverride ?? (community ? 0 : (stats.data?.get(data.id) ?? 0))
+  const statsReady = community ? solversOverride !== undefined : !!stats.data
   const scroller = useRef<HTMLDivElement>(null)
   const prefix = `problem-${data.id}`
   const pickTab = (v: LeftTab) => {
@@ -573,11 +574,12 @@ function DiffNote({ d }: { d: NonNullable<ReturnType<typeof firstDiff>> }) {
   )
 }
 
-function TestDetail({ r, lang, limitMs, custom, skippedAfter, onUseInput }: { r: TestResult; lang: Lang; limitMs: number; custom: boolean; skippedAfter: number; onUseInput: (input: string) => void }) {
+function TestDetail({ r, lang, timeLimitMs, custom, skippedAfter, onUseInput }: { r: TestResult; lang: Lang; timeLimitMs: number; custom: boolean; skippedAfter: number; onUseInput: (input: string) => void }) {
   const { t, lang: ui } = useI18n()
   const explanation = r.status === 'error' ? explainError(lang, r.stderr, ui) : null
   const diff = r.status === 'wrong' && r.expected !== undefined ? firstDiff(r.expected, r.stdout) : null
   const otherLang: Lang = lang === 'python' ? 'cpp' : 'python'
+  const limitMs = limitFor(lang, timeLimitMs)
   return (
     <div className="mt-5 flex flex-col gap-3">
       {r.status === 'timeout' && (
@@ -588,8 +590,8 @@ function TestDetail({ r, lang, limitMs, custom, skippedAfter, onUseInput }: { r:
             : '.'}{' '}
           <span className="text-ink-2">
             {t(
-              `Chercher une boucle qui ne s’arrête jamais, ou compter les opérations pour la plus grande entrée des contraintes. Limite en ${LANG_NAME[otherLang]} : ${seconds(ui, limitFor(otherLang, limitMs === limitFor(lang, 0) ? 0 : limitMs))}.`,
-              `Look for a loop that never ends, or count the operations for the largest input in the constraints. Limit in ${LANG_NAME[otherLang]}: ${seconds(ui, limitFor(otherLang, limitMs === limitFor(lang, 0) ? 0 : limitMs))}.`,
+              `Chercher une boucle qui ne s’arrête jamais, ou compter les opérations pour la plus grande entrée des contraintes. Limite en ${LANG_NAME[otherLang]} : ${seconds(ui, limitFor(otherLang, timeLimitMs))}.`,
+              `Look for a loop that never ends, or count the operations for the largest input in the constraints. Limit in ${LANG_NAME[otherLang]}: ${seconds(ui, limitFor(otherLang, timeLimitMs))}.`,
             )}
           </span>
         </p>
@@ -748,7 +750,6 @@ function RunLog({
   o,
   data,
   lang,
-  limitMs,
   next,
   onShowSolution,
   onUseInput,
@@ -756,7 +757,6 @@ function RunLog({
   o: Outcome | null
   data: ProblemData
   lang: Lang
-  limitMs: number
   next: string | null
   onShowSolution: () => void
   onUseInput: (input: string) => void
@@ -879,7 +879,8 @@ function RunLog({
   return (
     <div>
       {head}
-      {items && (
+      {/* Entrée personnalisée : ni les exemples ni les tests cachés n'ont tourné. */}
+      {items && !custom && (
         <div className="mt-4">
           <Strips items={items} samples={samples} hidden={hidden} selected={done ? open : null} onSelect={done ? (i) => setOpen(open === i ? null : i) : undefined} />
         </div>
@@ -892,10 +893,10 @@ function RunLog({
       )}
       {accepted && o.mode === 'submit' && <SuccessBlock o={o} data={data} next={next} onShowSolution={onShowSolution} />}
       {selected && !(accepted && o.mode === 'submit') && (
-        <TestDetail key={selected.index} r={selected} lang={lang} limitMs={limitMs} custom={custom} skippedAfter={skippedAfter} onUseInput={onUseInput} />
+        <TestDetail key={selected.index} r={selected} lang={lang} timeLimitMs={data.timeLimitMs} custom={custom} skippedAfter={skippedAfter} onUseInput={onUseInput} />
       )}
       {selected && accepted && o.mode === 'submit' && (
-        <TestDetail key={selected.index} r={selected} lang={lang} limitMs={limitMs} custom={false} skippedAfter={0} onUseInput={onUseInput} />
+        <TestDetail key={selected.index} r={selected} lang={lang} timeLimitMs={data.timeLimitMs} custom={false} skippedAfter={0} onUseInput={onUseInput} />
       )}
     </div>
   )
@@ -907,6 +908,12 @@ function defaultCode(data: ProblemData, lang: Lang, ui: UiLang) {
   const starter = data.starter[ui]?.[lang] ?? data.starter.fr[lang]
   if (starter) return starter
   return lang === 'cpp' ? CPP_TEMPLATE : ''
+}
+
+/** Code de départ intact : pas de brouillon, pour suivre la langue de l'interface et les mises à jour. */
+function persistDraft(data: ProblemData, lang: Lang, code: string) {
+  if (code === defaultCode(data, lang, 'fr') || code === defaultCode(data, lang, 'en')) clearDraft(data.id, lang)
+  else saveDraft(data.id, lang, code)
 }
 
 export function Workspace({
@@ -933,6 +940,9 @@ export function Workspace({
   const toast = useToast()
   const abort = useRef<AbortController | null>(null)
   const customRef = useRef<HTMLTextAreaElement>(null)
+  // Dernier code tapé, enregistré tout de suite quand on quitte ce problème ou ce langage.
+  const codeRef = useRef(code)
+  codeRef.current = code
   const next = useMemo(() => {
     const i = problemList.findIndex((p) => p.id === data.id)
     return i < 0 ? null : (problemList[i + 1]?.id ?? null)
@@ -945,13 +955,21 @@ export function Workspace({
   // Nouveau problème ou nouveau langage : on arrête l'exécution en cours et on recharge le brouillon.
   useEffect(() => {
     runKey.current = `${data.id}:${lang}`
-    abort.current?.abort()
     setBusy(false)
     setCode(loadDraft(data.id, lang) ?? defaultCode(data, lang, ui))
     setOutcome(null)
-    setCustomInput(data.samples[0]?.input ?? '')
+    return () => {
+      abort.current?.abort()
+      persistDraft(data, lang, codeRef.current)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.id, lang])
+
+  // L'entrée personnalisée ne dépend pas du langage : elle ne revient à l'exemple qu'au changement de problème.
+  useEffect(() => {
+    setCustomInput(data.samples[0]?.input ?? '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.id])
 
   useEffect(() => {
     warmUp(lang)
@@ -959,8 +977,9 @@ export function Workspace({
 
   // Sauvegarde du brouillon, une demi-seconde après la dernière frappe.
   useEffect(() => {
-    const id = setTimeout(() => saveDraft(data.id, lang, code), 500)
+    const id = setTimeout(() => persistDraft(data, lang, code), 500)
     return () => clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, data.id, lang])
 
   const run = useCallback(
@@ -1013,6 +1032,9 @@ export function Workspace({
         show({ mode, report: null, phase: 'failed', failure: err instanceof Error ? err.message : String(err) })
         if (live()) setBusy(false)
         return
+      } finally {
+        // Exécution terminée : plus rien à interrompre.
+        if (abort.current === ctl) abort.current = null
       }
       if (live()) setBusy(false)
       if (mode !== 'submit' || !report.verdict) return
@@ -1040,7 +1062,6 @@ export function Workspace({
     setTimeout(() => customRef.current?.focus(), 0)
   }
 
-  const limitMs = limitFor(lang, data.timeLimitMs)
   const showSkeleton = useDelayed(busy && !outcome, 300)
   const runningSubmit = busy && outcome?.mode === 'submit'
   const runningOther = busy && outcome?.mode !== 'submit'
@@ -1124,7 +1145,7 @@ export function Workspace({
         {showSkeleton && !outcome ? (
           <Skeleton className="h-16" />
         ) : (
-          <RunLog o={outcome} data={data} lang={lang} limitMs={limitMs} next={next} onShowSolution={onShowSolution} onUseInput={useInput} />
+          <RunLog o={outcome} data={data} lang={lang} next={next} onShowSolution={onShowSolution} onUseInput={useInput} />
         )}
       </section>
     </div>
@@ -1155,7 +1176,12 @@ export function Problem() {
     setMobilePane('statement')
   }, [id])
   useEffect(() => {
-    if (meta) document.title = `${problemTitle(lang, meta)} · Kodo`
+    if (!meta) return
+    const prev = document.title
+    document.title = `${problemTitle(lang, meta)} · Kodo`
+    return () => {
+      document.title = prev
+    }
   }, [meta, lang])
 
   const idx = problemList.findIndex((p) => p.id === id)

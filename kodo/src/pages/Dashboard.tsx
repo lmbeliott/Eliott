@@ -9,15 +9,16 @@ import { CurriculumGrid } from '../components/CurriculumGrid'
 import { DailyList } from '../components/DailyList'
 import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
+import { ProfileError } from '../components/ProfileError'
 import { DifficultyMark, LinkButton, Panel, Skeleton, cx } from '../components/ui'
 import { limitFor, type Verdict } from '../judge/judge'
 import { useAuth } from '../lib/auth'
-import { chapterById, chapterTitle, loadProblem, problemList, problemTitle, type CatalogProblem } from '../lib/content'
+import { chapterById, chapterTitle, loadProblem, problemById, problemList, problemTitle, type CatalogProblem } from '../lib/content'
 import { formatDate, formatNumber, formatPoints as fmtPoints, plural, timeAgo, useI18n, type UiLang } from '../lib/i18n'
 import { leagueName, leagueOf } from '../lib/leagues'
 import { useCodeLang, useProgress } from '../lib/progress'
 import { useActivity, useDaily, useLeaderboard, useMyGroups } from '../lib/queries'
-import { liveStreak, parisDay, supabase, type Group } from '../lib/supabase'
+import { dayKey, liveStreak, parisDay, parisToday, supabase, type Group } from '../lib/supabase'
 
 // ------------------------------------------------------------------ Outils
 
@@ -91,7 +92,7 @@ const VERDICT: Record<Verdict, [string, string]> = {
 // ------------------------------------------------------------------ Page
 
 export function Dashboard() {
-  const { profile, session } = useAuth()
+  const { profile, profileError, session } = useAuth()
   const { lang, t } = useI18n()
   const progress = useProgress()
   const daily = useDaily()
@@ -109,14 +110,16 @@ export function Dashboard() {
     return p ? { problem: p, tried: false } : null
   }, [progress.solved, progress.tried])
 
-  if (!profile) return <DashboardSkeleton />
+  if (!profile) return profileError ? <ProfileError /> : <DashboardSkeleton />
 
   const streak = liveStreak(profile)
   const doneToday = profile.last_streak_day === parisDay(new Date())
   const me = week.data?.find((r) => r.is_me)
   const dailyIds = new Set((daily.data ?? []).map((d) => d.problem_id))
   const dailyDone = (daily.data ?? []).filter((d) => progress.solved.has(d.problem_id)).length
-  const triedOnly = [...progress.tried].filter((id) => !progress.solved.has(id)).length
+  const triedOnly = [...progress.tried].filter((id) => !progress.solved.has(id) && problemById(id)).length
+  // Seulement les problèmes du catalogue actuel (d'anciens identifiants peuvent rester en base).
+  const solvedCount = problemList.filter((p) => progress.solved.has(p.id)).length
   const totals = (activity.data ?? []).reduce((a, d) => ({ subs: a.subs + d.submissions, solves: a.solves + d.solves }), { subs: 0, solves: 0 })
 
   return (
@@ -200,8 +203,8 @@ export function Dashboard() {
       <section className="mt-12" aria-labelledby="dash-progression">
         <SectionHead id="dash-progression" title={t('Progression', 'Progress')} link={{ to: '/parcours', label: t('Ouvrir le parcours', 'Open the path') }}>
           {t(
-            `${progress.solved.size} problème${progress.solved.size > 1 ? 's' : ''} réussi${progress.solved.size > 1 ? 's' : ''} sur ${problemList.length}${triedOnly ? `, ${triedOnly} tenté${triedOnly > 1 ? 's' : ''} sans réussite` : ''}. Chaque case ouvre le problème correspondant.`,
-            `${progress.solved.size} of ${problemList.length} problems solved${triedOnly ? `, ${triedOnly} attempted without success` : ''}. Each square opens its problem.`,
+            `${solvedCount} problème${solvedCount > 1 ? 's' : ''} réussi${solvedCount > 1 ? 's' : ''} sur ${problemList.length}${triedOnly ? `, ${triedOnly} tenté${triedOnly > 1 ? 's' : ''} sans réussite` : ''}. Chaque case ouvre le problème correspondant.`,
+            `${solvedCount} of ${problemList.length} problems solved${triedOnly ? `, ${triedOnly} attempted without success` : ''}. Each square opens its problem.`,
           )}
         </SectionHead>
         <Legend />
@@ -481,15 +484,15 @@ function LeagueRail({ points, solved }: { points: number; solved: Map<string, un
 function WeekRail({ streak, doneToday, untilMidnight, days }: { streak: number; doneToday: boolean; untilMidnight: string; days?: { day: string; submissions: number; solves: number }[] }) {
   const { lang, t } = useI18n()
   const byDay = useMemo(() => new Map((days ?? []).map((d) => [d.day, d])), [days])
-  const now = new Date()
-  const week = Array.from({ length: 7 }, (_, i) => new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6 + i, 12))
+  const today = parisToday()
+  const week = Array.from({ length: 7 }, (_, i) => new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6 + i, 12))
 
   return (
     <div className="border-t border-line pt-6">
       <h2 className="text-sm font-medium">{t('7 derniers jours', 'Last 7 days')}</h2>
       <ol className="mt-3 grid grid-cols-7 gap-1">
         {week.map((d, i) => {
-          const a = byDay.get(parisDay(d))
+          const a = byDay.get(dayKey(d))
           const state = a?.solves ? 'done' : a?.submissions ? 'tried' : 'empty'
           const label = `${formatDate(lang, d, { weekday: 'long', day: 'numeric', month: 'long' })} : ${
             a?.solves

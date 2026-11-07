@@ -84,6 +84,17 @@ export function parisDay(d: Date) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
 }
 
+/** Jour en cours à Paris (l'activité est datée ainsi), ancré à midi heure locale pour les calendriers. */
+export function parisToday() {
+  const [y, m, d] = parisDay(new Date()).split('-').map(Number)
+  return new Date(y, m - 1, d, 12)
+}
+
+/** Clé AAAA-MM-JJ d'un jour construit en heure locale (voir parisToday). */
+export function dayKey(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 /** Message d'erreur lisible à partir d'une erreur Supabase / Postgres. */
 export function errorText(e: unknown, lang: 'fr' | 'en'): string {
   const err = e as { message?: string; code?: string; status?: number }
@@ -107,6 +118,10 @@ export function errorText(e: unknown, lang: 'fr' | 'en'): string {
     [/déjà proposé 5 problèmes/i, 'Limite de 5 problèmes proposés en 24 heures atteinte. Réessayer demain.', 'Limit of 5 problems proposed in 24 hours reached. Try again tomorrow.'],
     [/masqué par la modération/i, 'Problème masqué par la modération : republication impossible.', 'Problem hidden by moderators: it cannot be republished.'],
     [/community_votes_pkey|community_reports_pkey/i, 'Déjà enregistré.', 'Already recorded.'],
+    [/community_problems_size/i, 'Tests trop volumineux une fois enregistrés : réduire ou retirer des tests.', 'Tests too large once stored: shrink or remove some tests.'],
+    [/community_problems_samples_check/i, 'Un exemple dépasse 4 000 octets (entrée ou sortie) : le raccourcir.', 'An example exceeds 4,000 bytes (input or output): shorten it.'],
+    [/community_problems_tests_check/i, 'Tests cachés invalides : recalculer les sorties puis réessayer.', 'Invalid hidden tests: recompute the outputs, then try again.'],
+    [/community_references_(code|generator)_check/i, 'Solution de référence ou générateur trop long : 64 Ko au plus.', 'Reference solution or generator too long: 64 KB at most.'],
     [/row-level security.*community_votes/i, 'Vote impossible sur un problème dont on est l’auteur.', 'Authors cannot vote for their own problem.'],
   ]
   for (const [re, fr, en] of map) if (re.test(msg)) return lang === 'en' ? en : fr

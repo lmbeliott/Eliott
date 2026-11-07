@@ -92,7 +92,7 @@ export function ChapterPage() {
         />
       </div>
 
-      <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <article className={cx(pane === 'lesson' ? 'block' : 'hidden', 'lg:block')}>
           <div className="mb-6 flex items-center justify-between gap-4 border-b border-line pb-4">
             <p className="text-sm text-muted">{t('Exemples de code en', 'Code examples in')}</p>

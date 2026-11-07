@@ -6,10 +6,23 @@ import type { LeaderRow } from '../lib/supabase'
 import { formatNumber, formatPoints, useI18n } from '../lib/i18n'
 import { leagueOf } from '../lib/leagues'
 import { LeagueBadge } from './League'
-import { cx, Skeleton } from './ui'
+import { Button, cx, Notice, Skeleton } from './ui'
 
 /** Classement : tableau L1 à filets ; ta ligne surlignée (DESIGN.md §5). */
-export function LeaderboardTable({ rows, loading, compact, empty }: { rows: LeaderRow[] | undefined; loading?: boolean; compact?: boolean; empty?: React.ReactNode }) {
+export function LeaderboardTable({
+  rows,
+  loading,
+  compact,
+  empty,
+  onRetry,
+}: {
+  rows: LeaderRow[] | undefined
+  loading?: boolean
+  compact?: boolean
+  empty?: React.ReactNode
+  /** Chargement échoué : message et bouton plutôt qu'un classement vide */
+  onRetry?: () => void
+}) {
   const { lang, t } = useI18n()
   if (loading)
     return (
@@ -18,6 +31,19 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
           <Skeleton key={i} className="h-12 rounded-none" />
         ))}
       </div>
+    )
+  if (onRetry && !rows)
+    return (
+      <Notice
+        tone="error"
+        action={
+          <Button variant="secondary" size="sm" onClick={onRetry}>
+            {t('Réessayer', 'Try again')}
+          </Button>
+        }
+      >
+        {t('Chargement du classement impossible. Vérifier la connexion internet puis réessayer.', 'The leaderboard could not be loaded. Check the internet connection, then try again.')}
+      </Notice>
     )
   if (!rows?.length) return <>{empty}</>
   const sorted = [...rows].sort((a, b) => a.rank - b.rank)

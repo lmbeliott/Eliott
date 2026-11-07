@@ -366,12 +366,22 @@ if (FILTER) {
 
 // ---------------------------------------------------------------- Écriture
 
+// Écriture sur place, sans vider le dossier : un serveur Vite lancé garde sa liste des fichiers
+// publics et ne retrouverait pas ceux d'un dossier supprimé puis recréé.
 const outPublic = join(ROOT, 'public', 'content')
-rmSync(outPublic, { recursive: true, force: true })
-mkdirSync(join(outPublic, 'problems'), { recursive: true })
-mkdirSync(join(outPublic, 'lessons'), { recursive: true })
-for (const p of problems) writeFileSync(join(outPublic, 'problems', `${p.id}.json`), JSON.stringify(p))
-for (const l of lessons) writeFileSync(join(outPublic, 'lessons', `${l.id}.json`), JSON.stringify(l))
+const writeDir = (sub, items) => {
+  const dir = join(outPublic, sub)
+  mkdirSync(dir, { recursive: true })
+  const names = new Set(items.map((x) => `${x.id}.json`))
+  for (const f of readdirSync(dir)) if (!names.has(f)) rmSync(join(dir, f), { recursive: true, force: true })
+  for (const x of items) {
+    const file = join(dir, `${x.id}.json`)
+    const text = JSON.stringify(x)
+    if (!existsSync(file) || readFileSync(file, 'utf8') !== text) writeFileSync(file, text)
+  }
+}
+writeDir('problems', problems)
+writeDir('lessons', lessons)
 
 const byChapter = (chId) => problems.filter((p) => p.chapter === chId).sort((a, b) => a.order - b.order)
 const catalog = {
@@ -393,6 +403,11 @@ const catalog = {
       problems: byChapter(ch.id).map((p) => p.id),
     })),
   })),
+  // Bornes affichées sur l'accueil (« 9 à 30 tests ») : toujours celles du contenu publié.
+  tests: {
+    samples: [Math.min(...problems.map((p) => p.samples.length)), Math.max(...problems.map((p) => p.samples.length))],
+    total: [Math.min(...problems.map((p) => p.samples.length + p.tests.length)), Math.max(...problems.map((p) => p.samples.length + p.tests.length))],
+  },
   problems: Object.fromEntries(
     problems.map((p) => [p.id, { id: p.id, title: p.title, titleEn: p.titleEn, chapter: p.chapter, level: p.level, difficulty: p.difficulty, order: p.order, tags: p.tags, points: p.points }]),
   ),

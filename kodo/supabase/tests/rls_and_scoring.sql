@@ -25,7 +25,7 @@ begin
   select username into t from public.profiles where id = bob;
   report := report || (case when t ~ '^alice\d{4}$' then 'ok' else 'ÉCHEC' end) || ' pseudo en double renommé : ' || t || E'\n';
   select username into t from public.profiles where id = prof;
-  report := report || (case when t like 'grimpeur%' then 'ok' else 'ÉCHEC' end) || ' pseudo par défaut : ' || t || E'\n';
+  report := report || (case when t like 'kodo%' then 'ok' else 'ÉCHEC' end) || ' pseudo par défaut : ' || t || E'\n';
 
   -- On agit désormais comme Alice (rôle authenticated).
   perform set_config('request.jwt.claims', json_build_object('sub', alice, 'role', 'authenticated')::text, true);
@@ -94,8 +94,10 @@ begin
   report := report || (case when n = 0 then 'ok' else 'ÉCHEC' end) || ' Bob : classement de la cordée vide' || E'\n';
   select count(*) into n from public.leaderboard('all', null, 50);
   report := report || (case when n >= 3 then 'ok' else 'ÉCHEC' end) || ' classement général : ' || n || E'\n';
-  select count(*) into n from public.leaderboard('week', null, 50);
-  report := report || (case when n = 1 then 'ok' else 'ÉCHEC' end) || ' classement de la semaine (seule Alice a marqué) : ' || n || E'\n';
+  select count(*) into n from public.leaderboard('week', null, 50) where xp <= 0 or user_id = alice;
+  -- La base réelle peut contenir d'autres comptes ayant marqué cette semaine : seules comptent
+  -- la présence d'Alice et l'absence de lignes à 0 point.
+  report := report || (case when n = 1 and exists (select 1 from public.leaderboard('week', null, 50) where user_id = alice) then 'ok' else 'ÉCHEC' end) || ' classement de la semaine : Alice présente, aucune ligne à 0 point' || E'\n';
   delete from public.group_members where group_id = g.id and user_id = alice;
   get diagnostics n = row_count;
   report := report || (case when n = 0 then 'ok' else 'ÉCHEC' end) || ' Bob ne peut pas retirer Alice' || E'\n';

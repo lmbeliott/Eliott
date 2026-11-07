@@ -51,7 +51,7 @@ export interface Progress {
 }
 
 export function useProgress(): Progress {
-  const { session } = useAuth()
+  const { session, ready } = useAuth()
   const uid = session?.user.id
   const [guest, setGuest] = useState(readGuest)
 
@@ -84,6 +84,8 @@ export function useProgress(): Progress {
     },
   })
 
+  // Session pas encore lue : ni invité ni progression vide, seulement « en chargement ».
+  if (!ready) return { solved: new Map(), tried: new Set(), loading: true, guest: false }
   if (!uid) {
     return {
       solved: new Map(
@@ -100,7 +102,7 @@ export function useProgress(): Progress {
   return {
     solved: new Map((solves.data ?? []).map((s) => [s.problem_id, s])),
     tried: tried.data ?? new Set(),
-    loading: solves.isLoading,
+    loading: solves.isLoading || tried.isLoading,
     guest: false,
   }
 }
@@ -148,6 +150,7 @@ export function useRecordSubmission() {
       qc.invalidateQueries({ queryKey: ['profile', uid] })
       qc.invalidateQueries({ queryKey: ['leaderboard'] })
       qc.invalidateQueries({ queryKey: ['activity'] })
+      qc.invalidateQueries({ queryKey: ['problem-stats'] })
       return data as SubmitResult
     },
     [uid, qc],
@@ -158,20 +161,37 @@ export function useRecordSubmission() {
 export function useGuestSync(onSynced: (count: number) => void) {
   const { session } = useAuth()
   const qc = useQueryClient()
-  const running = useRef(false)
   const uid = session?.user.id
+  // Le rappel change à chaque rendu : on garde le dernier sans relancer l'envoi.
+  const notify = useRef(onSynced)
+  notify.current = onSynced
+  const doneFor = useRef<string | null>(null)
   useEffect(() => {
-    if (!uid || running.current) return
-    const g = readGuest()
-    const entries = Object.entries(g.solved)
-    if (entries.length === 0 && Object.keys(g.tried).length === 0) return
-    running.current = true
-    ;(async () => {
+    if (!uid) {
+      doneFor.current = null
+      return
+    }
+    if (doneFor.current === uid) return
+    doneFor.current = uid
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const sync = async () => {
+      if (doneFor.current !== uid) return // déconnecté entre-temps
+      const g = readGuest()
+      const entries = Object.entries(g.solved)
+      if (entries.length === 0 && Object.keys(g.tried).length === 0) return
       let count = 0
+      let sent = 0
+      let limited = false
       const kept: GuestState = { solved: {}, tried: {} }
       for (const [id, s] of entries) {
         if (!problemById(id)) continue
-        const { error } = await supabase.rpc('submit_result', {
+        // Le serveur accepte 20 soumissions par minute : on en garde pour l'élève, le reste part plus tard.
+        if (limited || sent >= GUEST_BATCH) {
+          kept.solved[id] = s
+          continue
+        }
+        sent++
+        const { data, error } = await supabase.rpc('submit_result', {
           p_problem: id,
           p_language: s.lang,
           p_code: s.code.slice(0, 65000),
@@ -180,23 +200,40 @@ export function useGuestSync(onSynced: (count: number) => void) {
           p_total: s.total,
           p_time_ms: 0,
         })
-        if (!error) count++
-        else kept.solved[id] = s // échec (réseau…) : on garde la réussite pour la prochaine connexion
+        if (!error) {
+          if ((data as SubmitResult | null)?.new_solve) count++
+        } else if (error.code !== '22023') {
+          // Échec passager (réseau, limite) : on garde la réussite pour plus tard.
+          // Un problème inconnu du serveur (22023) ne passera jamais : on l'abandonne.
+          kept.solved[id] = s
+          if (error.code === '54000') limited = true
+        }
       }
       writeLocal(GUEST_KEY, kept)
       window.dispatchEvent(new Event('kodo:guest'))
       qc.invalidateQueries()
-      running.current = false
-      if (count > 0) onSynced(count)
-    })()
-  }, [uid, qc, onSynced])
+      if (count > 0) notify.current(count)
+      if (Object.keys(kept.solved).length > 0) timer = setTimeout(sync, 61_000)
+    }
+    sync()
+    return () => clearTimeout(timer)
+  }, [uid, qc])
 }
+
+const GUEST_BATCH = 15
 
 // ------------------------------------------------------------------ Brouillons et préférences
 
 export const draftKey = (problemId: string, lang: Lang) => `kodo:draft:${problemId}:${lang}`
 export const loadDraft = (problemId: string, lang: Lang) => readLocal<string | null>(draftKey(problemId, lang), null)
 export const saveDraft = (problemId: string, lang: Lang, code: string) => writeLocal(draftKey(problemId, lang), code)
+export function clearDraft(problemId: string, lang: Lang) {
+  try {
+    localStorage.removeItem(draftKey(problemId, lang))
+  } catch {
+    /* stockage indisponible */
+  }
+}
 
 const LANG_KEY = 'kodo:code-lang'
 export function useCodeLang(): [Lang, (l: Lang) => void] {

@@ -104,6 +104,9 @@ function writeDraft(d: Draft | null) {
 
 const withNl = (s: string) => (s.endsWith('\n') ? s : `${s}\n`)
 const bytes = (s: string) => new TextEncoder().encode(s).length
+/** Taille une fois stocké en JSON (comme la vérifie la base) : chaque retour à la ligne y compte double. */
+const jsonBytes = (s: string) => bytes(JSON.stringify(s))
+const CODE_BYTES = 65536
 const signatureOf = (d: Draft) => JSON.stringify([d.sampleInputs.map(withNl), d.testInputs.map(withNl), d.refLang, d.refCode, d.time_limit_ms])
 const sizeLabel = (n: number) => (n < 1000 ? `${n} o` : n < 1e6 ? `${(n / 1000).toFixed(1)} ko` : `${(n / 1e6).toFixed(2)} Mo`)
 const preview = (s: string, max = 80) => {
@@ -305,15 +308,19 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
 
   const signature = useMemo(() => signatureOf(d), [d])
   const upToDate = verified?.signature === signature
-  const totalBytes = useMemo(() => d.sampleInputs.concat(d.testInputs).reduce((a, s) => a + bytes(s), 0) + (upToDate ? verified!.samples.reduce((a, s) => a + bytes(s.output), 0) : 0), [d, verified, upToDate])
+  // Chaque test porte aussi ses clés et son empreinte (une centaine d'octets).
+  const totalBytes = useMemo(
+    () => d.sampleInputs.concat(d.testInputs).reduce((a, s) => a + jsonBytes(withNl(s)) + 100, 0) + (upToDate ? verified!.samples.reduce((a, s) => a + jsonBytes(s.output), 0) : 0),
+    [d, verified, upToDate],
+  )
 
   const checks: { label: string; ok: boolean }[] = [
     { label: t('Titre de 3 à 80 caractères', 'Title of 3 to 80 characters'), ok: d.title.trim().length >= 3 && d.title.trim().length <= 80 },
     { label: t('Énoncé d’au moins 20 caractères', 'Statement of at least 20 characters'), ok: d.statement.trim().length >= 20 && d.statement.length <= 20000 },
     { label: t('Entrée et sortie décrites', 'Input and output described'), ok: !!d.input_spec.trim() && !!d.output_spec.trim() },
-    { label: t('1 à 5 exemples non vides', '1 to 5 non-empty examples'), ok: d.sampleInputs.length >= 1 && d.sampleInputs.length <= MAX_SAMPLES && d.sampleInputs.every((s) => s.trim() && bytes(s) <= SAMPLE_BYTES) },
+    { label: t('1 à 5 exemples non vides', '1 to 5 non-empty examples'), ok: d.sampleInputs.length >= 1 && d.sampleInputs.length <= MAX_SAMPLES && d.sampleInputs.every((s) => s.trim() && bytes(withNl(s)) <= SAMPLE_BYTES) },
     { label: t('3 à 50 tests cachés non vides', '3 to 50 non-empty hidden tests'), ok: d.testInputs.length >= MIN_TESTS && d.testInputs.length <= MAX_TESTS && d.testInputs.every((s) => s.trim()) },
-    { label: t('Solution de référence écrite', 'Reference solution written'), ok: d.refCode.trim().length > 0 },
+    { label: t('Solution de référence écrite (64 Ko au plus)', 'Reference solution written (64 KB at most)'), ok: d.refCode.trim().length > 0 && bytes(d.refCode) <= CODE_BYTES && bytes(d.generator) <= CODE_BYTES },
     { label: t('Sorties calculées pour cette version', 'Outputs computed for this version'), ok: upToDate },
   ]
   const ready = checks.every((c) => c.ok) && totalBytes <= TOTAL_BYTES
@@ -364,6 +371,8 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
       setVerified({ signature: sig, samples, tests })
     } catch (err) {
       if (!ctl.signal.aborted) setRun((r) => ({ results: r?.results ?? [], running: false, error: err instanceof Error ? err.message : String(err) }))
+    } finally {
+      if (abort.current === ctl) abort.current = null
     }
   }
 
@@ -516,7 +525,7 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
                       label={t('Limite de temps', 'Time limit')}
                       value={String(d.time_limit_ms)}
                       onChange={(v) => set('time_limit_ms', Number(v))}
-                      options={['1000', '2000', '3000'].map((v) => ({ value: v, label: `${Number(v) / 1000} s` }))}
+                      options={['1000', '2000', '3000'].map((v) => ({ value: v, label: `${limitFor('cpp', Number(v)) / 1000} s` }))}
                     />
                     <span className="text-xs text-muted">{t(`Appliquée par test : ${limits}.`, `Applied per test: ${limits}.`)}</span>
                   </div>

@@ -38,6 +38,8 @@ export interface Level {
 }
 interface Catalog {
   levels: Level[]
+  /** Nombre d'exemples et de tests (exemples compris) par problème : [minimum, maximum] */
+  tests: { samples: [number, number]; total: [number, number] }
   problems: Record<string, CatalogProblem>
 }
 

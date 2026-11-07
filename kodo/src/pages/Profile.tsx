@@ -8,10 +8,10 @@ import { Check, Flame } from 'lucide-react'
 import { CurriculumGrid } from '../components/CurriculumGrid'
 import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
-import { cx, DifficultyMark, LinkButton, Skeleton } from '../components/ui'
+import { Button, cx, DifficultyMark, LinkButton, Notice, Skeleton } from '../components/ui'
 import { useAuth } from '../lib/auth'
 import { problemById, problemList, problemTitle, totalPoints } from '../lib/content'
-import { formatDate, formatNumber, formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
+import { formatDate, formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
 import { badges, LEAGUES, leagueName, leagueOf } from '../lib/leagues'
 import { useActivity, useLeaderboard, useMyGroups, useProfile, useSolvesOf } from '../lib/queries'
 import { liveStreak } from '../lib/supabase'
@@ -43,13 +43,31 @@ export function ProfilePage() {
         <Skeleton className="mt-8 h-64" />
       </div>
     )
+  if (profileQ.isError)
+    return (
+      <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
+        <Notice
+          tone="error"
+          action={
+            <Button variant="secondary" size="sm" onClick={() => profileQ.refetch()}>
+              {t('Réessayer', 'Try again')}
+            </Button>
+          }
+        >
+          {t('Chargement du profil impossible. Vérifier la connexion internet puis réessayer.', 'The profile could not be loaded. Check the internet connection, then try again.')}
+        </Notice>
+      </div>
+    )
   if (!profile) return <NotFound />
 
+  // Le classement renvoie au plus les 200 premiers (et soi-même) : pas de total fiable, et
+  // un profil absent de la liste est au-delà de la 200ᵉ place.
   const rank = board.data?.find((r) => r.user_id === profile.id)?.rank
-  const total = board.data?.length
+  const beyond = !rank && profile.xp > 0 && (board.data?.length ?? 0) >= 200
   const league = leagueOf(profile.xp)
   const streak = liveStreak(profile)
-  const all = badges({ solves: list, bestStreak: profile.best_streak, groups: isMe ? (myGroups.data?.length ?? 0) : 0 })
+  // Les groupes d'un autre élève ne sont pas visibles : cette distinction n'est montrée que sur son propre profil.
+  const all = badges({ solves: list, bestStreak: profile.best_streak, groups: isMe ? (myGroups.data?.length ?? 0) : 0 }).filter((b) => isMe || b.id !== 'groupe')
   const sortedBadges = [...all.filter((b) => b.earned), ...all.filter((b) => !b.earned)]
   const solvedSet = new Set(list.map((s) => s.problem_id))
   const L = (x: [string, string]) => (lang === 'en' ? x[1] : x[0])
@@ -57,8 +75,8 @@ export function ProfilePage() {
   const facts: { k: string; v: React.ReactNode }[] = [
     { k: t('Points', 'Points'), v: formatPoints(lang, profile.xp) },
     { k: t('Rang', 'Rank'), v: <LeagueBadge league={league.current} className="text-base" /> },
-    { k: t('Classement général', 'Overall rank'), v: rank ? (lang === 'en' ? `#${rank}` : `${rank}${rank === 1 ? 'ᵉʳ' : 'ᵉ'}`) + (total ? ` / ${formatNumber(lang, total)}` : '') : '–' },
-    { k: t('Problèmes réussis', 'Problems solved'), v: `${profile.solved_count} / ${problemList.length}` },
+    { k: t('Classement général', 'Overall rank'), v: rank ? (lang === 'en' ? `#${rank}` : `${rank}${rank === 1 ? 'ᵉʳ' : 'ᵉ'}`) : beyond ? t('après la 200ᵉ place', 'below #200') : '–' },
+    { k: t('Problèmes réussis', 'Problems solved'), v: solves.data ? `${problemList.filter((p) => solvedSet.has(p.id)).length} / ${problemList.length}` : '–' },
     {
       k: t('Série', 'Streak'),
       v: (

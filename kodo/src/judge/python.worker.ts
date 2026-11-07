@@ -60,6 +60,20 @@ def __kodo_run(code, data):
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let runner: any = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let pyodide: any = null
+
+// Entrée du test en cours, servie aussi au descripteur 0 : open(0) et os.read(0, n)
+// lisent les mêmes données que sys.stdin, puis la fin de fichier. Le descripteur est rouvert
+// à chaque exécution : open(0) le ferme en fin de lecture.
+let stdinBytes = new Uint8Array(0)
+let stdinPos = 0
+const readStdin = (buf: Uint8Array) => {
+  const n = Math.min(buf.length, stdinBytes.length - stdinPos)
+  buf.set(stdinBytes.subarray(stdinPos, stdinPos + n))
+  stdinPos += n
+  return n
+}
 
 self.onmessage = async (e: MessageEvent<ToWorker>) => {
   const msg = e.data
@@ -72,6 +86,7 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
         stdout: () => {},
         stderr: () => {},
       })
+      pyodide = py
       py.runPython(PRELUDE)
       runner = py.globals.get('__kodo_run')
       post({ type: 'ready' })
@@ -81,8 +96,11 @@ self.onmessage = async (e: MessageEvent<ToWorker>) => {
     return
   }
   if (msg.type === 'run') {
+    stdinBytes = new TextEncoder().encode(msg.input)
+    stdinPos = 0
     const t0 = performance.now()
     try {
+      pyodide.setStdin({ read: readStdin })
       const res = runner(msg.code, msg.input)
       const [ok, stdout, stderr] = res.toJs()
       res.destroy()

@@ -167,7 +167,12 @@ export function CommunityProblem() {
   const data = q.data ? toProblemData(q.data) : null
 
   useEffect(() => {
-    if (q.data) document.title = `${q.data.title} · Kodo`
+    if (!q.data) return
+    const prev = document.title
+    document.title = `${q.data.title} · Kodo`
+    return () => {
+      document.title = prev
+    }
   }, [q.data])
   useEffect(() => setSolvedNow(false), [id])
 

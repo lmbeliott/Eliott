@@ -7,6 +7,11 @@ import { errorText, supabase } from '../lib/supabase'
 
 // Retour après connexion : uniquement un chemin interne (« /… », jamais « //autre-site »).
 const safeBack = (v: string | null, fallback: string) => (v && v.startsWith('/') && !v.startsWith('//') ? v : fallback)
+/** Le retour suit le passage de la connexion à l'inscription (et inversement). */
+const keepRetour = (params: URLSearchParams) => {
+  const v = params.get('retour')
+  return v ? `?retour=${encodeURIComponent(v)}` : ''
+}
 
 const appUrl = (path: string) => `${window.location.origin}${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
 
@@ -35,6 +40,7 @@ export function SignIn() {
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState(false)
   const back = safeBack(params.get('retour'), '/')
+  const keep = keepRetour(params)
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -76,7 +82,7 @@ export function SignIn() {
       footer={
         <>
           {t('Pas encore de compte ?', 'No account yet?')}{' '}
-          <Link to="/inscription" className="font-medium text-ink underline underline-offset-2">
+          <Link to={`/inscription${keep}`} className="font-medium text-ink underline underline-offset-2">
             {t('Créer un compte', 'Create an account')}
           </Link>
         </>
@@ -132,6 +138,7 @@ export function SignUp() {
   // Arrivé depuis un lien d'invitation : on y retourne après l'inscription.
   const [params] = useSearchParams()
   const back = safeBack(params.get('retour'), '/parcours')
+  const keep = keepRetour(params)
   const toast = useToast()
   const [f, setF] = useState({ name: '', username: '', email: '', password: '' })
   const [errors, setErrors] = useState<Partial<Record<keyof typeof f | 'form', string>>>({})
@@ -174,10 +181,19 @@ export function SignUp() {
       password: f.password,
       options: { data: { username: f.username, display_name: f.name.trim() }, emailRedirectTo: appUrl('') },
     })
+    if (error) {
+      setBusy(false)
+      return setErrors({ form: errorText(error, lang) })
+    }
+    if (!data.session) {
+      setBusy(false)
+      return setConfirmSent(true)
+    }
+    // Le serveur peut ajuster le pseudo (pris entre-temps) : on annonce celui qui a été créé.
+    const { data: created } = await supabase.from('profiles').select('username').eq('id', data.session.user.id).maybeSingle()
     setBusy(false)
-    if (error) return setErrors({ form: errorText(error, lang) })
-    if (!data.session) return setConfirmSent(true)
-    toast(t(`Compte @${f.username} créé.`, `Account @${f.username} created.`), 'ok')
+    const username = (created as { username: string } | null)?.username ?? f.username
+    toast(t(`Compte @${username} créé.`, `Account @${username} created.`), 'ok')
     navigate(back)
   }
 
@@ -186,7 +202,7 @@ export function SignUp() {
       <AuthLayout
         title={t('Confirmation de l’adresse e-mail', 'Email confirmation')}
         lead={t(`Lien de confirmation envoyé à ${f.email}. Le compte est activé à l’ouverture de ce lien.`, `Confirmation link sent to ${f.email}. The account is activated once the link is opened.`)}
-        footer={<Link to="/connexion" className="font-medium underline underline-offset-2">{t('Aller à la connexion', 'Go to sign in')}</Link>}
+        footer={<Link to={`/connexion${keep}`} className="font-medium underline underline-offset-2">{t('Aller à la connexion', 'Go to sign in')}</Link>}
       >
         <p className="text-sm text-ink-2">{t('Le message peut arriver dans les courriers indésirables. Les problèmes résolus en invité sur cet appareil sont ajoutés au compte à la première connexion.', 'The email may land in the spam folder. Problems solved as a guest on this device are added to the account at first sign-in.')}</p>
       </AuthLayout>
@@ -205,7 +221,7 @@ export function SignUp() {
       footer={
         <>
           {t('Déjà un compte ?', 'Already have an account?')}{' '}
-          <Link to="/connexion" className="font-medium text-ink underline underline-offset-2">
+          <Link to={`/connexion${keep}`} className="font-medium text-ink underline underline-offset-2">
             {t('Se connecter', 'Sign in')}
           </Link>
         </>

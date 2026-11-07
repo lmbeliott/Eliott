@@ -55,6 +55,7 @@ export function Leaderboards() {
       <LeaderboardTable
         rows={board.data}
         loading={board.isLoading}
+        onRetry={board.isError ? () => board.refetch() : undefined}
         empty={
           <div className="rounded-lg border border-line bg-surface p-6">
             <p className="font-medium">

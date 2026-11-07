@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, X } from 'lucide-react'
 import { LeaderboardTable } from '../components/LeaderboardTable'
-import { Button, CopyButton, Field, Input, Notice, Segmented, Skeleton, cx } from '../components/ui'
+import { Button, CopyButton, Field, Input, LinkButton, Notice, Segmented, Skeleton, cx } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { useAuth } from '../lib/auth'
 import { levels, levelTitle, problemById, problemList, problemTitle } from '../lib/content'
@@ -145,7 +145,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
                   </td>
                 ))}
                 <td className="px-4 text-right tabular">
-                  {set.size}
+                  {problemList.filter((p) => set.has(p.id)).length}
                   <span className="text-muted">/{problemList.length}</span>
                 </td>
                 <td className="px-4 text-right tabular">{formatPoints(lang, m.profile.xp)}</td>
@@ -178,6 +178,29 @@ export function GroupPage() {
       <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
         <Skeleton className="h-10 w-72" />
         <Skeleton className="mt-6 h-64" />
+      </div>
+    )
+  if (q.isError)
+    return (
+      <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
+        <Notice
+          tone="error"
+          action={
+            session ? (
+              <Button variant="secondary" size="sm" onClick={() => q.refetch()}>
+                {t('Réessayer', 'Try again')}
+              </Button>
+            ) : (
+              <LinkButton variant="secondary" size="sm" to={`/connexion?retour=${encodeURIComponent(`/groupes/${id}`)}`}>
+                {t('Se connecter', 'Sign in')}
+              </LinkButton>
+            )
+          }
+        >
+          {session
+            ? t('Chargement du groupe impossible. Vérifier la connexion internet puis réessayer.', 'The group could not be loaded. Check the internet connection, then try again.')
+            : t('Connexion requise pour voir un groupe.', 'Sign-in required to view a group.')}
+        </Notice>
       </div>
     )
   if (!q.data) return <NotFound />
@@ -303,7 +326,7 @@ export function GroupPage() {
               ]}
             />
             <div className="mt-4">
-              <LeaderboardTable rows={board.data} loading={board.isLoading} empty={<p className="text-sm text-muted">{t('Aucun point marqué pour l’instant.', 'No points scored yet.')}</p>} />
+              <LeaderboardTable rows={board.data} loading={board.isLoading} onRetry={board.isError ? () => board.refetch() : undefined} empty={<p className="text-sm text-muted">{t('Aucun point marqué pour l’instant.', 'No points scored yet.')}</p>} />
             </div>
           </>
         )}

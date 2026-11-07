@@ -8,7 +8,7 @@ import { LeaderboardTable } from '../components/LeaderboardTable'
 import { Cell, type CellState } from '../components/Cell'
 import { TestStrip } from '../components/TestStrip'
 import { Button, cx, DifficultyMark, LinkButton, Panel, Skeleton, Spinner } from '../components/ui'
-import { chapterById, chapters, chapterTitle, levels, levelTitle, loadProblem, problemById, problemList, problemTitle, totalPoints } from '../lib/content'
+import { catalog, chapterById, chapters, chapterTitle, levels, levelTitle, loadProblem, problemById, problemList, problemTitle, totalPoints } from '../lib/content'
 import { formatNumber, formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { saveDraft } from '../lib/progress'
 import { useLeaderboard } from '../lib/queries'
@@ -21,8 +21,12 @@ const FIRST_ID = 'somme-de-deux-nombres'
 const first = problemById(FIRST_ID) ?? problemList[0]
 const last = problemList[problemList.length - 1]
 const firstChapter = chapterById(first.chapter)
-/** Durée des cours : la même pour tous les chapitres aujourd'hui (5 min). */
-const lessonMinutes = Math.max(...chapters.map((c) => c.lessonMinutes ?? 0))
+/** Durée des cours, de la plus courte à la plus longue (minutes). */
+const minutes = chapters.map((c) => c.lessonMinutes).filter((m): m is number => !!m)
+const [minLesson, maxLesson] = [Math.min(...minutes), Math.max(...minutes)]
+const lessonRange = (lang: UiLang) => (minLesson === maxLesson ? `${minLesson}` : `${minLesson} ${lang === 'en' ? 'to' : 'à'} ${maxLesson}`)
+/** Nombre de tests par problème, exemples compris : [minimum, maximum]. */
+const { samples: sampleRange, total: testRange } = catalog.tests
 /** Points d'un problème par niveau : 50, 100, 200, 400. */
 const levelPoints = levels.map((l) => problemById(l.chapters[0]?.problems[0] ?? '')?.points ?? 0)
 /** Limite fixée par la plupart des énoncés. */
@@ -638,8 +642,8 @@ export function Landing() {
           </h1>
           <p className="mt-6 max-w-[34rem] text-lg leading-[1.55] text-ink-2">
             {t(
-              `${problemList.length} problèmes en Python ou en C++, jugés dans le navigateur sur des tests cachés. Chaque chapitre s’ouvre sur un cours de ${lessonMinutes} minutes ; chaque problème réussi rapporte des points au classement de la classe.`,
-              `${problemList.length} problems in Python or C++, judged in the browser against hidden tests. Each chapter opens with a ${lessonMinutes}-minute lesson; every solved problem earns points on the class leaderboard.`,
+              `${problemList.length} problèmes en Python ou en C++, jugés dans le navigateur sur des tests cachés. Chaque chapitre s’ouvre sur un cours de ${lessonRange('fr')} minutes ; chaque problème réussi rapporte des points au classement de la classe.`,
+              `${problemList.length} problems in Python or C++, judged in the browser against hidden tests. Each chapter opens with a lesson of ${lessonRange('en')} minutes; every solved problem earns points on the class leaderboard.`,
             )}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -667,8 +671,8 @@ export function Landing() {
             id="juge"
             title={t('Le juge', 'The judge')}
             lead={t(
-              'Chaque soumission passe sur 9 à 19 tests selon le problème. Les 2 ou 3 premiers sont les exemples de l’énoncé ; les autres sont cachés et visent les cas limites.',
-              'Each submission runs on 9 to 19 tests depending on the problem. The first 2 or 3 are the statement’s examples; the others are hidden and target edge cases.',
+              `Chaque soumission passe sur ${testRange[0]} à ${testRange[1]} tests selon le problème. Les ${sampleRange[0]} à ${sampleRange[1]} premiers sont les exemples de l’énoncé ; les autres sont cachés et visent les cas limites.`,
+              `Each submission runs on ${testRange[0]} to ${testRange[1]} tests depending on the problem. The first ${sampleRange[0]} to ${sampleRange[1]} are the statement’s examples; the others are hidden and target edge cases.`,
             )}
           />
           <div className="mt-12 grid gap-x-12 gap-y-16 lg:grid-cols-12">
@@ -788,6 +792,7 @@ export function Landing() {
             <LeaderboardTable
               rows={week.data}
               loading={week.isLoading}
+              onRetry={week.isError ? () => week.refetch() : undefined}
               compact
               empty={
                 <Panel className="px-5 py-6">
@@ -817,8 +822,8 @@ export function Landing() {
             </h2>
             <p className="mt-2 max-w-[40rem] text-ink-2">
               {t(
-                `Le premier problème du parcours : lire deux entiers sur une ligne et afficher leur somme, pour ${pts(lang, first.points)}. Le cours de son chapitre, ${firstChapter ? chapterTitle(lang, firstChapter) : ''}, se lit en ${lessonMinutes} minutes.`,
-                `The first problem of the path: read two integers on one line and print their sum, for ${pts(lang, first.points)}. The lesson of its chapter, ${firstChapter ? chapterTitle(lang, firstChapter) : ''}, takes ${lessonMinutes} minutes to read.`,
+                `Le premier problème du parcours : lire deux entiers sur une ligne et afficher leur somme, pour ${pts(lang, first.points)}. Le cours de son chapitre, ${firstChapter ? chapterTitle(lang, firstChapter) : ''}, se lit en ${firstChapter?.lessonMinutes ?? minLesson} minutes.`,
+                `The first problem of the path: read two integers on one line and print their sum, for ${pts(lang, first.points)}. The lesson of its chapter, ${firstChapter ? chapterTitle(lang, firstChapter) : ''}, takes ${firstChapter?.lessonMinutes ?? minLesson} minutes to read.`,
               )}
             </p>
           </div>

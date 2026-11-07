@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase, type Group, type LeaderRow, type Profile, type Solve } from './supabase'
+import { parisDay, supabase, type Group, type LeaderRow, type Profile, type Solve } from './supabase'
 import { useAuth } from './auth'
 
 /** Défi du jour : un problème par piste (choisi par le serveur, identique pour tous). */
 export function useDaily() {
+  // Le jour de Paris fait partie de la clé : une page restée ouverte passe minuit avec la
+  // nouvelle sélection (les pages qui l'affichent se redessinent avec le compte à rebours).
   return useQuery({
-    queryKey: ['daily'],
+    queryKey: ['daily', parisDay(new Date())],
     staleTime: 10 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('daily_problems')
@@ -90,17 +92,19 @@ export function useMyGroups() {
     queryKey: ['groups', uid],
     enabled: !!uid,
     queryFn: async () => {
-      const [{ data: groups, error: e1 }, { data: members, error: e2 }] = await Promise.all([
-        supabase.from('groups').select('*').order('created_at', { ascending: false }),
-        supabase.from('group_members').select('group_id, user_id, role'),
+      // Le nombre de membres est compté par le serveur : la liste complète dépasserait vite
+      // les 1000 lignes que l'API renvoie au plus.
+      const [{ data: groups, error: e1 }, { data: mine, error: e2 }] = await Promise.all([
+        supabase.from('groups').select('*, group_members(count)').order('created_at', { ascending: false }),
+        supabase.from('group_members').select('group_id, role').eq('user_id', uid!),
       ])
       if (e1) throw e1
       if (e2) throw e2
-      const rows = members as { group_id: string; user_id: string; role: 'encadrant' | 'membre' }[]
-      return (groups as Group[]).map((g) => ({
+      const roles = new Map((mine as { group_id: string; role: 'encadrant' | 'membre' }[]).map((m) => [m.group_id, m.role]))
+      return (groups as (Group & { group_members: { count: number }[] })[]).map(({ group_members, ...g }) => ({
         ...g,
-        role: rows.find((m) => m.group_id === g.id && m.user_id === uid)?.role ?? 'membre',
-        members: rows.filter((m) => m.group_id === g.id).length,
+        role: roles.get(g.id) ?? 'membre',
+        members: group_members[0]?.count ?? 0,
       })) as MyGroup[]
     },
   })

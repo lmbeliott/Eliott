@@ -85,6 +85,7 @@ class Runtime {
   progress = { loaded: 0, total: 0 }
   private kind: Kind
   private listeners = new Set<() => void>()
+  private progressFns = new Set<(loaded: number, total: number) => void>()
 
   constructor(kind: Kind) {
     this.kind = kind
@@ -99,20 +100,31 @@ class Runtime {
   }
 
   start(onProgress?: (loaded: number, total: number) => void): Promise<void> {
-    if (this.ready) return this.ready
+    if (!this.ready) this.ready = this.load()
+    // Chargement déjà en cours (préchargement sans suivi) : ce demandeur reçoit aussi la progression.
+    if (onProgress && this.state === 'loading') {
+      this.progressFns.add(onProgress)
+      if (this.progress.total) onProgress(this.progress.loaded, this.progress.total)
+    }
+    return this.ready
+  }
+
+  private load(): Promise<void> {
     this.state = 'loading'
+    this.progress = { loaded: 0, total: 0 }
     this.emit()
     const w = makeWorker[this.kind]()
     this.worker = w
-    this.ready = new Promise<void>((resolve, reject) => {
+    const ready = new Promise<void>((resolve, reject) => {
       w.onmessage = (e: MessageEvent<FromWorker>) => {
         const m = e.data
         if (m.type === 'progress') {
           this.progress = { loaded: m.loaded, total: m.total }
-          onProgress?.(m.loaded, m.total)
+          for (const fn of this.progressFns) fn(m.loaded, m.total)
           this.emit()
         } else if (m.type === 'ready') {
           this.state = 'ready'
+          this.progressFns.clear()
           this.emit()
           resolve()
         } else if (m.type === 'fatal') {
@@ -134,13 +146,14 @@ class Runtime {
       }
     })
     w.postMessage({ type: 'init', base: BASE } satisfies ToWorker)
-    return this.ready
+    return ready
   }
 
   kill() {
     this.worker?.terminate()
     this.worker = null
     this.ready = null
+    this.progressFns.clear()
     for (const cb of this.pending.values()) cb({ type: 'fatal', message: 'arrêté' })
     this.pending.clear()
     if (this.state !== 'failed') this.state = 'idle'
@@ -207,7 +220,17 @@ export interface RunOptions {
 
 let programCounter = 0
 
-export async function judge(opts: RunOptions): Promise<JudgeReport> {
+// Un seul jugement à la fois : chaque worker traite ses messages l'un après l'autre, et le
+// temps passé à attendre derrière une autre exécution compterait dans la limite de temps.
+let queue: Promise<unknown> = Promise.resolve()
+
+export function judge(opts: RunOptions): Promise<JudgeReport> {
+  const run = queue.then(() => judgeNow(opts))
+  queue = run.catch(() => {})
+  return run
+}
+
+async function judgeNow(opts: RunOptions): Promise<JudgeReport> {
   const { lang, code, tests, problemId, onEvent, signal } = opts
   const limit = limitFor(lang, opts.timeLimitMs)
   const results: TestResult[] = tests.map((t, index) => ({
@@ -232,70 +255,82 @@ export async function judge(opts: RunOptions): Promise<JudgeReport> {
   const rt = runtimeFor(lang)
   // Interruption : on arrête le worker qui exécute ce programme, pour qu'il ne bloque
   // (ni ne fasse échouer) l'exécution suivante. Il sera relancé à la demande.
-  signal?.addEventListener('abort', () => (lang === 'python' ? runtimes.python : runtimes.wasm).kill(), { once: true })
-  await rt.start((loaded, total) => onEvent?.({ kind: 'loading', lang, loaded, total }))
-
-  // --- compilation (C++)
-  let wasm: ArrayBuffer | null = null
-  const programId = `p${++programCounter}`
-  if (lang === 'cpp') {
-    onEvent?.({ kind: 'compiling' })
-    const res = await runtimes.clang.request({ type: 'compile', code }, 60_000)
-    if (res === 'timeout') return report('compile_error', 'La compilation a pris plus d’une minute et a été arrêtée.')
-    if (res.type === 'compile_error') return report('compile_error', res.stderr)
-    if (res.type !== 'compiled') return report('compile_error', 'Le compilateur a rencontré une erreur interne. Recharge la page puis réessaie.')
-    wasm = res.wasm
-    await runtimes.wasm.start()
+  // L'écouteur est retiré à la fin : interrompre une exécution déjà terminée ne doit pas
+  // arrêter le worker (prêt) pour la suivante.
+  const onAbort = () => (lang === 'python' ? runtimes.python : runtimes.wasm).kill()
+  signal?.addEventListener('abort', onAbort, { once: true })
+  try {
+    return await execute()
+  } finally {
+    signal?.removeEventListener('abort', onAbort)
   }
 
-  // --- tests
-  let stop = false
-  for (const [i, test] of tests.entries()) {
-    const r = results[i]
-    if (stop || signal?.aborted) {
-      r.status = 'skipped'
+  async function execute(): Promise<JudgeReport> {
+    await rt.start((loaded, total) => onEvent?.({ kind: 'loading', lang, loaded, total }))
+
+    // --- compilation (C++)
+    let wasm: ArrayBuffer | null = null
+    const programId = `p${++programCounter}`
+    // Interrompue pendant l'attente de son tour : rien à compiler, les tests seront sautés.
+    if (lang === 'cpp' && !signal?.aborted) {
+      onEvent?.({ kind: 'compiling' })
+      const res = await runtimes.clang.request({ type: 'compile', code }, 60_000)
+      if (res === 'timeout') return report('compile_error', 'La compilation a pris plus d’une minute et a été arrêtée.')
+      if (res.type === 'compile_error') return report('compile_error', res.stderr)
+      if (res.type !== 'compiled') return report('compile_error', 'Le compilateur a rencontré une erreur interne. Recharger la page puis réessayer.')
+      wasm = res.wasm
+      await runtimes.wasm.start()
+    }
+
+    // --- tests
+    let stop = false
+    for (const [i, test] of tests.entries()) {
+      const r = results[i]
+      if (stop || signal?.aborted) {
+        r.status = 'skipped'
+        onEvent?.({ kind: 'test', result: r, done: i + 1, total: tests.length })
+        continue
+      }
+      r.status = 'running'
+      const res =
+        lang === 'python'
+          ? await runtimes.python.request({ type: 'run', code, input: test.input }, limit + 1500)
+          : await runtimes.wasm.request({ type: 'exec', wasm: wasm!.slice(0), programId, input: test.input }, limit + 1000)
+
+      if (res === 'timeout') {
+        r.status = 'timeout'
+        r.timeMs = limit
+        stop = true // chaque dépassement coûte du temps : on n'insiste pas
+      } else if (res.type === 'result') {
+        r.stdout = res.stdout.length > OUTPUT_LIMIT ? res.stdout.slice(0, OUTPUT_LIMIT) : res.stdout
+        r.stderr = res.stderr
+        r.timeMs = Math.round(res.timeMs)
+        if (res.crashed) (lang === 'python' ? runtimes.python : runtimes.wasm).kill()
+        if (!res.ok) r.status = 'error'
+        else if (res.timeMs > limit) r.status = 'timeout'
+        else if (test.output === undefined && !test.hash) r.status = 'ok'
+        else r.status = (await matches(problemId, i, test, res.stdout)) ? 'ok' : 'wrong'
+        if (r.status === 'timeout') stop = true
+      } else {
+        r.status = 'error'
+        r.stderr = 'Le juge a été interrompu.'
+      }
       onEvent?.({ kind: 'test', result: r, done: i + 1, total: tests.length })
-      continue
     }
-    r.status = 'running'
-    const res =
-      lang === 'python'
-        ? await runtimes.python.request({ type: 'run', code, input: test.input }, limit + 1500)
-        : await runtimes.wasm.request({ type: 'exec', wasm: wasm!.slice(0), programId, input: test.input }, limit + 1000)
 
-    if (res === 'timeout') {
-      r.status = 'timeout'
-      r.timeMs = limit
-      stop = true // chaque dépassement coûte du temps : on n'insiste pas
-    } else if (res.type === 'result') {
-      r.stdout = res.stdout.length > OUTPUT_LIMIT ? res.stdout.slice(0, OUTPUT_LIMIT) : res.stdout
-      r.stderr = res.stderr
-      r.timeMs = Math.round(res.timeMs)
-      if (res.crashed) (lang === 'python' ? runtimes.python : runtimes.wasm).kill()
-      if (!res.ok) r.status = 'error'
-      else if (res.timeMs > limit) r.status = 'timeout'
-      else if (test.output === undefined && !test.hash) r.status = 'ok'
-      else r.status = (await matches(problemId, i, test, res.stdout)) ? 'ok' : 'wrong'
-      if (r.status === 'timeout') stop = true
-    } else {
-      r.status = 'error'
-      r.stderr = 'Le juge a été interrompu.'
+    const freeRun = tests.every((t) => t.output === undefined && !t.hash)
+    if (freeRun) return report(null)
+    // Le verdict est celui du premier test raté : c'est par lui que l'élève doit commencer.
+    const firstBad = results.find((r) => r.status !== 'ok')
+    const verdictOf: Record<TestStatus, Verdict> = {
+      ok: 'accepted',
+      wrong: 'wrong_answer',
+      timeout: 'time_limit',
+      error: 'runtime_error',
+      skipped: 'time_limit',
+      pending: 'runtime_error',
+      running: 'runtime_error',
     }
-    onEvent?.({ kind: 'test', result: r, done: i + 1, total: tests.length })
+    return report(firstBad ? verdictOf[firstBad.status] : 'accepted')
   }
-
-  const freeRun = tests.every((t) => t.output === undefined && !t.hash)
-  if (freeRun) return report(null)
-  // Le verdict est celui du premier test raté : c'est par lui que l'élève doit commencer.
-  const firstBad = results.find((r) => r.status !== 'ok')
-  const verdictOf: Record<TestStatus, Verdict> = {
-    ok: 'accepted',
-    wrong: 'wrong_answer',
-    timeout: 'time_limit',
-    error: 'runtime_error',
-    skipped: 'time_limit',
-    pending: 'runtime_error',
-    running: 'runtime_error',
-  }
-  return report(firstBad ? verdictOf[firstBad.status] : 'accepted')
 }

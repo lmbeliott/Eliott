@@ -55,7 +55,7 @@ export function Path() {
             <div>
               <dt className="text-sm text-muted">{t('Problèmes réussis', 'Problems solved')}</dt>
               <dd className="mt-1 text-xl font-semibold leading-none">
-                {formatNumber(lang, solvedCount)}
+                {progress.loading ? '–' : formatNumber(lang, solvedCount)}
                 <span className="font-normal text-muted"> / {formatNumber(lang, total)}</span>
               </dd>
             </div>
@@ -66,7 +66,7 @@ export function Path() {
               </div>
             )}
           </dl>
-          {next && (
+          {next && !progress.loading && (
             <LinkButton to={`/probleme/${next.id}`} className="self-start lg:self-end">
               {t(`Ouvrir ${problemTitle(lang, next)}`, `Open ${problemTitle(lang, next)}`)}
             </LinkButton>
@@ -75,7 +75,7 @@ export function Path() {
       </header>
 
       <p className="mt-4 text-sm text-muted">
-        {progress.guest ? (
+        {progress.loading ? null : progress.guest ? (
           <>
             {t(
               `Sans compte, réussites conservées dans ce navigateur, sans points. Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus. `,

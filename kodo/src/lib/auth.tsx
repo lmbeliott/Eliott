@@ -7,6 +7,9 @@ interface AuthState {
   session: Session | null
   ready: boolean
   profile: Profile | null
+  /** Le profil n'a pas pu être chargé (erreur du serveur) */
+  profileError: boolean
+  retryProfile: () => void
   /** Arrivée par le lien « mot de passe oublié » */
   recovering: boolean
   clearRecovering: () => void
@@ -48,8 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   })
 
   const value = useMemo<AuthState>(
-    () => ({ session, ready, profile: profileQuery.data ?? null, recovering, clearRecovering: () => setRecovering(false) }),
-    [session, ready, profileQuery.data, recovering],
+    () => ({
+      session,
+      ready,
+      profile: profileQuery.data ?? null,
+      profileError: profileQuery.isError && !profileQuery.data,
+      retryProfile: () => void profileQuery.refetch(),
+      recovering,
+      clearRecovering: () => setRecovering(false),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session, ready, profileQuery.data, profileQuery.isError, recovering],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

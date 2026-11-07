@@ -306,9 +306,14 @@ export async function saveCommunityProblem(d: CommunityDraft, userId: string, is
     samples: d.samples,
     tests: d.tests,
   }
-  const { error } = isNew
+  let { error } = isNew
     ? await supabase.from('community_problems').insert({ id: d.id, author_id: userId, ...row })
     : await supabase.from('community_problems').update(row).eq('id', d.id)
+  // Nouvelle tentative après un échec sur la solution de référence : le problème existe déjà,
+  // on le met à jour (les deux écritures ne sont pas dans une même transaction).
+  if (isNew && error?.code === '23505' && /community_problems_pkey/.test(error.message)) {
+    ;({ error } = await supabase.from('community_problems').update(row).eq('id', d.id).eq('author_id', userId))
+  }
   if (error) throw error
   const ref = await supabase.from('community_references').upsert({ problem_id: d.id, language: d.reference.language, code: d.reference.code, generator: d.reference.generator })
   if (ref.error) throw ref.error
