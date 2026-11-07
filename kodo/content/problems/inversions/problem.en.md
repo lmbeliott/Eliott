@@ -31,10 +31,10 @@ So we need to answer quickly "how many values already seen are smaller than `d`?
 
 The number of inversions that `d` forms with the values placed before it is `i - somme(d)`. Total complexity: **O(N log N)**.
 
-The naive algorithm compares every pair: N(N - 1)/2, that is 2 × 10⁸ comparisons for `N = 20 000`.
+The naive algorithm compares every pair: N(N - 1)/2, that is 2 × 10⁸ comparisons for `N = 20 000`. That is too slow in Python; in C++ it still passes at this size, but not at all for `N` around 10⁵ and above, where the Fenwick tree becomes essential.
 
 A modified merge sort can also count the inversions in O(N log N).
 
 Traps:
-- The result can reach N(N - 1)/2 ≈ 2 × 10⁸: it fits in a 32-bit `int`, but not by much; a `long long` is safer.
+- The result can reach N(N - 1)/2 ≈ 2 × 10⁸: it fits in a 32-bit `int` (limit ≈ 2.1 × 10⁹); a `long long` is still a good habit when counting pairs.
 - The Fenwick tree is indexed from `1`: with index `0`, `i & -i` is `0` and the loop in `ajoute` never stops.

@@ -26,12 +26,12 @@ On donne une liste de `N` ensembles. Écris un programme qui répond à `Q` requ
 - chaque ensemble est un entier entre `0` et `65 535`
 
 ## Indices
-1. L'ensemble `A` est inclus dans `B` si `A & B == A`. Tester tous les ensembles de la liste pour chaque requête fait 10⁸ tests : trop lent.
+1. L'ensemble `A` est inclus dans `B` si `(A & B) == A`. Tester tous les ensembles de la liste pour chaque requête fait 10⁸ tests : trop lent en Python.
 2. Il n'y a que 2¹⁶ = 65 536 ensembles possibles. Compte d'abord combien de fois chaque ensemble apparaît dans la liste, puis précalcule la réponse pour **tous** les ensembles `B` : `réponse[B]` est la somme des comptes de tous les sous-ensembles de `B`.
 3. Énumérer les sous-ensembles de chaque `B` coûte 3¹⁶ ≈ 4 × 10⁷ au total : encore trop en Python. Traite plutôt les bits un par un : pour chaque bit `b` et chaque `m` qui contient `b`, ajoute à `réponse[m]` la valeur de `réponse[m sans le bit b]`.
 
 ## Solution
-Un ensemble `A` est inclus dans `B` si `A ⊆ B`, ce qui se teste par `A & B == A`. Tester tous les ensembles de la liste pour chaque requête coûte O(N × Q) = 10⁸ : trop lent en Python.
+Un ensemble `A` est inclus dans `B` si `A ⊆ B`, ce qui se teste par `(A & B) == A`. Tester tous les ensembles de la liste pour chaque requête coûte O(N × Q) = 10⁸ : trop lent en Python.
 
 On remarque qu'il n'y a que 2¹⁶ ensembles. On compte `c[A]`, le nombre de fois où l'ensemble `A` apparaît dans la liste. La réponse pour `B` est alors `S[B] = somme des c[A] pour A ⊆ B`. Si on précalcule `S` pour les 65 536 ensembles, chaque requête se lit en O(1).
 
@@ -48,4 +48,4 @@ Complexité : **O(16 × 2¹⁶ + N + Q)**, environ un million d'opérations.
 Pièges :
 - `A = 0` (l'ensemble vide) est inclus dans tous les ensembles : il compte pour toutes les requêtes, même `B = 0`.
 - Plusieurs ensembles de la liste peuvent être égaux : il faut les **compter**, pas seulement les marquer.
-- En Python, `~B` est un nombre négatif : pour tester l'inclusion, préfère `A & B == A` ou `A | B == B`.
+- En C++, `==` est prioritaire sur `&` : écris `(A & B) == A`. Sans parenthèses, `A & B == A` signifie `A & (B == A)`.

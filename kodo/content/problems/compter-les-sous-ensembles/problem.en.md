@@ -21,12 +21,12 @@ You are given a list of `N` sets. Write a program that answers `Q` queries: for 
 - each set is an integer between `0` and `65 535`
 
 ## Hints
-1. Set `A` is included in `B` if `A & B == A`. Testing every set of the list for each query means 10⁸ tests: too slow.
+1. Set `A` is included in `B` if `(A & B) == A`. Testing every set of the list for each query means 10⁸ tests: too slow in Python.
 2. There are only 2¹⁶ = 65 536 possible sets. First count how many times each set appears in the list, then precompute the answer for **all** the sets `B`: `answer[B]` is the sum of the counts of all the subsets of `B`.
 3. Listing the subsets of every `B` costs 3¹⁶ ≈ 4 × 10⁷ in total: still too much in Python. Instead, handle the bits one by one: for each bit `b` and each `m` that contains `b`, add to `answer[m]` the value of `answer[m without bit b]`.
 
 ## Solution
-A set `A` is included in `B` if `A ⊆ B`, which is tested with `A & B == A`. Testing every set of the list for each query costs O(N × Q) = 10⁸: too slow in Python.
+A set `A` is included in `B` if `A ⊆ B`, which is tested with `(A & B) == A`. Testing every set of the list for each query costs O(N × Q) = 10⁸: too slow in Python.
 
 Notice that there are only 2¹⁶ sets. We count `c[A]`, the number of times set `A` appears in the list. The answer for `B` is then `S[B] = sum of c[A] over A ⊆ B`. If we precompute `S` for all 65 536 sets, each query is read in O(1).
 
@@ -43,4 +43,4 @@ Complexity: **O(16 × 2¹⁶ + N + Q)**, about a million operations.
 Traps:
 - `A = 0` (the empty set) is included in every set: it counts for every query, even `B = 0`.
 - Several sets of the list can be equal: you must **count** them, not just mark them.
-- In Python, `~B` is a negative number: to test inclusion, prefer `A & B == A` or `A | B == B`.
+- In C++, `==` has higher precedence than `&`: write `(A & B) == A`. Without parentheses, `A & B == A` means `A & (B == A)`.

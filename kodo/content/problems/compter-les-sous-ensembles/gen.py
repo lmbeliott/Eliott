@@ -26,8 +26,12 @@ tests.append(fmt([ensemble(0.3) for _ in range(500)], [ensemble(0.7) for _ in ra
 tests.append(fmt([4242] * 3000, [4242, 4243, 4240, TOUT, 0] * 200))
 # Grands cas.
 tests.append(fmt([ensemble(0.2) for _ in range(10000)], [ensemble(0.8) for _ in range(10000)]))
-tests.append(fmt([ensemble(random.choice([0.05, 0.3, 0.6])) for _ in range(10000)],
-                 [ensemble(random.choice([0.5, 0.9, 0.97])) for _ in range(10000)]))
-# Requêtes presque pleines : énumérer les sous-ensembles de chaque requête coûte 2¹⁶.
-tests.append(fmt([random.randint(0, TOUT) for _ in range(10000)], [TOUT ^ (1 << random.randrange(16)) for _ in range(10000)]))
+# Liste et requêtes aux valeurs presque toutes différentes : garder en mémoire la réponse de
+# chaque requête déjà vue ne fait rien gagner. Les requêtes sont les 10 000 ensembles qui ont
+# le plus d'éléments : énumérer leurs sous-ensembles coûte des dizaines de millions d'étapes.
+liste = [random.randint(0, TOUT) for _ in range(10000)]
+requetes = sorted(range(TOUT + 1), key=lambda m: -bin(m).count("1"))[:10000]
+random.shuffle(requetes)
+tests.append(fmt(liste, requetes))
+tests.append(fmt([random.randint(0, TOUT) for _ in range(10000)], [random.randint(0, TOUT) for _ in range(10000)]))
 print(json.dumps(tests))

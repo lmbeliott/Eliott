@@ -36,10 +36,10 @@ Il faut donc répondre vite à la question « combien de valeurs déjà vues son
 
 Le nombre d'inversions que `d` forme avec les valeurs placées avant elle vaut `i - somme(d)`. Complexité totale : **O(N log N)**.
 
-L'algorithme naïf compare toutes les paires : N(N - 1)/2, soit 2 × 10⁸ comparaisons pour `N = 20 000`.
+L'algorithme naïf compare toutes les paires : N(N - 1)/2, soit 2 × 10⁸ comparaisons pour `N = 20 000`. C'est trop lent en Python ; en C++, cela passe encore à cette taille, mais plus du tout pour `N` autour de 10⁵ et au-delà, où l'arbre de Fenwick devient indispensable.
 
 Un tri fusion modifié permet également de compter les inversions en O(N log N).
 
 Pièges :
-- Le résultat peut atteindre N(N - 1)/2 ≈ 2 × 10⁸ : il tient dans un `int` de 32 bits, mais pas de beaucoup ; un `long long` est plus sûr.
+- Le résultat peut atteindre N(N - 1)/2 ≈ 2 × 10⁸ : il tient dans un `int` de 32 bits (limite ≈ 2,1 × 10⁹) ; un `long long` reste une bonne habitude pour les comptages de paires.
 - L'arbre de Fenwick s'indexe à partir de `1` : avec l'indice `0`, `i & -i` vaut `0` et la boucle de `ajoute` ne s'arrête jamais.
