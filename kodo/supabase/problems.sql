@@ -1,6 +1,7 @@
 -- Généré par scripts/build-content.mjs : ne pas modifier à la main.
 insert into public.problems (id, chapter, level, difficulty, points, title) values
   ('ajouter-des-rampes', 'n3-complexite', 'n3', 'difficile', 200, 'Ajouter des rampes'),
+  ('ajouts-sur-des-chemins-sommes-de-sous-arbres', 'n4-arbres', 'n4', 'expert', 400, 'Ajouts sur des chemins, sommes de sous-arbres'),
   ('alimenter-tous-les-sommets', 'n4-chemins', 'n4', 'expert', 400, 'Alimenter tous les sommets'),
   ('anagrammes-sans-doublon', 'n3-recursivite', 'n3', 'difficile', 200, 'Anagrammes sans doublon'),
   ('arcs-sans-croisement', 'n4-dynamique-avancee', 'n4', 'expert', 400, 'Arcs sans croisement'),
@@ -87,6 +88,7 @@ insert into public.problems (id, chapter, level, difficulty, points, title) valu
   ('nombres-premiers-dans-une-fenetre', 'n3-arithmetique', 'n3', 'difficile', 200, 'Nombres premiers dans une fenêtre'),
   ('nombres-premiers-jumeaux', 'n2-fonctions', 'n2', 'moyen', 100, 'Nombres premiers jumeaux'),
   ('note-du-milieu', 'n1-conditions', 'n1', 'facile', 50, 'Note du milieu'),
+  ('occurrences-a-une-lettre-pres', 'n4-chaines-avancees', 'n4', 'expert', 400, 'Occurrences à une lettre près'),
   ('ordre-des-taches-en-retard', 'n4-dynamique-avancee', 'n4', 'expert', 400, 'Ordre des tâches en retard'),
   ('paires-d-ecart-borne', 'n4-structures', 'n4', 'expert', 400, 'Paires d''écart borné'),
   ('paires-dont-le-pgcd-est-premier', 'n3-arithmetique', 'n3', 'difficile', 200, 'Paires dont le PGCD est premier'),
@@ -109,6 +111,7 @@ insert into public.problems (id, chapter, level, difficulty, points, title) valu
   ('points-entiers-sur-un-trajet', 'n3-arithmetique', 'n3', 'difficile', 200, 'Points entiers sur un trajet'),
   ('position-du-maximum', 'n1-listes', 'n1', 'facile', 50, 'Position du maximum'),
   ('prefixe-de-poids-maximal', 'n4-chaines-avancees', 'n4', 'expert', 400, 'Préfixe de poids maximal'),
+  ('prefixes-qui-couvrent-un-mot', 'n4-chaines-avancees', 'n4', 'expert', 400, 'Préfixes qui couvrent un mot'),
   ('premier-alignement', 'n2-grilles', 'n2', 'moyen', 100, 'Premier alignement'),
   ('premier-element-assez-grand', 'n4-structures', 'n4', 'expert', 400, 'Premier élément assez grand'),
   ('prix-selon-l-age', 'n1-conditions', 'n1', 'facile', 50, 'Prix selon l''âge'),

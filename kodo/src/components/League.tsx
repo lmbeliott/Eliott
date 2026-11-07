@@ -2,25 +2,16 @@ import { formatPoints, useI18n } from '../lib/i18n'
 import { leagueMeaning, leagueName, leagueOf, type League } from '../lib/leagues'
 import { cx } from './ui'
 
-/** Pastille de rang : le kanji du rang sur sa teinte, puis son nom. Le sens apparaît au survol. */
-export function LeagueBadge({ league, className, kanji }: { league: League; className?: string; kanji?: boolean }) {
+/** Rang : son kanji en mincho, à la teinte du rang, puis son nom en capitales espacées.
+ *  Le sens apparaît au survol. `kanji` est conservé pour compatibilité (le kanji est toujours affiché). */
+export function LeagueBadge({ league, className }: { league: League; className?: string; kanji?: boolean }) {
   const { lang } = useI18n()
   return (
-    <span className={cx('inline-flex items-center gap-1.5 text-sm font-medium', className)} title={`${league.kanji} · ${leagueMeaning(lang, league)}`}>
-      <span
-        aria-hidden
-        lang="ja"
-        className="inline-flex size-5 shrink-0 items-center justify-center rounded-[5px] text-[12px] font-semibold leading-none text-white"
-        style={{ background: league.tone }}
-      >
-        {league.glyph}
+    <span className={cx('inline-flex items-baseline gap-2 whitespace-nowrap', className)} title={`${league.kanji} · ${leagueMeaning(lang, league)}`}>
+      <span lang="ja" className="rank-kanji text-[1.15em] leading-none" style={{ color: league.tone }}>
+        {league.kanji}
       </span>
-      {leagueName(lang, league)}
-      {kanji && (
-        <span lang="ja" className="font-normal text-muted">
-          {league.kanji}
-        </span>
-      )}
+      <span className="rank-name text-[0.7em] leading-none">{leagueName(lang, league)}</span>
     </span>
   )
 }

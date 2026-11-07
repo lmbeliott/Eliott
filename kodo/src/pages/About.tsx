@@ -96,7 +96,7 @@ export function About() {
       <Section id="rangs" title={t('Rangs', 'Ranks')} lead={t('Rang déterminé par le total de points. Shu, Ha, Ri : les trois étapes classiques de l’apprentissage japonais.', 'Rank set by total points. Shu, Ha, Ri: the three classic stages of Japanese learning.')}>
         <Table
           head={[t('Rang', 'Rank'), t('Sens', 'Meaning'), t('À partir de', 'From')]}
-          rows={LEAGUES.map((l) => [<LeagueBadge league={l} kanji className="font-normal" />, leagueMeaning(lang, l), formatPoints(lang, l.min)])}
+          rows={LEAGUES.map((l) => [<LeagueBadge league={l} />, leagueMeaning(lang, l), formatPoints(lang, l.min)])}
         />
       </Section>
 

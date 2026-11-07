@@ -126,7 +126,7 @@ export function ProfilePage() {
               return (
                 <li key={l.id} className={cx('flex h-11 items-center justify-between border-b border-line px-4 text-sm last:border-0', current && 'bg-accent-soft')}>
                   <span className="flex items-center gap-3">
-                    <LeagueBadge league={l} kanji className={reached ? '' : 'font-normal text-muted'} />
+                    <LeagueBadge league={l} className={reached ? '' : 'opacity-40'} />
                     {current && league.next && (
                       <span className="text-xs text-ink-2">{t(`encore ${formatPoints(lang, league.remaining)} pour ${leagueName(lang, league.next)}`, `${formatPoints(lang, league.remaining)} to ${leagueName(lang, league.next)}`)}</span>
                     )}
