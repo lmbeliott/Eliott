@@ -4,6 +4,7 @@ import { Button, Field, Input, Notice } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { useI18n } from '../lib/i18n'
 import { errorText, supabase } from '../lib/supabase'
+import { useCaptcha } from '../components/Turnstile'
 
 // Retour après connexion : uniquement un chemin interne (« /… », jamais « //autre-site »).
 const safeBack = (v: string | null, fallback: string) => (v && v.startsWith('/') && !v.startsWith('//') ? v : fallback)
@@ -41,23 +42,27 @@ export function SignIn() {
   const [sent, setSent] = useState(false)
   const back = safeBack(params.get('retour'), '/')
   const keep = keepRetour(params)
+  const captcha = useCaptcha()
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     const errs: typeof errors = {}
     if (!emailOk(email)) errs.email = t('Adresse e-mail attendue, par exemple nom@exemple.fr.', 'Email address expected, for example name@example.com.')
     if (mode === 'login' && !password) errs.password = t('Mot de passe requis.', 'Password required.')
+    if (!captcha.ready) errs.form = t('Valider la vérification anti-robot ci-dessus.', 'Complete the anti-bot check above.')
     setErrors(errs)
     if (Object.keys(errs).length) return
     setBusy(true)
+    const captchaToken = captcha.token ?? undefined
+    captcha.reset()
     if (mode === 'forgot') {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: appUrl('compte') })
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: appUrl('compte'), captchaToken })
       setBusy(false)
       if (error) setErrors({ form: errorText(error, lang) })
       else setSent(true)
       return
     }
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password, options: { captchaToken } })
     setBusy(false)
     if (error) {
       setErrors({ form: errorText(error, lang) })
@@ -121,6 +126,7 @@ export function SignIn() {
             />
           </Field>
         )}
+        {captcha.widget}
         <Button type="submit" loading={busy} size="lg" className="mt-2">
           {mode === 'login' ? t('Se connecter', 'Sign in') : t('Envoyer le lien', 'Send the link')}
         </Button>
@@ -144,6 +150,7 @@ export function SignUp() {
   const [errors, setErrors] = useState<Partial<Record<keyof typeof f | 'form', string>>>({})
   const [busy, setBusy] = useState(false)
   const [confirmSent, setConfirmSent] = useState(false)
+  const captcha = useCaptcha()
 
   const validate = (key: keyof typeof f, v: string): string | undefined => {
     if (key === 'name' && v.trim().length < 1) return t('Prénom ou nom requis.', 'First name or name required.')
@@ -173,13 +180,16 @@ export function SignUp() {
       if (m) errs[k] = m
     }
     if (errors.username) errs.username = errors.username
+    if (!captcha.ready) errs.form = t('Valider la vérification anti-robot ci-dessous.', 'Complete the anti-bot check below.')
     setErrors(errs)
     if (Object.keys(errs).length) return
     setBusy(true)
+    const captchaToken = captcha.token ?? undefined
+    captcha.reset()
     const { data, error } = await supabase.auth.signUp({
       email: f.email.trim(),
       password: f.password,
-      options: { data: { username: f.username, display_name: f.name.trim() }, emailRedirectTo: appUrl('') },
+      options: { data: { username: f.username, display_name: f.name.trim() }, emailRedirectTo: appUrl(''), captchaToken },
     })
     if (error) {
       setBusy(false)
@@ -243,6 +253,7 @@ export function SignUp() {
             />
           </Field>
         ))}
+        {captcha.widget}
         <Button type="submit" loading={busy} size="lg" className="mt-2">
           {t('Créer mon compte', 'Create my account')}
         </Button>

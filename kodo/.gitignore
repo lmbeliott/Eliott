@@ -4,3 +4,4 @@ public/vendor
 public/content
 src/content/catalog.json
 *.tsbuildinfo
+dist-cf

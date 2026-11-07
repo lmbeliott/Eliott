@@ -38,6 +38,7 @@ const Community = lazy(() => load(() => import('./pages/Community').then((m) => 
 const CommunityProblem = lazy(() => load(() => import('./pages/CommunityProblem').then((m) => ({ default: m.CommunityProblem }))))
 const CommunityEditor = lazy(() => load(() => import('./pages/CommunityEditor').then((m) => ({ default: m.CommunityEditor }))))
 const About = lazy(() => load(() => import('./pages/About').then((m) => ({ default: m.About }))))
+const Admin = lazy(() => load(() => import('./pages/Admin').then((m) => ({ default: m.Admin }))))
 
 const wrap = (el: React.ReactNode) => (
   <Suspense
@@ -75,6 +76,7 @@ const router = createBrowserRouter(
         { path: '/inscription', element: wrap(<SignUp />) },
         { path: '/compte', element: wrap(<Account />) },
         { path: '/a-propos', element: wrap(<About />) },
+        { path: '/admin', element: wrap(<Admin />) },
         { path: '*', element: <NotFound /> },
       ],
     },

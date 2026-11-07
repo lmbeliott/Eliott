@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { UserName } from './Staff'
 import { UserAvatar } from './UserAvatar'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useMatches, useNavigate } from 'react-router-dom'
-import { Flame, LogOut, Menu, Moon, Settings, Sun, User, X } from 'lucide-react'
+import { Flame, LogOut, Menu, Moon, Settings, ShieldCheck, Sun, User, X } from 'lucide-react'
 import { Logo } from './Logo'
 import { CellText } from './CellText'
 import { cx, IconButton, LinkButton, Segmented } from './ui'
@@ -13,6 +13,7 @@ import { useTheme } from '../lib/theme'
 import { useGuestSync } from '../lib/progress'
 import { useToast } from './Toast'
 import { plural } from '../lib/i18n'
+import { useAnnouncement } from '../lib/admin'
 
 function useNav() {
   const { t } = useI18n()
@@ -100,6 +101,11 @@ function AccountMenu() {
           <Link role="menuitem" to="/compte" className={item} onClick={() => setOpen(false)}>
             <Settings className="size-4 text-muted" /> {t('Paramètres', 'Settings')}
           </Link>
+          {profile.staff === 'admin' && (
+            <Link role="menuitem" to="/admin" className={item} onClick={() => setOpen(false)}>
+              <ShieldCheck className="size-4 text-muted" /> {t('Administration', 'Administration')}
+            </Link>
+          )}
           <button
             role="menuitem"
             type="button"
@@ -249,6 +255,43 @@ function Footer() {
   )
 }
 
+/** Annonce de l'administration (site_settings), fermable ; une nouvelle annonce réapparaît. */
+function AnnouncementBar() {
+  const { data } = useAnnouncement()
+  const { t } = useI18n()
+  const key = 'kodo:announcement-closed'
+  const [closed, setClosed] = useState<number | null>(() => {
+    try {
+      return Number(localStorage.getItem(key)) || null
+    } catch {
+      return null
+    }
+  })
+  if (!data || closed === data.id) return null
+  return (
+    <div className={cx('border-b border-line text-sm', data.tone === 'warn' ? 'bg-warn-soft' : 'bg-accent-soft')} role="status">
+      <div className="mx-auto flex max-w-[1200px] items-start justify-between gap-3 px-4 py-2.5 sm:px-6">
+        <p className="min-w-0 text-ink">{data.text}</p>
+        <button
+          type="button"
+          className="shrink-0 rounded p-0.5 text-ink-2 hover:text-ink"
+          aria-label={t('Fermer l’annonce', 'Dismiss announcement')}
+          onClick={() => {
+            setClosed(data.id)
+            try {
+              localStorage.setItem(key, String(data.id))
+            } catch {
+              /* stockage indisponible */
+            }
+          }}
+        >
+          <X className="size-4" aria-hidden />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function Shell() {
   const matches = useMatches()
   const bare = matches.some((m) => (m.handle as { bare?: boolean } | undefined)?.bare)
@@ -268,6 +311,7 @@ export function Shell() {
         {lang === 'en' ? 'Skip to content' : 'Aller au contenu'}
       </a>
       <TopBar />
+      <AnnouncementBar />
       <main id="contenu" className="flex-1">
         <Outlet />
       </main>

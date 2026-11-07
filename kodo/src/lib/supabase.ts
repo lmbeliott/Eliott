@@ -104,6 +104,9 @@ export function errorText(e: unknown, lang: 'fr' | 'en'): string {
   const err = e as { message?: string; code?: string; status?: number }
   const msg = err?.message ?? String(e)
   const map: [RegExp, string, string][] = [
+    [/User is banned|Compte suspendu/i, 'Compte suspendu. Pour toute question, contacter l’administration du site.', 'Account suspended. For any question, contact the site administration.'],
+    [/Double authentification requise/i, 'Double authentification requise : recharger la page et saisir le code.', 'Two-factor authentication required: reload the page and enter the code.'],
+    [/captcha/i, 'Vérification anti-robot échouée. Recharger la page et réessayer.', 'Anti-bot check failed. Reload the page and try again.'],
     [/Invalid login credentials/i, 'Adresse e-mail ou mot de passe incorrect.', 'Wrong email or password.'],
     [/Email not confirmed/i, 'Adresse e-mail non confirmée. Ouvrir le lien de confirmation reçu par e-mail, puis réessayer.', 'Email address not confirmed. Open the confirmation link sent by email, then try again.'],
     [/User already registered/i, 'Un compte existe déjà avec cette adresse. Se connecter à la place.', 'An account already exists with this email. Sign in instead.'],
