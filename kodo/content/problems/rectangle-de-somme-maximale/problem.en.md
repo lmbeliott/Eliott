@@ -13,8 +13,8 @@ A grid of `R` rows and `C` columns contains integers, positive or negative. Find
 The largest sum of a rectangle.
 
 ## Constraints
-- 1 ≤ R ≤ 25
-- 1 ≤ C ≤ 1,000
+- 1 ≤ R ≤ 12
+- 1 ≤ C ≤ 2,000
 - The values are between −99 and 99.
 
 ## Hints
@@ -27,4 +27,4 @@ A rectangle is determined by its first row `top`, its last row `bottom`, its fir
 
 Try every pair `top ≤ bottom`: for each `top`, start from `col` filled with zeros, then move `bottom` down from `top` to `R − 1`, adding row `bottom` to `col` each time. This array thus always equals the column sums between `top` and `bottom`, without ever recomputing everything. Since every rectangle has a first and a last row, it is examined for its pair `(top, bottom)`, and the largest of the results is the answer.
 
-**Cost.** There are `R × (R + 1) / 2` pairs of rows, that is 325 for `R = 25`, and each one takes two passes over the `C` columns: about 650,000 steps. Trying every rectangle and adding up its cells would take billions of operations. The best rectangle can be negative (all cells negative): as in the lesson, initialise the maximum with a real cell, not with 0. The small dimension, `R ≤ 25`, goes in the double loop: fixing two columns instead and scanning the rows would take `C × (C + 1) / 2 × R` steps, more than 12 million, twenty times more.
+**Cost.** There are `R × (R + 1) / 2` pairs of rows, that is 78 for `R = 12`, and each one takes two passes over the `C` columns: about 312,000 steps. Trying every rectangle and adding up its cells would take billions of operations. The best rectangle can be negative (all cells negative): as in the lesson, initialise the maximum with a real cell, not with 0. The small dimension, `R ≤ 12`, goes in the double loop: fixing two columns instead and scanning the rows would take `C × (C + 1) / 2 × R` steps, about 24 million, nearly eighty times more.
