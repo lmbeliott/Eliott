@@ -126,7 +126,7 @@ The `not` operator applies to a single condition and gives its opposite: `not a`
 n = int(input())
 multiple_of_3 = n % 3 == 0
 if not multiple_of_3:
-    print("RESTE", n % 3)
+    print("PAS MULTIPLE DE 3")
 ```
 
 ```cpp
@@ -138,13 +138,13 @@ int main() {
     cin >> n;
     bool multiple_of_3 = n % 3 == 0;
     if (!multiple_of_3) {
-        cout << "RESTE " << n % 3 << "\n";
+        cout << "PAS MULTIPLE DE 3\n";
     }
     return 0;
 }
 ```
 
-With `10`, the variable `multiple_of_3` is false, so `not multiple_of_3` is true: the program prints `RESTE 1` (remainder 1). With `9`, it prints nothing.
+With `10`, the variable `multiple_of_3` is false, so `not multiple_of_3` is true: the program prints `PAS MULTIPLE DE 3` (not a multiple of 3). With `9`, it prints nothing.
 
 On a comparison, `not` is rarely useful, because there is always an opposite comparison: `not (x < 5)` is more simply written `x >= 5`, and `not (a == b)` is written `a != b`. It is mostly used in front of a boolean variable.
 
@@ -188,7 +188,39 @@ Two rules, called **De Morgan's laws**, turn the negation of a combination into 
 
 For example, "`t` is not between 15 and 25", that is, `not (t >= 15 and t <= 25)`, can also be written `t < 15 or t > 25`. The `and` becomes an `or` when the negation moves inside.
 
-Finally, Python and C++ evaluate a combination from left to right and stop as soon as the result is known: this is **short-circuit evaluation**. In `a and b`, if `a` is false, `b` is not even computed, since the result will be false anyway. This is useful as a protection: `d != 0 and n % d == 0` never computes `n % 0`, which would cause an error.
+Sometimes you want "one or the other, but not both": this is the **exclusive or**. It has no operator of its own in this chapter, but it can be written with the other three: `(a or b) and not (a and b)`, "at least one of the two, and not both". There is a shorter form. Two booleans of which exactly one is true are two **different** booleans: you can compare them with `!=`, exactly like two numbers. The program below reads two integers and prints `OUI` if exactly one of them is even.
+
+```python
+a, b = map(int, input().split())
+a_even = a % 2 == 0
+b_even = b % 2 == 0
+if a_even != b_even:
+    print("OUI")
+else:
+    print("NON")
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    bool a_even = a % 2 == 0;
+    bool b_even = b % 2 == 0;
+    if (a_even != b_even) {
+        cout << "OUI\n";
+    } else {
+        cout << "NON\n";
+    }
+    return 0;
+}
+```
+
+With `3 8`, only `b_even` is true: the two booleans are different, and the program prints `OUI`. With `4 8`, both are true, and with `3 5`, both are false: in both cases they are equal, and the program prints `NON`.
+
+Finally, Python and C++ evaluate a combination from left to right and stop as soon as the result is known: this is **short-circuit evaluation**. In `a and b`, if `a` is false, `b` is not even computed, since the result will be false anyway. This is useful as a protection: `d != 0 and n % d == 0` never computes `n % 0`, which would cause an error (`ZeroDivisionError` in Python, an abrupt crash of the program in C++).
 
 ## Flags and counters
 
@@ -198,15 +230,15 @@ To know **how many** values have a property, use a **counter**: it starts at 0, 
 
 ```python
 n = int(input())
-all_positive = True
+no_negative = True
 in_range = 0
 for i in range(n):
     x = int(input())
     if x < 0:
-        all_positive = False
+        no_negative = False
     if x >= 10 and x <= 20:
         in_range = in_range + 1
-if all_positive:
+if no_negative:
     print("OUI")
 else:
     print("NON")
@@ -220,19 +252,19 @@ using namespace std;
 int main() {
     int n;
     cin >> n;
-    bool all_positive = true;
+    bool no_negative = true;
     int in_range = 0;
     for (int i = 0; i < n; i++) {
         int x;
         cin >> x;
         if (x < 0) {
-            all_positive = false;
+            no_negative = false;
         }
         if (x >= 10 && x <= 20) {
             in_range = in_range + 1;
         }
     }
-    if (all_positive) {
+    if (no_negative) {
         cout << "OUI\n";
     } else {
         cout << "NON\n";
@@ -254,7 +286,7 @@ With `N = 4` and the values `12`, `-3`, `20`, `7`: the flag is lowered at the se
 
 **Negating a combination wrongly.** The negation of "`t` between 15 and 25" is not `t < 15 and t > 25`, which is always false (no number is both smaller than 15 and larger than 25). According to De Morgan's laws, it is `t < 15 or t > 25`.
 
-**Raising the flag in the wrong place.** If you write `all_positive = True` inside the loop, the flag is reset to true at every iteration, and only the last value counts. The initialisation goes **before** the loop. Likewise, do not write `else: all_positive = True`: a positive value must not erase a negative value seen earlier.
+**Raising the flag in the wrong place.** If you write `no_negative = True` inside the loop, the flag is reset to true at every iteration, and only the last value counts. The initialisation goes **before** the loop. Likewise, do not write `else: no_negative = True`: a non-negative value must not erase a negative value seen earlier.
 
 **Printing the boolean instead of the expected word.** `print(x > 0)` prints `True` or `False` in Python, and `1` or `0` in C++. If the statement expects `OUI` or `NON`, the output is wrong: go through an `if`.
 
@@ -328,6 +360,6 @@ The test `x <= previous` is the exact negation of "`x` is strictly larger than `
 
 - A boolean is true or false (`True`/`False` in Python, `true`/`false` in C++). A comparison is a boolean, which can be stored in a variable.
 - `and` (`&&`) is true if both conditions are true; `or` (`||`) if at least one is; `not` (`!`) gives the opposite.
-- Use parentheses as soon as you mix `and` and `or`. To negate a combination, `and` and `or` swap (De Morgan's laws).
+- Use parentheses as soon as you mix `and` and `or`. To negate a combination, `and` and `or` swap (De Morgan's laws). "Exactly one of the two" is written `a != b`.
 - Each side of an `and` or an `or` is a complete comparison: `x == 1 or x == 2`, and in C++ `a <= x && x <= b`.
 - A flag initialised before the loop checks "all values" or "at least one value"; a counter tells how many values satisfy a condition.

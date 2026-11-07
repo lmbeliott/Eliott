@@ -5,8 +5,6 @@ title: Odd and even
 ## Statement
 Read `N` non-negative integers, then print how many of them are odd, and how many are even.
 
-This chapter does not cover conditions (`if`) yet: the computation can be done with arithmetic operations only.
-
 ## Input
 - The first line contains the integer `N`.
 - The second line contains `N` integers separated by spaces.
@@ -19,9 +17,10 @@ Two lines: the number of odd values, then the number of even values.
 - 0 ≤ each value ≤ 1 000 000 000
 
 ## Hints
-1. What is `x % 2` when `x` is even? And when `x` is odd?
-2. If you add up `x % 2` for all values, each odd value adds `1` and each even value adds `0`.
-3. A value that is not odd is even: the second number follows from the first one and `N`.
+1. Conditions (`if`) come in the next chapter: here, everything is computed with arithmetic operations.
+2. What is `x % 2` when `x` is even? And when `x` is odd?
+3. If you add up `x % 2` for all values, each odd value adds `1` and each even value adds `0`.
+4. A value that is not odd is even: the second number follows from the first one and `N`.
 
 ## Solution
 The remainder of the division of a non-negative integer by 2 is `0` if it is even and `1` if it is odd. By adding up `x % 2` for all the values read, you add exactly `1` per odd value: the sum is the number of odd values. The number of even values is then `N` minus that number.

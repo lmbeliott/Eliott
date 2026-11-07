@@ -34,4 +34,4 @@ On compare comme dans un dictionnaire : d'abord les années, puis les mois, puis
 
 Le `<=` du dernier test traite le cas de deux dates identiques : on affiche alors la première, qui est aussi la seconde.
 
-Le piège est de comparer les jours en premier, ou de comparer chaque nombre séparément : le 30 janvier 2020 est plus ancien que le 2 mars 2019 seulement si on oublie de regarder l'année d'abord. Il ne l'est pas : c'est l'année qui décide.
+Le piège est de commencer par les jours ou par les mois. Le 30 janvier 2020 a un mois plus petit que le 2 mars 2019 (1 contre 3), et pourtant il vient après : c'est l'année qui décide en premier. De même, comparer les trois nombres séparément (« `J1 <= J2` et `M1 <= M2` et `A1 <= A2` ») ne marche pas : pour ces deux dates, aucune n'aurait ses trois nombres plus petits.

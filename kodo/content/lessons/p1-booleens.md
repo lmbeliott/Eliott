@@ -126,7 +126,7 @@ L'opérateur `not` (« non ») s'applique à une seule condition et donne son co
 n = int(input())
 multiple_de_3 = n % 3 == 0
 if not multiple_de_3:
-    print("RESTE", n % 3)
+    print("PAS MULTIPLE DE 3")
 ```
 
 ```cpp
@@ -138,13 +138,13 @@ int main() {
     cin >> n;
     bool multiple_de_3 = n % 3 == 0;
     if (!multiple_de_3) {
-        cout << "RESTE " << n % 3 << "\n";
+        cout << "PAS MULTIPLE DE 3\n";
     }
     return 0;
 }
 ```
 
-Avec `10`, la variable `multiple_de_3` vaut faux, donc `not multiple_de_3` est vrai : le programme affiche `RESTE 1`. Avec `9`, il n'affiche rien.
+Avec `10`, la variable `multiple_de_3` vaut faux, donc `not multiple_de_3` est vrai : le programme affiche `PAS MULTIPLE DE 3`. Avec `9`, il n'affiche rien.
 
 Sur une comparaison, `not` est rarement utile, car il existe toujours une comparaison contraire : `not (x < 5)` s'écrit plus simplement `x >= 5`, et `not (a == b)` s'écrit `a != b`. Il sert surtout devant une variable booléenne.
 
@@ -188,7 +188,39 @@ Deux règles, appelées **lois de De Morgan**, permettent de transformer la nég
 
 Par exemple, « `t` n'est pas entre 15 et 25 », c'est-à-dire `not (t >= 15 and t <= 25)`, s'écrit aussi `t < 15 or t > 25`. Le `and` devient un `or` en passant la négation à l'intérieur.
 
-Enfin, Python et C++ évaluent une combinaison de gauche à droite et s'arrêtent dès que le résultat est connu : c'est l'**évaluation paresseuse**. Dans `a and b`, si `a` est faux, `b` n'est même pas calculé, puisque le résultat sera faux de toute façon. C'est utile pour se protéger : `d != 0 and n % d == 0` ne calcule jamais `n % 0`, qui provoquerait une erreur.
+Il arrive qu'on veuille « l'un ou l'autre, mais pas les deux » : c'est le **ou exclusif**. Il n'a pas d'opérateur à lui dans ce chapitre, mais il s'écrit avec les trois autres : `(a or b) and not (a and b)`, « au moins un des deux, et pas les deux ». Il existe une écriture plus courte. Deux booléens dont exactement un est vrai sont deux booléens **différents** : on peut les comparer avec `!=`, exactement comme deux nombres. Le programme suivant lit deux entiers et affiche `OUI` si exactement un des deux est pair.
+
+```python
+a, b = map(int, input().split())
+a_pair = a % 2 == 0
+b_pair = b % 2 == 0
+if a_pair != b_pair:
+    print("OUI")
+else:
+    print("NON")
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    bool a_pair = a % 2 == 0;
+    bool b_pair = b % 2 == 0;
+    if (a_pair != b_pair) {
+        cout << "OUI\n";
+    } else {
+        cout << "NON\n";
+    }
+    return 0;
+}
+```
+
+Avec `3 8`, seul `b_pair` est vrai : les deux booléens sont différents, le programme affiche `OUI`. Avec `4 8`, les deux sont vrais, et avec `3 5`, les deux sont faux : dans les deux cas, ils sont égaux et le programme affiche `NON`.
+
+Enfin, Python et C++ évaluent une combinaison de gauche à droite et s'arrêtent dès que le résultat est connu : c'est l'**évaluation en court-circuit**. Dans `a and b`, si `a` est faux, `b` n'est même pas calculé, puisque le résultat sera faux de toute façon. C'est utile pour se protéger : `d != 0 and n % d == 0` ne calcule jamais `n % 0`, qui provoquerait une erreur (`ZeroDivisionError` en Python, un arrêt brutal du programme en C++).
 
 ## Les drapeaux et les compteurs
 
@@ -258,7 +290,7 @@ Avec `N = 4` et les valeurs `12`, `-3`, `20`, `7` : le drapeau est baissé à la
 
 **Afficher le booléen au lieu du mot attendu.** `print(x > 0)` affiche `True` ou `False` en Python, et `1` ou `0` en C++. Si l'énoncé attend `OUI` ou `NON`, la sortie est fausse : il faut passer par un `if`.
 
-## Exemple complet
+## Un exemple complet
 
 **Énoncé.** Lire `N` entiers, un par ligne. Afficher `OUI` si la suite est strictement croissante (chaque valeur est strictement plus grande que la précédente), `NON` sinon. Afficher ensuite, sur une deuxième ligne, le nombre de valeurs paires et positives (strictement).
 
@@ -328,6 +360,6 @@ Le test `x <= precedent` est la négation exacte de « `x` est strictement plus 
 
 - Un booléen vaut vrai ou faux (`True`/`False` en Python, `true`/`false` en C++). Une comparaison est un booléen, qu'on peut ranger dans une variable.
 - `and` (`&&`) est vrai si les deux conditions sont vraies ; `or` (`||`) si au moins une l'est ; `not` (`!`) donne le contraire.
-- On met des parenthèses dès qu'on mélange `and` et `or`. Pour nier une combinaison, `and` et `or` s'échangent (lois de De Morgan).
+- On met des parenthèses dès qu'on mélange `and` et `or`. Pour nier une combinaison, `and` et `or` s'échangent (lois de De Morgan). « Exactement un des deux » s'écrit `a != b`.
 - Chaque côté d'un `and` ou d'un `or` est une comparaison complète : `x == 1 or x == 2`, et en C++ `a <= x && x <= b`.
 - Un drapeau initialisé avant la boucle vérifie « toutes les valeurs » ou « au moins une valeur » ; un compteur dit combien de valeurs vérifient une condition.

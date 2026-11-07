@@ -29,4 +29,4 @@ Compare as in a dictionary: first the years, then the months, then the days. The
 
 The `<=` in the last test handles two identical dates: the first one is printed, which is also the second.
 
-The trap is to compare the days first, or to compare each number separately: January 30, 2020 would look earlier than March 2, 2019 if you forgot to look at the year first. It is not: the year decides.
+The trap is to start with the days or the months. January 30, 2020 has a smaller month than March 2, 2019 (1 versus 3), and yet it comes later: the year decides first. Likewise, comparing the three numbers separately ("`J1 <= J2` and `M1 <= M2` and `A1 <= A2`") does not work: for these two dates, neither has all three numbers smaller.
