@@ -36,4 +36,4 @@ Pour chaque arête `A – B`, on cherche les racines `a` et `b`. Si `a = b`, les
 
 **Complexité.** Avec l'union par taille et la compression des chemins, chaque opération coûte un temps quasi constant : O(N + M) en pratique. Un parcours complet après chaque ajout coûterait `M × (N + M)`, environ 10⁹ opérations.
 
-**Pièges.** Une arête `A – A` ou une arête répétée ne change rien. En Python, écrire la recherche de racine avec une boucle plutôt qu'en récursif, pour ne pas dépasser la profondeur de récursion autorisée.
+**Pièges.** Une arête `A – A` ou une arête répétée ne change rien. Sans l'union par taille, les ajouts `1 – 2`, `2 – 3`, `3 – 4`… peuvent former une chaîne de 10 000 sommets : les recherches deviennent lentes, et une recherche récursive dépasse en Python la profondeur de récursion autorisée. D'où l'union par taille, et une recherche écrite avec des boucles.

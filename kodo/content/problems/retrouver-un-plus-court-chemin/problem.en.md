@@ -15,8 +15,8 @@ It is guaranteed that, if vertex `N` can be reached from vertex `1`, the shortes
 If vertex `N` cannot be reached, print `-1`. Otherwise print, on a first line, the length `D` of the shortest path and its number `K` of vertices, then, on a second line, the `K` vertices of the path, from `1` to `N`.
 
 ## Constraints
-- 1 ≤ N ≤ 5,000
-- 0 ≤ M ≤ 7,000
+- 1 ≤ N ≤ 8,000
+- 0 ≤ M ≤ 10,000
 - 1 ≤ A, B ≤ N
 - 1 ≤ L ≤ 10⁶
 

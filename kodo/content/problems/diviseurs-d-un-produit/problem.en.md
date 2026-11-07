@@ -29,4 +29,4 @@ Two integers on one line: the number of divisors of P and the sum of the divisor
 
 **Dividing modulo M.** Write Sᵢ = (pᵢ^(eᵢ+1) − 1) / (pᵢ − 1). Since M is prime and 1 ≤ pᵢ − 1 < M, Fermat's little theorem gives the inverse of pᵢ − 1: (pᵢ − 1)^(M−2). So Sᵢ mod M is (pᵢ^(eᵢ+1) − 1) × (pᵢ − 1)^(M−2) mod M, with two fast exponentiations. In C++, add M to pᵢ^(eᵢ+1) − 1 before taking the remainder, so as never to handle a negative remainder.
 
-**Cost.** O(V log log V) for the sieve with V = 10⁶, then at most 20 divisions per number, then two fast exponentiations per prime of P. Computing P and then looking for its divisors would be hopeless.
+**Cost.** O(V log log V) for the sieve with V = 10⁶, then at most 20 divisions per number, then two fast exponentiations per prime of P. Factoring each aᵢ by trial division, up to √aᵢ ≤ 1,000, also works, but costs up to 10⁷ divisions: the sieve is much faster. Computing P and then looking for its divisors would be hopeless.

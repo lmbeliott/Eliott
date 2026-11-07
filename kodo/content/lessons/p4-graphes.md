@@ -191,7 +191,7 @@ Le programme affiche `1 2 3 4 5`. Depuis 1, on va en 2, puis en 3 (premier voisi
 
 ## Profondeur de récursion et pile explicite
 
-La profondeur de la récursion peut atteindre le nombre de sommets : sur un chemin `1 – 2 – … – 100 000`, l'appel sur 1 appelle 2, qui appelle 3, etc. Le programme précédent s'arrête alors avec `RecursionError: maximum recursion depth exceeded`. Relever encore la limite n'est pas sûr : la pile de la machine a une taille fixe, petite dans un navigateur. En C++, le programme s'arrête avec `Segmentation fault` sur un chemin d'un million de sommets.
+La profondeur de la récursion peut atteindre le nombre de sommets : sur un chemin `1 – 2 – … – 100 000`, l'appel sur 1 appelle 2, qui appelle 3, etc. Le programme précédent s'arrête alors avec `RecursionError: maximum recursion depth exceeded`. Relever encore la limite n'est pas sûr : la pile de la machine a une taille fixe, petite dans un navigateur. En C++, le même programme s'arrête avec `Segmentation fault` sur un chemin d'un million de sommets, et bien plus tôt dans le navigateur, où la pile est plus petite.
 
 Le remède consiste à gérer soi-même la pile, avec une liste. On empile le départ ; tant que la pile n'est pas vide, on dépile un sommet ; s'il est déjà marqué, on l'ignore, sinon on le marque et on empile ses voisins non marqués.
 

@@ -31,4 +31,4 @@ For each edge `A – B`, find the roots `a` and `b`. If `a = b`, both vertices w
 
 **Complexity.** With union by size and path compression, each operation takes nearly constant time: O(N + M) in practice. A full traversal after each addition would cost `M × (N + M)`, about 10⁹ operations.
 
-**Pitfalls.** An edge `A – A` or a repeated edge changes nothing. In Python, write the root search with a loop rather than recursively, so as not to exceed the allowed recursion depth.
+**Pitfalls.** An edge `A – A` or a repeated edge changes nothing. Without union by size, the additions `1 – 2`, `2 – 3`, `3 – 4`… can build a chain of 10,000 vertices: searches become slow, and a recursive search exceeds the allowed recursion depth in Python. Hence union by size, and a search written with loops.

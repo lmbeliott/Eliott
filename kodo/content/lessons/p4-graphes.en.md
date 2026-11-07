@@ -191,7 +191,7 @@ The program prints `1 2 3 4 5`. From 1, we go to 2, then to 3 (the first unmarke
 
 ## Recursion depth and explicit stack
 
-The recursion depth can reach the number of vertices: on a path `1 – 2 – … – 100,000`, the call on 1 calls 2, which calls 3, and so on. The previous program then stops with `RecursionError: maximum recursion depth exceeded`. Raising the limit further is not safe: the machine stack has a fixed size, small in a browser. In C++, the program stops with `Segmentation fault` on a path of one million vertices.
+The recursion depth can reach the number of vertices: on a path `1 – 2 – … – 100,000`, the call on 1 calls 2, which calls 3, and so on. The previous program then stops with `RecursionError: maximum recursion depth exceeded`. Raising the limit further is not safe: the machine stack has a fixed size, small in a browser. In C++, the same program stops with `Segmentation fault` on a path of one million vertices, and much earlier in the browser, where the stack is smaller.
 
 The cure is to manage the stack yourself, with a list. Push the start; while the stack is not empty, pop a vertex; if it is already marked, skip it, otherwise mark it and push its unmarked neighbours.
 

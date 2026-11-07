@@ -67,7 +67,7 @@ The program prints `25 [73, 79, 83, 89, 97]`: there are 25 primes up to 100. The
 
 **Correctness.** A crossed-out number is a multiple `k × p` with `k ≥ p ≥ 2`: it is composite. Conversely, a composite `m ≤ n` has a prime factor `p ≤ √m ≤ √n`; when the loop reaches `p`, it is still marked (a prime is never crossed out, since it is a multiple of no smaller number except 1), and `m`, a multiple of `p` at least `p²`, gets crossed out. At the end, the marked numbers are exactly the primes.
 
-**Cost.** For each prime `p ≤ √n`, we make about `n / p` operations. The total is `n × (1/2 + 1/3 + 1/5 + 1/7 + …)`, a sum over the primes only. Level 3 showed that the sum of `1/k` over all `k` up to `n` is about `ln n`; restricted to primes, it is only about `ln(ln n)`, which does not exceed 3 for `n ≤ 10⁹`. The sieve is in **O(n log log n)**: almost linear.
+**Cost.** For each prime `p ≤ √n`, we make about `n / p` operations. The total is `n × (1/2 + 1/3 + 1/5 + 1/7 + …)`, a sum over the primes only. Level 3 showed that the sum of `1/k` over all `k` up to `n` is about `ln n`; restricted to primes, it is only about `ln(ln n)` (we admit this result), that is about 3 for `n = 10⁹`. The sieve is in **O(n log log n)**: almost linear.
 
 ## The smallest prime factor
 
@@ -284,17 +284,19 @@ int main() {
 }
 ```
 
-Python prints `2 -3`: its remainder is always between 0 and `M − 1`. C++ prints `-1 -2`: its division truncates towards zero, and the remainder of a negative number is negative. After a subtraction, write `((x % M) + M) % M` in C++. Finally, in C++, a product of two remainders below 10⁹ + 7 is at most about 10¹⁸ and fits in a `long long`: reduce **before** each multiplication.
+Python prints `2 -3`: its remainder is always between 0 and `M − 1`. C++ prints `-1 -2`: its division truncates towards zero, and the remainder of a negative number is negative. After a subtraction, write `((x % M) + M) % M` in C++: the second line prints `2`, like Python. Finally, in C++, a product of two remainders below 10⁹ + 7 is at most about 10¹⁸ and fits in a `long long`: reduce **before** each multiplication.
 
 ## The modular inverse
 
 An **inverse** of `a` modulo `M` is an integer `u` such that `a × u ≡ 1 (mod M)`. It replaces division: dividing by `a` modulo `M` means multiplying by `u`. **It exists if and only if `GCD(a, M) = 1`.** If `a × u + M × v = 1` (Bézout), then `a × u ≡ 1`; conversely, if `a × u ≡ 1`, then `a × u − 1` is a multiple of `M`, and every common divisor of `a` and `M` divides 1. The extended Euclidean algorithm therefore computes the inverse, brought back between 0 and `M − 1`: the inverse of 17 modulo 3,120 is 2,753.
 
-When `M = p` is **prime**, there is something simpler. **Fermat's little theorem**: if `p` does not divide `a`, then `a^(p−1) ≡ 1 (mod p)`. Proof: the numbers `a, 2a, …, (p − 1)a` have nonzero and pairwise different remainders (if `ia ≡ ja`, then `p` divides `(i − j)a`, hence `i − j`, since `p` is prime and does not divide `a`). So they are the remainders `1, 2, …, p − 1` in another order, and their product gives `a^(p−1) × (p − 1)! ≡ (p − 1)! (mod p)`. Since `(p − 1)!` is coprime with `p`, it can be cancelled. Consequence: `a^(p−2)` is the inverse of `a`, computed by fast exponentiation. The previous program prints `333333336 1`: 333,333,336 is the inverse of 3 modulo 10⁹ + 7, since 3 × 333,333,336 = 10⁹ + 8. Beware: Fermat only applies if `p` is prime and does not divide `a`.
+When `M = p` is **prime**, there is something simpler. **Fermat's little theorem**: if `p` does not divide `a`, then `a^(p−1) ≡ 1 (mod p)`. Proof: the numbers `a, 2a, …, (p − 1)a` have nonzero and pairwise different remainders (if `ia ≡ ja`, then `p` divides `(i − j)a`, hence `i − j`, since `p` is prime and does not divide `a`). So they are the remainders `1, 2, …, p − 1` in another order, and their product gives `a^(p−1) × (p − 1)! ≡ (p − 1)! (mod p)`. Since `(p − 1)!` is coprime with `p`, it can be cancelled. Consequence: `a^(p−2)` is the inverse of `a`, computed by fast exponentiation. Another consequence: if `p` does not divide `a`, an exponent can be reduced modulo `p − 1`, since for `n = q × (p − 1) + r`, `a^n = (a^(p−1))^q × a^r ≡ a^r (mod p)`. The previous program prints `333333336 1`: 333,333,336 is the inverse of 3 modulo 10⁹ + 7, since 3 × 333,333,336 = 10⁹ + 8. Beware: Fermat only applies if `p` is prime and does not divide `a`.
 
 ## Linear congruences and LCM
 
-To solve `a × x ≡ b (mod M)`, let `g = GCD(a, M)`. If `g` does not divide `b`, there is no solution, since `a × x − b` would have to be a multiple of `M`, hence of `g`. Otherwise, divide everything by `g`: `a/g` is coprime with `M/g`, it has an inverse `u` modulo `M/g`, and the solutions are the `x ≡ u × (b/g) (mod M/g)`; there are `g` of them between 0 and `M − 1`. A system of two congruences `x ≡ a₁ (mod m₁)`, `x ≡ a₂ (mod m₂)` reduces to such an equation by writing `x = a₁ + m₁ × k`.
+To solve `a × x ≡ b (mod M)`, let `g = GCD(a, M)`. If `g` does not divide `b`, there is no solution, since `a × x − b` would have to be a multiple of `M`, hence of `g`. Otherwise, divide everything by `g`: `a/g` is coprime with `M/g`, it has an inverse `u` modulo `M/g`, and the solutions are the `x ≡ u × (b/g) (mod M/g)`; there are `g` of them between 0 and `M − 1`. A system of two congruences `x ≡ a₁ (mod m₁)`, `x ≡ a₂ (mod m₂)` reduces to such an equation by writing `x = a₁ + m₁ × k`: the second condition becomes `m₁ × k ≡ a₂ − a₁ (mod m₂)`. It determines `k` modulo `m₂ / g`, with `g = GCD(m₁, m₂)`, hence `x` modulo `m₁ × m₂ / g = LCM(m₁, m₂)`: when there are solutions, they form a single class modulo the LCM. This is the **Chinese remainder theorem**.
+
+Similarly, the equation `a × x + b × y = c`, with integer unknowns `x` and `y`, has solutions if and only if `g = GCD(a, b)` divides `c`: extended Euclid gives `a × u + b × v = g`, which we multiply by `c / g`. If `(x₀, y₀)` is a solution, the others are the `(x₀ + k × b/g, y₀ − k × a/g)` for integer `k`. Indeed, `(a/g) × (x − x₀) = (b/g) × (y₀ − y)`, and since `a/g` is invertible modulo `b/g`, `b/g` divides `x − x₀`.
 
 The **LCM** of `a` and `b` satisfies `GCD(a, b) × LCM(a, b) = a × b`: in the factorizations, the GCD takes the smaller exponent of each prime, the LCM the larger one. Compute `a / GCD(a, b) × b`, dividing **first**. Even so, the result can exceed 2⁶³ − 1: for `a = 10¹²` and `b = 10¹² − 1`, which are coprime, the LCM is about 10²⁴. In C++, the product overflows and gives a wrong number, without any message. To know whether `q × b` exceeds a limit `L`, test `q > L / b` before multiplying.
 
@@ -366,5 +368,5 @@ int main() {
 - The sieve of Eratosthenes is in O(n log log n); its "smallest prime factor" variant then factorizes any `x ≤ n` in O(log x).
 - If `n = p₁^e₁ × … × p_k^e_k`, then `d(n) = Π (eᵢ + 1)` and `σ(n) = Π (1 + pᵢ + … + pᵢ^eᵢ)`.
 - Extended Euclid gives `u, v` with `a × u + b × v = GCD(a, b)` (Bézout); `a` is invertible modulo `M` if and only if `GCD(a, M) = 1`. If `M` is prime, Fermat gives the inverse `a^(M−2)`.
-- `a × x ≡ b (mod M)` has solutions if and only if `g = GCD(a, M)` divides `b`, and there are `g` of them between 0 and `M − 1`.
+- `a × x ≡ b (mod M)` has solutions if and only if `g = GCD(a, M)` divides `b`, and there are `g` of them between 0 and `M − 1`. A solvable system of two congruences has a single solution modulo the LCM of the moduli.
 - In C++: reduce before multiplying, add `M` after a subtraction, compute an LCM by dividing first and testing for overflow before multiplying.

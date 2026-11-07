@@ -21,9 +21,14 @@ g[10][20] = "A"
 g[200][250] = "B"
 g[240][5] = "A"
 tests.append(test(g))
-tests.append(test(grille(300, 300, 0.25, 26, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
+# les 26 lettres, deux sources chacune, peu de murs : 26 parcours séparés sont trop lents
+g = grille(300, 300, 0.05, 0, "A")
+for lettre in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+    for _ in range(2):
+        g[random.randrange(300)][random.randrange(300)] = lettre
+tests.append(test(g))
 tests.append(test(grille(300, 300, 0.1, 300, "ABC")))
-tests.append(test(grille(300, 300, 0.4, 2000, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
+tests.append(test(grille(300, 300, 0.15, 2000, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 # deux lettres aux coins opposés : la diagonale est disputée
 g = [["."] * 200 for _ in range(200)]
 g[0][0] = "P"

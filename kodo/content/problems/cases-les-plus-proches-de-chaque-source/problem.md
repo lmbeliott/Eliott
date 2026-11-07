@@ -5,6 +5,7 @@ chapter: p4-graphes-implicites
 order: 5
 tags: [grilles, parcours-en-largeur]
 samples: 2
+time_limit_ms: 500
 ---
 
 ## Énoncé

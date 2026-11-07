@@ -32,6 +32,6 @@ T lignes : pour chaque question, le K-ième nombre de la liste.
 
 **Racines entières exactes.** Ces racines se calculent par dichotomie, comme dans le cours, avec des puissances calculées sans débordement. On peut aussi remarquer que ⌊x^(1/6)⌋ = ⌊∛⌊√x⌋⌋. Les fonctions flottantes donnent des erreurs d'une unité pour les grands x, et les tests contiennent des carrés et des cubes proches de 10¹⁸.
 
-**Chercher la réponse.** f est croissante au sens large, et augmente exactement sur les éléments de la liste : le K-ième élément est le plus petit x tel que f(x) ≥ K. Comme f(x) ≤ x, la réponse est au moins K ; et f(2K) ≥ K, car il y a au plus √(2K) + ∛(2K) carrés ou cubes jusqu'à 2K, ce qui ne dépasse pas K. Une dichotomie entre K − 1 (f(K − 1) < K) et 2K trouve la réponse en une soixantaine d'étapes, chacune avec deux ou trois racines entières.
+**Chercher la réponse.** f est croissante au sens large, et augmente exactement sur les éléments de la liste : le K-ième élément est le plus petit x tel que f(x) ≥ K. Comme f(x) ≤ x, la réponse est au moins K ; et f(2K) ≥ K, car il y a au plus ⌊√(2K)⌋ + ⌊∛(2K)⌋ − 1 carrés ou cubes jusqu'à 2K (1 est compté deux fois), ce qui ne dépasse pas K : on le vérifie à la main pour K ≤ 5, et √(2K) + ∛(2K) ≤ K dès que K ≥ 6. Une dichotomie entre K − 1 (f(K − 1) < K) et 2K trouve la réponse en une soixantaine d'étapes, chacune avec deux ou trois racines entières.
 
 **Coût.** Quelques milliers d'opérations par question. Énumérer les entiers un par un demanderait de l'ordre de K étapes, jusqu'à 10¹⁸.

@@ -1,4 +1,4 @@
-The sorts of level 3 make about n²/2 comparisons: for a million numbers, 5 × 10¹¹ comparisons, several hours. The sort provided by the languages sorts that million in a fraction of a second. This chapter explains how, with a method that goes far beyond sorting: **divide and conquer**. We cut the problem into smaller pieces of the same kind, solve them recursively, then **combine** their solutions.
+The sorts of level 3 make about n²/2 comparisons: for a million numbers, 5 × 10¹¹ comparisons: several minutes in C++, hours in Python. The sort provided by the languages sorts that million in a fraction of a second. This chapter explains how, with a method that goes far beyond sorting: **divide and conquer**. We cut the problem into smaller pieces of the same kind, solve them recursively, then **combine** their solutions.
 
 We study merge sort, with its proof and its cost, then quicksort and its worst case, quickselect, an application to portions of an array, and a method to estimate the cost of any algorithm of this kind. Counting inversions will be the complete example: it is the typical example of a computation that "takes advantage" of a sort.
 
@@ -153,7 +153,7 @@ int main() {
 
 The first line printed is `[1, 2, 5, 5, 6, 9]`. For the second one, Python stops with `RecursionError: maximum recursion depth exceeded`. The list `0, 1, …, 4999` is already sorted: the pivot is always the smallest element, the list of smaller ones is empty, and the list of larger ones has only one element less. The recursion goes down to a depth of 5,000, and the total number of comparisons is 4,999 + 4,998 + … + 1, about n²/2. C++ does print `5000`, but for a million sorted elements it would make 5 × 10¹¹ comparisons and would probably exceed the size of the stack.
 
-This is the **worst case** of quicksort: O(n²). In the best case, the pivot cuts the list into two halves, and the call tree looks like that of merge sort: O(n log n). If the pivot is chosen **at random** (`random.choice(t)`), one can show that the average number of comparisons is about 1.39 n log₂ n, whatever the input: no particular input can trap the algorithm, except by extreme bad luck. The sorts of Python and C++ use even safer variants, and guarantee O(n log n).
+This is the **worst case** of quicksort: O(n²). In the best case, the pivot cuts the list into two halves, and the call tree looks like that of merge sort: O(n log n). If the pivot is chosen **at random** (`random.choice(t)`), one can show (we will admit it) that the average number of comparisons is about 1.39 n log₂ n, whatever the input: no particular input can trap the algorithm, except by extreme bad luck. The sorts of Python and C++ use even safer variants, and guarantee O(n log n).
 
 **Correctness.** By strong induction: `petits` and `grands` are strictly shorter than `t` (the pivot is not in them), so they are sorted by the recursive calls; every element of `petits` is less than `p`, every element of `grands` is at least `p`, and the concatenation is sorted.
 
@@ -212,7 +212,9 @@ int main() {
 }
 ```
 
-The program prints `1 3 9`, whatever the random choices: in order, the list is `1 2 3 3 7 8 9`. If the pivot cuts roughly in the middle, the work is n + n/2 + n/4 + … ≤ 2n: quickselect is O(n) on average, with a random pivot, but O(n²) in the worst case. In C++, `nth_element(t.begin(), t.begin() + k - 1, t.end())` does this job in place.
+The program prints `1 3 9`, whatever the random choices: in order, the list is `1 2 3 3 7 8 9`.
+
+**Average cost.** Call a pivot **good** if it is neither among the smallest quarter of the elements nor among the largest quarter. A random pivot is good with probability about 1/2, and after a good pivot, the part where we continue has at most 3n/4 elements. Just as it takes two coin tosses on average to get "heads", it takes two draws on average to get a good pivot, and each costs at most about n operations. So the size drops below 3n/4 for an average cost of at most 2n, then below (3/4)² n for an average cost of at most 2 × (3/4) n, and so on: in total, at most 2n × (1 + 3/4 + (3/4)² + …) = 8n. Quickselect is therefore O(n) on average, but O(n²) in the worst case, if every pivot happens to be the smallest element. In C++, `nth_element(t.begin(), t.begin() + k - 1, t.end())` does this job in place.
 
 ## Divide and conquer on an array
 

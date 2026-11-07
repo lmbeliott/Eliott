@@ -223,7 +223,7 @@ Negative lengths appear with gains or with constraints of the form `x_B − x_A 
 
 The **Bellman-Ford** algorithm works in **rounds**: in each round, it relaxes **all** edges, in any order. Invariant: after `k` rounds, `dist[v]` is at most the length of any path from `s` to `v` with at most `k` edges. If a path with `k + 1` edges reaches `v` through `u → v`, its part up to `u` has `k` edges, so after `k` rounds `dist[u]` is at most its length, and relaxing `u → v` in the next round concludes.
 
-Without a negative cycle, a shortest path never visits a vertex twice (removing a cycle does not make it longer), so it has at most `N − 1` edges: after `N − 1` rounds all distances are exact, and an `N`-th round changes nothing. Conversely, if a negative cycle is reachable from `s`, the values never stabilise: adding the inequalities `dist[b] ≤ dist[a] + l` along the cycle would give `0 ≤ length of the cycle`. Hence the test: **if there is still an improvement in round `N`, there is a negative cycle**.
+Without a negative cycle, a shortest path never visits a vertex twice (removing a cycle does not make it longer), so it has at most `N − 1` edges: after `N − 1` rounds all distances are exact, and an `N`-th round changes nothing. Conversely, if a negative cycle is reachable from `s`, the values never stabilise: if a round changed nothing, each arc `a → b` of the cycle would satisfy `dist[b] ≤ dist[a] + l` (finite values, the cycle being reachable); adding up along the cycle would leave `0 ≤ length of the cycle`. Hence the test: **if there is still an improvement in round `N`, there is a negative cycle**.
 
 ```python
 def bellman_ford(n, arcs, source):
@@ -295,7 +295,7 @@ The program prints `0 2 5 4`, then `cycle négatif` (negative cycle): the arc `4
 
 When we want the distances between **all** pairs of vertices of a small graph, the **Floyd-Warshall** algorithm fits in three loops. Start from a matrix `d`: `0` on the diagonal, the length of the arc `i → j` if it exists (the smallest if there are several), infinity otherwise. Then, for each `k` from `1` to `N`, allow `k` as an intermediate vertex: `d[i][j] = min(d[i][j], d[i][k] + d[k][j])`.
 
-**Invariant.** After step `k`, `d[i][j]` is the length of a shortest path from `i` to `j` whose **intermediate** vertices are all among `1, …, k`. At step `k`, such an optimal path either does not use `k`, and its length was already `d[i][j]`, or goes through `k` once, and splits into a path from `i` to `k` and a path from `k` to `j` whose intermediate vertices are among `1, …, k − 1`. The values `d[i][k]` and `d[k][j]` do not change during step `k`, which allows working in place. At the end, all vertices are allowed: `d` holds the distances.
+**Invariant** (without a negative cycle). After step `k`, `d[i][j]` is the length of a shortest path from `i` to `j` whose **intermediate** vertices are all among `1, …, k`. At step `k`, such an optimal path either does not use `k`, and its length was already `d[i][j]`, or goes through `k` once, and splits into a path from `i` to `k` and a path from `k` to `j` whose intermediate vertices are among `1, …, k − 1`. The values `d[i][k]` and `d[k][j]` do not change during step `k`, which allows working in place. At the end, all vertices are allowed: `d` holds the distances.
 
 ```python
 INFINI = 10 ** 18
@@ -355,7 +355,7 @@ Choose according to the lengths and the constraints:
 | negative lengths, one source | Bellman-Ford | O(N × M) |
 | all pairs, N ≤ about 400 | Floyd-Warshall | O(N³) |
 
-For lengths 0 or 1, Dijkstra works as is; a double-ended queue (`deque`) does better, pushing to the front the vertex reached by an arc of length 0 and to the back the other one. With **several sources**, put all sources in the heap with distance 0 at the start: you get, for each vertex, the distance to the closest source, as if a fictitious source were joined to each of them by an arc of length 0.
+For lengths 0 or 1, Dijkstra works as is; a double-ended queue (`deque`) does better, pushing to the front the vertex reached by an arc of length 0 and to the back the other one. With **several sources**, put all sources in the heap with distance 0 at the start: you get, for each vertex, the distance to the closest source, as if a fictitious source were joined to each of them by an arc of length 0. Likewise, an **auxiliary vertex** joined to a whole group of vertices replaces the edges between all pairs of the group.
 
 Vertices can also be **numbers**: if only the remainder modulo `K` of a quantity matters, the `K` remainders are the vertices and each operation becomes an arc, computed when the vertex is processed.
 
@@ -363,7 +363,7 @@ Vertices can also be **numbers**: if only the remainder modulo `K` of a quantity
 
 **The heap upside down.** `priority_queue<pair<long long, int>>` returns the **largest** element, and a pair `(vertex, distance)` brings out the smallest vertex number: Dijkstra becomes wrong or very slow. Forgetting the container in `priority_queue<pair<long long, int>, greater<pair<long long, int>>>` does not compile: `error: no type named 'value_type' in 'struct std::greater<std::pair<long long int, int> >'`. The container `vector<...>` is the second parameter.
 
-**Forgetting the stale-entry test.** Without `if d > dist[u]`, distances remain correct, but a vertex can be processed as many times as it was improved, and the program exceeds the time limit on large graphs.
+**Forgetting the stale-entry test.** Without `if d > dist[u]`, distances remain correct, but a vertex is processed as many times as it was improved: the program can exceed the time limit.
 
 **Distances that are too large.** A path of 10⁵ edges of length 10⁹ measures 10¹⁴: `long long` is needed in C++. The "infinity" must exceed every possible distance without causing an overflow: with `LLONG_MAX`, the sum `d[i][k] + d[k][j]` in Floyd-Warshall overflows and becomes negative, and the algorithm invents paths. The value 10¹⁸ works: the sum of two infinities can still be represented.
 

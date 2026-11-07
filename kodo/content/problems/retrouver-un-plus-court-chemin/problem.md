@@ -20,8 +20,8 @@ On garantit que, si le sommet `N` est accessible depuis le sommet `1`, le plus c
 Si le sommet `N` n'est pas accessible, afficher `-1`. Sinon, afficher sur une première ligne la longueur `D` du plus court chemin et son nombre `K` de sommets, puis sur une deuxième ligne les `K` sommets du chemin, de `1` à `N`.
 
 ## Contraintes
-- 1 ≤ N ≤ 5 000
-- 0 ≤ M ≤ 7 000
+- 1 ≤ N ≤ 8 000
+- 0 ≤ M ≤ 10 000
 - 1 ≤ A, B ≤ N
 - 1 ≤ L ≤ 10⁶
 

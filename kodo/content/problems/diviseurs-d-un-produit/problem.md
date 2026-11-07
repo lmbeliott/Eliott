@@ -35,4 +35,4 @@ Deux entiers sur une ligne : le nombre de diviseurs de P et la somme des diviseu
 
 **Diviser modulo M.** On écrit Sᵢ = (pᵢ^(eᵢ+1) − 1) / (pᵢ − 1). Comme M est premier et 1 ≤ pᵢ − 1 < M, le petit théorème de Fermat donne l'inverse de pᵢ − 1 : (pᵢ − 1)^(M−2). Sᵢ mod M vaut donc (pᵢ^(eᵢ+1) − 1) × (pᵢ − 1)^(M−2) mod M, avec deux exponentiations rapides. En C++, on ajoute M à pᵢ^(eᵢ+1) − 1 avant de prendre le reste, pour ne jamais manipuler de reste négatif.
 
-**Coût.** O(V log log V) pour le crible avec V = 10⁶, puis au plus 20 divisions par nombre, puis deux exponentiations rapides par nombre premier de P. Calculer P puis chercher ses diviseurs serait sans espoir.
+**Coût.** O(V log log V) pour le crible avec V = 10⁶, puis au plus 20 divisions par nombre, puis deux exponentiations rapides par nombre premier de P. Décomposer chaque aᵢ par divisions successives, jusqu'à √aᵢ ≤ 1 000, marche aussi, mais coûte jusqu'à 10⁷ divisions : le crible est bien plus rapide. Calculer P puis chercher ses diviseurs serait sans espoir.

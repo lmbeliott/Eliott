@@ -27,6 +27,6 @@ T lines: for each question, the K-th number of the list.
 
 **Exact integer roots.** These roots are computed by binary search, as in the lesson, with powers computed without overflow. One can also notice that ⌊x^(1/6)⌋ = ⌊∛⌊√x⌋⌋. Floating-point functions are off by one for large x, and the tests contain squares and cubes close to 10¹⁸.
 
-**Searching for the answer.** f is non-decreasing, and increases exactly at the elements of the list: the K-th element is the smallest x such that f(x) ≥ K. Since f(x) ≤ x, the answer is at least K; and f(2K) ≥ K, because there are at most √(2K) + ∛(2K) squares or cubes up to 2K, which does not exceed K. A binary search between K − 1 (f(K − 1) < K) and 2K finds the answer in about sixty steps, each with two or three integer roots.
+**Searching for the answer.** f is non-decreasing, and increases exactly at the elements of the list: the K-th element is the smallest x such that f(x) ≥ K. Since f(x) ≤ x, the answer is at least K; and f(2K) ≥ K, because there are at most ⌊√(2K)⌋ + ⌊∛(2K)⌋ − 1 squares or cubes up to 2K (1 is counted twice), which does not exceed K: check it by hand for K ≤ 5, and √(2K) + ∛(2K) ≤ K as soon as K ≥ 6. A binary search between K − 1 (f(K − 1) < K) and 2K finds the answer in about sixty steps, each with two or three integer roots.
 
 **Cost.** A few thousand operations per question. Listing the integers one by one would take about K steps, up to 10¹⁸.

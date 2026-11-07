@@ -23,7 +23,7 @@ L'**union par taille** accroche toujours la racine de la plus **petite** arbores
 
 La **compression des chemins** profite de chaque recherche : une fois la racine trouvée, on fait pointer directement vers elle tous les éléments rencontrés. Les recherches suivantes sur ces éléments coûtent une seule étape.
 
-Avec les deux idées, une suite de `K` opérations coûte O(K × α(N)), où α est une fonction qui croît si lentement qu'elle vaut au plus 4 pour tout `N` réaliste. On admet ce résultat ; en pratique, chaque opération coûte un **temps quasi constant**. On écrit `trouver` avec deux boucles plutôt que par récursivité : en Python, une chaîne de quelques milliers d'éléments dépasserait la profondeur de récursion autorisée.
+Avec les deux idées, une suite de `K` opérations coûte O(K × α(N)), où α est une fonction qui croît si lentement qu'elle vaut au plus 4 pour tout `N` réaliste. On admet ce résultat ; en pratique, chaque opération coûte un **temps quasi constant**. On écrit `trouver` avec deux boucles plutôt que par récursivité. Avec l'union par taille, la récursion resterait courte ; mais si l'on accroche les racines sans comparer les tailles, des chaînes de milliers d'éléments apparaissent, et une recherche récursive dépasse en Python la profondeur de récursion autorisée. Les boucles conviennent dans tous les cas.
 
 ```python
 n = 6
@@ -114,7 +114,7 @@ Une **coupure** est un partage des sommets en deux groupes non vides ; une arêt
 
 **Propriété de coupure.** Pour toute coupure, si `e` est une arête de poids minimal parmi celles qui la traversent, il existe un ACM qui contient `e`. *Preuve.* Soit `T` un ACM qui ne contient pas `e`. Ajouter `e` à `T` crée un cycle ; en le parcourant, on passe d'un groupe à l'autre par `e`, et il faut revenir : une autre arête `f` du cycle traverse la coupure. Par choix de `e`, poids(`f`) ≥ poids(`e`). En retirant `f`, on obtient un arbre couvrant de poids au plus celui de `T`, donc minimal, qui contient `e`.
 
-On en déduit la **propriété de cycle** : une arête strictement plus lourde que toutes les autres arêtes d'un cycle n'appartient à aucun ACM. Avec des égalités, on peut toujours la retirer sans changer le poids minimal.
+**Propriété de cycle.** Une arête `e` strictement plus lourde que toutes les autres arêtes d'un cycle `C` n'appartient à aucun ACM. *Preuve.* Soit `T` un arbre couvrant qui contient `e`. Retirer `e` de `T` partage les sommets en deux groupes, et `e` est la seule arête de `T` qui relie ces groupes. Le reste du cycle `C` va d'une extrémité de `e` à l'autre : une de ses arêtes, `f`, relie les deux groupes, et `f` n'est pas dans `T`. En remplaçant `e` par `f`, on obtient un arbre couvrant strictement plus léger : `T` n'était pas minimal. Si `e` est seulement **au moins aussi lourde** que les autres arêtes du cycle, le même échange ne fait pas augmenter le poids : il existe un ACM sans `e`, et l'on peut retirer `e` du graphe sans changer le poids minimal. On peut répéter ce retrait tant qu'une arête est la plus lourde d'un cycle encore présent.
 
 ## L'algorithme de Kruskal
 
@@ -200,9 +200,11 @@ int main() {
 
 Le programme garde `(1, 3)`, `(2, 4)`, `(2, 3)` et `(3, 5)`, pour un poids de 12. Les arêtes `1 – 2` (poids 4) et `3 – 4` (poids 5) arrivent quand leurs extrémités sont déjà reliées.
 
-**Pourquoi c'est juste.** Invariant : les arêtes gardées sont contenues dans un ACM. Quand Kruskal garde `e = u – v`, on considère la coupure entre la composante `C` de `u` (formée par les arêtes gardées) et le reste. Aucune arête gardée ne la traverse. Une arête plus légère que `e` qui la traverserait aurait été examinée avant, alors qu'elle reliait `C` à une autre composante : elle aurait été gardée, et `C` ne serait pas une composante. Donc `e` est de poids minimal parmi les arêtes qui traversent la coupure. L'échange de la preuve précédente retire une arête `f` qui traverse la coupure, donc pas une arête gardée : l'ACM obtenu contient toutes les arêtes gardées et `e`. À la fin, on a `N − 1` arêtes (si le graphe est connexe) contenues dans un ACM : c'est cet ACM.
+**Pourquoi c'est juste.** Invariant : les arêtes gardées sont contenues dans un ACM. Quand Kruskal garde `e = u – v`, on considère la coupure entre la composante `C` de `u` (formée par les arêtes gardées) et le reste. Aucune arête gardée ne la traverse. Une arête plus légère que `e` qui la traverserait a été examinée avant `e` ; à ce moment, ses extrémités étaient déjà dans des composantes différentes (les composantes ne font que fusionner), donc elle a été gardée, et ses extrémités seraient maintenant dans la même composante : impossible. Donc `e` est de poids minimal parmi les arêtes qui traversent la coupure. L'échange de la preuve précédente retire une arête `f` qui traverse la coupure, donc pas une arête gardée : l'ACM obtenu contient toutes les arêtes gardées et `e`. À la fin, on a `N − 1` arêtes (si le graphe est connexe) contenues dans un ACM : c'est cet ACM.
 
 **Complexité.** O(M log M) pour le tri, plus `M` opérations Union-Find en temps quasi constant. Si le graphe n'est pas connexe, on obtient moins de `N − 1` arêtes : une **forêt couvrante** minimale.
+
+**Poids égaux.** Le tri ne dit pas dans quel ordre ranger des arêtes de même poids, et la preuve n'a jamais supposé les poids différents : chaque ordre donne un ACM, mais pas forcément le même. Si tous les poids sont différents, l'ACM est **unique**. En effet, si `T` et `T'` étaient deux ACM différents, soit `e` l'arête la plus légère qui appartient à l'un mais pas à l'autre, disons à `T`. Ajouter `e` à `T'` crée un cycle, qui contient une arête `f` absente de `T` (sinon `T` contiendrait un cycle). Comme `f` est dans `T'` mais pas dans `T`, elle est plus lourde que `e` : `T'` privé de `f` et augmenté de `e` serait un arbre couvrant plus léger que `T'`.
 
 ## L'algorithme de Prim
 
@@ -275,11 +277,9 @@ Le programme affiche `12`, comme Kruskal. Chaque arête entre au plus deux fois 
 
 Le **goulet** d'un chemin est le poids de sa plus lourde arête. Entre deux sommets `u` et `v`, le chemin dans un ACM a le plus petit goulet possible. En effet, si Kruskal relie `u` et `v` pour la première fois avec une arête de poids `w`, toutes les arêtes plus légères étaient déjà examinées sans les relier : tout chemin de `u` à `v` contient une arête de poids au moins `w`, et le chemin dans l'arbre n'utilise que des arêtes de poids au plus `w`. Ainsi, « peut-on aller de `u` à `v` sans arête de poids plus grand que `S` ? » se règle en ajoutant les arêtes par poids croissant, en même temps que l'on trie les questions par seuil.
 
-Autre idée utile : le meilleur arbre couvrant **différent** d'un ACM s'obtient en ajoutant une arête hors de l'arbre et en retirant l'arête la plus lourde du cycle ainsi formé.
-
 ## Erreurs fréquentes
 
-**Une recherche récursive en Python.** La version `parent[x] = trouver(parent[x])` est élégante, mais sur une chaîne de 5 000 éléments elle provoque `RecursionError: maximum recursion depth exceeded`. On utilise les deux boucles, et l'union par taille.
+**Une recherche récursive en Python.** La version `parent[x] = trouver(parent[x])` est élégante, mais sans l'union par taille une chaîne de 5 000 éléments peut se former, et la recherche provoque alors `RecursionError: maximum recursion depth exceeded`. On utilise les deux boucles, et l'union par taille.
 
 **Unir sans chercher les racines.** Écrire `parent[a] = b` relie `a` à `b` mais détache `a` de son ancien ensemble : les autres éléments de cet ensemble sont perdus. Aucun message, la réponse est fausse. On accroche toujours une racine sous une autre racine.
 
@@ -407,5 +407,5 @@ Kruskal garde `1 – 2`, `5 – 6`, `2 – 3` et `4 – 5` : il reste les groupe
 - Union-Find gère une partition avec `trouver` et `unir` ; avec l'union par taille et la compression des chemins, chaque opération coûte un temps quasi constant. La recherche s'écrit avec des boucles en Python.
 - L'union par taille garantit une profondeur au plus log₂ N : un élément ne descend que si la taille de son ensemble double.
 - Union-Find suit la connexité quand on ajoute des arêtes ; des suppressions connues à l'avance se traitent à l'envers, comme des ajouts.
-- Propriété de coupure : l'arête la plus légère qui traverse une coupure appartient à un arbre couvrant minimal. Elle prouve Kruskal (tri puis Union-Find, O(M log M)) et Prim (tas, O(M log M)).
+- Propriété de coupure : l'arête la plus légère qui traverse une coupure appartient à un arbre couvrant minimal ; propriété de cycle : l'arête la plus lourde d'un cycle peut être retirée. La première prouve Kruskal (tri puis Union-Find, O(M log M)) et Prim (tas, O(M log M)).
 - Dans un arbre couvrant minimal, le chemin entre deux sommets minimise la plus lourde arête : les questions de seuil se traitent en ajoutant les arêtes par poids croissant.

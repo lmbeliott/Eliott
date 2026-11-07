@@ -37,6 +37,10 @@ n = 100000
 a = [(1, v) for v in random.sample(range(2, n + 1), 6000)] + [(random.randint(2, n), random.randint(2, n)) for _ in range(2000)]
 a = [(x, y) for x, y in a if x != y]
 tests.append(test(n, a))
+# 100 000 sommets : le sommet 1 est voisin de 4 000 sommets, reliés entre eux au hasard
+voisins1 = random.sample(range(2, n + 1), 4000)
+a = [(1, v) for v in voisins1] + [tuple(random.sample(voisins1, 2)) for _ in range(1500)]
+tests.append(test(n, renomme(n, a)))
 # le sommet 1 est voisin dans G de tous les sommets sauf le dernier
 n = 3500
 a = [(1, v) for v in range(2, n)] + [(n, v) for v in random.sample(range(2, n), 3000)] + [(random.randint(2, n - 1), random.randint(2, n - 1)) for _ in range(3000)]

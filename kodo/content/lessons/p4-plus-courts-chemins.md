@@ -223,7 +223,7 @@ Des longueurs négatives apparaissent avec des gains ou des contraintes de la fo
 
 L'algorithme de **Bellman-Ford** fait des **tours** : à chaque tour, il relâche **toutes** les arêtes, dans un ordre quelconque. Invariant : après `k` tours, `dist[v]` est au plus la longueur de n'importe quel chemin de `s` à `v` ayant au plus `k` arêtes. Si un chemin de `k + 1` arêtes arrive en `v` par `u → v`, sa partie jusqu'à `u` a `k` arêtes, donc après `k` tours `dist[u]` est au plus sa longueur, et le relâchement de `u → v` au tour suivant conclut.
 
-Sans cycle négatif, un plus court chemin ne repasse jamais par un sommet (enlever un cycle ne l'allonge pas), donc il a au plus `N − 1` arêtes : après `N − 1` tours, toutes les distances sont exactes, et un `N`-ième tour ne change rien. Réciproquement, s'il y a un cycle négatif accessible depuis `s`, les valeurs ne se stabilisent jamais : en additionnant les inégalités `dist[b] ≤ dist[a] + l` le long du cycle, on trouverait `0 ≤ longueur du cycle`. D'où le test : **s'il y a encore une amélioration au `N`-ième tour, il existe un cycle négatif**.
+Sans cycle négatif, un plus court chemin ne repasse jamais par un sommet (enlever un cycle ne l'allonge pas), donc il a au plus `N − 1` arêtes : après `N − 1` tours, toutes les distances sont exactes, et un `N`-ième tour ne change rien. Réciproquement, s'il y a un cycle négatif accessible depuis `s`, les valeurs ne se stabilisent jamais : si un tour ne changeait rien, chaque arc `a → b` du cycle vérifierait `dist[b] ≤ dist[a] + l` (valeurs finies, le cycle étant accessible) ; en additionnant le long du cycle, il resterait `0 ≤ longueur du cycle`. D'où le test : **s'il y a encore une amélioration au `N`-ième tour, il existe un cycle négatif**.
 
 ```python
 def bellman_ford(n, arcs, source):
@@ -295,7 +295,7 @@ Le programme affiche `0 2 5 4`, puis `cycle négatif` : l'arc `4 → 3` de longu
 
 Quand on veut les distances entre **toutes** les paires de sommets d'un petit graphe, l'algorithme de **Floyd-Warshall** tient en trois boucles. On part d'une matrice `d` : `0` sur la diagonale, la longueur de l'arc `i → j` s'il existe (la plus petite s'il y en a plusieurs), l'infini sinon. Puis, pour chaque `k` de `1` à `N`, on autorise `k` comme sommet intermédiaire : `d[i][j] = min(d[i][j], d[i][k] + d[k][j])`.
 
-**Invariant.** Après l'étape `k`, `d[i][j]` est la longueur d'un plus court chemin de `i` à `j` dont tous les sommets **intermédiaires** sont parmi `1, …, k`. À l'étape `k`, un tel chemin optimal ou bien n'utilise pas `k`, et sa longueur était déjà `d[i][j]`, ou bien passe une seule fois par `k`, et se coupe en un chemin de `i` à `k` puis un chemin de `k` à `j` dont les intermédiaires sont parmi `1, …, k − 1`. Les valeurs `d[i][k]` et `d[k][j]` ne changent pas pendant l'étape `k`, ce qui permet de travailler sur place. À la fin, tous les sommets sont permis : `d` contient les distances.
+**Invariant** (sans cycle négatif). Après l'étape `k`, `d[i][j]` est la longueur d'un plus court chemin de `i` à `j` dont tous les sommets **intermédiaires** sont parmi `1, …, k`. À l'étape `k`, un tel chemin optimal ou bien n'utilise pas `k`, et sa longueur était déjà `d[i][j]`, ou bien passe une seule fois par `k`, et se coupe en un chemin de `i` à `k` puis un chemin de `k` à `j` dont les intermédiaires sont parmi `1, …, k − 1`. Les valeurs `d[i][k]` et `d[k][j]` ne changent pas pendant l'étape `k`, ce qui permet de travailler sur place. À la fin, tous les sommets sont permis : `d` contient les distances.
 
 ```python
 INFINI = 10 ** 18
@@ -355,7 +355,7 @@ On choisit d'après les longueurs et les contraintes :
 | longueurs négatives, une source | Bellman-Ford | O(N × M) |
 | toutes les paires, N ≤ 400 environ | Floyd-Warshall | O(N³) |
 
-Pour les longueurs 0 ou 1, Dijkstra marche tel quel ; une file à double entrée (`deque`) fait mieux, en ajoutant devant le sommet atteint par un arc de longueur 0 et derrière l'autre. Avec **plusieurs sources**, on met toutes les sources dans le tas avec la distance 0 au départ : on obtient, pour chaque sommet, la distance à la source la plus proche, comme si une source fictive était reliée à chacune par un arc de longueur 0.
+Pour les longueurs 0 ou 1, Dijkstra marche tel quel ; une file à double entrée (`deque`) fait mieux, en ajoutant devant le sommet atteint par un arc de longueur 0 et derrière l'autre. Avec **plusieurs sources**, on met toutes les sources dans le tas avec la distance 0 au départ : on obtient, pour chaque sommet, la distance à la source la plus proche, comme si une source fictive était reliée à chacune par un arc de longueur 0. De même, un **sommet auxiliaire** relié à tout un groupe de sommets remplace les arêtes entre toutes les paires du groupe.
 
 Les sommets peuvent aussi être des **nombres** : si seul compte le reste modulo `K` d'une quantité, les `K` restes forment les sommets et chaque opération devient un arc, calculé au moment de traiter le sommet.
 
@@ -363,7 +363,7 @@ Les sommets peuvent aussi être des **nombres** : si seul compte le reste modulo
 
 **Le tas à l'envers.** `priority_queue<pair<long long, int>>` renvoie le plus **grand** élément, et un couple `(sommet, distance)` fait sortir le plus petit numéro : Dijkstra devient faux ou très lent. Oublier le conteneur dans `priority_queue<pair<long long, int>, greater<pair<long long, int>>>` ne compile pas : `error: no type named 'value_type' in 'struct std::greater<std::pair<long long int, int> >'`. Le conteneur `vector<...>` est le deuxième paramètre.
 
-**Oublier le test des entrées périmées.** Sans `if d > dist[u]`, les distances restent justes, mais un sommet peut être traité autant de fois qu'il a été amélioré, et le programme dépasse la limite de temps sur les grands graphes.
+**Oublier le test des entrées périmées.** Sans `if d > dist[u]`, les distances restent justes, mais un sommet est traité autant de fois qu'il a été amélioré : le programme peut dépasser la limite de temps.
 
 **Des distances trop grandes.** Un chemin de 10⁵ arêtes de longueur 10⁹ mesure 10¹⁴ : il faut des `long long` en C++. L'« infini » doit dépasser toute distance possible sans provoquer de dépassement : avec `LLONG_MAX`, la somme `d[i][k] + d[k][j]` de Floyd-Warshall déborde et devient négative, et l'algorithme invente des chemins. La valeur 10¹⁸ convient : la somme de deux infinis reste représentable.
 

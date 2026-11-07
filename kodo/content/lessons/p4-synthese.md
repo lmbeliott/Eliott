@@ -191,10 +191,148 @@ Le programme affiche `1000 essais identiques`. Si l'on oublie d'ajouter chaque a
 
 Pour que le test soit utile, les entrées doivent rester **petites** (quelques sommets, de petits poids, des boucles et des arêtes multiples possibles) : les cas limites y apparaissent souvent. Et la solution naïve doit vraiment être différente : recopier le même algorithme ne détecte pas l'erreur de raisonnement.
 
+## Un exemple complet
+
+**Énoncé.** Un graphe non orienté a `N` sommets et `M` arêtes ; chaque arête a un poids. Pour chacune des `Q` questions `U V S`, afficher `OUI` si l'on peut aller de `U` à `V` en n'empruntant que des arêtes de poids au plus `S`, et `NON` sinon. `N`, `M` et `Q` vont jusqu'à 2 × 10⁵.
+
+**Idée.** On part des contraintes : un parcours par question coûterait `Q × (N + M)`, soit 8 × 10¹⁰ opérations. Il faut donc partager le travail entre les questions. Une question ne dépend que des arêtes de poids au plus `S`, et quand `S` augmente, on ne fait qu'**ajouter** des arêtes : c'est la transformation « trier les seuils ». On lit toutes les questions avant de répondre (traitement **hors ligne**), on trie les arêtes par poids et les questions par seuil, puis on balaie les questions dans l'ordre : avant de répondre à une question de seuil `S`, on ajoute dans un Union-Find toutes les arêtes de poids au plus `S` qui ne le sont pas encore. La réponse est `OUI` exactement quand `U` et `V` ont la même racine. Chaque réponse est rangée à la place d'origine de sa question.
+
+**Programme.**
+
+```python
+import sys
+
+donnees = sys.stdin.read().split()
+n, m, q = int(donnees[0]), int(donnees[1]), int(donnees[2])
+pos = 3
+aretes = []
+for _ in range(m):
+    a, b, w = int(donnees[pos]), int(donnees[pos + 1]), int(donnees[pos + 2])
+    pos += 3
+    aretes.append((w, a, b))
+questions = []
+for i in range(q):
+    u, v, s = int(donnees[pos]), int(donnees[pos + 1]), int(donnees[pos + 2])
+    pos += 3
+    questions.append((s, u, v, i))  # i : place de la question dans l'entrée
+aretes.sort()
+questions.sort()
+
+parent = list(range(n + 1))
+taille = [1] * (n + 1)
+
+
+def trouver(x):
+    racine = x
+    while parent[racine] != racine:
+        racine = parent[racine]
+    while parent[x] != racine:
+        parent[x], x = racine, parent[x]
+    return racine
+
+
+reponses = [""] * q
+k = 0  # nombre d'arêtes déjà ajoutées
+for s, u, v, i in questions:  # par seuil croissant
+    while k < m and aretes[k][0] <= s:  # on ajoute les arêtes de poids au plus s
+        w, a, b = aretes[k]
+        ra, rb = trouver(a), trouver(b)
+        if ra != rb:
+            if taille[ra] < taille[rb]:
+                ra, rb = rb, ra
+            parent[rb] = ra
+            taille[ra] += taille[rb]
+        k += 1
+    reponses[i] = "OUI" if trouver(u) == trouver(v) else "NON"
+print("\n".join(reponses))
+```
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <string>
+#include <tuple>
+#include <vector>
+using namespace std;
+
+vector<int> parent, taille;
+
+int trouver(int x) {
+    int racine = x;
+    while (parent[racine] != racine) racine = parent[racine];
+    while (parent[x] != racine) {
+        int suivant = parent[x];
+        parent[x] = racine;
+        x = suivant;
+    }
+    return racine;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m, q;
+    cin >> n >> m >> q;
+    vector<tuple<int, int, int>> aretes(m);  // (poids, a, b)
+    for (auto& [w, a, b] : aretes) cin >> a >> b >> w;
+    vector<tuple<int, int, int, int>> questions(q);  // (seuil, u, v, place dans l'entrée)
+    for (int i = 0; i < q; i++) {
+        auto& [s, u, v, place] = questions[i];
+        cin >> u >> v >> s;
+        place = i;
+    }
+    sort(aretes.begin(), aretes.end());
+    sort(questions.begin(), questions.end());
+    parent.resize(n + 1);
+    iota(parent.begin(), parent.end(), 0);
+    taille.assign(n + 1, 1);
+
+    vector<string> reponses(q);
+    int k = 0;  // nombre d'arêtes déjà ajoutées
+    for (auto [s, u, v, place] : questions) {  // par seuil croissant
+        while (k < m && get<0>(aretes[k]) <= s) {  // on ajoute les arêtes de poids au plus s
+            auto [w, a, b] = aretes[k];
+            int ra = trouver(a), rb = trouver(b);
+            if (ra != rb) {
+                if (taille[ra] < taille[rb]) swap(ra, rb);
+                parent[rb] = ra;
+                taille[ra] += taille[rb];
+            }
+            k++;
+        }
+        reponses[place] = (trouver(u) == trouver(v) ? "OUI" : "NON");
+    }
+    for (const string& r : reponses) cout << r << "\n";
+    return 0;
+}
+```
+
+**Vérification à la main.** Avec l'entrée
+
+```text
+5 4 4
+1 2 3
+2 3 5
+3 4 2
+4 5 8
+1 3 4
+1 3 5
+3 5 7
+4 4 1
+```
+
+les questions sont traitées dans l'ordre des seuils 1, 4, 5, 7. Au seuil 1, aucune arête n'est ajoutée, mais `4` est relié à lui-même : `OUI`. Au seuil 4, on ajoute `3 – 4` (2) et `1 – 2` (3) : `1` et `3` restent séparés, `NON`. Au seuil 5, on ajoute `2 – 3` : `1 – 2 – 3` les relie, `OUI`. Au seuil 7, rien de neuf, et `5` n'est atteint que par l'arête de poids 8 : `NON`. Remises dans l'ordre de l'entrée, les réponses sont `NON`, `OUI`, `NON`, `OUI`, ce que le programme affiche.
+
+**Pourquoi c'est juste.** Invariant : au moment de répondre à une question de seuil `S`, l'Union-Find contient exactement les arêtes de poids au plus `S`. En effet, les arêtes ajoutées sont prises dans l'ordre croissant des poids, et la boucle `while` s'arrête à la première de poids plus grand que `S` ; comme les seuils sont croissants, aucune arête ajoutée pour une question précédente ne dépasse `S`. Par l'invariant de la connexité dynamique, `U` et `V` ont la même racine exactement quand un chemin d'arêtes de poids au plus `S` les relie.
+
+**Coût.** Les deux tris coûtent O(M log M + Q log Q), puis chaque arête est ajoutée une fois et chaque question fait deux recherches : `M + 2Q` opérations Union-Find en temps quasi constant. Pour se convaincre du programme, on le compare à la solution naïve (un parcours en largeur par question, restreint aux arêtes de poids au plus `S`) sur des centaines de petites entrées. Répondre aux questions dans l'ordre de l'entrée, sans les trier, obligerait à retirer des arêtes quand le seuil baisse : c'est le tri hors ligne qui transforme le problème en une suite d'ajouts.
+
 ## À retenir
 
 - On lit d'abord les contraintes : elles indiquent la complexité visée, et donc la famille d'outils.
 - « Plus grand minimum » ou « plus petit maximum » : dichotomie sur la réponse, avec un test oui/non monotone, souvent glouton ou de type plus court chemin.
 - Modéliser, c'est choisir les sommets (lieux, nombres, restes, états, sommets auxiliaires) et vérifier la correspondance entre solutions et chemins dans les deux sens.
 - Chaque solution s'appuie sur un argument nommé : invariant, échange, coupure ou cycle, monotonie, terminaison, et un compte d'opérations.
+- Des questions qui dépendent d'un seuil, ou des suppressions connues à l'avance, se traitent hors ligne : on trie les seuils ou l'on remonte le temps pour n'avoir que des ajouts, que Union-Find gère.
 - Les pièges reviennent : dépassements, récursion trop profonde, indices décalés, cas dégénérés. Un test contre une solution naïve sur de petites entrées les révèle presque tous.

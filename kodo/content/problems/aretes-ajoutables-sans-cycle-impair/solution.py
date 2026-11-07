@@ -12,7 +12,7 @@ for i in range(m):
 
 couleur = [-1] * (n + 1)
 biparti = True
-memes = n * (n - 1) // 2        # paires de composantes différentes (on retire les autres)
+entre = n * (n - 1) // 2        # paires de composantes différentes (on retire les autres)
 opposees = 0                    # paires de couleurs différentes dans une même composante
 for depart in range(1, n + 1):
     if couleur[depart] != -1:
@@ -30,10 +30,10 @@ for depart in range(1, n + 1):
             elif couleur[v] == couleur[u]:
                 biparti = False
     s = nb[0] + nb[1]
-    memes -= s * (s - 1) // 2
+    entre -= s * (s - 1) // 2
     opposees += nb[0] * nb[1]
 
 if biparti:
-    print(memes + opposees - m)
+    print(entre + opposees - m)
 else:
     print(0)

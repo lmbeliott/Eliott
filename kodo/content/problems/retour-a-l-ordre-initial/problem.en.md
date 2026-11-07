@@ -31,4 +31,4 @@ A single integer: this number of shuffles, modulo `1,000,000,007`.
 
 **Complexity.** O(N log log N) for the sieve, O(N) for the cycles, and each length is factorised in O(log N).
 
-**Pitfalls.** The real LCM can exceed 10¹⁵⁰: in C++, computing `lcm = lcm / gcd × L` overflows, and taking the remainder along the way gives a wrong result. Fixed points (`P_i = i`) are cycles of length 1. If the permutation is the identity, the answer is `1`.
+**Pitfalls.** The real LCM can exceed 10¹⁵⁰: in C++, computing `lcm = lcm / gcd × L` overflows, and taking the remainder along the way gives a wrong result. (In Python, integers have no size limit: the exact LCM can also be computed, then its remainder; the method with exponents works in both languages.) Fixed points (`P_i = i`) are cycles of length 1. If the permutation is the identity, the answer is `1`.

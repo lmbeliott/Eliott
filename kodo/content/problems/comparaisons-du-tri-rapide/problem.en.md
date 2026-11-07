@@ -5,9 +5,9 @@ title: Comparisons of quicksort
 ## Statement
 A list of distinct numbers is sorted with the following version of **quicksort**. If the list has at most one element, it is sorted. Otherwise, its **first** element is the pivot p; p is compared with each of the other elements, which makes (length − 1) comparisons, and we form the list G of the elements smaller than p and the list D of the larger ones, each **in the order in which its elements appeared**. G and D are sorted the same way, and the result is sorted G, then p, then sorted D.
 
-For example, for `3 1 4 2 5`, the pivot 3 makes 4 comparisons and gives G = `1 2` and D = `4 5`. Sorting G makes 1 comparison, and so does sorting D: 6 comparisons in total.
-
 The list is a permutation of the integers from 1 to N, built by a formula: its element number i, for i from 0 to N − 1, is ((A × i + B) mod N) + 1, where A and N have no common divisor other than 1. Print the total number of comparisons.
+
+For example, with N = 5, A = 2 and B = 3, the list is `4 1 3 5 2`. The pivot 4 makes 4 comparisons and gives G = `1 3 2` and D = `5`. To sort G, the pivot 1 makes 2 comparisons and leaves `3 2`, where the pivot 3 makes 1 comparison. In total: 4 + 2 + 1 = 7 comparisons.
 
 ## Input
 A single line: the three integers N, A and B.

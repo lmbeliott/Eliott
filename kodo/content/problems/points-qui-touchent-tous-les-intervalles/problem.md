@@ -32,6 +32,6 @@ Le plus petit nombre de contrôles.
 
 **Le choix est sûr (argument d'échange).** Soit [a, b] la période qui se termine le plus tôt, et une solution optimale quelconque. Elle a un contrôle q dans [a, b]. Remplaçons q par b. Toute période qui contenait q commence avant q ≤ b, et se termine après b, puisque b est la plus petite fin : elle contient aussi b. La solution modifiée est donc encore valable, avec le même nombre de contrôles, et elle fait le même premier choix que le glouton. On retire les périodes touchées par b et on recommence le raisonnement sur celles qui restent : par récurrence, le glouton utilise autant de contrôles qu'une solution optimale.
 
-**Les mauvais gloutons.** Trier par début, ou placer le contrôle au début d'une période, échoue : avec [0, 10], [1, 2] et [5, 6], un contrôle à la minute 0 ou 10 ne touche qu'une période ; le bon glouton place 2 et 6, et répond 2.
+**Les mauvais gloutons.** Trier par début échoue : avec [0, 10], [1, 2] et [5, 6], le premier contrôle, à la minute 0 ou 10, ne touche qu'une période, et il en faut 3 ; le bon glouton place 2 et 6, et répond 2. Placer le contrôle au **début** de la période qui finit le plus tôt échoue aussi : avec [0, 5] et [4, 6], un contrôle à la minute 0 oblige à en placer un second, alors que la minute 4 ou 5 touche les deux périodes.
 
 **Coût.** O(N log N) pour le tri, puis un seul passage.

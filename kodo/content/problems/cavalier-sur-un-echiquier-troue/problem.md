@@ -28,7 +28,7 @@ Un seul entier : le nombre minimal de coups, ou `-1`.
 ## Indices
 1. Chaque case libre est un sommet ; chaque coup de cavalier possible est une arête. La réponse est une distance dans ce graphe.
 2. Les 8 coups s'écrivent comme une liste de décalages `(dr, dc)` : `(±1, ±2)` et `(±2, ±1)`.
-3. Sur un plateau sans trou, un cavalier change de couleur de case à chaque coup : la parité de la réponse est connue d'avance, ce qui permet de vérifier ses résultats à la main.
+3. Comme sur un damier, un cavalier change de couleur de case à chaque coup : si la réponse existe, sa parité est connue d'avance, ce qui aide à vérifier ses résultats à la main.
 
 ## Solution
 Le graphe a pour sommets les cases libres et pour arêtes les coups de cavalier. On ne le construit pas : depuis une case `(r, c)`, les 8 voisins sont `(r + dr, c + dc)` pour les 8 décalages `(±1, ±2)`, `(±2, ±1)`, à condition de rester sur le plateau et de ne pas tomber sur un trou.

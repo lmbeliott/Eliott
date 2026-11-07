@@ -7,7 +7,7 @@ An **inversion** of a sequence a₁, …, a_N is a pair of positions i < j such 
 
 Print the smallest number of inversions among these N sequences.
 
-The sequence is built by a formula, to keep the input short: a₁ = X, then a_{i+1} = (aᵢ × B + C) mod M.
+The sequence is built by a formula, to keep the input short: a₁ = X, then a_{i+1} = (aᵢ × B + C) mod M. For example, with N = 4, X = 3, B = 1, C = 1 and M = 4, the sequence is `3 0 1 2`, which has 3 inversions; after one rotation, `0 1 2 3` has none: the answer is 0.
 
 ## Input
 A single line: the five integers N, X, B, C and M.

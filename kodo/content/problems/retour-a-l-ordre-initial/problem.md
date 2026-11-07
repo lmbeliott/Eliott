@@ -36,4 +36,4 @@ Un seul entier : ce nombre de mélanges, modulo `1 000 000 007`.
 
 **Complexité.** O(N log log N) pour le crible, O(N) pour les cycles, et chaque longueur se factorise en O(log N).
 
-**Pièges.** Le PPCM réel peut dépasser 10¹⁵⁰ : en C++, calculer `ppcm = ppcm / pgcd × L` déborde, et prendre le reste au fil du calcul donne un résultat faux. Les points fixes (`P_i = i`) sont des cycles de longueur 1. Si la permutation est l'identité, la réponse est `1`.
+**Pièges.** Le PPCM réel peut dépasser 10¹⁵⁰ : en C++, calculer `ppcm = ppcm / pgcd × L` déborde, et prendre le reste au fil du calcul donne un résultat faux. (En Python, les entiers n'ont pas de taille limite : on peut aussi calculer le PPCM exact, puis son reste ; la méthode par les exposants fonctionne dans les deux langages.) Les points fixes (`P_i = i`) sont des cycles de longueur 1. Si la permutation est l'identité, la réponse est `1`.

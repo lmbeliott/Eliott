@@ -23,7 +23,7 @@ A single integer: the minimum number of moves, or `-1`.
 ## Hints
 1. Each free square is a vertex; each possible knight move is an edge. The answer is a distance in this graph.
 2. The 8 moves can be written as a list of offsets `(dr, dc)`: `(±1, ±2)` and `(±2, ±1)`.
-3. On a board without holes, a knight changes square colour at every move: the parity of the answer is known in advance, which helps checking results by hand.
+3. As on a chessboard, a knight changes square colour at every move: if the answer exists, its parity is known in advance, which helps checking results by hand.
 
 ## Solution
 The graph has the free squares as vertices and the knight moves as edges. It is not built: from a square `(r, c)`, the 8 neighbours are `(r + dr, c + dc)` for the 8 offsets `(±1, ±2)`, `(±2, ±1)`, provided they stay on the board and do not land on a hole.

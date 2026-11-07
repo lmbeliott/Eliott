@@ -23,7 +23,7 @@ Two simple ideas make the forest very efficient.
 
 **Path compression** takes advantage of each search: once the root is found, make all elements met on the way point directly to it. Later searches on these elements cost a single step.
 
-With both ideas, a sequence of `K` operations costs O(K × α(N)), where α is a function growing so slowly that it is at most 4 for any realistic `N`. We admit this result; in practice, each operation takes **nearly constant time**. Write `trouver` with two loops rather than recursively: in Python, a chain of a few thousand elements would exceed the allowed recursion depth.
+With both ideas, a sequence of `K` operations costs O(K × α(N)), where α is a function growing so slowly that it is at most 4 for any realistic `N`. We admit this result; in practice, each operation takes **nearly constant time**. Write `trouver` with two loops rather than recursively. With union by size, the recursion would stay short; but if roots are attached without comparing sizes, chains of thousands of elements appear, and a recursive search exceeds the allowed recursion depth in Python. Loops work in every case.
 
 ```python
 n = 6
@@ -114,7 +114,7 @@ A **cut** is a division of the vertices into two non-empty groups; an edge **cro
 
 **Cut property.** For any cut, if `e` is an edge of minimum weight among those crossing it, there is an MST containing `e`. *Proof.* Let `T` be an MST not containing `e`. Adding `e` to `T` creates a cycle; going around it, we move from one group to the other through `e`, and must come back: another edge `f` of the cycle crosses the cut. By the choice of `e`, weight(`f`) ≥ weight(`e`). Removing `f` gives a spanning tree of weight at most that of `T`, hence minimum, containing `e`.
 
-This gives the **cycle property**: an edge strictly heavier than all other edges of a cycle belongs to no MST. With ties, it can always be removed without changing the minimum weight.
+**Cycle property.** An edge `e` strictly heavier than all other edges of a cycle `C` belongs to no MST. *Proof.* Let `T` be a spanning tree containing `e`. Removing `e` from `T` splits the vertices into two groups, and `e` is the only edge of `T` joining them. The rest of the cycle `C` goes from one end of `e` to the other: one of its edges, `f`, joins the two groups, and `f` is not in `T`. Replacing `e` by `f` gives a strictly lighter spanning tree: `T` was not minimal. If `e` is only **at least as heavy** as the other edges of the cycle, the same exchange does not increase the weight: there is an MST without `e`, and `e` can be removed from the graph without changing the minimum weight. This removal can be repeated as long as some edge is the heaviest of a cycle still present.
 
 ## Kruskal's algorithm
 
@@ -200,9 +200,11 @@ int main() {
 
 The program keeps `(1, 3)`, `(2, 4)`, `(2, 3)` and `(3, 5)`, for a weight of 12. Edges `1 – 2` (weight 4) and `3 – 4` (weight 5) come when their endpoints are already connected.
 
-**Why it is correct.** Invariant: the kept edges are contained in an MST. When Kruskal keeps `e = u – v`, consider the cut between the component `C` of `u` (formed by the kept edges) and the rest. No kept edge crosses it. An edge lighter than `e` crossing it would have been examined earlier, while it joined `C` to another component: it would have been kept, and `C` would not be a component. So `e` has minimum weight among the edges crossing the cut. The exchange of the previous proof removes an edge `f` crossing the cut, hence not a kept edge: the MST obtained contains all kept edges and `e`. At the end, we have `N − 1` edges (if the graph is connected) contained in an MST: it is that MST.
+**Why it is correct.** Invariant: the kept edges are contained in an MST. When Kruskal keeps `e = u – v`, consider the cut between the component `C` of `u` (formed by the kept edges) and the rest. No kept edge crosses it. An edge lighter than `e` crossing it was examined before `e`; at that time, its ends were already in different components (components only merge), so it was kept, and its ends would now be in the same component: impossible. So `e` has minimum weight among the edges crossing the cut. The exchange of the previous proof removes an edge `f` crossing the cut, hence not a kept edge: the MST obtained contains all kept edges and `e`. At the end, we have `N − 1` edges (if the graph is connected) contained in an MST: it is that MST.
 
 **Complexity.** O(M log M) for sorting, plus `M` Union-Find operations in nearly constant time. If the graph is not connected, fewer than `N − 1` edges are obtained: a minimum **spanning forest**.
+
+**Equal weights.** Sorting does not say in which order to put edges of equal weight, and the proof never assumed distinct weights: every order gives an MST, but not always the same one. If all weights are distinct, the MST is **unique**. Indeed, if `T` and `T'` were two different MSTs, let `e` be the lightest edge belonging to one but not to the other, say to `T`. Adding `e` to `T'` creates a cycle, which contains an edge `f` missing from `T` (otherwise `T` would contain a cycle). Since `f` is in `T'` but not in `T`, it is heavier than `e`: `T'` without `f` and with `e` would be a spanning tree lighter than `T'`.
 
 ## Prim's algorithm
 
@@ -275,11 +277,9 @@ The program prints `12`, as Kruskal does. Each edge enters the heap at most twic
 
 The **bottleneck** of a path is the weight of its heaviest edge. Between two vertices `u` and `v`, the path in an MST has the smallest possible bottleneck. Indeed, if Kruskal connects `u` and `v` for the first time with an edge of weight `w`, all lighter edges were already examined without connecting them: every path from `u` to `v` contains an edge of weight at least `w`, and the path in the tree only uses edges of weight at most `w`. So "can we go from `u` to `v` without an edge heavier than `S`?" is answered by adding edges by increasing weight, while sorting the questions by threshold.
 
-Another useful idea: the best spanning tree **different** from an MST is obtained by adding an edge outside the tree and removing the heaviest edge of the cycle formed.
-
 ## Common mistakes
 
-**A recursive search in Python.** The version `parent[x] = trouver(parent[x])` is elegant, but on a chain of 5,000 elements it causes `RecursionError: maximum recursion depth exceeded`. Use the two loops, and union by size.
+**A recursive search in Python.** The version `parent[x] = trouver(parent[x])` is elegant, but without union by size a chain of 5,000 elements can form, and the search then causes `RecursionError: maximum recursion depth exceeded`. Use the two loops, and union by size.
 
 **Uniting without finding the roots.** Writing `parent[a] = b` joins `a` to `b` but detaches `a` from its former set: the other elements of that set are lost. No message, the answer is wrong. Always hang a root under another root.
 
@@ -407,5 +407,5 @@ Kruskal keeps `1 – 2`, `5 – 6`, `2 – 3` and `4 – 5`: the groups `{1, 2, 
 - Union-Find manages a partition with `trouver` and `unir`; with union by size and path compression, each operation takes nearly constant time. Write the search with loops in Python.
 - Union by size guarantees a depth of at most log₂ N: an element only goes down when the size of its set doubles.
 - Union-Find follows connectivity when edges are added; deletions known in advance are processed backwards, as additions.
-- Cut property: the lightest edge crossing a cut belongs to a minimum spanning tree. It proves Kruskal (sort then Union-Find, O(M log M)) and Prim (heap, O(M log M)).
+- Cut property: the lightest edge crossing a cut belongs to a minimum spanning tree; cycle property: the heaviest edge of a cycle can be removed. The first proves Kruskal (sort then Union-Find, O(M log M)) and Prim (heap, O(M log M)).
 - In a minimum spanning tree, the path between two vertices minimises the heaviest edge: threshold questions are handled by adding edges by increasing weight.

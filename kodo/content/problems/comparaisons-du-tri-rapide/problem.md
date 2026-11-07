@@ -11,9 +11,9 @@ samples: 2
 ## Énoncé
 On trie une liste de nombres distincts par la version suivante du **tri rapide**. Si la liste a au plus un élément, elle est triée. Sinon, son **premier** élément est le pivot p ; on compare p à chacun des autres éléments, ce qui fait (longueur − 1) comparaisons, et on forme la liste G des éléments plus petits que p et la liste D des éléments plus grands, chacune **dans l'ordre où ses éléments apparaissaient**. On trie G et D de la même façon, et le résultat est G triée, puis p, puis D triée.
 
-Par exemple, pour `3 1 4 2 5`, le pivot 3 fait 4 comparaisons et donne G = `1 2` et D = `4 5`. Trier G fait 1 comparaison, trier D aussi : 6 comparaisons en tout.
-
 La liste est une permutation des entiers de 1 à N, fabriquée par une formule : son élément numéro i, pour i de 0 à N − 1, vaut ((A × i + B) mod N) + 1, où A et N n'ont pas de diviseur commun autre que 1. Afficher le nombre total de comparaisons.
+
+Par exemple, avec N = 5, A = 2 et B = 3, la liste est `4 1 3 5 2`. Le pivot 4 fait 4 comparaisons et donne G = `1 3 2` et D = `5`. Pour trier G, le pivot 1 fait 2 comparaisons et laisse `3 2`, où le pivot 3 fait 1 comparaison. En tout : 4 + 2 + 1 = 7 comparaisons.
 
 ## Entrée
 Une seule ligne : les trois entiers N, A et B.

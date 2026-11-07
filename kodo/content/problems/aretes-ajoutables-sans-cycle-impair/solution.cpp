@@ -17,7 +17,7 @@ int main() {
     }
     vector<int> couleur(n + 1, -1);
     bool biparti = true;
-    long long memes = (long long)n * (n - 1) / 2;  // paires de composantes différentes (on retire les autres)
+    long long entre = (long long)n * (n - 1) / 2;  // paires de composantes différentes (on retire les autres)
     long long opposees = 0;                         // paires de couleurs différentes dans une même composante
     for (int depart = 1; depart <= n; depart++) {
         if (couleur[depart] != -1) continue;
@@ -39,10 +39,10 @@ int main() {
             }
         }
         long long s = nb[0] + nb[1];
-        memes -= s * (s - 1) / 2;
+        entre -= s * (s - 1) / 2;
         opposees += nb[0] * nb[1];
     }
-    if (biparti) cout << memes + opposees - m << "\n";
+    if (biparti) cout << entre + opposees - m << "\n";
     else cout << 0 << "\n";
     return 0;
 }

@@ -27,6 +27,6 @@ The smallest number of checks.
 
 **The choice is safe (exchange argument).** Let [a, b] be the period that ends first, and take any optimal solution. It has a check q in [a, b]. Replace q by b. Every period that contained q starts before q ≤ b, and ends after b, since b is the smallest end: it also contains b. The modified solution is therefore still valid, with the same number of checks, and it makes the same first choice as greedy. Remove the periods touched by b and repeat the reasoning on those that remain: by induction, greedy uses as many checks as an optimal solution.
 
-**Bad greedy algorithms.** Sorting by start, or placing the check at the start of a period, fails: with [0, 10], [1, 2] and [5, 6], a check at minute 0 or 10 touches only one period; the right greedy places 2 and 6, and answers 2.
+**Bad greedy algorithms.** Sorting by start fails: with [0, 10], [1, 2] and [5, 6], the first check, at minute 0 or 10, touches only one period, and 3 checks are needed; the right greedy places 2 and 6, and answers 2. Placing the check at the **start** of the period that ends first fails too: with [0, 5] and [4, 6], a check at minute 0 forces a second one, while minute 4 or 5 touches both periods.
 
 **Cost.** O(N log N) for the sort, then a single pass.

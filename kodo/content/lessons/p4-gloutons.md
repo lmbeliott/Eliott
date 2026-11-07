@@ -117,11 +117,11 @@ int main() {
 }
 ```
 
-Le programme affiche les tâches dans l'ordre `(1, 2)`, `(4, 4)`, `(2, 1)`, `(3, 1)` : les rapports durée / poids valent 0,5, 1, 2 et 3. Avant de trier avec une règle, il faut vérifier qu'elle est **transitive** : si `a` passe avant `b` et `b` avant `c`, alors `a` doit passer avant `c`. Sinon le tri n'a pas de sens, et le C++ peut même planter. Ici, la règle revient à comparer les rapports `p / w`, et c'est transitif. On compare des produits plutôt que des quotients pour rester en nombres entiers.
+Le programme affiche les tâches dans l'ordre `(1, 2)`, `(4, 4)`, `(2, 1)`, `(3, 1)` : les rapports durée / poids valent 0,5, 1, 2 et 3. Avant de trier avec une règle, il faut vérifier qu'elle est **transitive** : si `a` passe avant `b` et `b` avant `c`, alors `a` doit passer avant `c`. Sinon le tri n'a pas de sens, et le C++ peut même planter. Ici, la règle revient à comparer les rapports `p / w`, et c'est transitif. On compare des produits plutôt que des quotients pour rester en nombres entiers. Le tri fait toujours O(n log n) comparaisons, mais chacune est un appel de `compare` : c'est un peu plus lent qu'avec une clé, qu'on préfère quand elle existe.
 
 ## Quand le glouton échoue
 
-Revenons aux pièces. Le glouton est optimal pour 1, 2, 5, 10, 20, 50 ; il l'est aussi dès que chaque valeur divise la suivante (on le prouve en montrant qu'une solution optimale utilise toujours moins de `c_{i+1} / c_i` pièces de valeur `cᵢ`). Mais il ne l'est pas pour 1, 3, 4. Pour trouver un contre-exemple, on compare le glouton à un calcul **exact**. Le plus petit nombre de pièces `opt(s)` pour former `s` se calcule dans l'ordre croissant des montants : la dernière pièce ajoutée a une certaine valeur `c ≤ s`, et le reste `s − c` doit être formé au mieux, donc `opt(s) = 1 + min(opt(s − c))` sur les pièces `c ≤ s`, avec `opt(0) = 0`.
+Revenons aux pièces. Le glouton est optimal pour 1, 2, 5, 10, 20, 50 ; il l'est aussi dès que chaque valeur divise la suivante : une solution optimale utilise alors moins de `c_{i+1} / c_i` pièces de valeur `cᵢ` (sinon, on en remplace `c_{i+1} / c_i` par une seule pièce de valeur `c_{i+1}`), et cette contrainte ne laisse qu'une façon de former le montant, celle du glouton. Mais il ne l'est pas pour 1, 3, 4. Pour trouver un contre-exemple, on compare le glouton à un calcul **exact**. Le plus petit nombre de pièces `opt(s)` pour former `s` se calcule dans l'ordre croissant des montants : la dernière pièce ajoutée a une certaine valeur `c ≤ s`, et le reste `s − c` doit être formé au mieux, donc `opt(s) = 1 + min(opt(s − c))` sur les pièces `c ≤ s`, avec `opt(0) = 0`.
 
 ```python
 pieces = [1, 3, 4]
@@ -183,9 +183,50 @@ Le programme affiche `6 3 2` : pour 6, le glouton utilise 3 pièces et l'optimum
 
 ## Fusionner au moindre coût
 
-On a des tas de jetons, de tailles `4, 3, 6, 2`. Fusionner deux tas coûte le nombre total de jetons du nouveau tas, et on fusionne jusqu'à n'avoir qu'un seul tas. La règle gloutonne est : **fusionner les deux plus petits tas**. Pour la justifier, on dessine l'arbre des fusions : chaque tas de départ est une feuille, et son nombre de jetons est compté une fois par fusion qui le concerne, c'est-à-dire autant de fois que sa profondeur dans l'arbre. Dans un arbre optimal, les deux feuilles les plus profondes peuvent être échangées avec les deux plus petits tas sans augmenter le coût (un plus petit tas placé plus profond coûte moins) : il existe donc un arbre optimal où les deux plus petits tas sont fusionnés ensemble. On les remplace par leur somme, et on recommence sur un problème plus petit. C'est l'**algorithme de Huffman**, qui sert aussi à compresser des fichiers.
+On a des tas de jetons, de tailles `4, 3, 6, 2`. Fusionner deux tas coûte le nombre total de jetons du nouveau tas, et on fusionne jusqu'à n'avoir qu'un seul tas. La règle gloutonne est : **fusionner les deux plus petits tas**. Pour la justifier, on dessine l'arbre des fusions : chaque tas de départ est une feuille, et son nombre de jetons est compté une fois par fusion qui le concerne, c'est-à-dire autant de fois que sa profondeur dans l'arbre. Dans un arbre optimal, chaque fusion a deux enfants : la feuille la plus profonde a donc une sœur, elle aussi une feuille. On échange ces deux feuilles sœurs avec les deux plus petits tas ; un tas plus petit placé plus profond ne coûte pas plus, donc le coût n'augmente pas : il existe un arbre optimal où les deux plus petits tas sont fusionnés ensemble. On les remplace par leur somme, et on recommence sur un problème plus petit. C'est l'**algorithme de Huffman**, qui sert aussi à compresser des fichiers.
 
-Il faut trouver à chaque étape les deux plus petits tas, alors que de nouveaux tas apparaissent. Une **file de priorité** le fait efficacement : elle range des nombres, et donne ou retire le plus petit en O(log n). En Python, le module `heapq` travaille sur une liste ordinaire : `heapify(t)` la prépare, `heappush(t, x)` ajoute `x`, `heappop(t)` retire et renvoie le plus petit. Pour obtenir le plus grand, on y range les nombres avec un signe moins. En C++, `priority_queue` (dans `<queue>`) donne le plus grand ; avec `greater<long long>`, elle donne le plus petit.
+Il faut trouver à chaque étape les deux plus petits tas, alors que de nouveaux tas apparaissent. Trier ne suffit pas, et chercher le minimum dans une liste coûte O(n) à chaque fois. Une **file de priorité** fait mieux : elle range des éléments, ajoute un élément ou retire le plus petit en O(log n), et lit le plus petit sans le retirer en O(1). En Python, le module `heapq` travaille sur une liste ordinaire : `heappush(t, x)` ajoute `x`, `heappop(t)` retire et renvoie le plus petit, `t[0]` est le plus petit, et `heapify(t)` transforme une liste quelconque en file de priorité, en O(n). En C++, `priority_queue` (dans `<queue>`) donne le **plus grand** ; avec `greater`, elle donne le plus petit. Ses méthodes sont `push`, `top` (lire), `pop` (retirer, sans rien renvoyer) et `size`.
+
+```python
+import heapq
+
+file = []                        # le plus petit d'abord
+for x in [5, 1, 8, 3]:
+    heapq.heappush(file, x)
+print(file[0], len(file))        # le plus petit, sans le retirer
+print(heapq.heappop(file), heapq.heappop(file), len(file))
+
+grands = []                      # le plus grand d'abord : on range -x
+for x in [5, 1, 8, 3]:
+    heapq.heappush(grands, -x)
+print(-heapq.heappop(grands))
+```
+
+```cpp
+#include <functional>
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+int main() {
+    priority_queue<int, vector<int>, greater<int>> file;   // le plus petit d'abord
+    for (int x : {5, 1, 8, 3}) file.push(x);
+    cout << file.top() << " " << file.size() << "\n";      // le plus petit, sans le retirer
+    int a = file.top(); file.pop();
+    int b = file.top(); file.pop();
+    cout << a << " " << b << " " << file.size() << "\n";
+
+    priority_queue<int> grands;                            // le plus grand d'abord
+    for (int x : {5, 1, 8, 3}) grands.push(x);
+    cout << grands.top() << "\n";
+    return 0;
+}
+```
+
+Le programme affiche `1 4`, puis `1 3 2`, puis `8`. La liste de `heapq` n'est **pas** triée : seul `t[0]` est garanti être le plus petit, et on ne lit jamais `t[1]` ou `t[-1]` en espérant le deuxième ou le plus grand. Les éléments peuvent être des couples, comparés dans l'ordre lexicographique, ce qui permet de ranger une valeur avec son indice. Retirer d'une file vide est une erreur : `IndexError: index out of range` en Python, un comportement imprévisible en C++ ; on teste la taille avant.
+
+Avec une file de priorité, l'algorithme de Huffman s'écrit en quelques lignes.
 
 ```python
 import heapq

@@ -1,4 +1,4 @@
-Les tris du niveau 3 font de l'ordre de n²/2 comparaisons : pour un million de nombres, 5 × 10¹¹ comparaisons, plusieurs heures. Le tri fourni par les langages trie ce million en une fraction de seconde. Ce chapitre explique comment, avec une méthode qui dépasse largement le tri : **diviser pour régner**. On découpe le problème en morceaux plus petits du même type, on les résout récursivement, puis on **combine** leurs solutions.
+Les tris du niveau 3 font de l'ordre de n²/2 comparaisons : pour un million de nombres, 5 × 10¹¹ comparaisons : plusieurs minutes en C++, des heures en Python. Le tri fourni par les langages trie ce million en une fraction de seconde. Ce chapitre explique comment, avec une méthode qui dépasse largement le tri : **diviser pour régner**. On découpe le problème en morceaux plus petits du même type, on les résout récursivement, puis on **combine** leurs solutions.
 
 On étudie le tri fusion, avec sa preuve et son coût, puis le tri rapide et son pire cas, la sélection rapide, une application aux portions d'un tableau, et une méthode pour estimer le coût de n'importe quel algorithme de ce type. Le comptage des inversions servira d'exemple complet : c'est l'exemple typique d'un calcul qui « profite » d'un tri.
 
@@ -153,7 +153,7 @@ int main() {
 
 La première ligne affichée est `[1, 2, 5, 5, 6, 9]`. Pour la seconde, Python s'arrête avec `RecursionError: maximum recursion depth exceeded`. La liste `0, 1, …, 4999` est déjà triée : le pivot est toujours le plus petit élément, la liste des petits est vide, et celle des grands n'a qu'un élément de moins. La récursion descend à une profondeur de 5 000, et le nombre total de comparaisons vaut 4 999 + 4 998 + … + 1, environ n²/2. Le C++ affiche bien `5000`, mais pour un million d'éléments triés, il ferait 5 × 10¹¹ comparaisons et dépasserait probablement la taille de la pile.
 
-C'est le **pire cas** du tri rapide : O(n²). Dans le meilleur cas, le pivot coupe la liste en deux moitiés, et l'arbre des appels ressemble à celui du tri fusion : O(n log n). Si on choisit le pivot **au hasard** (`random.choice(t)`), on montre que le nombre moyen de comparaisons est environ 1,39 n log₂ n, quelle que soit l'entrée : aucune entrée particulière ne peut piéger l'algorithme, sauf malchance extrême. Les tris de Python et du C++ utilisent des variantes plus sûres encore, et garantissent O(n log n).
+C'est le **pire cas** du tri rapide : O(n²). Dans le meilleur cas, le pivot coupe la liste en deux moitiés, et l'arbre des appels ressemble à celui du tri fusion : O(n log n). Si on choisit le pivot **au hasard** (`random.choice(t)`), on montre (on l'admettra) que le nombre moyen de comparaisons est environ 1,39 n log₂ n, quelle que soit l'entrée : aucune entrée particulière ne peut piéger l'algorithme, sauf malchance extrême. Les tris de Python et du C++ utilisent des variantes plus sûres encore, et garantissent O(n log n).
 
 **Correction.** Par récurrence forte : `petits` et `grands` sont strictement plus courtes que `t` (le pivot n'y est pas), donc triées par les appels récursifs ; tout élément de `petits` est inférieur à `p`, tout élément de `grands` lui est au moins égal, et la concaténation est triée.
 
@@ -212,7 +212,9 @@ int main() {
 }
 ```
 
-Le programme affiche `1 3 9`, quel que soit le hasard : dans l'ordre, la liste est `1 2 3 3 7 8 9`. Si le pivot coupe à peu près au milieu, le travail vaut n + n/2 + n/4 + … ≤ 2n : la sélection rapide est en O(n) en moyenne, avec un pivot au hasard, mais en O(n²) dans le pire cas. En C++, `nth_element(t.begin(), t.begin() + k - 1, t.end())` fait ce travail sur place.
+Le programme affiche `1 3 9`, quel que soit le hasard : dans l'ordre, la liste est `1 2 3 3 7 8 9`.
+
+**Coût moyen.** Disons qu'un pivot est **bon** s'il n'est ni parmi le quart des plus petits éléments, ni parmi le quart des plus grands. Un pivot tiré au hasard est bon avec une probabilité d'environ 1/2, et après un bon pivot, la partie où l'on continue a au plus 3n/4 éléments. Comme il faut en moyenne deux lancers pour obtenir « pile », il faut en moyenne deux tirages pour obtenir un bon pivot, et chacun coûte au plus de l'ordre de n opérations. La taille passe donc sous 3n/4 pour un coût moyen d'au plus 2n, puis sous (3/4)² n pour un coût moyen d'au plus 2 × (3/4) n, et ainsi de suite : en tout, au plus 2n × (1 + 3/4 + (3/4)² + …) = 8n. La sélection rapide est donc en O(n) en moyenne, mais en O(n²) dans le pire cas, si chaque pivot tombe sur le plus petit élément. En C++, `nth_element(t.begin(), t.begin() + k - 1, t.end())` fait ce travail sur place.
 
 ## Diviser pour régner sur un tableau
 

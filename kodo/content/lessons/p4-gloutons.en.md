@@ -117,11 +117,11 @@ int main() {
 }
 ```
 
-The program prints the tasks in the order `(1, 2)`, `(4, 4)`, `(2, 1)`, `(3, 1)`: the ratios duration / weight are 0.5, 1, 2 and 3. Before sorting with a rule, check that it is **transitive**: if `a` goes before `b` and `b` before `c`, then `a` must go before `c`. Otherwise the sort makes no sense, and C++ may even crash. Here, the rule amounts to comparing the ratios `p / w`, which is transitive. We compare products rather than quotients to stay with integers.
+The program prints the tasks in the order `(1, 2)`, `(4, 4)`, `(2, 1)`, `(3, 1)`: the ratios duration / weight are 0.5, 1, 2 and 3. Before sorting with a rule, check that it is **transitive**: if `a` goes before `b` and `b` before `c`, then `a` must go before `c`. Otherwise the sort makes no sense, and C++ may even crash. Here, the rule amounts to comparing the ratios `p / w`, which is transitive. We compare products rather than quotients to stay with integers. Sorting still makes O(n log n) comparisons, but each one is a call to `compare`: it is a bit slower than with a key, which is preferred when one exists.
 
 ## When greedy fails
 
-Back to coins. Greedy is optimal for 1, 2, 5, 10, 20, 50; it also is as soon as each value divides the next (proved by showing that an optimal solution always uses fewer than `c_{i+1} / c_i` coins of value `cᵢ`). But it is not for 1, 3, 4. To find a counterexample, compare greedy with an **exact** computation. The smallest number of coins `opt(s)` to form `s` is computed in increasing order of amounts: the last coin added has some value `c ≤ s`, and the rest `s − c` must be formed in the best way, so `opt(s) = 1 + min(opt(s − c))` over the coins `c ≤ s`, with `opt(0) = 0`.
+Back to coins. Greedy is optimal for 1, 2, 5, 10, 20, 50; it also is as soon as each value divides the next: an optimal solution then uses fewer than `c_{i+1} / c_i` coins of value `cᵢ` (otherwise, replace `c_{i+1} / c_i` of them by a single coin of value `c_{i+1}`), and this constraint leaves only one way to form the amount, the greedy one. But it is not for 1, 3, 4. To find a counterexample, compare greedy with an **exact** computation. The smallest number of coins `opt(s)` to form `s` is computed in increasing order of amounts: the last coin added has some value `c ≤ s`, and the rest `s − c` must be formed in the best way, so `opt(s) = 1 + min(opt(s − c))` over the coins `c ≤ s`, with `opt(0) = 0`.
 
 ```python
 pieces = [1, 3, 4]
@@ -183,9 +183,50 @@ The program prints `6 3 2`: for 6, greedy uses 3 coins and the optimum 2. This m
 
 ## Merging at the lowest cost
 
-We have piles of tokens, of sizes `4, 3, 6, 2`. Merging two piles costs the total number of tokens of the new pile, and we merge until a single pile remains. The greedy rule is: **merge the two smallest piles**. To justify it, draw the merge tree: each initial pile is a leaf, and its number of tokens is counted once per merge involving it, that is as many times as its depth in the tree. In an optimal tree, the two deepest leaves can be swapped with the two smallest piles without increasing the cost (a smaller pile placed deeper costs less): so there is an optimal tree where the two smallest piles are merged together. Replace them by their sum, and start again on a smaller problem. This is **Huffman's algorithm**, which is also used to compress files.
+We have piles of tokens, of sizes `4, 3, 6, 2`. Merging two piles costs the total number of tokens of the new pile, and we merge until a single pile remains. The greedy rule is: **merge the two smallest piles**. To justify it, draw the merge tree: each initial pile is a leaf, and its number of tokens is counted once per merge involving it, that is as many times as its depth in the tree. In an optimal tree, every merge has two children: so the deepest leaf has a sibling, which is a leaf too. Swap these two sibling leaves with the two smallest piles; a smaller pile placed deeper costs no more, so the cost does not increase: there is an optimal tree where the two smallest piles are merged together. Replace them by their sum, and start again on a smaller problem. This is **Huffman's algorithm**, which is also used to compress files.
 
-At each step we must find the two smallest piles, while new piles appear. A **priority queue** does this efficiently: it stores numbers, and gives or removes the smallest in O(log n). In Python, the `heapq` module works on an ordinary list: `heapify(t)` prepares it, `heappush(t, x)` adds `x`, `heappop(t)` removes and returns the smallest. To get the largest, store the numbers with a minus sign. In C++, `priority_queue` (in `<queue>`) gives the largest; with `greater<long long>`, it gives the smallest.
+At each step we must find the two smallest piles, while new piles appear. Sorting is not enough, and searching for the minimum in a list costs O(n) each time. A **priority queue** does better: it stores elements, adds an element or removes the smallest in O(log n), and reads the smallest without removing it in O(1). In Python, the `heapq` module works on an ordinary list: `heappush(t, x)` adds `x`, `heappop(t)` removes and returns the smallest, `t[0]` is the smallest, and `heapify(t)` turns any list into a priority queue, in O(n). In C++, `priority_queue` (in `<queue>`) gives the **largest**; with `greater`, it gives the smallest. Its methods are `push`, `top` (read), `pop` (remove, returning nothing) and `size`.
+
+```python
+import heapq
+
+file = []                        # smallest first
+for x in [5, 1, 8, 3]:
+    heapq.heappush(file, x)
+print(file[0], len(file))        # the smallest, without removing it
+print(heapq.heappop(file), heapq.heappop(file), len(file))
+
+grands = []                      # largest first: store -x
+for x in [5, 1, 8, 3]:
+    heapq.heappush(grands, -x)
+print(-heapq.heappop(grands))
+```
+
+```cpp
+#include <functional>
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+int main() {
+    priority_queue<int, vector<int>, greater<int>> file;   // smallest first
+    for (int x : {5, 1, 8, 3}) file.push(x);
+    cout << file.top() << " " << file.size() << "\n";      // the smallest, without removing it
+    int a = file.top(); file.pop();
+    int b = file.top(); file.pop();
+    cout << a << " " << b << " " << file.size() << "\n";
+
+    priority_queue<int> grands;                            // largest first
+    for (int x : {5, 1, 8, 3}) grands.push(x);
+    cout << grands.top() << "\n";
+    return 0;
+}
+```
+
+The program prints `1 4`, then `1 3 2`, then `8`. The `heapq` list is **not** sorted: only `t[0]` is guaranteed to be the smallest, and we never read `t[1]` or `t[-1]` hoping for the second smallest or the largest. Elements can be pairs, compared in lexicographic order, which lets us store a value with its index. Removing from an empty queue is an error: `IndexError: index out of range` in Python, unpredictable behaviour in C++; check the size first.
+
+With a priority queue, Huffman's algorithm takes a few lines.
 
 ```python
 import heapq

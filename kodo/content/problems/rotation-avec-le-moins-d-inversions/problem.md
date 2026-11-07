@@ -13,7 +13,7 @@ Une **inversion** d'une suite a₁, …, a_N est une paire de positions i < j te
 
 Afficher le plus petit nombre d'inversions parmi ces N suites.
 
-La suite est fabriquée par une formule, pour que l'entrée reste courte : a₁ = X, puis a_{i+1} = (aᵢ × B + C) mod M.
+La suite est fabriquée par une formule, pour que l'entrée reste courte : a₁ = X, puis a_{i+1} = (aᵢ × B + C) mod M. Par exemple, avec N = 4, X = 3, B = 1, C = 1 et M = 4, la suite est `3 0 1 2`, qui a 3 inversions ; après une rotation, `0 1 2 3` n'en a aucune : la réponse est 0.
 
 ## Entrée
 Une seule ligne : les cinq entiers N, X, B, C et M.

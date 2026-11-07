@@ -191,10 +191,148 @@ The program prints `1000 essais identiques` (1,000 identical trials). If you for
 
 For the test to be useful, inputs must stay **small** (a few vertices, small weights, loops and multiple edges allowed): edge cases show up often. And the naive solution must really be different: copying the same algorithm does not detect a reasoning error.
 
+## A complete example
+
+**Statement.** An undirected graph has `N` vertices and `M` edges; each edge has a weight. For each of the `Q` questions `U V S`, print `OUI` if one can go from `U` to `V` using only edges of weight at most `S`, and `NON` otherwise. `N`, `M` and `Q` go up to 2 × 10⁵.
+
+**Idea.** Start from the constraints: one traversal per question would cost `Q × (N + M)`, that is 8 × 10¹⁰ operations. The work must be shared between questions. A question only depends on the edges of weight at most `S`, and when `S` increases, edges are only **added**: this is the "sort the thresholds" transformation. Read all the questions before answering (**offline** processing), sort the edges by weight and the questions by threshold, then sweep the questions in that order: before answering a question with threshold `S`, add to a Union-Find every edge of weight at most `S` not added yet. The answer is `OUI` exactly when `U` and `V` have the same root. Each answer is stored at the original position of its question.
+
+**Program.**
+
+```python
+import sys
+
+donnees = sys.stdin.read().split()
+n, m, q = int(donnees[0]), int(donnees[1]), int(donnees[2])
+pos = 3
+aretes = []
+for _ in range(m):
+    a, b, w = int(donnees[pos]), int(donnees[pos + 1]), int(donnees[pos + 2])
+    pos += 3
+    aretes.append((w, a, b))
+questions = []
+for i in range(q):
+    u, v, s = int(donnees[pos]), int(donnees[pos + 1]), int(donnees[pos + 2])
+    pos += 3
+    questions.append((s, u, v, i))  # i : place de la question dans l'entrée
+aretes.sort()
+questions.sort()
+
+parent = list(range(n + 1))
+taille = [1] * (n + 1)
+
+
+def trouver(x):
+    racine = x
+    while parent[racine] != racine:
+        racine = parent[racine]
+    while parent[x] != racine:
+        parent[x], x = racine, parent[x]
+    return racine
+
+
+reponses = [""] * q
+k = 0  # nombre d'arêtes déjà ajoutées
+for s, u, v, i in questions:  # par seuil croissant
+    while k < m and aretes[k][0] <= s:  # on ajoute les arêtes de poids au plus s
+        w, a, b = aretes[k]
+        ra, rb = trouver(a), trouver(b)
+        if ra != rb:
+            if taille[ra] < taille[rb]:
+                ra, rb = rb, ra
+            parent[rb] = ra
+            taille[ra] += taille[rb]
+        k += 1
+    reponses[i] = "OUI" if trouver(u) == trouver(v) else "NON"
+print("\n".join(reponses))
+```
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <string>
+#include <tuple>
+#include <vector>
+using namespace std;
+
+vector<int> parent, taille;
+
+int trouver(int x) {
+    int racine = x;
+    while (parent[racine] != racine) racine = parent[racine];
+    while (parent[x] != racine) {
+        int suivant = parent[x];
+        parent[x] = racine;
+        x = suivant;
+    }
+    return racine;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m, q;
+    cin >> n >> m >> q;
+    vector<tuple<int, int, int>> aretes(m);  // (poids, a, b)
+    for (auto& [w, a, b] : aretes) cin >> a >> b >> w;
+    vector<tuple<int, int, int, int>> questions(q);  // (seuil, u, v, place dans l'entrée)
+    for (int i = 0; i < q; i++) {
+        auto& [s, u, v, place] = questions[i];
+        cin >> u >> v >> s;
+        place = i;
+    }
+    sort(aretes.begin(), aretes.end());
+    sort(questions.begin(), questions.end());
+    parent.resize(n + 1);
+    iota(parent.begin(), parent.end(), 0);
+    taille.assign(n + 1, 1);
+
+    vector<string> reponses(q);
+    int k = 0;  // nombre d'arêtes déjà ajoutées
+    for (auto [s, u, v, place] : questions) {  // par seuil croissant
+        while (k < m && get<0>(aretes[k]) <= s) {  // on ajoute les arêtes de poids au plus s
+            auto [w, a, b] = aretes[k];
+            int ra = trouver(a), rb = trouver(b);
+            if (ra != rb) {
+                if (taille[ra] < taille[rb]) swap(ra, rb);
+                parent[rb] = ra;
+                taille[ra] += taille[rb];
+            }
+            k++;
+        }
+        reponses[place] = (trouver(u) == trouver(v) ? "OUI" : "NON");
+    }
+    for (const string& r : reponses) cout << r << "\n";
+    return 0;
+}
+```
+
+**Checking by hand.** With the input
+
+```text
+5 4 4
+1 2 3
+2 3 5
+3 4 2
+4 5 8
+1 3 4
+1 3 5
+3 5 7
+4 4 1
+```
+
+the questions are processed in the order of thresholds 1, 4, 5, 7. At threshold 1, no edge is added, but `4` is connected to itself: `OUI`. At threshold 4, add `3 – 4` (2) and `1 – 2` (3): `1` and `3` remain apart, `NON`. At threshold 5, add `2 – 3`: `1 – 2 – 3` connects them, `OUI`. At threshold 7, nothing new, and `5` is only reached by the edge of weight 8: `NON`. Put back in input order, the answers are `NON`, `OUI`, `NON`, `OUI`, which is what the program prints.
+
+**Why it is correct.** Invariant: when answering a question with threshold `S`, the Union-Find contains exactly the edges of weight at most `S`. Indeed, edges are added in increasing order of weight, and the `while` loop stops at the first one heavier than `S`; since thresholds are increasing, no edge added for an earlier question exceeds `S`. By the invariant of dynamic connectivity, `U` and `V` have the same root exactly when a path of edges of weight at most `S` connects them.
+
+**Cost.** The two sorts cost O(M log M + Q log Q), then each edge is added once and each question makes two searches: `M + 2Q` Union-Find operations in nearly constant time. To gain confidence in the program, compare it with the naive solution (one breadth-first search per question, restricted to edges of weight at most `S`) on hundreds of small inputs. Answering the questions in input order, without sorting them, would require removing edges when the threshold goes down: offline sorting is what turns the problem into a sequence of additions.
+
 ## Key takeaways
 
 - Read the constraints first: they indicate the target complexity, and hence the family of tools.
 - "Largest minimum" or "smallest maximum": binary search on the answer, with a monotone yes/no test, often greedy or shortest-path based.
 - Modelling means choosing the vertices (places, numbers, remainders, states, auxiliary vertices) and checking the correspondence between solutions and paths both ways.
 - Every solution relies on a named argument: invariant, exchange, cut or cycle, monotonicity, termination, and an operation count.
+- Questions that depend on a threshold, or deletions known in advance, are handled offline: sort the thresholds or go back in time so that there are only additions, which Union-Find handles.
 - The pitfalls come back: overflow, too deep recursion, shifted indices, degenerate cases. A test against a naive solution on small inputs reveals almost all of them.
