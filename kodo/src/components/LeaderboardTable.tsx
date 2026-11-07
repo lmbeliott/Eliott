@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
+import { UserAvatar } from './UserAvatar'
 import { Flame } from 'lucide-react'
 import type { LeaderRow } from '../lib/supabase'
 import { formatNumber, formatPoints, useI18n } from '../lib/i18n'
 import { leagueOf } from '../lib/leagues'
 import { LeagueBadge } from './League'
-import { Avatar, cx, Skeleton } from './ui'
+import { cx, Skeleton } from './ui'
 
 /** Classement : tableau L1 à filets ; ta ligne surlignée (DESIGN.md §5). */
 export function LeaderboardTable({ rows, loading, compact, empty }: { rows: LeaderRow[] | undefined; loading?: boolean; compact?: boolean; empty?: React.ReactNode }) {
@@ -25,7 +26,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
         <thead>
           <tr className="border-b border-line bg-surface-2 text-left text-xs text-muted">
             <th scope="col" className="h-9 w-14 pl-4 font-medium">
-              {t('Rang', 'Rank')}
+              {t('Place', 'Place')}
             </th>
             <th scope="col" className="font-medium">
               {t('Nom', 'Name')}
@@ -37,7 +38,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
             )}
             {!compact && (
               <th scope="col" className="hidden font-medium lg:table-cell">
-                {t('Ligue', 'League')}
+                {t('Rang', 'Rank')}
               </th>
             )}
             {!compact && (
@@ -66,7 +67,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
                 <td className={cx('h-12 pl-4 tabular', r.rank <= 3 ? 'font-semibold text-ink' : 'text-muted')}>{r.rank}</td>
                 <td className="py-2 pr-3">
                   <Link to={`/profil/${r.username}`} className="group flex min-w-0 items-center gap-3">
-                    <Avatar name={r.display_name} size={28} />
+                    <UserAvatar avatar={r.avatar} seed={r.user_id} size={28} />
                     <span className="min-w-0">
                       <span className="block truncate font-medium text-ink group-hover:underline">
                         {r.display_name}
@@ -79,7 +80,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
                 {!compact && <td className="hidden max-w-52 truncate pr-3 text-ink-2 md:table-cell">{r.school ?? <span className="text-muted">–</span>}</td>}
                 {!compact && (
                   <td className="hidden pr-3 lg:table-cell">
-                    <LeagueBadge league={leagueOf(Number(r.xp)).current} className="font-normal text-ink-2" />
+                    <LeagueBadge league={leagueOf(Number(r.total_xp ?? r.xp)).current} className="font-normal text-ink-2" />
                   </td>
                 )}
                 {!compact && <td className="hidden pr-4 text-right tabular text-ink-2 sm:table-cell">{formatNumber(lang, Number(r.solved))}</td>}

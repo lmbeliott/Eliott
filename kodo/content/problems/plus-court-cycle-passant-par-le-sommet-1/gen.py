@@ -69,8 +69,8 @@ for _ in range(400):
     aretes.append((a, a + random.randint(2, 30), random.randint(1, 50)))
 tests.append(fmt(n, renumerote(n, aretes)))
 # Grands cas : le sommet 1 a des milliers d'arêtes, relancer un calcul par arête est trop lent.
-tests.append(fmt(5000, eventail(5000, 8000, 2500, (500, 1000), (1, 10))))
-tests.append(fmt(5000, eventail(5000, 8000, 3000, (1, 1000), (1, 1000), recul=200)))
+tests.append(fmt(5000, eventail(5000, 8000, 2500, (500, 1000), (1, 4), recul=60)))
+tests.append(fmt(5000, eventail(5000, 8000, 2000, (900, 1000), (1, 3), recul=5000)))
 # Arêtes parallèles depuis 1 : le meilleur cycle revient par une autre arête vers le même sommet.
 n = 5000
 aretes = []

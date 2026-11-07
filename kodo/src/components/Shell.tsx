@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { UserAvatar } from './UserAvatar'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useMatches, useNavigate } from 'react-router-dom'
 import { Flame, LogOut, Menu, Moon, Settings, Sun, User, X } from 'lucide-react'
 import { Logo } from './Logo'
 import { CellText } from './CellText'
-import { Avatar, cx, IconButton, LinkButton, Segmented } from './ui'
+import { cx, IconButton, LinkButton, Segmented } from './ui'
 import { useAuth } from '../lib/auth'
 import { formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { liveStreak, supabase } from '../lib/supabase'
@@ -81,7 +82,7 @@ function AccountMenu() {
         className="flex items-center rounded-full"
         aria-label={t('Mon compte', 'My account')}
       >
-        <Avatar name={profile.display_name} size={32} />
+        <UserAvatar avatar={profile.avatar} seed={profile.id} size={32} />
       </button>
       {open && (
         <div role="menu" className="anim-rise absolute right-0 top-11 z-40 w-60 rounded-lg border border-line bg-surface p-1.5 shadow-e3">

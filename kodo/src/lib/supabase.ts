@@ -14,6 +14,7 @@ export interface Profile {
   username: string
   display_name: string
   school: string | null
+  avatar: string | null
   preferred_language: 'python' | 'cpp'
   xp: number
   solved_count: number
@@ -47,7 +48,10 @@ export interface LeaderRow {
   username: string
   display_name: string
   school: string | null
+  avatar: string | null
   xp: number
+  /** Total de points (le rang), même pour le classement de la semaine */
+  total_xp: number
   solved: number
   streak: number
   is_me: boolean

@@ -1,21 +1,31 @@
 import { formatPoints, useI18n } from '../lib/i18n'
-import { leagueName, leagueOf, type League } from '../lib/leagues'
+import { leagueMeaning, leagueName, leagueOf, type League } from '../lib/leagues'
 import { cx } from './ui'
 
-/** Pastille de ligue : un losange à la teinte de la ligue, et son nom. */
-export function LeagueBadge({ league, className }: { league: League; className?: string }) {
+/** Pastille de rang : le kanji du rang sur sa teinte, puis son nom. Le sens apparaît au survol. */
+export function LeagueBadge({ league, className, kanji }: { league: League; className?: string; kanji?: boolean }) {
   const { lang } = useI18n()
   return (
-    <span className={cx('inline-flex items-center gap-1.5 text-sm font-medium', className)}>
-      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
-        <path d="M6 0.8 11.2 6 6 11.2 0.8 6Z" fill={league.tone} />
-      </svg>
+    <span className={cx('inline-flex items-center gap-1.5 text-sm font-medium', className)} title={`${league.kanji} · ${leagueMeaning(lang, league)}`}>
+      <span
+        aria-hidden
+        lang="ja"
+        className="inline-flex size-5 shrink-0 items-center justify-center rounded-[5px] text-[12px] font-semibold leading-none text-white"
+        style={{ background: league.tone }}
+      >
+        {league.glyph}
+      </span>
       {leagueName(lang, league)}
+      {kanji && (
+        <span lang="ja" className="font-normal text-muted">
+          {league.kanji}
+        </span>
+      )}
     </span>
   )
 }
 
-/** Points, ligue actuelle et distance jusqu'à la suivante. */
+/** Points, rang actuel et distance jusqu'au suivant. */
 export function LeagueProgress({ points }: { points: number }) {
   const { lang, t } = useI18n()
   const l = leagueOf(points)
@@ -33,19 +43,19 @@ export function LeagueProgress({ points }: { points: number }) {
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={Math.round(l.ratio * 100)}
-            aria-label={t('Progression vers la ligue suivante', 'Progress to the next league')}
+            aria-label={t('Progression vers le rang suivant', 'Progress to the next rank')}
           >
             <div className="h-full rounded-full bg-accent transition-[width] duration-700" style={{ width: `${Math.max(2, l.ratio * 100)}%` }} />
           </div>
           <p className="mt-2 text-sm text-ink-2">
             {t(
-              `Encore ${formatPoints(lang, l.remaining)} pour la ligue ${leagueName(lang, l.next)}.`,
-              `${formatPoints(lang, l.remaining)} to go for the ${leagueName(lang, l.next)} league.`,
+              `Encore ${formatPoints(lang, l.remaining)} avant le rang ${leagueName(lang, l.next)}.`,
+              `${formatPoints(lang, l.remaining)} to go before the ${leagueName(lang, l.next)} rank.`,
             )}
           </p>
         </>
       ) : (
-        <p className="mt-2 text-sm text-ink-2">{t('Ligue la plus haute atteinte.', 'Top league reached.')}</p>
+        <p className="mt-2 text-sm text-ink-2">{t('Rang le plus haut atteint.', 'Top rank reached.')}</p>
       )}
     </div>
   )

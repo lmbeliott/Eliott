@@ -166,7 +166,7 @@ export function Dashboard() {
           </Panel>
         )}
 
-        <aside className="flex flex-col" aria-label={t('Ligue et série', 'League and streak')}>
+        <aside className="flex flex-col" aria-label={t('Rang et série', 'Rank and streak')}>
           <LeagueRail points={profile.xp} solved={progress.solved} />
           <WeekRail
             streak={streak}
@@ -425,7 +425,7 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
 function LeagueRail({ points, solved }: { points: number; solved: Map<string, unknown> }) {
   const { lang, t } = useI18n()
   const l = leagueOf(points)
-  // Combien de problèmes, dans l'ordre du parcours, suffisent pour atteindre la ligue suivante.
+  // Combien de problèmes, dans l'ordre du parcours, suffisent pour atteindre le rang suivant.
   const plan = useMemo(() => {
     if (!l.next) return null
     let sum = 0
@@ -442,7 +442,7 @@ function LeagueRail({ points, solved }: { points: number; solved: Map<string, un
   return (
     <div className="pb-6">
       <h2 className="text-sm font-medium">
-        {l.next ? t(`Ligue ${leagueName(lang, l.next)} à ${formatPoints(lang, l.next.min)}`, `${leagueName(lang, l.next)} league at ${formatPoints(lang, l.next.min)}`) : t('Ligue', 'League')}
+        {l.next ? t(`Rang ${leagueName(lang, l.next)} à ${formatPoints(lang, l.next.min)}`, `${leagueName(lang, l.next)} rank at ${formatPoints(lang, l.next.min)}`) : t('Rang', 'Rank')}
       </h2>
       {l.next ? (
         <>
@@ -471,7 +471,7 @@ function LeagueRail({ points, solved }: { points: number; solved: Map<string, un
       ) : (
         <>
           <LeagueBadge league={l.current} className="mt-2" />
-          <p className="mt-2 text-sm text-ink-2">{t('Ligue la plus haute.', 'Highest league.')}</p>
+          <p className="mt-2 text-sm text-ink-2">{t('Rang le plus haut.', 'Highest rank.')}</p>
         </>
       )}
     </div>

@@ -24,13 +24,11 @@ def croissants(n, ecart_max):
     prix = sorted(random.randint(1, 1000) for _ in range(n))
     return test(longueur, capacite, list(zip(xs, prix)))
 
-def presque_croissants(n, ecart_max):
-    # comme croissants, mais avec quelques baisses de prix isolées
+def croissants_avec_egalites(n, ecart_max):
+    # prix croissants avec beaucoup d'égalités, réservoir d'un tiers de route
     xs, longueur = route(n, ecart_max)
-    prix = sorted(random.randint(200, 1000) for _ in range(n))
-    for i in random.sample(range(n // 2, n), 2):
-        prix[i] = random.randint(1, prix[i])
-    return test(longueur, longueur // 2, list(zip(xs, prix)))
+    prix = sorted(random.randint(1, 60) for _ in range(n))
+    return test(longueur, longueur // 3, list(zip(xs, prix)))
 
 def dents_de_scie(n, capacite, ecart_max):
     # des stations bon marché de temps en temps, chères entre les deux
@@ -59,5 +57,5 @@ tests = [
 ]
 # tailles maximales
 tests.append(croissants(10000, 10**5))
-tests.append(presque_croissants(10000, 10**5))
+tests.append(croissants_avec_egalites(10000, 10**5))
 print(json.dumps(tests))

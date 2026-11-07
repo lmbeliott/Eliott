@@ -1,12 +1,13 @@
 // Profil (motif Détail) : identité et faits en ligne, grille personnelle, activité, ligue,
 // distinctions, dernières réussites. Voir DESIGN.md.
 import { useMemo } from 'react'
+import { UserAvatar } from '../components/UserAvatar'
 import { Link, useParams } from 'react-router-dom'
 import { Check, Flame } from 'lucide-react'
 import { CurriculumGrid } from '../components/CurriculumGrid'
 import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
-import { Avatar, cx, DifficultyMark, LinkButton, Skeleton } from '../components/ui'
+import { cx, DifficultyMark, LinkButton, Skeleton } from '../components/ui'
 import { useAuth } from '../lib/auth'
 import { problemById, problemList, problemTitle, totalPoints } from '../lib/content'
 import { formatDate, formatNumber, formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
@@ -54,7 +55,7 @@ export function ProfilePage() {
 
   const facts: { k: string; v: React.ReactNode }[] = [
     { k: t('Points', 'Points'), v: formatPoints(lang, profile.xp) },
-    { k: t('Ligue', 'League'), v: <LeagueBadge league={league.current} className="text-base" /> },
+    { k: t('Rang', 'Rank'), v: <LeagueBadge league={league.current} className="text-base" /> },
     { k: t('Classement général', 'Overall rank'), v: rank ? (lang === 'en' ? `#${rank}` : `${rank}${rank === 1 ? 'ᵉʳ' : 'ᵉ'}`) + (total ? ` / ${formatNumber(lang, total)}` : '') : '–' },
     { k: t('Problèmes réussis', 'Problems solved'), v: `${profile.solved_count} / ${problemList.length}` },
     {
@@ -74,7 +75,7 @@ export function ProfilePage() {
       <header className="flex flex-col gap-6 border-b border-line pb-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <Avatar name={profile.display_name} size={56} />
+            <UserAvatar avatar={profile.avatar} seed={profile.id} size={56} />
             <div>
               <h1 className="display text-2xl">{profile.display_name}</h1>
               <p className="text-ink-2">
@@ -117,7 +118,7 @@ export function ProfilePage() {
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_1.3fr]">
         <section aria-labelledby="ligue">
-          <H2 id="ligue">{t('Ligues', 'Leagues')}</H2>
+          <H2 id="ligue">{t('Rangs', 'Ranks')}</H2>
           <ol className="overflow-hidden rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
             {[...LEAGUES].reverse().map((l) => {
               const current = l.id === league.current.id
@@ -125,7 +126,7 @@ export function ProfilePage() {
               return (
                 <li key={l.id} className={cx('flex h-11 items-center justify-between border-b border-line px-4 text-sm last:border-0', current && 'bg-accent-soft')}>
                   <span className="flex items-center gap-3">
-                    <LeagueBadge league={l} className={reached ? '' : 'font-normal text-muted'} />
+                    <LeagueBadge league={l} kanji className={reached ? '' : 'font-normal text-muted'} />
                     {current && league.next && (
                       <span className="text-xs text-ink-2">{t(`encore ${formatPoints(lang, league.remaining)} pour ${leagueName(lang, league.next)}`, `${formatPoints(lang, league.remaining)} to ${leagueName(lang, league.next)}`)}</span>
                     )}
@@ -139,7 +140,7 @@ export function ProfilePage() {
 
         <section aria-labelledby="distinctions">
           <H2 id="distinctions">
-            {t('Distinctions', 'Badges')}
+            {t('Titres', 'Titles')}
             <span className="ml-3 text-sm font-normal text-muted">
               {all.filter((b) => b.earned).length} / {all.length}
             </span>

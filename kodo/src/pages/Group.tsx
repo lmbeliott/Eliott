@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
+import { UserAvatar } from '../components/UserAvatar'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, X } from 'lucide-react'
 import { LeaderboardTable } from '../components/LeaderboardTable'
-import { Avatar, Button, CopyButton, Field, Input, Notice, Segmented, Skeleton, cx } from '../components/ui'
+import { Button, CopyButton, Field, Input, Notice, Segmented, Skeleton, cx } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { useAuth } from '../lib/auth'
 import { levels, levelTitle, problemById, problemList, problemTitle } from '../lib/content'
@@ -127,7 +128,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
               <tr key={m.user_id} className={cx('border-b border-line last:border-0', sel ? 'bg-accent-soft' : 'hover:bg-surface-2')}>
                 <th scope="row" className={cx('sticky left-0 z-10 px-4 py-2 text-left font-normal', sel ? 'bg-accent-soft' : 'bg-surface')}>
                   <button type="button" onClick={() => onPick(m)} aria-expanded={sel} className="flex items-center gap-2.5 font-medium hover:underline">
-                    <Avatar name={m.profile.display_name} size={24} />
+                    <UserAvatar avatar={m.profile.avatar} seed={m.user_id} size={24} />
                     <span className="truncate">{m.profile.display_name}</span>
                   </button>
                 </th>
@@ -323,7 +324,7 @@ export function GroupPage() {
                 .map((m) => (
                   <li key={m.user_id} className="flex items-center justify-between gap-3 border-b border-line px-5 py-3 last:border-0">
                     <Link to={`/profil/${m.profile.username}`} className="flex min-w-0 items-center gap-3 hover:underline">
-                      <Avatar name={m.profile.display_name} size={32} />
+                      <UserAvatar avatar={m.profile.avatar} seed={m.user_id} size={32} />
                       <span className="min-w-0">
                         <span className="block truncate font-medium">{m.profile.display_name}</span>
                         <span className="block text-xs text-muted">

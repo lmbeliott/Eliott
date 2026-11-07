@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { Button, Field, Input, LinkButton, Notice, PageHeader, Segmented, Skeleton } from '../components/ui'
 import { useToast } from '../components/Toast'
+import { AvatarPicker } from '../components/AvatarPicker'
 import { useAuth } from '../lib/auth'
 import { useI18n, type UiLang } from '../lib/i18n'
 import { useCodeLang } from '../lib/progress'
@@ -104,7 +105,14 @@ export function Account() {
         <h2 id="profil" className="text-lg font-semibold">
           {t('Profil public', 'Public profile')}
         </h2>
-        <form onSubmit={saveProfile} noValidate className="mt-4 flex flex-col gap-4">
+        <div className="mt-4">
+          <p className="text-sm font-medium">{t('Avatar', 'Avatar')}</p>
+          <p className="mt-0.5 text-xs text-muted">{t('Affiché dans les classements, les groupes et sur le profil. Enregistré dès le clic.', 'Shown on leaderboards, in groups and on the profile. Saved on click.')}</p>
+          <div className="mt-3">
+            <AvatarPicker profile={profile} />
+          </div>
+        </div>
+        <form onSubmit={saveProfile} noValidate className="mt-6 flex flex-col gap-4 border-t border-line pt-6">
           {errors.form && <Notice tone="error">{errors.form}</Notice>}
           <Field label={t('Nom affiché', 'Display name')} htmlFor="display_name" error={errors.display_name}>
             <Input id="display_name" value={form.display_name} maxLength={40} onChange={(e) => (setForm({ ...form, display_name: e.target.value }), setErrors({ ...errors, display_name: undefined }))} aria-invalid={!!errors.display_name} />

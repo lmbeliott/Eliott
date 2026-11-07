@@ -3,34 +3,42 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/ui'
 import { LeagueBadge } from '../components/League'
+import { cx } from '../components/ui'
 import { formatNumber, formatPoints, useI18n } from '../lib/i18n'
-import { LEAGUES } from '../lib/leagues'
+import { LEAGUES, leagueMeaning } from '../lib/leagues'
 import { POINTS_TABLE } from '../lib/xp'
 import { limitFor } from '../judge/judge'
 import { OUTPUT_LIMIT } from '../judge/protocol'
 import { problemList } from '../lib/content'
 
-function Table({ head, rows }: { head: [string, string]; rows: [ReactNode, ReactNode][] }) {
+function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
+  const last = head.length - 1
   return (
-    <div className="overflow-hidden rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
+    <div className="overflow-x-auto rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-2 text-left text-xs text-muted">
-            <th scope="col" className="h-9 px-4 font-medium">
-              {head[0]}
-            </th>
-            <th scope="col" className="h-9 px-4 text-right font-medium">
-              {head[1]}
-            </th>
+            {head.map((h, i) => (
+              <th key={i} scope="col" className={cx('h-9 px-4 font-medium', i === last && i > 0 && 'text-right')}>
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map(([a, b], i) => (
-            <tr key={i} className="border-b border-line last:border-0">
-              <th scope="row" className="h-11 px-4 text-left font-normal text-ink">
-                {a}
-              </th>
-              <td className="px-4 text-right text-ink-2 tabular">{b}</td>
+          {rows.map((cells, r) => (
+            <tr key={r} className="border-b border-line last:border-0">
+              {cells.map((c, i) =>
+                i === 0 ? (
+                  <th key={i} scope="row" className="h-11 px-4 text-left font-normal text-ink">
+                    {c}
+                  </th>
+                ) : (
+                  <td key={i} className={cx('px-4 text-ink-2', i === last ? 'whitespace-nowrap text-right tabular' : 'text-left')}>
+                    {c}
+                  </td>
+                ),
+              )}
             </tr>
           ))}
         </tbody>
@@ -85,8 +93,11 @@ export function About() {
         />
       </Section>
 
-      <Section id="ligues" title={t('Ligues', 'Leagues')} lead={t('Ligue déterminée par le total de points.', 'League set by total points.')}>
-        <Table head={[t('Ligue', 'League'), t('À partir de', 'From')]} rows={LEAGUES.map((l) => [<LeagueBadge league={l} className="font-normal" />, formatPoints(lang, l.min)])} />
+      <Section id="rangs" title={t('Rangs', 'Ranks')} lead={t('Rang déterminé par le total de points. Shu, Ha, Ri : les trois étapes classiques de l’apprentissage japonais.', 'Rank set by total points. Shu, Ha, Ri: the three classic stages of Japanese learning.')}>
+        <Table
+          head={[t('Rang', 'Rank'), t('Sens', 'Meaning'), t('À partir de', 'From')]}
+          rows={LEAGUES.map((l) => [<LeagueBadge league={l} kanji className="font-normal" />, leagueMeaning(lang, l), formatPoints(lang, l.min)])}
+        />
       </Section>
 
       <Section
