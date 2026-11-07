@@ -2,7 +2,7 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Check, Circle, Plus } from 'lucide-react'
-import { Button, cx, DifficultyMark, LinkButton, Notice, PageHeader, Segmented, Skeleton, useDelayed } from '../components/ui'
+import { Button, cx, DifficultyMark, LinkButton, Notice, PageHeader, Segmented, Skeleton, useDelayed, SectionCell } from '../components/ui'
 import { DIFFICULTIES, DIFFICULTY_LABEL, type Difficulty } from '../lib/content'
 import { useCommunityList, useIsModerator, useMyCommunitySolves, type CommunityListItem, type CommunityStatus } from '../lib/community'
 import { useAuth } from '../lib/auth'
@@ -153,6 +153,7 @@ export function Community() {
           {toReview.length > 0 && (
             <section aria-labelledby="a-examiner">
               <h2 id="a-examiner" className="mb-3 text-lg font-semibold">
+          <SectionCell />
                 {t('À examiner', 'To review')}
               </h2>
               <Rows items={toReview} show="moderation" />
@@ -162,6 +163,7 @@ export function Community() {
           {mine.length > 0 && (
             <section aria-labelledby="mes-problemes">
               <h2 id="mes-problemes" className="mb-3 text-lg font-semibold">
+          <SectionCell />
                 {t('Mes problèmes', 'My problems')}
               </h2>
               <Rows items={mine} show="mine" />
@@ -171,6 +173,7 @@ export function Community() {
           <section aria-labelledby="publies">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
               <h2 id="publies" className="text-lg font-semibold">
+          <SectionCell />
                 {t(`Publiés`, `Published`)} <span className="font-normal text-muted">{formatNumber(lang, published.length)}</span>
               </h2>
               <div className="flex flex-wrap items-center gap-2">

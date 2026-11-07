@@ -8,7 +8,7 @@ import { Check, Flame } from 'lucide-react'
 import { CurriculumGrid } from '../components/CurriculumGrid'
 import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
-import { Button, cx, DifficultyMark, LinkButton, Notice, Skeleton } from '../components/ui'
+import { Button, cx, DifficultyMark, LinkButton, Notice, Skeleton, SectionCell } from '../components/ui'
 import { useAuth } from '../lib/auth'
 import { problemById, problemList, problemTitle, totalPoints } from '../lib/content'
 import { formatDate, formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
@@ -19,6 +19,7 @@ import { NotFound } from './NotFound'
 
 const H2 = ({ id, children }: { id: string; children: React.ReactNode }) => (
   <h2 id={id} className="mb-4 text-lg">
+          <SectionCell />
     {children}
   </h2>
 )

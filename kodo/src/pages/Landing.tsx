@@ -7,7 +7,7 @@ import { CurriculumGrid } from '../components/CurriculumGrid'
 import { LeaderboardTable } from '../components/LeaderboardTable'
 import { Cell, type CellState } from '../components/Cell'
 import { TestStrip } from '../components/TestStrip'
-import { Button, cx, DifficultyMark, LinkButton, Panel, Skeleton, Spinner } from '../components/ui'
+import { Button, cx, DifficultyMark, LinkButton, Panel, Skeleton, Spinner, SectionCell } from '../components/ui'
 import { catalog, chapterById, chapters, chapterTitle, levels, levelTitle, loadProblem, problemById, problemList, problemTitle, totalPoints } from '../lib/content'
 import { formatNumber, formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { saveDraft } from '../lib/progress'
@@ -617,6 +617,7 @@ function SectionHeading({ id, title, lead, action }: { id: string; title: ReactN
     <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div className="max-w-[44rem]">
         <h2 id={id} className="display text-[1.75rem] leading-[1.15] sm:text-2xl">
+          <SectionCell />
           {title}
         </h2>
         {lead && <p className="mt-3 text-ink-2">{lead}</p>}

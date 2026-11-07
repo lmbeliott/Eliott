@@ -13,10 +13,11 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-accent text-accent-ink hover:bg-accent-hover',
-  secondary: 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--line-strong)] hover:bg-surface-2',
-  ghost: 'text-ink-2 hover:bg-surface-2 hover:text-ink',
-  danger: 'bg-surface text-bad shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--bad)_45%,transparent)] hover:bg-bad-soft',
+  // « btn-drawn » : bord fin et ombre pleine décalée, le bouton se soulève au survol (styles.css).
+  primary: 'btn-drawn btn-primary bg-accent text-accent-ink hover:bg-accent-hover',
+  secondary: 'btn-drawn bg-surface text-ink hover:bg-surface-2',
+  ghost: 'text-ink-2 hover:bg-surface-2 hover:text-ink transition-[background-color,color] duration-150 ease-out',
+  danger: 'btn-drawn btn-danger bg-surface text-bad hover:bg-bad-soft',
 }
 const sizes: Record<Size, string> = {
   sm: 'h-8 px-3 text-sm gap-1.5',
@@ -25,7 +26,7 @@ const sizes: Record<Size, string> = {
 }
 export const buttonClass = (variant: Variant = 'primary', size: Size = 'md', extra?: string) =>
   cx(
-    'inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap select-none transition-[background-color,color,box-shadow] duration-150 ease-out disabled:opacity-50 disabled:pointer-events-none',
+    'inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap select-none disabled:opacity-50 disabled:pointer-events-none',
     variants[variant],
     sizes[size],
     extra,
@@ -271,7 +272,11 @@ export function Tabs<T extends string>({
 export function Spinner({ label, className }: { label?: string; className?: string }) {
   return (
     <span className={cx('inline-flex items-center gap-2 text-sm text-muted', className)} role="status">
-      <LoaderCircle className="size-4 animate-spin" aria-hidden />
+      <span className="cell-loader inline-flex gap-[3px]" aria-hidden>
+        <span />
+        <span />
+        <span />
+      </span>
       {label}
     </span>
   )
@@ -340,12 +345,31 @@ export function Avatar({ name, size = 32, me }: { name: string; size?: number; m
   )
 }
 
+/** Cellule d'accent devant un titre de section. */
+export function SectionCell() {
+  return <span aria-hidden className="mr-2.5 inline-block size-[7px] shrink-0 -translate-y-[0.18em] rounded-[2px] bg-accent align-middle" />
+}
+
+/** Signature de Kodo : trois cellules (pleine, à moitié, vide), comme une bande de tests. */
+export function CellMark({ className }: { className?: string }) {
+  return (
+    <span aria-hidden className={cx('inline-flex gap-[3px]', className)}>
+      <span className="size-[7px] rounded-[2px] bg-accent" />
+      <span className="size-[7px] rounded-[2px] bg-[color-mix(in_oklab,var(--accent)_40%,transparent)]" />
+      <span className="size-[7px] rounded-[2px] shadow-[inset_0_0_0_1px_var(--line-strong)]" />
+    </span>
+  )
+}
+
 /** En-tête de page : titre, une phrase factuelle, actions. Filet dessous. */
 export function PageHeader({ title, lead, actions, meta }: { title: ReactNode; lead?: ReactNode; actions?: ReactNode; meta?: ReactNode }) {
   return (
     <header className="mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
-        {meta && <div className="mb-2 text-sm text-muted">{meta}</div>}
+        <div className="mb-3 flex items-center gap-3 text-sm text-muted">
+          <CellMark />
+          {meta}
+        </div>
         <h1 className="display text-2xl leading-tight">{title}</h1>
         {lead && <p className="mt-2 text-ink-2">{lead}</p>}
       </div>

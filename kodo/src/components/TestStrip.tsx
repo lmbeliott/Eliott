@@ -42,7 +42,7 @@ export function TestStrip({ results, selected, onSelect, size = 'lg', className 
               label={label}
               onClick={clickable ? () => onSelect!(r.index) : undefined}
               selected={selected === r.index}
-              className={size === 'lg' ? 'size-6' : undefined}
+              className={cx(size === 'lg' && 'size-6', ['ok', 'wrong', 'error', 'timeout'].includes(r.status) && 'anim-pop')}
             />
           </li>
         )

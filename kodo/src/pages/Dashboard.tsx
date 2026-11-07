@@ -10,7 +10,7 @@ import { DailyList } from '../components/DailyList'
 import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
 import { ProfileError } from '../components/ProfileError'
-import { DifficultyMark, LinkButton, Panel, Skeleton, cx } from '../components/ui'
+import { DifficultyMark, LinkButton, Panel, Skeleton, cx, SectionCell } from '../components/ui'
 import { limitFor, type Verdict } from '../judge/judge'
 import { useAuth } from '../lib/auth'
 import { chapterById, chapterTitle, loadProblem, problemById, problemList, problemTitle, type CatalogProblem } from '../lib/content'
@@ -543,6 +543,7 @@ function SectionHead({ id, title, link, children }: { id: string; title: string;
     <div>
       <div className="flex items-baseline justify-between gap-4">
         <h2 id={id} className="text-xl">
+          <SectionCell />
           {title}
         </h2>
         {link && (

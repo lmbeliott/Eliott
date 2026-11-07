@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button, Field, Input, LinkButton, Notice, PageHeader, Segmented, Skeleton } from '../components/ui'
+import { Button, Field, Input, LinkButton, Notice, PageHeader, Segmented, Skeleton, SectionCell } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { AvatarPicker } from '../components/AvatarPicker'
 import { ProfileError } from '../components/ProfileError'
@@ -107,6 +107,7 @@ export function Account() {
 
       <section className="rounded-xl border border-line bg-surface p-6" aria-labelledby="profil">
         <h2 id="profil" className="text-lg font-semibold">
+          <SectionCell />
           {t('Profil public', 'Public profile')}
         </h2>
         <div className="mt-4">
@@ -135,6 +136,7 @@ export function Account() {
 
       <section className="mt-6 rounded-xl border border-line bg-surface p-6" aria-labelledby="preferences">
         <h2 id="preferences" className="text-lg font-semibold">
+          <SectionCell />
           {t('Préférences', 'Preferences')}
         </h2>
         <dl className="mt-4 flex flex-col gap-5">
@@ -169,6 +171,7 @@ export function Account() {
 
       <section className="mt-6 rounded-xl border border-line bg-surface p-6" aria-labelledby="motdepasse">
         <h2 id="motdepasse" className="text-lg font-semibold">
+          <SectionCell />
           {t('Mot de passe', 'Password')}
         </h2>
         <form onSubmit={savePassword} noValidate className="mt-4 flex flex-wrap items-end gap-3">
@@ -185,6 +188,7 @@ export function Account() {
 
       <section className="mt-6 rounded-xl border border-bad/40 p-6" aria-labelledby="suppression">
         <h2 id="suppression" className="text-lg font-semibold">
+          <SectionCell />
           {t('Supprimer mon compte', 'Delete my account')}
         </h2>
         <p className="mt-1 text-sm text-ink-2">

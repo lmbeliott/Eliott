@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PageHeader } from '../components/ui'
+import { PageHeader, SectionCell } from '../components/ui'
 import { DailyList } from '../components/DailyList'
 import { plural, useI18n } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
@@ -38,7 +38,8 @@ export function Daily() {
       <DailyList daily={daily.data} loading={daily.isLoading} solved={progress.solved} />
       <section className="mt-12 grid gap-8 md:grid-cols-2">
         <div>
-          <h2 className="text-lg font-semibold">{t('Les règles', 'The rules')}</h2>
+          <h2 className="text-lg font-semibold">
+          <SectionCell />{t('Les règles', 'The rules')}</h2>
           <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-ink-2">
             <li>{t('Un défi réussi aujourd’hui rapporte 50 % de points en plus.', 'A challenge solved today earns 50% more points.')}</li>
             <li>{t('La série avance d’un jour dès qu’un nouveau problème ou un défi du jour est réussi.', 'The streak grows by one day as soon as a new problem or a daily challenge is solved.')}</li>
@@ -47,7 +48,8 @@ export function Daily() {
           </ul>
         </div>
         <div>
-          <h2 className="text-lg font-semibold">{t('Série', 'Streak')}</h2>
+          <h2 className="text-lg font-semibold">
+          <SectionCell />{t('Série', 'Streak')}</h2>
           <p className="mt-3 text-ink-2">
             {profile
               ? t(

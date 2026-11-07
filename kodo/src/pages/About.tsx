@@ -1,7 +1,7 @@
 // Règles et limites du juge : une page de référence, chaque valeur vient du code.
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { PageHeader } from '../components/ui'
+import { PageHeader, SectionCell } from '../components/ui'
 import { LeagueBadge } from '../components/League'
 import { cx } from '../components/ui'
 import { formatNumber, formatPoints, useI18n } from '../lib/i18n'
@@ -52,6 +52,7 @@ function Section({ id, title, lead, children }: { id: string; title: string; lea
     <section aria-labelledby={id} className="grid gap-6 border-t border-line py-10 first-of-type:border-t-0 first-of-type:pt-2 lg:grid-cols-[18rem_1fr] lg:gap-12">
       <div>
         <h2 id={id} className="text-xl">
+          <SectionCell />
           {title}
         </h2>
         {lead && <p className="mt-2 text-sm text-ink-2">{lead}</p>}

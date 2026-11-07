@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronRight, Users } from 'lucide-react'
-import { Button, Field, Input, LinkButton, PageHeader, Skeleton, cx } from '../components/ui'
+import { Button, Field, Input, LinkButton, PageHeader, Skeleton, cx, SectionCell } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { useAuth } from '../lib/auth'
 import { plural, useI18n } from '../lib/i18n'
@@ -110,16 +110,17 @@ export function Groups() {
 
       <section aria-labelledby="mes-cordees">
         <h2 id="mes-cordees" className="text-lg font-semibold">
+          <SectionCell />
           {t('Mes groupes', 'My groups')}
         </h2>
-        <div className="mt-3 overflow-hidden rounded-xl border border-line bg-surface">
+        <div className="mt-3">
           {groups.isLoading ? (
-            <Skeleton className="m-4 h-12" />
+            <Skeleton className="h-16" />
           ) : groups.data?.length ? (
-            <ul>
+            <ul className="grid gap-3 sm:grid-cols-2">
               {groups.data.map((g) => (
-                <li key={g.id} className="border-b border-line last:border-0">
-                  <Link to={`/groupes/${g.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-2">
+                <li key={g.id}>
+                  <Link to={`/groupes/${g.id}`} className="lift flex items-center gap-4 rounded-lg bg-surface px-5 py-3.5 shadow-[inset_0_0_0_1px_var(--line-strong)]">
                     <Users className="size-5 shrink-0 text-muted" aria-hidden />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{g.name}</span>
@@ -134,7 +135,7 @@ export function Groups() {
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-4 text-sm text-ink-2">{t('Aucun groupe pour l’instant. Rejoindre un groupe avec un code, ou en créer un.', 'No groups yet. Join one with a code, or create one.')}</p>
+            <p className="rounded-lg bg-surface px-5 py-4 text-sm text-ink-2 shadow-[inset_0_0_0_1px_var(--line)]">{t('Aucun groupe pour l’instant. Rejoindre un groupe avec un code, ou en créer un.', 'No groups yet. Join one with a code, or create one.')}</p>
           )}
         </div>
       </section>
@@ -142,6 +143,7 @@ export function Groups() {
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         <form onSubmit={join} noValidate className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-6" aria-labelledby="rejoindre">
           <h2 id="rejoindre" className="text-lg font-semibold">
+          <SectionCell />
             {t('Rejoindre un groupe', 'Join a group')}
           </h2>
           <Field label={t('Code du groupe', 'Group code')} htmlFor="code" error={joinError} hint={t('6 caractères, fournis par un professeur ou un ami.', '6 characters, from a teacher or a friend.')}>
@@ -166,6 +168,7 @@ export function Groups() {
 
         <form onSubmit={create} noValidate className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-6" aria-labelledby="creer">
           <h2 id="creer" className="text-lg font-semibold">
+          <SectionCell />
             {t('Créer un groupe', 'Create a group')}
           </h2>
           <Field label={t('Nom', 'Name')} htmlFor="nom-cordee" error={nameError} hint={t('Par exemple : 2nde B, lycée Jean Moulin', 'For example: Year 10 B, Jean Moulin High')}>

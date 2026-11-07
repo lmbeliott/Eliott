@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, ArrowRight, Check, Circle, CircleDot } from 'lucide-react'
-import { Button, DifficultyMark, LinkButton, Notice, Segmented, Skeleton, cx, useDelayed } from '../components/ui'
+import { Button, DifficultyMark, LinkButton, Notice, Segmented, Skeleton, cx, useDelayed, SectionCell } from '../components/ui'
 import { chapters, chapterById, chapterSummary, chapterTitle, loadLesson, problemById, problemTitle } from '../lib/content'
 import { formatPoints, plural, useI18n } from '../lib/i18n'
 import { useCodeLang, useProgress } from '../lib/progress'
@@ -26,7 +26,7 @@ export function ChapterPage() {
 
   const problems = (
     <div>
-      <h2 className="text-lg font-semibold">{t('Problèmes du chapitre', 'Problems in this chapter')}</h2>
+      <h2 className="text-lg font-semibold"><SectionCell />{t('Problèmes du chapitre', 'Problems in this chapter')}</h2>
       <ol className="mt-3 overflow-hidden rounded-lg border border-line bg-surface">
         {chapter.problems.map((pid, i) => {
           const p = problemById(pid)!
