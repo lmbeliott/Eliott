@@ -10,7 +10,7 @@ import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
 import { Button, cx, DifficultyMark, LinkButton, Notice, Skeleton, SectionCell } from '../components/ui'
 import { useAuth } from '../lib/auth'
-import { problemById, problemList, problemTitle, totalPoints } from '../lib/content'
+import { allProblems, openList, problemById, problemList, problemTitle, totalPoints } from '../lib/content'
 import { formatDate, formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
 import { badges, LEAGUES, leagueName, leagueOf } from '../lib/leagues'
 import { useActivity, useLeaderboard, useMyGroups, useProfile, useSolvesOf } from '../lib/queries'
@@ -77,7 +77,7 @@ export function ProfilePage() {
     { k: t('Points', 'Points'), v: formatPoints(lang, profile.xp) },
     { k: t('Rang', 'Rank'), v: <LeagueBadge league={league.current} className="text-base" /> },
     { k: t('Classement général', 'Overall rank'), v: rank ? (lang === 'en' ? `#${rank}` : `${rank}${rank === 1 ? 'ᵉʳ' : 'ᵉ'}`) : beyond ? t('après la 200ᵉ place', 'below #200') : '–' },
-    { k: t('Problèmes réussis', 'Problems solved'), v: solves.data ? `${problemList.filter((p) => solvedSet.has(p.id)).length} / ${problemList.length}` : '–' },
+    { k: t('Problèmes réussis', 'Problems solved'), v: solves.data ? `${allProblems.filter((p) => solvedSet.has(p.id)).length} / ${allProblems.length}` : '–' },
     {
       k: t('Série', 'Streak'),
       v: (
@@ -194,8 +194,8 @@ export function ProfilePage() {
             {isMe ? (
               <>
                 {t('Aucun problème réussi pour l’instant. Le premier est ', 'No problem solved yet. The first one is ')}
-                <Link to={`/probleme/${problemList[0].id}`} className="text-accent underline underline-offset-2">
-                  {problemTitle(lang, problemList[0])}
+                <Link to={`/probleme/${(problemList[0] ?? openList[0]).id}`} className="text-accent underline underline-offset-2">
+                  {problemTitle(lang, problemList[0] ?? openList[0])}
                 </Link>
                 .
               </>

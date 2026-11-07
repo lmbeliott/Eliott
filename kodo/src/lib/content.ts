@@ -7,12 +7,18 @@ import { pick } from './i18n'
 export type Difficulty = 'facile' | 'moyen' | 'difficile' | 'expert'
 export const DIFFICULTIES: Difficulty[] = ['facile', 'moyen', 'difficile', 'expert']
 
+export type Track = 'course' | 'open'
+
 export interface CatalogProblem {
   id: string
   title: string
   titleEn: string | null
   chapter: string
   level: string
+  /** 'course' : exercice du parcours ; 'open' : problème ouvert */
+  track: Track
+  /** Problème de synthèse d'un chapitre du parcours (points doublés) */
+  synthesis: boolean
   difficulty: Difficulty
   order: number
   tags: string[]
@@ -30,32 +36,67 @@ export interface Chapter {
 export interface Level {
   id: string
   difficulty: Difficulty
+  /** Points d'un exercice du niveau (le problème de synthèse vaut le double) */
+  points: number
   title: string
   titleEn?: string
   summary: string
   summaryEn?: string
   chapters: Chapter[]
 }
+export interface Theme {
+  id: string
+  title: string
+  titleEn?: string
+}
+export interface OpenLevel {
+  id: string
+  difficulty: Difficulty
+  title: string
+  titleEn?: string
+  themes: Theme[]
+}
 interface Catalog {
-  levels: Level[]
+  course: { levels: Level[] }
+  open: { levels: OpenLevel[]; problems: string[] }
   /** Nombre d'exemples et de tests (exemples compris) par problème : [minimum, maximum] */
   tests: { samples: [number, number]; total: [number, number] }
   problems: Record<string, CatalogProblem>
 }
 
 export const catalog = catalogJson as unknown as Catalog
-export const levels = catalog.levels
+
+// ---- Parcours : niveaux et chapitres, y compris ceux pas encore écrits (indisponibles).
+export const levels = catalog.course.levels
 export const chapters = levels.flatMap((l) => l.chapters.map((c) => ({ ...c, level: l })))
 export type ChapterWithLevel = (typeof chapters)[number]
+/** Un chapitre est disponible dès qu'il a des exercices publiés. */
+export const isAvailable = (c: Chapter) => c.problems.length > 0
+export const availableChapters = chapters.filter(isAvailable)
+export const levelAvailable = (l: Level) => l.chapters.some(isAvailable)
+/** Exercices du parcours, dans l'ordre. */
 export const problemList: CatalogProblem[] = chapters.flatMap((c) => c.problems.map((id) => catalog.problems[id]))
-export const problemById = (id: string): CatalogProblem | undefined => catalog.problems[id]
 export const chapterById = (id: string) => chapters.find((c) => c.id === id)
 export const levelById = (id: string) => levels.find((l) => l.id === id)
+
+// ---- Problèmes ouverts : par difficulté puis par thème.
+export const openLevels = catalog.open.levels
+export const openList: CatalogProblem[] = catalog.open.problems.map((id) => catalog.problems[id])
+export const themes = openLevels.flatMap((l) => l.themes.map((t) => ({ ...t, level: l })))
+export const themeById = (id: string) => themes.find((t) => t.id === id)
+export const openLevelById = (id: string) => openLevels.find((l) => l.id === id)
+
+// ---- Tous les problèmes.
+export const allProblems: CatalogProblem[] = [...problemList, ...openList]
+export const problemById = (id: string): CatalogProblem | undefined => catalog.problems[id]
+/** Liste à laquelle appartient un problème (pour précédent / suivant). */
+export const listOf = (p: CatalogProblem) => (p.track === 'course' ? problemList : openList)
 
 export const problemTitle = (lang: UiLang, p: CatalogProblem) => pick(lang, p.title, p.titleEn)
 export const chapterTitle = (lang: UiLang, c: Chapter) => pick(lang, c.title, c.titleEn)
 export const chapterSummary = (lang: UiLang, c: Chapter) => pick(lang, c.summary, c.summaryEn)
-export const levelTitle = (lang: UiLang, l: Level) => pick(lang, l.title, l.titleEn)
+export const levelTitle = (lang: UiLang, l: { title: string; titleEn?: string }) => pick(lang, l.title, l.titleEn)
+export const themeTitle = (lang: UiLang, t: Theme) => pick(lang, t.title, t.titleEn)
 export const levelSummary = (lang: UiLang, l: Level) => pick(lang, l.summary, l.summaryEn)
 
 export const DIFFICULTY_LABEL: Record<Difficulty, { fr: string; en: string }> = {
@@ -66,8 +107,9 @@ export const DIFFICULTY_LABEL: Record<Difficulty, { fr: string; en: string }> = 
 }
 export const difficultyRank = (d: Difficulty) => DIFFICULTIES.indexOf(d) + 1
 
-/** Total des points disponibles : la somme de tous les problèmes. */
-export const totalPoints = problemList.reduce((a, p) => a + p.points, 0)
+/** Total des points disponibles : parcours et problèmes ouverts. */
+export const totalPoints = allProblems.reduce((a, p) => a + p.points, 0)
+export const coursePoints = problemList.reduce((a, p) => a + p.points, 0)
 
 // ------------------------------------------------------------------ Énoncés
 

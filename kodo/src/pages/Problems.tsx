@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Check, Circle, CircleDot, Search, X } from 'lucide-react'
 import { Button, DifficultyMark, Input, PageHeader, Select, cx } from '../components/ui'
-import { chapters, chapterTitle, DIFFICULTIES, problemList, problemTitle, tagLabel, type Difficulty } from '../lib/content'
+import { DIFFICULTIES, openList, problemTitle, tagLabel, themeById, themes, themeTitle, type Difficulty } from '../lib/content'
 import { formatNumber, formatPoints, plural, useI18n } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
 import { useProblemStats } from '../lib/queries'
@@ -17,7 +17,7 @@ export function Problems() {
   const stats = useProblemStats()
   const q = params.get('q') ?? ''
   const levelsSel = (params.get('niveaux')?.split(',').filter(Boolean) ?? []) as Difficulty[]
-  const chapter = params.get('chapitre') ?? ''
+  const chapter = params.get('theme') ?? ''
   const tag = params.get('tag') ?? ''
   const status = (params.get('statut') ?? 'tous') as Status
 
@@ -32,8 +32,8 @@ export function Problems() {
     set('niveaux', next.join(','))
   }
 
-  const tags = useMemo(() => [...new Set(problemList.flatMap((p) => p.tags))].sort((a, b) => tagLabel(lang, a).localeCompare(tagLabel(lang, b))), [lang])
-  const list = problemList.filter((p) => {
+  const tags = useMemo(() => [...new Set(openList.flatMap((p) => p.tags))].sort((a, b) => tagLabel(lang, a).localeCompare(tagLabel(lang, b))), [lang])
+  const list = openList.filter((p) => {
     if (levelsSel.length && !levelsSel.includes(p.difficulty)) return false
     if (chapter && p.chapter !== chapter) return false
     if (tag && !p.tags.includes(tag)) return false
@@ -45,15 +45,15 @@ export function Problems() {
     return true
   })
   const filtered = !!(q || levelsSel.length || chapter || tag || status !== 'tous')
-  const solvedCount = problemList.filter((p) => progress.solved.has(p.id)).length
+  const solvedCount = openList.filter((p) => progress.solved.has(p.id)).length
 
   return (
     <div className="mx-auto max-w-[1280px] px-4 py-10 sm:px-6">
       <PageHeader
         title={t('Problèmes', 'Problems')}
         lead={t(
-          `${plural(lang, problemList.length, ['problème', 'problèmes'], ['', ''])}${progress.loading ? '' : `, ${solvedCount} réussi${solvedCount > 1 ? 's' : ''}`}. Filtres par difficulté, chapitre, notion et statut.`,
-          `${problemList.length} problems${progress.loading ? '' : `, ${solvedCount} solved`}. Filters by difficulty, chapter, topic and status.`,
+          `${plural(lang, openList.length, ['problème', 'problèmes'], ['', ''])}${progress.loading ? '' : `, ${solvedCount} réussi${solvedCount > 1 ? 's' : ''}`}. Hors parcours, du plus facile au plus difficile.`,
+          `${openList.length} problems${progress.loading ? '' : `, ${solvedCount} solved`}. Outside the path, from easiest to hardest.`,
         )}
       />
 
@@ -67,12 +67,12 @@ export function Problems() {
             <Input id="recherche" type="search" value={q} onChange={(e) => set('q', e.target.value)} placeholder={t('Rechercher', 'Search')} className="pl-9" />
           </div>
           <div>
-            <label htmlFor="f-chapitre" className="sr-only">{t('Chapitre', 'Chapter')}</label>
-            <Select id="f-chapitre" value={chapter} onChange={(e) => set('chapitre', e.target.value)}>
-              <option value="">{t('Tous les chapitres', 'All chapters')}</option>
-              {chapters.map((c) => (
+            <label htmlFor="f-theme" className="sr-only">{t('Thème', 'Theme')}</label>
+            <Select id="f-theme" value={chapter} onChange={(e) => set('theme', e.target.value)}>
+              <option value="">{t('Tous les thèmes', 'All themes')}</option>
+              {themes.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {chapterTitle(lang, c)}
+                  {themeTitle(lang, c)}
                 </option>
               ))}
             </Select>
@@ -127,7 +127,7 @@ export function Problems() {
                 <span className="sr-only">{t('Statut', 'Status')}</span>
               </th>
               <th scope="col" className="py-2.5 font-medium">{t('Problème', 'Problem')}</th>
-              <th scope="col" className="hidden py-2.5 font-medium md:table-cell">{t('Chapitre', 'Chapter')}</th>
+              <th scope="col" className="hidden py-2.5 font-medium md:table-cell">{t('Thème', 'Theme')}</th>
               <th scope="col" className="hidden py-2.5 font-medium lg:table-cell">{t('Notions', 'Topics')}</th>
               <th scope="col" className="hidden py-2.5 pr-4 text-right font-medium sm:table-cell">{t('Réussi par', 'Solved by')}</th>
               <th scope="col" className="py-2.5 pr-4 text-right font-medium">{t('Points', 'Points')}</th>
@@ -137,7 +137,7 @@ export function Problems() {
             {list.map((p) => {
               const solved = progress.solved.has(p.id)
               const tried = !solved && progress.tried.has(p.id)
-              const ch = chapters.find((c) => c.id === p.chapter)!
+              const ch = themeById(p.chapter)
               return (
                 <tr key={p.id} className="border-b border-line last:border-0 hover:bg-surface-2/60">
                   <td className="py-3 pl-4">
@@ -157,7 +157,7 @@ export function Problems() {
                       <DifficultyMark difficulty={p.difficulty} className="text-xs" />
                     </span>
                   </td>
-                  <td className="hidden py-3 pr-3 text-ink-2 md:table-cell">{chapterTitle(lang, ch)}</td>
+                  <td className="hidden py-3 pr-3 text-ink-2 md:table-cell">{ch ? themeTitle(lang, ch) : ''}</td>
                   <td className="hidden py-3 pr-3 text-ink-2 lg:table-cell">{p.tags.map((x) => tagLabel(lang, x)).join(', ')}</td>
                   <td className="hidden py-3 pr-4 text-right tabular text-ink-2 sm:table-cell">{formatNumber(lang, stats.data?.get(p.id) ?? 0)}</td>
                   <td className="py-3 pr-4 text-right tabular">{formatPoints(lang, p.points)}</td>

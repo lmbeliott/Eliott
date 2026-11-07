@@ -1,0 +1,455 @@
+{
+  "levels": [
+    {
+      "id": "p1",
+      "title": "Découverte de la programmation",
+      "title_en": "Discovering programming",
+      "summary": "Afficher, calculer, lire, décider, répéter.",
+      "summary_en": "Print, compute, read, decide, repeat.",
+      "points": 50,
+      "difficulty": "facile",
+      "chapters": [
+        {
+          "id": "p1-affichage",
+          "title": "Affichage et suites d'instructions",
+          "title_en": "Output and sequences of instructions",
+          "summary": "Afficher du texte et des nombres, enchaîner des instructions.",
+          "summary_en": "Print text and numbers, chain instructions."
+        },
+        {
+          "id": "p1-repetitions",
+          "title": "Répétitions",
+          "title_en": "Repetition",
+          "summary": "Répéter une instruction un nombre fixé de fois avec for.",
+          "summary_en": "Repeat an instruction a fixed number of times with for."
+        },
+        {
+          "id": "p1-variables",
+          "title": "Calculs et variables",
+          "title_en": "Computing and variables",
+          "summary": "Stocker des valeurs, calculer, mettre à jour une variable.",
+          "summary_en": "Store values, compute, update a variable."
+        },
+        {
+          "id": "p1-lecture",
+          "title": "Lecture de l'entrée",
+          "title_en": "Reading input",
+          "summary": "Lire des nombres et des mots, une ou plusieurs valeurs par ligne.",
+          "summary_en": "Read numbers and words, one or several values per line."
+        },
+        {
+          "id": "p1-conditions",
+          "title": "Conditions",
+          "title_en": "Conditions",
+          "summary": "Décider avec if, else, elif et les comparaisons.",
+          "summary_en": "Decide with if, else, elif and comparisons."
+        },
+        {
+          "id": "p1-booleens",
+          "title": "Conditions avancées et booléens",
+          "title_en": "Advanced conditions and booleans",
+          "summary": "Combiner des conditions avec and, or, not.",
+          "summary_en": "Combine conditions with and, or, not."
+        },
+        {
+          "id": "p1-tant-que",
+          "title": "Répétitions conditionnées",
+          "title_en": "Conditional repetition",
+          "summary": "Répéter tant qu'une condition est vraie avec while.",
+          "summary_en": "Repeat while a condition holds."
+        },
+        {
+          "id": "p1-boucles-imbriquees",
+          "title": "Boucles imbriquées",
+          "title_en": "Nested loops",
+          "summary": "Une boucle dans une boucle : tableaux de valeurs, motifs, paires.",
+          "summary_en": "A loop inside a loop: tables of values, patterns, pairs."
+        },
+        {
+          "id": "p1-synthese",
+          "title": "Synthèse du niveau 1",
+          "title_en": "Level 1 review",
+          "summary": "Problèmes qui réunissent toutes les notions du niveau.",
+          "summary_en": "Problems combining every notion of the level."
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "title": "Structures de base",
+      "title_en": "Basic structures",
+      "summary": "Nombres à virgule, tableaux, chaînes, fonctions, grilles, dictionnaires.",
+      "summary_en": "Decimals, arrays, strings, functions, grids, dictionaries.",
+      "points": 50,
+      "difficulty": "facile",
+      "chapters": [
+        {
+          "id": "p2-nombres",
+          "title": "Nombres à virgule, divisions et arrondis",
+          "title_en": "Decimals, division and rounding",
+          "summary": "Division entière, reste, nombres à virgule et arrondis.",
+          "summary_en": "Integer division, remainder, decimals and rounding."
+        },
+        {
+          "id": "p2-tableaux",
+          "title": "Tableaux",
+          "title_en": "Arrays",
+          "summary": "Stocker une suite de valeurs, la parcourir, l'indexer.",
+          "summary_en": "Store a sequence of values, traverse it, index it."
+        },
+        {
+          "id": "p2-chaines",
+          "title": "Chaînes de caractères",
+          "title_en": "Strings",
+          "summary": "Parcourir un texte, comparer, découper, construire.",
+          "summary_en": "Traverse text, compare, split, build."
+        },
+        {
+          "id": "p2-fonctions",
+          "title": "Fonctions",
+          "title_en": "Functions",
+          "summary": "Nommer un calcul, le réutiliser, découper un problème.",
+          "summary_en": "Name a computation, reuse it, split a problem."
+        },
+        {
+          "id": "p2-grilles",
+          "title": "Tableaux à deux dimensions",
+          "title_en": "Two-dimensional arrays",
+          "summary": "Grilles, voisins d'une case, parcours ligne par ligne.",
+          "summary_en": "Grids, neighbours of a cell, row-by-row traversal."
+        },
+        {
+          "id": "p2-dictionnaires",
+          "title": "Dictionnaires et ensembles",
+          "title_en": "Dictionaries and sets",
+          "summary": "Associer des clés à des valeurs, tester l'appartenance.",
+          "summary_en": "Map keys to values, test membership."
+        },
+        {
+          "id": "p2-synthese",
+          "title": "Synthèse du niveau 2",
+          "title_en": "Level 2 review",
+          "summary": "Problèmes qui réunissent toutes les notions du niveau.",
+          "summary_en": "Problems combining every notion of the level."
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "title": "Premiers algorithmes",
+      "title_en": "First algorithms",
+      "summary": "Tris, piles et files, balayages, récursivité, complexité.",
+      "summary_en": "Sorting, stacks and queues, sweeps, recursion, complexity.",
+      "points": 100,
+      "difficulty": "moyen",
+      "chapters": [
+        {
+          "id": "p3-chaines-avancees",
+          "title": "Opérations avancées sur les chaînes",
+          "title_en": "Advanced string operations",
+          "summary": "Codes des caractères, palindromes, recherche de motif simple.",
+          "summary_en": "Character codes, palindromes, simple pattern search."
+        },
+        {
+          "id": "p3-tableaux-avances",
+          "title": "Tableaux avancés",
+          "title_en": "Advanced arrays",
+          "summary": "Décalages, fusions, comptages, tableaux de fréquences.",
+          "summary_en": "Shifts, merges, counting, frequency arrays."
+        },
+        {
+          "id": "p3-correction",
+          "title": "Correction, invariants et terminaison",
+          "title_en": "Correctness, invariants and termination",
+          "summary": "Prouver qu'un algorithme est juste et qu'il s'arrête.",
+          "summary_en": "Prove that an algorithm is correct and that it stops."
+        },
+        {
+          "id": "p3-tris-simples",
+          "title": "Tris simples",
+          "title_en": "Simple sorts",
+          "summary": "Tri par sélection, par insertion, par comptage.",
+          "summary_en": "Selection sort, insertion sort, counting sort."
+        },
+        {
+          "id": "p3-piles-files",
+          "title": "Piles et files",
+          "title_en": "Stacks and queues",
+          "summary": "Dernier entré premier sorti, premier entré premier sorti.",
+          "summary_en": "Last in first out, first in first out."
+        },
+        {
+          "id": "p3-balayages",
+          "title": "Balayages",
+          "title_en": "Sweeps",
+          "summary": "Sommes préfixes, deux pointeurs, fenêtre glissante.",
+          "summary_en": "Prefix sums, two pointers, sliding window."
+        },
+        {
+          "id": "p3-recursivite",
+          "title": "Récursivité",
+          "title_en": "Recursion",
+          "summary": "Une fonction qui s'appelle elle-même, cas de base, pile d'appels.",
+          "summary_en": "A function that calls itself, base case, call stack."
+        },
+        {
+          "id": "p3-complexite",
+          "title": "Efficacité temporelle",
+          "title_en": "Time efficiency",
+          "summary": "Compter les opérations, comparer des algorithmes, notation O.",
+          "summary_en": "Count operations, compare algorithms, O notation."
+        },
+        {
+          "id": "p3-synthese",
+          "title": "Synthèse du niveau 3",
+          "title_en": "Level 3 review",
+          "summary": "Problèmes qui réunissent toutes les notions du niveau.",
+          "summary_en": "Problems combining every notion of the level."
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "title": "Algorithmique classique",
+      "title_en": "Classic algorithms",
+      "summary": "Dichotomie, tris efficaces, gloutons, graphes, plus courts chemins.",
+      "summary_en": "Binary search, efficient sorts, greedy, graphs, shortest paths.",
+      "points": 200,
+      "difficulty": "difficile",
+      "chapters": [
+        {
+          "id": "p4-dichotomie",
+          "title": "Recherche dichotomique",
+          "title_en": "Binary search",
+          "summary": "Chercher dans un tableau trié, chercher la réponse.",
+          "summary_en": "Search a sorted array, search for the answer."
+        },
+        {
+          "id": "p4-diviser-regner",
+          "title": "Tris efficaces et diviser pour régner",
+          "title_en": "Efficient sorts and divide and conquer",
+          "summary": "Tri fusion, tri rapide, découper pour résoudre.",
+          "summary_en": "Merge sort, quicksort, split to solve."
+        },
+        {
+          "id": "p4-gloutons",
+          "title": "Algorithmes gloutons",
+          "title_en": "Greedy algorithms",
+          "summary": "Faire le meilleur choix local, et le justifier.",
+          "summary_en": "Make the best local choice, and justify it."
+        },
+        {
+          "id": "p4-arithmetique",
+          "title": "Arithmétique",
+          "title_en": "Arithmetic",
+          "summary": "PGCD, nombres premiers, crible, exponentiation rapide.",
+          "summary_en": "GCD, primes, sieve, fast exponentiation."
+        },
+        {
+          "id": "p4-graphes",
+          "title": "Graphes : parcours",
+          "title_en": "Graphs: traversals",
+          "summary": "Représenter un graphe, parcours en profondeur et en largeur.",
+          "summary_en": "Represent a graph, depth-first and breadth-first search."
+        },
+        {
+          "id": "p4-graphes-implicites",
+          "title": "Graphes implicites",
+          "title_en": "Implicit graphs",
+          "summary": "Grilles et espaces d'états vus comme des graphes.",
+          "summary_en": "Grids and state spaces seen as graphs."
+        },
+        {
+          "id": "p4-exploration",
+          "title": "Exploration exhaustive et retour sur trace",
+          "title_en": "Exhaustive search and backtracking",
+          "summary": "Énumérer toutes les possibilités, couper les branches inutiles.",
+          "summary_en": "Enumerate every possibility, prune useless branches."
+        },
+        {
+          "id": "p4-arbres-binaires",
+          "title": "Arbres binaires et arbres de recherche",
+          "title_en": "Binary trees and search trees",
+          "summary": "Parcours d'arbres, insertion et recherche dans un ABR.",
+          "summary_en": "Tree traversals, insertion and search in a BST."
+        },
+        {
+          "id": "p4-plus-courts-chemins",
+          "title": "Plus courts chemins",
+          "title_en": "Shortest paths",
+          "summary": "Dijkstra, Bellman-Ford, Floyd-Warshall.",
+          "summary_en": "Dijkstra, Bellman-Ford, Floyd-Warshall."
+        },
+        {
+          "id": "p4-union-find",
+          "title": "Union-Find et arbres couvrants",
+          "title_en": "Union-Find and spanning trees",
+          "summary": "Ensembles disjoints, Kruskal, Prim.",
+          "summary_en": "Disjoint sets, Kruskal, Prim."
+        },
+        {
+          "id": "p4-synthese",
+          "title": "Synthèse du niveau 4",
+          "title_en": "Level 4 review",
+          "summary": "Problèmes qui réunissent toutes les notions du niveau.",
+          "summary_en": "Problems combining every notion of the level."
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "title": "Algorithmique avancée",
+      "title_en": "Advanced algorithms",
+      "summary": "Programmation dynamique, structures de données, arbres, géométrie, chaînes.",
+      "summary_en": "Dynamic programming, data structures, trees, geometry, strings.",
+      "points": 400,
+      "difficulty": "expert",
+      "chapters": [
+        {
+          "id": "p5-dp-bases",
+          "title": "Programmation dynamique : bases",
+          "title_en": "Dynamic programming: basics",
+          "summary": "Sous-problèmes, mémorisation, tableaux de valeurs.",
+          "summary_en": "Subproblems, memoization, tables of values."
+        },
+        {
+          "id": "p5-dp-classiques",
+          "title": "Programmation dynamique : classiques",
+          "title_en": "Dynamic programming: classics",
+          "summary": "Sac à dos, plus longue sous-suite, distance d'édition.",
+          "summary_en": "Knapsack, longest subsequence, edit distance."
+        },
+        {
+          "id": "p5-tas-hachage",
+          "title": "Tas, files de priorité et hachage",
+          "title_en": "Heaps, priority queues and hashing",
+          "summary": "Extraire le minimum vite, retrouver une valeur vite.",
+          "summary_en": "Extract the minimum fast, find a value fast."
+        },
+        {
+          "id": "p5-dag",
+          "title": "Tri topologique et graphes acycliques",
+          "title_en": "Topological sort and acyclic graphs",
+          "summary": "Ordonner des tâches, chemins dans un graphe sans cycle.",
+          "summary_en": "Order tasks, paths in a graph without cycles."
+        },
+        {
+          "id": "p5-arbres",
+          "title": "Arbres",
+          "title_en": "Trees",
+          "summary": "Parcours, diamètre, ancêtre commun, reracinement.",
+          "summary_en": "Traversals, diameter, common ancestor, rerooting."
+        },
+        {
+          "id": "p5-fenwick-segments",
+          "title": "Arbres de Fenwick et arbres de segments",
+          "title_en": "Fenwick trees and segment trees",
+          "summary": "Requêtes et mises à jour sur des intervalles.",
+          "summary_en": "Range queries and updates."
+        },
+        {
+          "id": "p5-combinatoire",
+          "title": "Combinatoire et arithmétique modulaire",
+          "title_en": "Combinatorics and modular arithmetic",
+          "summary": "Dénombrer, coefficients binomiaux, inverses modulaires.",
+          "summary_en": "Counting, binomial coefficients, modular inverses."
+        },
+        {
+          "id": "p5-geometrie",
+          "title": "Géométrie algorithmique",
+          "title_en": "Computational geometry",
+          "summary": "Produit vectoriel, orientation, intersections de segments.",
+          "summary_en": "Cross product, orientation, segment intersection."
+        },
+        {
+          "id": "p5-chaines",
+          "title": "Algorithmes sur les chaînes",
+          "title_en": "String algorithms",
+          "summary": "Hachage, KMP, fonction Z, arbre préfixe.",
+          "summary_en": "Hashing, KMP, Z-function, trie."
+        },
+        {
+          "id": "p5-synthese",
+          "title": "Synthèse du niveau 5",
+          "title_en": "Level 5 review",
+          "summary": "Problèmes qui réunissent toutes les notions du niveau.",
+          "summary_en": "Problems combining every notion of the level."
+        }
+      ]
+    },
+    {
+      "id": "p6",
+      "title": "Olympiades",
+      "title_en": "Olympiads",
+      "summary": "Techniques avancées des concours d'informatique.",
+      "summary_en": "Advanced techniques from programming contests.",
+      "points": 400,
+      "difficulty": "expert",
+      "chapters": [
+        {
+          "id": "p6-graphes-etats",
+          "title": "Graphes implicites avancés",
+          "title_en": "Advanced implicit graphs",
+          "summary": "BFS 0-1, Dijkstra sur des états, recherche bidirectionnelle.",
+          "summary_en": "0-1 BFS, Dijkstra on states, bidirectional search."
+        },
+        {
+          "id": "p6-dp-avancee",
+          "title": "Programmation dynamique avancée",
+          "title_en": "Advanced dynamic programming",
+          "summary": "Intervalles, masques de bits, arbres, chiffres.",
+          "summary_en": "Intervals, bitmasks, trees, digits."
+        },
+        {
+          "id": "p6-structures-avancees",
+          "title": "Structures et balayages avancés",
+          "title_en": "Advanced structures and sweeps",
+          "summary": "Propagation paresseuse, balayage, décomposition en racine.",
+          "summary_en": "Lazy propagation, sweep line, square-root decomposition."
+        },
+        {
+          "id": "p6-cfc",
+          "title": "Composantes fortement connexes et 2-SAT",
+          "title_en": "Strongly connected components and 2-SAT",
+          "summary": "Tarjan, Kosaraju, satisfiabilité de clauses à deux variables.",
+          "summary_en": "Tarjan, Kosaraju, two-variable clause satisfiability."
+        },
+        {
+          "id": "p6-geometrie",
+          "title": "Géométrie avancée",
+          "title_en": "Advanced geometry",
+          "summary": "Enveloppe convexe, aires, balayage géométrique.",
+          "summary_en": "Convex hull, areas, geometric sweep."
+        },
+        {
+          "id": "p6-flots",
+          "title": "Flots et couplages",
+          "title_en": "Flows and matchings",
+          "summary": "Flot maximal, coupe minimale, couplage biparti.",
+          "summary_en": "Maximum flow, minimum cut, bipartite matching."
+        },
+        {
+          "id": "p6-jeux",
+          "title": "Théorie des jeux",
+          "title_en": "Game theory",
+          "summary": "Positions gagnantes, Sprague-Grundy.",
+          "summary_en": "Winning positions, Sprague-Grundy."
+        },
+        {
+          "id": "p6-techniques",
+          "title": "Techniques avancées",
+          "title_en": "Advanced techniques",
+          "summary": "Meet in the middle, binary lifting, tables creuses.",
+          "summary_en": "Meet in the middle, binary lifting, sparse tables."
+        },
+        {
+          "id": "p6-synthese",
+          "title": "Synthèse du niveau 6",
+          "title_en": "Level 6 review",
+          "summary": "Problèmes qui réunissent toutes les notions du niveau.",
+          "summary_en": "Problems combining every notion of the level."
+        }
+      ]
+    }
+  ]
+}

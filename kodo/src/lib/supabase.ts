@@ -63,6 +63,8 @@ export interface LeaderRow {
 export interface SubmitResult {
   new_solve: boolean
   xp_gain: number
+  /** Bonus de fin de chapitre du parcours (0 sinon) */
+  chapter_bonus?: number
   first_try: boolean
   daily: boolean
   xp: number

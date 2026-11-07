@@ -4,25 +4,10 @@ import { Link } from 'react-router-dom'
 import { BookOpen, Check } from 'lucide-react'
 import { Cell } from '../components/Cell'
 import { DifficultyMark, LinkButton, Panel, cx } from '../components/ui'
-import { chapters, chapterSummary, chapterTitle, levels, levelSummary, levelTitle, problemById, problemList, problemTitle, type Level } from '../lib/content'
+import { chapters, chapterSummary, chapterTitle, isAvailable, levelAvailable, levels, levelSummary, levelTitle, openList, problemById, problemList, problemTitle } from '../lib/content'
 import { useAuth } from '../lib/auth'
-import { formatNumber, formatPoints, useI18n, type UiLang } from '../lib/i18n'
+import { formatNumber, formatPoints, useI18n } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
-
-/** « 3 ou 4 », « 4 » : bornes réelles tirées du catalogue. */
-function range(lang: UiLang, values: number[]) {
-  const lo = Math.min(...values)
-  const hi = Math.max(...values)
-  if (lo === hi) return formatNumber(lang, lo)
-  return `${formatNumber(lang, lo)} ${lang === 'en' ? 'to' : 'à'} ${formatNumber(lang, hi)}`
-}
-
-function levelPoints(lang: UiLang, level: Level) {
-  const pts = level.chapters.flatMap((c) => c.problems.map((id) => problemById(id)?.points ?? 0))
-  const lo = Math.min(...pts)
-  const hi = Math.max(...pts)
-  return lo === hi ? formatPoints(lang, lo) : `${formatNumber(lang, lo)}–${formatPoints(lang, hi)}`
-}
 
 export function Path() {
   const { lang, t } = useI18n()
@@ -33,8 +18,6 @@ export function Path() {
   const total = problemList.length
   const solvedCount = problemList.filter((p) => solved.has(p.id)).length
   const next = problemList.find((p) => !solved.has(p.id))
-  const minutes = chapters.map((c) => c.lessonMinutes).filter((m): m is number => !!m)
-  const perChapter = chapters.map((c) => c.problems.length).filter(Boolean)
 
   let chapterNumber = 0
   return (
@@ -44,8 +27,8 @@ export function Path() {
           <h1 className="display text-2xl">{t('Parcours', 'Path')}</h1>
           <p className="mt-3 text-ink-2">
             {t(
-              `${chapters.length} chapitres répartis en ${levels.length} niveaux. Chaque chapitre commence par un cours de ${range(lang, minutes)} min, suivi de ${range(lang, perChapter)} problèmes à résoudre en Python ou en C++.`,
-              `${chapters.length} chapters across ${levels.length} levels. Each chapter opens with a ${range(lang, minutes)}-minute lesson, followed by ${range(lang, perChapter)} problems to solve in Python or C++.`,
+              `${chapters.length} chapitres en ${levels.length} niveaux. Chaque chapitre : un cours, des exercices, un problème de synthèse.`,
+              `${chapters.length} chapters in ${levels.length} levels. Each chapter: a lesson, exercises, a synthesis problem.`,
             )}
           </p>
         </div>
@@ -80,25 +63,31 @@ export function Path() {
           const ids = level.chapters.flatMap((c) => c.problems)
           const done = ids.filter((id) => solved.has(id)).length
           const headingId = `niveau-${level.id}`
+          const open = levelAvailable(level)
           return (
             <section key={level.id} aria-labelledby={headingId} className="grid gap-5 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10">
               <div className="lg:pt-3">
-                <p className="text-sm text-muted">{t(`Niveau ${li + 1}`, `Level ${li + 1}`)}</p>
+                <p className="text-sm text-muted">
+                  {t(`Niveau ${li + 1}`, `Level ${li + 1}`)}
+                  {!open && <span className="ml-2 rounded-[4px] bg-surface-2 px-1.5 py-0.5 text-xs shadow-[inset_0_0_0_1px_var(--line)]">{t('Bientôt', 'Coming soon')}</span>}
+                </p>
                 <h2 id={headingId} className="display mt-1 text-xl">
                   {levelTitle(lang, level)}
                 </h2>
                 <DifficultyMark difficulty={level.difficulty} className="mt-2" />
                 <p className="mt-3 text-sm text-ink-2">{levelSummary(lang, level)}</p>
                 <dl className="mt-4 flex gap-6 text-sm lg:flex-col lg:gap-1.5">
+                  {open && (
+                    <div className="flex gap-1.5">
+                      <dt className="text-muted">{t('Réussis', 'Solved')}</dt>
+                      <dd className="font-medium">
+                        {done} / {ids.length}
+                      </dd>
+                    </div>
+                  )}
                   <div className="flex gap-1.5">
-                    <dt className="text-muted">{t('Réussis', 'Solved')}</dt>
-                    <dd className="font-medium">
-                      {done} / {ids.length}
-                    </dd>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <dt className="text-muted">{t('Par problème', 'Per problem')}</dt>
-                    <dd className="font-medium">{levelPoints(lang, level)}</dd>
+                    <dt className="text-muted">{t('Par exercice', 'Per exercise')}</dt>
+                    <dd className="font-medium">{formatPoints(lang, level.points)}</dd>
                   </div>
                 </dl>
               </div>
@@ -111,6 +100,17 @@ export function Path() {
                     const d = c.problems.filter((id) => solved.has(id)).length
                     const complete = n > 0 && d === n
                     const pts = c.problems.reduce((a, id) => a + (problemById(id)?.points ?? 0), 0)
+                    if (!isAvailable(c))
+                      return (
+                        <li key={c.id} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 px-4 py-4 opacity-55 sm:px-5 md:grid-cols-[1.75rem_minmax(0,1fr)_auto] md:items-center md:gap-x-5">
+                          <span className="pt-px text-sm tabular text-muted md:pt-0">{chapterNumber}</span>
+                          <div className="min-w-0">
+                            <p className="font-medium text-ink">{chapterTitle(lang, c)}</p>
+                            <p className="mt-0.5 text-sm text-ink-2">{chapterSummary(lang, c)}</p>
+                          </div>
+                          <span className="col-start-2 mt-2 text-sm text-muted md:col-start-auto md:mt-0">{t('Indisponible', 'Unavailable')}</span>
+                        </li>
+                      )
                     return (
                       <li key={c.id} className="group relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 px-4 py-4 transition-colors hover:bg-surface-2/70 sm:px-5 md:grid-cols-[1.75rem_minmax(0,1fr)_auto_4.5rem_4.5rem] md:items-center md:gap-x-5">
                         <span className={cx('pt-px text-sm tabular md:pt-0', complete ? 'text-accent' : 'text-muted')}>
@@ -155,7 +155,7 @@ export function Path() {
 
       <p className="mt-12 border-t border-line pt-6 text-sm text-muted">
         <Link to="/problemes" className="font-medium text-ink underline underline-offset-2 hover:text-accent">
-          {t(`Voir les ${total} problèmes en tableau`, `See all ${total} problems as a table`)}
+          {t(`Voir les ${openList.length} problèmes ouverts`, `See the ${openList.length} open problems`)}
         </Link>
       </p>
     </div>

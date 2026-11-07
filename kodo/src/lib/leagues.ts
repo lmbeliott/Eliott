@@ -85,7 +85,7 @@ export function badges(input: BadgeInput): Badge[] {
     b('vingt-cinq', ['Vingt-cinq problèmes', 'Twenty-five problems'], ['25 problèmes réussis', '25 problems solved'], n >= 25),
     b('cinquante', ['Cinquante problèmes', 'Fifty problems'], ['50 problèmes réussis', '50 problems solved'], n >= 50),
     b('cent', ['Cent problèmes', 'One hundred problems'], ['100 problèmes réussis', '100 problems solved'], n >= 100),
-    b('tout', ['Parcours complet', 'Full path'], [`Les ${total} problèmes du parcours réussis`, `All ${total} problems of the path solved`], total > 0 && n >= total && levels.every((l) => levelDone(l.id))),
+    b('tout', ['Parcours complet', 'Full path'], [`Les ${total} exercices du parcours réussis`, `All ${total} exercises of the path solved`], total > 0 && n >= total && levels.every((l) => levelDone(l.id))),
     // Précision
     b('premier-coup', ['Du premier coup', 'First try'], ['5 problèmes acceptés à la première soumission', '5 problems accepted on the first submission'], firstTries >= 5),
     b('premier-coup-25', ['Sans retouche', 'No second draft'], ['25 problèmes acceptés à la première soumission', '25 problems accepted on the first submission'], firstTries >= 25),
@@ -101,13 +101,12 @@ export function badges(input: BadgeInput): Badge[] {
     // Parcours
     b('chapitre', ['Premier chapitre', 'First chapter'], ['Un chapitre terminé', 'One chapter complete'], chaptersDone.length >= 1),
     b('chapitres-10', ['Dix chapitres', 'Ten chapters'], ['10 chapitres terminés', '10 chapters complete'], chaptersDone.length >= 10),
-    b('n1', ['Niveau 1 terminé', 'Level 1 complete'], ['Tous les problèmes faciles réussis', 'All easy problems solved'], levelDone('n1')),
-    b('n2', ['Niveau 2 terminé', 'Level 2 complete'], ['Tous les problèmes moyens réussis', 'All medium problems solved'], levelDone('n2')),
-    b('n3', ['Niveau 3 terminé', 'Level 3 complete'], ['Tous les problèmes difficiles réussis', 'All hard problems solved'], levelDone('n3')),
-    b('n4', ['Niveau 4 terminé', 'Level 4 complete'], ['Tous les problèmes experts réussis', 'All expert problems solved'], levelDone('n4')),
+    ...levels.map((l, i) =>
+      b(`niveau-${i + 1}`, [`Niveau ${i + 1} terminé`, `Level ${i + 1} complete`], [`Tous les exercices de « ${l.title} »`, `Every exercise of “${l.titleEn ?? l.title}”`], levelDone(l.id)),
+    ),
     b('expert-1', ['Premier Expert', 'First Expert'], ['1 problème Expert réussi', '1 Expert problem solved'], experts >= 1),
     b('expert-10', ['Dix Experts', 'Ten Experts'], ['10 problèmes Expert réussis', '10 Expert problems solved'], experts >= 10),
-    b('defis-chapitre', ['Défis relevés', 'Challenges met'], ['Chapitre Défis terminé', 'Challenges chapter complete'], chapterDone('n4-defis')),
+    b('olympiades', ['Prêt pour les Olympiades', 'Olympiad-ready'], ['Synthèse du niveau 6 terminée', 'Level 6 review complete'], chapterDone('p6-synthese')),
     // Groupe
     b('groupe', ['En groupe', 'Team player'], ['Membre d’un groupe', 'Member of a group'], input.groups > 0),
   ]

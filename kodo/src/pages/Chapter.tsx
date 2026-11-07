@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, ArrowRight, Check, Circle, CircleDot } from 'lucide-react'
 import { Button, DifficultyMark, LinkButton, Notice, Segmented, Skeleton, cx, useDelayed, SectionCell } from '../components/ui'
-import { chapters, chapterById, chapterSummary, chapterTitle, loadLesson, problemById, problemTitle } from '../lib/content'
+import { availableChapters, chapterById, isAvailable, chapterSummary, chapterTitle, loadLesson, problemById, problemTitle } from '../lib/content'
 import { formatPoints, plural, useI18n } from '../lib/i18n'
 import { useCodeLang, useProgress } from '../lib/progress'
 import { NotFound } from './NotFound'
@@ -18,15 +18,28 @@ export function ChapterPage() {
   const lesson = useQuery({ queryKey: ['lesson', id], queryFn: () => loadLesson(id), enabled: !!chapter?.lessonMinutes, staleTime: Infinity })
   const showSkeleton = useDelayed(lesson.isLoading)
   if (!chapter) return <NotFound />
-  const idx = chapters.findIndex((c) => c.id === id)
-  const prev = chapters[idx - 1]
-  const next = chapters[idx + 1]
+  if (!isAvailable(chapter))
+    return (
+      <div className="mx-auto max-w-[1280px] px-4 py-10 sm:px-6">
+        <Link to="/parcours" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
+          <ArrowLeft className="size-4" aria-hidden /> {t('Parcours', 'Path')}
+        </Link>
+        <header className="mt-3 max-w-3xl">
+          <h1 className="text-3xl font-semibold">{chapterTitle(lang, chapter)}</h1>
+          <p className="mt-2 text-lg text-ink-2">{chapterSummary(lang, chapter)}</p>
+          <p className="mt-4 text-sm text-muted">{t('Chapitre indisponible pour l’instant.', 'Chapter not available yet.')}</p>
+        </header>
+      </div>
+    )
+  const idx = availableChapters.findIndex((c) => c.id === id)
+  const prev = availableChapters[idx - 1]
+  const next = availableChapters[idx + 1]
   const firstTodo = chapter.problems.find((p) => !progress.solved.has(p))
   const body = lesson.data ? (lang === 'en' && lesson.data.en ? lesson.data.en : lesson.data.fr) : null
 
   const problems = (
     <div>
-      <h2 className="text-lg font-semibold"><SectionCell />{t('Problèmes du chapitre', 'Problems in this chapter')}</h2>
+      <h2 className="text-lg font-semibold"><SectionCell />{t('Exercices du chapitre', 'Exercises in this chapter')}</h2>
       <ol className="mt-3 overflow-hidden rounded-lg border border-line bg-surface">
         {chapter.problems.map((pid, i) => {
           const p = problemById(pid)!

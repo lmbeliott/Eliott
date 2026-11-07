@@ -1,6 +1,11 @@
 # Écrire du contenu pour Kodo
 
-Ce dossier contient tout le contenu pédagogique : le parcours (`curriculum.json`), les cours (`lessons/`) et les problèmes (`problems/`). Le script `scripts/build-content.mjs` vérifie chaque problème en exécutant les solutions de référence, puis génère les fichiers publiés par le site.
+Ce dossier contient tout le contenu pédagogique, en deux parties :
+
+- **le parcours** (`course.json`) : 6 niveaux, 55 chapitres. Chaque chapitre a un **vrai cours** (`lessons/<id>.md`), des **exercices** de difficulté croissante et un **problème de synthèse** final. C'est la progression principale, sur le modèle de France-IOI et du programme d'informatique de prépa ;
+- **les problèmes ouverts** (`open.json`) : des problèmes rangés par thème et par difficulté (Facile, Moyen, Difficile, Expert), sans cours, pour s'entraîner librement.
+
+Les problèmes sont tous dans `problems/`. Le champ `chapter` de `problem.md` dit à quelle partie un problème appartient (un id de `course.json` ou de `open.json`). Le script `scripts/build-content.mjs` vérifie chaque problème en exécutant les solutions de référence, puis génère les fichiers publiés par le site.
 
 ```bash
 npm run content:check                          # tout vérifier
@@ -8,6 +13,14 @@ node scripts/build-content.mjs --check --filter n2-   # un niveau, un chapitre o
 ```
 
 Un problème n'est accepté que si `gen.py` produit les tests, si `solution.py` et `solution.cpp` donnent **exactement** les mêmes sorties sur tous les tests, et si `solution.py` reste rapide.
+
+## Le parcours : règles propres
+
+- **Points** : fixés par le niveau du chapitre (`points` dans `course.json`), doublés pour le problème de synthèse (`synthesis: true` dans le frontmatter, un seul par chapitre, en dernier). Ne pas écrire `difficulty`.
+- **Notions** : un exercice du chapitre k n'utilise **que** les notions des chapitres 1 à k du parcours. Au niveau 1, pas de listes avant le niveau 2, pas de fonctions, etc. La solution de référence doit pouvoir être écrite par un élève qui vient de lire le cours.
+- **Esprit olympiades dès le début** : même au niveau 1, chaque exercice est un petit problème d'algorithmique (compter, comparer, simuler, trouver un maximum, construire un motif), pas un exercice de syntaxe. Des tests qui couvrent les cas limites.
+- **Progression** : 6 à 8 exercices par chapitre, du plus simple (application directe du cours) au plus subtil, puis le problème de synthèse, qui combine les notions du chapitre et des chapitres précédents.
+- **Exercices sans entrée** (premiers chapitres, avant « Lecture de l'entrée ») : `no_input: true` et `samples: 1` dans le frontmatter ; `gen.py` affiche exactement `[""]`.
 
 ## Style des énoncés
 
@@ -19,7 +32,7 @@ Les titres décrivent la tâche, sobrement : « Somme de deux nombres », « Plu
 
 ## Ton
 
-- On tutoie l'élève : « Écris un programme qui… ».
+- Impersonnel et direct : « Afficher la somme… », « Le programme lit… ». Pas de « tu ».
 - Phrases courtes, vocabulaire simple, surtout au niveau 1. Un collégien doit comprendre seul.
 - Les nombres et contraintes en Unicode, sans LaTeX : `1 ≤ N ≤ 100 000`, `10⁹`, `×`.
 - Les noms de variables d'entrée en majuscules (`N`, `K`, `A`), les valeurs littérales en `code`.
@@ -42,7 +55,7 @@ Les titres décrivent la tâche, sobrement : « Somme de deux nombres », « Plu
 ---
 id: compteur-de-marmottes
 title: Le compteur de marmottes
-chapter: n1-affichage        # un id de content/curriculum.json
+chapter: p1-variables        # un id de content/course.json (parcours) ou content/open.json (ouverts)
 order: 2                     # position dans le chapitre (1, 2, 3…), difficulté croissante
 tags: [entrées-sorties, arithmétique]
 samples: 2                   # les N premiers tests de gen.py sont les exemples affichés (1 à 4)
@@ -50,7 +63,7 @@ time_limit_ms: 1000          # facultatif, défaut 1000 (limite C++ ; Python a 5
 ---
 
 ## Énoncé
-L'histoire (2 à 5 phrases), puis la tâche précise.
+La tâche, directement (une phrase de contexte concrète au plus), puis les précisions.
 
 ## Entrée
 Format exact, ligne par ligne.
@@ -106,11 +119,20 @@ print(json.dumps(tests))
 - `solution.cpp` : C++17 sans exceptions (`-fno-exceptions`), includes explicites (`<iostream>`, `<vector>`…), `ios::sync_with_stdio(false)` dès que l'entrée est grosse, `long long` dès que ça peut dépasser 2³¹.
 - Les deux solutions doivent suivre le même algorithme (celui expliqué dans `## Solution`).
 
-## Les cours
+## Les cours (parcours)
 
-`content/lessons/<id-du-chapitre>.md` : 400 à 900 mots, tutoiement, sans titre `#` (le site affiche le titre du chapitre). Des sous-parties `##`, des exemples courts. Chaque exemple de code s'écrit **deux fois, à la suite** : un bloc ```python puis un bloc ```cpp — le site n'affiche que celui du langage choisi par l'élève. Termine par une partie `## À retenir` de 3 à 5 points.
+`content/lessons/<id-du-chapitre>.md`, sans titre `#` (le site affiche le titre du chapitre). Un vrai cours, pas un résumé : **1 200 à 2 500 mots** de texte hors code, progressif et rigoureux, qu'un élève peut suivre seul du début à la fin.
 
-Le cours apprend juste ce qu'il faut pour attaquer les problèmes du chapitre, du plus simple au plus difficile.
+Structure attendue :
+
+1. Une introduction courte : ce que le chapitre permet de faire, sur un exemple concret.
+2. Les notions **une par une**, chacune avec : une explication précise, un exemple minimal, ce que le programme affiche, et pourquoi. Le vocabulaire exact est défini à sa première apparition (en **gras**).
+3. Les pièges et erreurs fréquentes, avec l'erreur affichée et sa correction.
+4. **Un exemple complet** : un petit problème résolu pas à pas (lecture de l'énoncé, idée, programme, vérification sur un exemple à la main).
+5. À partir du niveau 3 : la **correction** (pourquoi l'algorithme est juste, invariant) et la **complexité**, justifiées.
+6. `## À retenir` : 4 à 6 points.
+
+Style : phrases courtes, impersonnel (« on écrit », « il suffit de »), pas de « tu » ; aucune notion utilisée avant d'être expliquée. Chaque exemple de code s'écrit **deux fois, à la suite** : un bloc ```python puis un bloc ```cpp — le site n'affiche que celui du langage choisi par l'élève.
 
 ## Traduction anglaise
 

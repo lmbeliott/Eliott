@@ -1,13 +1,13 @@
 import { useLocation } from 'react-router-dom'
 import { CellText } from '../components/CellText'
 import { LinkButton } from '../components/ui'
-import { problemList, problemTitle } from '../lib/content'
+import { openList, problemList, problemTitle } from '../lib/content'
 import { useI18n } from '../lib/i18n'
 
 export function NotFound() {
   const { lang, t } = useI18n()
   const { pathname } = useLocation()
-  const first = problemList[0]
+  const first = problemList[0] ?? openList[0]
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-6 px-4 py-20 sm:px-6">
       <CellText text="404" cell={16} gap={4} lit={[[6, 5]]} label="404" className="hidden sm:inline-grid" />

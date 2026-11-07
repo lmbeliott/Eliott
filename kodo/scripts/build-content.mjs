@@ -165,10 +165,17 @@ function compileCpp(file, where) {
 
 // ---------------------------------------------------------------- Curriculum
 
-const curriculum = JSON.parse(readFileSync(join(CONTENT, 'curriculum.json'), 'utf8'))
+// Deux ensembles de problèmes :
+// - le parcours (course.json) : niveaux, chapitres avec cours, exercices et problème de synthèse ;
+// - les problèmes ouverts (open.json) : rangés par thème et par difficulté, sans cours.
+const course = JSON.parse(readFileSync(join(CONTENT, 'course.json'), 'utf8'))
+const open = JSON.parse(readFileSync(join(CONTENT, 'open.json'), 'utf8'))
 const chapterInfo = new Map()
-for (const level of curriculum.levels) {
-  for (const ch of level.chapters) chapterInfo.set(ch.id, { level, chapter: ch })
+for (const level of course.levels) {
+  for (const ch of level.chapters) chapterInfo.set(ch.id, { level, chapter: ch, track: 'course' })
+}
+for (const level of open.levels) {
+  for (const ch of level.chapters) chapterInfo.set(ch.id, { level, chapter: ch, track: 'open' })
 }
 const matches = (id) => !FILTER || id.startsWith(FILTER)
 
@@ -200,7 +207,9 @@ for (const dirName of problemDirs) {
   seenIds.add(dirName)
   if (!fm.title || typeof fm.title !== 'string') err(where, 'title manquant')
   const info = chapterInfo.get(chapterId)
-  if (!info) err(where, `chapitre inconnu « ${chapterId} » (voir content/curriculum.json)`)
+  if (!info) err(where, `chapitre inconnu « ${chapterId} » (voir content/course.json ou content/open.json)`)
+  if (fm.synthesis !== undefined && fm.synthesis !== true) err(where, 'synthesis vaut true ou est absent')
+  if (fm.synthesis && info?.track !== 'course') err(where, 'synthesis est réservé aux problèmes du parcours')
   if (!Number.isInteger(fm.order)) err(where, 'order (entier) manquant')
   const difficulty = fm.difficulty ?? info?.level.difficulty
   if (!DIFFICULTIES.includes(difficulty)) err(where, `difficulty invalide « ${difficulty} » (${DIFFICULTIES.join(', ')})`)
@@ -235,7 +244,13 @@ for (const dirName of problemDirs) {
     err(where, 'gen.py doit afficher une liste JSON (json.dumps([...]))')
     continue
   }
-  if (!Array.isArray(raw) || raw.length < nSamples + 3 || raw.length > 30) {
+  // Exercice sans entrée (premiers chapitres du parcours) : un seul test, d'entrée vide.
+  if (fm.no_input === true) {
+    if (!Array.isArray(raw) || raw.length !== 1 || raw[0] !== '' || nSamples !== 1) {
+      err(where, 'no_input : gen.py doit produire exactement [""] et samples vaut 1')
+      continue
+    }
+  } else if (!Array.isArray(raw) || raw.length < nSamples + 3 || raw.length > 30) {
     err(where, `gen.py doit produire entre ${nSamples + 3} et 30 tests (reçu ${Array.isArray(raw) ? raw.length : '?'})`)
     continue
   }
@@ -295,10 +310,13 @@ for (const dirName of problemDirs) {
     titleEn: textEn?.title ?? null,
     chapter: chapterId,
     level: info?.level.id,
+    track: info?.track ?? 'open',
+    synthesis: fm.synthesis === true,
     difficulty,
     order: fm.order,
     tags: fm.tags ?? [],
-    points: POINTS[difficulty],
+    // Parcours : points du niveau, doublés pour le problème de synthèse. Ouverts : selon la difficulté.
+    points: info?.track === 'course' ? info.level.points * (fm.synthesis ? 2 : 1) : POINTS[difficulty],
     timeLimitMs,
     text: { fr: textFr, en: textEn },
     solutionCode: { python: read('solution.py'), cpp: read('solution.cpp') },
@@ -317,12 +335,13 @@ for (const dirName of problemDirs) {
 // ---------------------------------------------------------------- Cours
 
 const lessons = []
-for (const level of curriculum.levels) {
+for (const level of course.levels) {
   for (const ch of level.chapters) {
     if (!matches(ch.id)) continue
     const file = join(CONTENT, 'lessons', `${ch.id}.md`)
     if (!existsSync(file)) {
-      warn(`lessons/${ch.id}.md`, 'cours manquant')
+      // Un chapitre pas encore écrit n'a ni cours ni exercices : il est affiché comme indisponible.
+      if (problems.some((p) => p.chapter === ch.id)) warn(`lessons/${ch.id}.md`, 'cours manquant pour un chapitre qui a des exercices')
       continue
     }
     const render = (text, name) => {
@@ -385,31 +404,47 @@ writeDir('lessons', lessons)
 
 const byChapter = (chId) => problems.filter((p) => p.chapter === chId).sort((a, b) => a.order - b.order)
 const catalog = {
-  levels: curriculum.levels.map((level) => ({
-    id: level.id,
-    difficulty: level.difficulty,
-    title: level.title,
-    titleEn: level.title_en,
-    summary: level.summary,
-    summaryEn: level.summary_en,
-    // Un chapitre sans problème publié (encore en écriture) n'est pas affiché.
-    chapters: level.chapters.filter((ch) => byChapter(ch.id).length > 0).map((ch) => ({
-      id: ch.id,
-      title: ch.title,
-      titleEn: ch.title_en,
-      summary: ch.summary,
-      summaryEn: ch.summary_en,
-      lessonMinutes: lessons.find((l) => l.id === ch.id)?.fr.minutes ?? null,
-      problems: byChapter(ch.id).map((p) => p.id),
+  // Parcours : tous les chapitres, y compris ceux pas encore écrits (indisponibles côté site).
+  course: {
+    levels: course.levels.map((level) => ({
+      id: level.id,
+      difficulty: level.difficulty,
+      points: level.points,
+      title: level.title,
+      titleEn: level.title_en,
+      summary: level.summary,
+      summaryEn: level.summary_en,
+      chapters: level.chapters.map((ch) => ({
+        id: ch.id,
+        title: ch.title,
+        titleEn: ch.title_en,
+        summary: ch.summary,
+        summaryEn: ch.summary_en,
+        lessonMinutes: lessons.find((l) => l.id === ch.id)?.fr.minutes ?? null,
+        problems: byChapter(ch.id).map((p) => p.id),
+      })),
     })),
-  })),
-  // Bornes affichées sur l'accueil (« 9 à 30 tests ») : toujours celles du contenu publié.
+  },
+  // Problèmes ouverts : thèmes (pour les filtres) et liste triée par difficulté puis par thème.
+  open: {
+    levels: open.levels.map((level) => ({
+      id: level.id,
+      difficulty: level.difficulty,
+      title: level.title,
+      titleEn: level.title_en,
+      themes: level.chapters.map((ch) => ({ id: ch.id, title: ch.title, titleEn: ch.title_en })),
+    })),
+    problems: open.levels.flatMap((level) => level.chapters.flatMap((ch) => byChapter(ch.id).map((p) => p.id))),
+  },
   tests: {
     samples: [Math.min(...problems.map((p) => p.samples.length)), Math.max(...problems.map((p) => p.samples.length))],
     total: [Math.min(...problems.map((p) => p.samples.length + p.tests.length)), Math.max(...problems.map((p) => p.samples.length + p.tests.length))],
   },
   problems: Object.fromEntries(
-    problems.map((p) => [p.id, { id: p.id, title: p.title, titleEn: p.titleEn, chapter: p.chapter, level: p.level, difficulty: p.difficulty, order: p.order, tags: p.tags, points: p.points }]),
+    problems.map((p) => [
+      p.id,
+      { id: p.id, title: p.title, titleEn: p.titleEn, chapter: p.chapter, level: p.level, track: p.track, synthesis: p.synthesis, difficulty: p.difficulty, order: p.order, tags: p.tags, points: p.points },
+    ]),
   ),
 }
 mkdirSync(join(ROOT, 'src', 'content'), { recursive: true })
@@ -417,13 +452,13 @@ writeFileSync(join(ROOT, 'src', 'content', 'catalog.json'), JSON.stringify(catal
 
 // Table « problems » côté Supabase : les points sont calculés par le serveur à partir d'elle.
 const sqlRows = problems
-  .map((p) => `  ('${p.id}', '${p.chapter}', '${p.level}', '${p.difficulty}', ${p.points}, '${String(p.title).replace(/'/g, "''")}')`)
+  .map((p) => `  ('${p.id}', '${p.chapter}', '${p.level}', '${p.track}', '${p.difficulty}', ${p.points}, '${String(p.title).replace(/'/g, "''")}')`)
   .join(',\n')
 mkdirSync(join(ROOT, 'supabase'), { recursive: true })
 writeFileSync(
   join(ROOT, 'supabase', 'problems.sql'),
   `-- Généré par scripts/build-content.mjs : ne pas modifier à la main.\n` +
-    `insert into public.problems (id, chapter, level, difficulty, points, title) values\n${sqlRows}\n` +
-    `on conflict (id) do update set chapter = excluded.chapter, level = excluded.level, difficulty = excluded.difficulty, points = excluded.points, title = excluded.title;\n`,
+    `insert into public.problems (id, chapter, level, track, difficulty, points, title) values\n${sqlRows}\n` +
+    `on conflict (id) do update set chapter = excluded.chapter, level = excluded.level, track = excluded.track, difficulty = excluded.difficulty, points = excluded.points, title = excluded.title;\n`,
 )
 console.log(`Écrit : public/content (${problems.length} problèmes, ${lessons.length} cours), src/content/catalog.json, supabase/problems.sql`)

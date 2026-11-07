@@ -13,7 +13,10 @@ import { ProfileError } from '../components/ProfileError'
 import { DifficultyMark, LinkButton, Panel, Skeleton, cx, SectionCell } from '../components/ui'
 import type { Verdict } from '../judge/judge'
 import { useAuth } from '../lib/auth'
-import { chapterById, chapterTitle, loadProblem, problemById, problemList, problemTitle, type CatalogProblem } from '../lib/content'
+import { chapterById, chapterTitle, loadProblem, openList, problemById, problemList, problemTitle, type CatalogProblem } from '../lib/content'
+
+/** Suite suggérée : le parcours ; les problèmes ouverts tant que le parcours n'a pas d'exercice publié. */
+const pathList = problemList.length ? problemList : openList
 import { formatDate, formatPoints as fmtPoints, plural, timeAgo, useI18n, type UiLang } from '../lib/i18n'
 import { leagueName, leagueOf } from '../lib/leagues'
 import { useProgress } from '../lib/progress'
@@ -104,9 +107,9 @@ export function Dashboard() {
 
   // Le prochain problème : d'abord le dernier tenté sans réussite, sinon le premier non réussi du parcours.
   const next = useMemo(() => {
-    const pending = [...progress.tried].find((id) => !progress.solved.has(id) && problemList.some((p) => p.id === id))
-    if (pending) return { problem: problemList.find((p) => p.id === pending)!, tried: true }
-    const p = problemList.find((x) => !progress.solved.has(x.id))
+    const pending = [...progress.tried].find((id) => !progress.solved.has(id) && pathList.some((p) => p.id === id))
+    if (pending) return { problem: pathList.find((p) => p.id === pending)!, tried: true }
+    const p = pathList.find((x) => !progress.solved.has(x.id))
     return p ? { problem: p, tried: false } : null
   }, [progress.solved, progress.tried])
 
@@ -119,7 +122,7 @@ export function Dashboard() {
   const dailyDone = (daily.data ?? []).filter((d) => progress.solved.has(d.problem_id)).length
   const triedOnly = [...progress.tried].filter((id) => !progress.solved.has(id) && problemById(id)).length
   // Seulement les problèmes du catalogue actuel (d'anciens identifiants peuvent rester en base).
-  const solvedCount = problemList.filter((p) => progress.solved.has(p.id)).length
+  const solvedCount = pathList.filter((p) => progress.solved.has(p.id)).length
   const totals = (activity.data ?? []).reduce((a, d) => ({ subs: a.subs + d.submissions, solves: a.solves + d.solves }), { subs: 0, solves: 0 })
 
   return (
@@ -161,7 +164,7 @@ export function Dashboard() {
           <NextProblem problem={next.problem} tried={next.tried} isDaily={dailyIds.has(next.problem.id)} solved={progress.solved} />
         ) : (
           <Panel className="p-6">
-            <h2 className="display text-xl">{t(`Les ${problemList.length} problèmes sont réussis`, `All ${problemList.length} problems solved`)}</h2>
+            <h2 className="display text-xl">{t(`Les ${pathList.length} problèmes sont réussis`, `All ${pathList.length} problems solved`)}</h2>
             <p className="mt-2 text-ink-2">{t(`${formatPoints(lang, profile.xp)} au total. Le rang dépend désormais du défi du jour et du classement de la semaine.`, `${formatPoints(lang, profile.xp)} in total. Rank now depends on the daily challenge and this week’s leaderboard.`)}</p>
             <LinkButton to="/classements" variant="secondary" className="mt-5">
               {t('Voir le classement', 'View the leaderboard')}
@@ -203,8 +206,8 @@ export function Dashboard() {
       <section className="mt-12" aria-labelledby="dash-progression">
         <SectionHead id="dash-progression" title={t('Progression', 'Progress')} link={{ to: '/parcours', label: t('Ouvrir le parcours', 'Open the path') }}>
           {t(
-            `${solvedCount} problème${solvedCount > 1 ? 's' : ''} réussi${solvedCount > 1 ? 's' : ''} sur ${problemList.length}${triedOnly ? `, ${triedOnly} tenté${triedOnly > 1 ? 's' : ''} sans réussite` : ''}. Chaque case ouvre le problème correspondant.`,
-            `${solvedCount} of ${problemList.length} problems solved${triedOnly ? `, ${triedOnly} attempted without success` : ''}. Each square opens its problem.`,
+            `${solvedCount} problème${solvedCount > 1 ? 's' : ''} réussi${solvedCount > 1 ? 's' : ''} sur ${pathList.length}${triedOnly ? `, ${triedOnly} tenté${triedOnly > 1 ? 's' : ''} sans réussite` : ''}. Chaque case ouvre le problème correspondant.`,
+            `${solvedCount} of ${pathList.length} problems solved${triedOnly ? `, ${triedOnly} attempted without success` : ''}. Each square opens its problem.`,
           )}
         </SectionHead>
         <Legend />
@@ -283,8 +286,8 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
   const { lang, t } = useI18n()
   const { session } = useAuth()
   const chapter = chapterById(problem.chapter)
-  const index = problemList.findIndex((p) => p.id === problem.id)
-  const prev = index > 0 ? problemList[index - 1] : null
+  const index = pathList.findIndex((p) => p.id === problem.id)
+  const prev = index > 0 ? pathList[index - 1] : null
   const title = problemTitle(lang, problem)
 
   const data = useQuery({ queryKey: ['problem-data', problem.id], queryFn: () => loadProblem(problem.id), staleTime: Infinity })
@@ -323,7 +326,7 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
     <Panel as="article" aria-labelledby="next-title" className="flex flex-col">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-6 pt-5">
         <p className="text-sm text-ink-2">{context}</p>
-        <p className="text-sm text-muted">{t(`Problème ${index + 1} sur ${problemList.length}`, `Problem ${index + 1} of ${problemList.length}`)}</p>
+        <p className="text-sm text-muted">{t(`Problème ${index + 1} sur ${pathList.length}`, `Problem ${index + 1} of ${pathList.length}`)}</p>
       </div>
 
       <div className="px-6 pb-6 pt-4">

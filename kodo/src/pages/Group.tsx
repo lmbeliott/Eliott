@@ -98,7 +98,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
   if (!students.length)
     return <p className="text-sm text-ink-2">{t('Aucun élève. La classe rejoint le groupe avec le code affiché en haut de cette page.', 'No students. The class joins with the code shown at the top of this page.')}</p>
   // Une cellule par problème, rangées par niveau (DESIGN.md : le motif des cellules).
-  const byLevel = levels.map((l) => ({ level: l, ids: l.chapters.flatMap((c) => c.problems) }))
+  const byLevel = levels.map((l) => ({ level: l, ids: l.chapters.flatMap((c) => c.problems) })).filter((x) => x.ids.length > 0)
   return (
     <div className="overflow-x-auto rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
       <table className="w-full text-sm">

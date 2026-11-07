@@ -9,7 +9,7 @@ import { LEAGUES, leagueMeaning } from '../lib/leagues'
 import { POINTS_TABLE } from '../lib/xp'
 import { limitFor } from '../judge/judge'
 import { OUTPUT_LIMIT } from '../judge/protocol'
-import { problemList } from '../lib/content'
+import { allProblems } from '../lib/content'
 
 function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
   const last = head.length - 1
@@ -78,8 +78,8 @@ export function About() {
       <PageHeader
         title={t('Règles et limites du juge', 'Rules and judge limits')}
         lead={t(
-          `Notation des ${problemList.length} problèmes, fonctionnement du juge et visibilité du code.`,
-          `Scoring of the ${problemList.length} problems, how the judge works, and who can see submitted code.`,
+          `Notation des ${allProblems.length} problèmes, fonctionnement du juge et visibilité du code.`,
+          `Scoring of the ${allProblems.length} problems, how the judge works, and who can see submitted code.`,
         )}
       />
 

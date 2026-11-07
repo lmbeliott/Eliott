@@ -8,7 +8,7 @@ import { Cell } from '../components/Cell'
 import { TestStrip, cellStateOf, statusText } from '../components/TestStrip'
 import { Button, CopyButton, cx, DifficultyMark, IconButton, Kbd, LinkButton, Notice, Panel, Segmented, Skeleton, Spinner, Tabs, useDelayed } from '../components/ui'
 import { useToast } from '../components/Toast'
-import { chapterById, chapterTitle, loadProblem, problemById, problemList, problemTitle, type ProblemData } from '../lib/content'
+import { chapterById, chapterTitle, listOf, loadProblem, problemById, problemList, problemTitle, themeById, themeTitle, type ProblemData } from '../lib/content'
 import { locale, pick, plural, useI18n, type UiLang } from '../lib/i18n'
 import { judge, runtimeFor, warmUp, limitFor, type JudgeReport, type JudgeTest, type TestResult } from '../judge/judge'
 import { explainError, trimCompilerOutput } from '../judge/explain'
@@ -248,14 +248,14 @@ function Solution({ data, solved, lang, onOpenHints }: { data: ProblemData; solv
   )
 }
 
-function ProblemSteps({ index, prev, next }: { index: number; prev?: string; next?: string }) {
+function ProblemSteps({ index, total, prev, next }: { index: number; total: number; prev?: string; next?: string }) {
   const { t, lang } = useI18n()
   const link = 'inline-flex size-8 items-center justify-center rounded-md text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink'
   const off = 'inline-flex size-8 items-center justify-center text-muted opacity-40'
   const name = (id: string) => problemTitle(lang, problemById(id)!)
   return (
     <div className="flex shrink-0 items-center gap-1">
-      <span className="mr-1 whitespace-nowrap text-xs text-muted">{t(`${index + 1} sur ${problemList.length}`, `${index + 1} of ${problemList.length}`)}</span>
+      <span className="mr-1 whitespace-nowrap text-xs text-muted">{t(`${index + 1} sur ${total}`, `${index + 1} of ${total}`)}</span>
       {prev ? (
         <Link to={`/probleme/${prev}`} className={link} aria-label={t(`Problème précédent : ${name(prev)}`, `Previous problem: ${name(prev)}`)} title={`${name(prev)} (Alt ←)`}>
           <ChevronLeft className="size-4" aria-hidden />
@@ -304,6 +304,9 @@ export function StatementPanel({
   const [tab, setTab] = useState<LeftTab>(initialTab)
   const text = pick(lang, data.text.fr, data.text.en)
   const chapter = chapterById(data.chapter)
+  const theme = chapter ? undefined : themeById(data.chapter)
+  const meta = problemById(data.id)
+  const siblings = meta ? listOf(meta) : problemList
   const stats = useProblemStats()
   const community = data.community
   // Problème de la communauté : seul son propre décompte compte (jamais celui des problèmes officiels).
@@ -355,6 +358,17 @@ export function StatementPanel({
               </Link>
             </nav>
           )}
+          {theme && (
+            <nav aria-label={t('Fil d’Ariane', 'Breadcrumb')} className="flex min-w-0 items-center gap-1 text-sm text-muted">
+              <Link to="/problemes" className="shrink-0 hover:text-ink">
+                {t('Problèmes', 'Problems')}
+              </Link>
+              <ChevronRight className="size-3.5 shrink-0" aria-hidden />
+              <Link to={`/problemes?theme=${theme.id}`} className="truncate hover:text-ink">
+                {themeTitle(lang, theme)}
+              </Link>
+            </nav>
+          )}
           {community && (
             <nav aria-label={t('Fil d’Ariane', 'Breadcrumb')} className="flex min-w-0 items-center gap-1 text-sm text-muted">
               <Link to="/communaute" className="shrink-0 hover:text-ink">
@@ -371,7 +385,7 @@ export function StatementPanel({
           )}
           {aside ?? (
             <div className="hidden lg:block">
-              <ProblemSteps index={index} prev={prev} next={next} />
+              <ProblemSteps index={index} total={siblings.length} prev={prev} next={next} />
             </div>
           )}
         </div>
@@ -379,6 +393,7 @@ export function StatementPanel({
         <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-ink-2">
           <DifficultyMark difficulty={data.difficulty} />
           <span>{community ? t('Sans points', 'No points') : t(`${data.points} points`, `${data.points} points`)}</span>
+          {meta?.synthesis && <span className="font-medium text-accent">{t('Problème de synthèse', 'Synthesis problem')}</span>}
           <span title={t('Limite par test, selon le langage', 'Limit per test, by language')} className="inline-flex items-center gap-1.5">
             <Clock className="size-3.5 text-muted" aria-hidden />
             {t(
@@ -692,7 +707,7 @@ function SuccessBlock({ o, data, next, onShowSolution }: { o: Outcome; data: Pro
         {rec?.new_solve ? (
           <>
             <p className="display text-2xl font-semibold leading-none">
-              +{rec.xp_gain} <span className="text-base font-medium text-ink-2">points</span>
+              +{rec.xp_gain + (rec.chapter_bonus ?? 0)} <span className="text-base font-medium text-ink-2">points</span>
             </p>
             <dl className="mt-3 grid w-fit grid-cols-[auto_auto] gap-x-8 gap-y-1 text-sm">
               <dt className="text-ink-2">{title}</dt>
@@ -707,6 +722,12 @@ function SuccessBlock({ o, data, next, onShowSolution }: { o: Outcome; data: Pro
                 <>
                   <dt className="text-ink-2">{t('Bonus défi du jour (50 %)', 'Daily challenge bonus (50%)')}</dt>
                   <dd className="tabular text-right">+{Math.floor(data.points / 2)}</dd>
+                </>
+              )}
+              {!!rec.chapter_bonus && (
+                <>
+                  <dt className="font-medium text-ink">{t('Chapitre terminé (50 % du chapitre)', 'Chapter complete (50% of the chapter)')}</dt>
+                  <dd className="tabular text-right font-medium">+{rec.chapter_bonus}</dd>
                 </>
               )}
             </dl>
@@ -944,8 +965,10 @@ export function Workspace({
   const codeRef = useRef(code)
   codeRef.current = code
   const next = useMemo(() => {
-    const i = problemList.findIndex((p) => p.id === data.id)
-    return i < 0 ? null : (problemList[i + 1]?.id ?? null)
+    const meta = problemById(data.id)
+    const list = meta ? listOf(meta) : []
+    const i = list.findIndex((p) => p.id === data.id)
+    return i < 0 ? null : (list[i + 1]?.id ?? null)
   }, [data.id])
 
   // Clé de l'exécution en cours : un résultat qui arrive après un changement de problème
@@ -1184,9 +1207,10 @@ export function Problem() {
     }
   }, [meta, lang])
 
-  const idx = problemList.findIndex((p) => p.id === id)
-  const prev = problemList[idx - 1]
-  const next = problemList[idx + 1]
+  const list = meta ? listOf(meta) : problemList
+  const idx = list.findIndex((p) => p.id === id)
+  const prev = list[idx - 1]
+  const next = list[idx + 1]
 
   // Raccourcis de navigation : Alt + ← / →
   useEffect(() => {

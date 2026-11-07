@@ -8,7 +8,7 @@ import { LeaderboardTable } from '../components/LeaderboardTable'
 import { TestStrip } from '../components/TestStrip'
 import { Cell, type CellState } from '../components/Cell'
 import { Button, cx, DifficultyMark, LinkButton, Panel, Skeleton, Spinner, SectionCell } from '../components/ui'
-import { chapters, levels, levelTitle, problemById, problemList, problemTitle } from '../lib/content'
+import { chapters, levelAvailable, levels, levelTitle, openList, problemById, problemList, problemTitle } from '../lib/content'
 import { formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { saveDraft } from '../lib/progress'
 import { useLeaderboard } from '../lib/queries'
@@ -20,7 +20,7 @@ const pts = (lang: UiLang, n: number) => formatPoints(lang, n).replace(' ', '\u0
 const CodeEditor = lazy(() => import('../components/CodeEditor').then((m) => ({ default: m.CodeEditor })))
 
 const FIRST_ID = 'somme-de-deux-nombres'
-const first = problemById(FIRST_ID) ?? problemList[0]
+const first = problemById(FIRST_ID) ?? openList[0]
 /** Limite fixée par la plupart des énoncés. */
 const STATEMENT_LIMIT_MS = 1000
 
@@ -277,10 +277,11 @@ function exampleState(s: number, i: number, reach: number): CellState {
 
 function ClassExample() {
   const { lang, t } = useI18n()
-  const order = new Map(problemList.map((p, i) => [p.id, i]))
+  const exampleList = problemList.length ? problemList : openList
+  const order = new Map(exampleList.map((p, i) => [p.id, i]))
   const rows = STUDENTS.map((s, si) => {
-    const states = problemList.map((_, i) => exampleState(si, i, s.reach))
-    const points = problemList.reduce((a, p, i) => a + (states[i] === 'done' ? p.points : 0), 0)
+    const states = exampleList.map((_, i) => exampleState(si, i, s.reach))
+    const points = exampleList.reduce((a, p, i) => a + (states[i] === 'done' ? p.points : 0), 0)
     return { name: lang === 'en' ? s.en : s.fr, states, points }
   })
   return (
@@ -297,7 +298,7 @@ function ClassExample() {
               <th scope="col" className="h-9 w-28 pl-4 font-medium">
                 {t('Élève', 'Student')}
               </th>
-              {levels.map((l) => (
+              {levels.filter(levelAvailable).map((l) => (
                 <th key={l.id} scope="col" className="px-3 font-medium">
                   {levelTitle(lang, l)}
                 </th>
@@ -313,7 +314,7 @@ function ClassExample() {
                 <th scope="row" className="h-11 whitespace-nowrap pl-4 text-left font-medium">
                   {r.name}
                 </th>
-                {levels.map((l) => {
+                {levels.filter(levelAvailable).map((l) => {
                   const ids = l.chapters.flatMap((c) => c.problems)
                   const solved = ids.filter((id) => r.states[order.get(id)!] === 'done').length
                   return (
@@ -397,7 +398,7 @@ export function Landing() {
         <div className={cx(container, 'py-16 sm:py-24')}>
           <SectionHeading
             id="programme"
-            title={t(`${problemList.length} problèmes, ${chapters.length} chapitres, ${levels.length} niveaux`, `${problemList.length} problems, ${chapters.length} chapters, ${levels.length} levels`)}
+            title={t(`Le parcours : ${levels.length} niveaux, ${chapters.length} chapitres`, `The path: ${levels.length} levels, ${chapters.length} chapters`)}
             action={
               <LinkButton to="/parcours" variant="secondary">
                 {t('Voir le parcours', 'See the path')}
@@ -439,8 +440,8 @@ export function Landing() {
                 [
                   t('Problème par problème', 'Problem by problem'),
                   t(
-                    `Pour chaque élève, lesquels des ${problemList.length} problèmes il a réussis, rangés par niveau comme dans l’exemple ci-dessous, avec ses points.`,
-                    `For each student, which of the ${problemList.length} problems they solved, grouped by level as in the example below, with their points.`,
+                    `Pour chaque élève, les exercices du parcours qu’il a réussis, rangés par niveau comme dans l’exemple ci-dessous, avec ses points.`,
+                    `For each student, the path exercises they solved, grouped by level as in the example below, with their points.`,
                   ),
                 ],
                 [
