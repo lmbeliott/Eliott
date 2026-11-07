@@ -55,7 +55,7 @@ int main() {
 
 Le programme affiche `2`, puis `17`. La première boucle s'arrête au premier négatif, d'indice 2 : la valeur `-1`, plus loin, n'est jamais examinée. Si aucun négatif n'existait, la boucle irait jusqu'au bout et `pos` garderait la valeur `-1`. La seconde boucle saute les négatifs et additionne `4 + 8 + 5`.
 
-Les deux écritures de la recherche sont équivalentes. La version `while i < n and not trouve` met toute la règle d'arrêt dans la condition, ce qui facilite le raisonnement sur la boucle. La version avec `break` est plus courte quand la condition d'arrêt est compliquée, ou quand on la découvre au milieu du corps de la boucle. `continue` évite d'emboîter tout le reste du corps dans un `if` : il sert à écarter tôt les cas sans intérêt. Deux précautions : `break` ne sort que de la boucle **la plus intérieure**, pas des boucles qui l'entourent ; et dans une fonction, `return` arrête à la fois la boucle et la fonction, ce qui est souvent plus clair encore.
+Les deux écritures de la recherche sont équivalentes. La condition `while i < n and not trouve` rassemble toute la règle d'arrêt, ce qui facilite le raisonnement sur la boucle ; `break` est plus court quand l'arrêt se décide au milieu du corps. `continue` écarte tôt les cas sans intérêt, sans emboîter tout le reste du corps dans un `if`. Dans une fonction, `return` arrête à la fois la boucle et la fonction, ce qui est souvent plus clair encore.
 
 ## Décalages et rotations
 
@@ -90,7 +90,7 @@ int main() {
 }
 ```
 
-Le programme affiche `4 5 1 2 3` : 12 crans font deux tours complets, plus 2 crans. Cette méthode utilise un second tableau. On peut aussi tourner **en place**, avec trois retournements : retourner les `n − k` premières valeurs, puis les `k` dernières, puis tout le tableau. Sur l'exemple : `3 2 1 5 4`, puis `4 5 1 2 3`. C'est juste, car retourner tout le tableau place le bloc de fin au début, mais chaque bloc se retrouve à l'envers ; les deux premiers retournements l'avaient mis à l'envers à l'avance. Chaque valeur est déplacée au plus deux fois : le coût est proportionnel à `n` dans les deux méthodes.
+Le programme affiche `4 5 1 2 3` : 12 crans font deux tours complets, plus 2 crans. Cette méthode utilise un second tableau. On peut aussi tourner **en place**, avec trois retournements : retourner les `n − k` premières valeurs, puis les `k` dernières, puis tout le tableau. Sur l'exemple : `3 2 1 5 4`, puis `4 5 1 2 3`. Pourquoi c'est juste : notons `A` le bloc des `n − k` premières valeurs et `B` celui des `k` dernières. Le tableau est `A` suivi de `B`, et l'on veut `B` suivi de `A`. Retourner un tableau formé d'un bloc `X` suivi d'un bloc `Y` donne `Y` retourné suivi de `X` retourné : la dernière valeur passe en tête, et ainsi de suite. Après les deux premiers retournements, le tableau est `A` retourné suivi de `B` retourné ; le dernier retournement donne donc `B` retourné deux fois, c'est-à-dire `B`, suivi de `A`. Chaque retournement se fait par échanges, comme au niveau 2, et chaque valeur est déplacée deux fois au plus : le coût est proportionnel à `n` dans les deux méthodes.
 
 ## Transformer en place
 
@@ -177,7 +177,7 @@ int main() {
 
 Le programme affiche `1 2 4 4 4 9 10`. La condition se lit ainsi : on prend dans `a` si `b` est épuisé, ou si `a` ne l'est pas et que `a[i] ≤ b[j]`. L'ordre des tests compte : `b[j]` n'est jamais lu quand `j == len(b)`, car `or` s'arrête dès que sa première partie est vraie.
 
-**Pourquoi c'est juste.** Invariant : `r` contient, triées, les `i + j` plus petites valeurs des deux tableaux. Comme `a` est trié, les valeurs restantes de `a` sont toutes au moins égales à `a[i]` ; de même pour `b`. La plus petite des deux est donc la plus petite de toutes les valeurs restantes, et l'ajouter à la fin de `r` conserve l'invariant. **Coût.** Chaque étape avance un indice : exactement `n + m` étapes. La même idée de deux indices qui avancent ensemble sert à calculer l'intersection de deux tableaux triés, ou le plus petit écart entre leurs valeurs.
+**Pourquoi c'est juste.** Invariant : au début de chaque tour, `r` contient `a[0..i − 1]` et `b[0..j − 1]`, dans l'ordre croissant, et chaque valeur de `r` est inférieure ou égale à toutes les valeurs restantes (`a[i..]` et `b[j..]`). C'est vrai au départ, où `r` est vide. Comme `a` est trié, les valeurs restantes de `a` sont toutes au moins égales à `a[i]` ; de même pour `b`. La valeur prise est donc la plus petite de toutes les valeurs restantes : elle est au moins égale à la dernière valeur de `r` (invariant), donc `r` reste trié, et elle est inférieure ou égale à tout ce qui reste. L'invariant est conservé. À la sortie, `i = n` et `j = m` : `r` contient toutes les valeurs, triées. **Coût.** Chaque étape avance un indice : exactement `n + m` étapes. La même idée de deux indices qui avancent ensemble sert à calculer l'intersection de deux tableaux triés, ou le plus petit écart entre leurs valeurs.
 
 ## Compter avec un tableau de fréquences
 
@@ -217,7 +217,7 @@ Le programme affiche `4` : trois paires de `3` et une paire de `1`. Chaque paire
 
 Beaucoup de problèmes demandent une information **pour chaque case** qui dépend de tout le tableau. Par exemple : pour chaque valeur, le plus grand des **autres** éléments. Recalculer un maximum pour chaque case coûte `n` opérations par case, donc `n²` en tout. Il vaut mieux un premier passage qui calcule une fois pour toutes ce dont on a besoin, puis un second qui répond pour chaque case.
 
-Ici, le premier passage calcule le maximum `m1` et le **deuxième maximum** `m2` (le plus grand une fois une occurrence de `m1` retirée). Pour une case qui vaut `m1`, le plus grand des autres est `m2` ; pour toute autre case, c'est `m1`. Cela reste juste quand le maximum apparaît deux fois : `m2` vaut alors aussi `m1`.
+Ici, le premier passage calcule le maximum `m1` et le **deuxième maximum** `m2` (le plus grand une fois une occurrence de `m1` retirée). Pour une case qui vaut `m1`, le plus grand des autres est `m2` ; pour toute autre case, c'est `m1`. Cela reste juste quand le maximum apparaît deux fois : `m2` vaut alors aussi `m1`. Le tableau doit avoir au moins deux cases. Invariant du premier passage : après avoir examiné `t[0..i]`, `m1` et `m2` sont les deux plus grandes valeurs de `t[0..i]` (`m1 ≥ m2`, en comptant les répétitions). Une nouvelle valeur `x` plus grande que `m1` devient le maximum et l'ancien maximum devient le second ; sinon, elle ne remplace que `m2`, si elle le dépasse.
 
 ```python
 t = [5, 9, 2, 9, 4]
@@ -269,7 +269,7 @@ Le programme affiche `9 9 9 9 9` : le maximum 9 apparaît deux fois, donc chaque
 
 Une **portion** d'un tableau est une suite de cases consécutives, `t[g]` à `t[d]` avec `g ≤ d`. On cherche la portion dont la somme est la plus grande. Il y a `n × (n + 1) / 2` portions : les essayer toutes, même en mettant à jour la somme au fur et à mesure, fait de l'ordre de `n²` additions.
 
-Un seul passage suffit. Notons `fin[i]` la plus grande somme d'une portion qui **se termine** à l'indice `i`. Une telle portion est soit la case `i` seule, soit une portion qui se termine en `i − 1`, prolongée de `t[i]` ; dans ce cas, mieux vaut prolonger la meilleure. Donc `fin[i] = t[i] + max(fin[i − 1], 0)` : on prolonge si la meilleure somme précédente est positive ou nulle, et on repart de zéro sinon. Comme toute portion se termine à un certain indice, la réponse est le plus grand des `fin[i]`.
+Un seul passage suffit. Notons `fin[i]` la plus grande somme d'une portion qui **se termine** à l'indice `i`. Une telle portion est soit la case `i` seule, de somme `t[i]`, soit une portion qui se termine en `i − 1`, prolongée de `t[i]`, de somme au plus `fin[i − 1] + t[i]`, valeur atteinte en prolongeant la meilleure. Donc `fin[i] = max(t[i], fin[i − 1] + t[i]) = t[i] + max(fin[i − 1], 0)` : on prolonge si la meilleure somme précédente est positive ou nulle, et on repart de zéro sinon. Comme toute portion se termine à un certain indice, la réponse est le plus grand des `fin[i]`.
 
 ```python
 t = [2, -5, 3, -1, 4, -7, 2]
@@ -306,7 +306,7 @@ int main() {
 }
 ```
 
-Le programme affiche `6`, la somme de `3 -1 4`. Les valeurs successives de `courant` sont 2, −3, 3, 2, 6, −1, 2 : après le −5, la somme −3 est négative, et l'on repart de la case suivante. La variable `courant` vaut `fin[i]` à la fin de chaque tour : c'est l'invariant qui garantit la correction. On initialise avec `t[0]` et non avec 0 : si toutes les valeurs sont négatives, la réponse est la plus grande d'entre elles. Le coût est d'un passage.
+Le programme affiche `6`, la somme de `3 -1 4`. Les valeurs successives de `courant` sont 2, −3, 3, 2, 6, −1, 2 : après le −5, la somme −3 est négative, et l'on repart de la case suivante. Invariant : à la fin du tour `i`, `courant` vaut `fin[i]` et `meilleur` le plus grand des `fin[0..i]` ; à la sortie, `meilleur` est donc la plus grande somme d'une portion. On initialise avec `t[0]` et non avec 0 : si toutes les valeurs sont négatives, la réponse est la plus grande d'entre elles. Le coût est d'un passage.
 
 ## Erreurs fréquentes
 
@@ -314,7 +314,7 @@ Le programme affiche `6`, la somme de `3 -1 4`. Les valeurs successives de `cour
 
 **Lire après la fin dans une fusion.** Avec la condition `a[i] <= b[j]` seule, la boucle lit `b[j]` alors que `j == len(b)` : `IndexError: list index out of range` en Python, une valeur quelconque en C++. On teste d'abord si un tableau est épuisé.
 
-**Oublier le reste pour une rotation.** Avec `k = 10¹⁸`, `(i + k) % n` fonctionne en Python, mais déborde en C++ si `k` est un `int`. On calcule `k % n` d'abord, avec des `long long`, et en ramenant un `k` négatif entre 0 et `n − 1`.
+**Oublier le reste pour une rotation.** Avec `k = 10¹⁸`, `(i + k) % n` fonctionne en Python. En C++, 10¹⁸ ne tient pas dans un `int` : on lit `k` dans un `long long`, puis on calcule d'abord `((k % n) + n) % n`, qui ramène aussi un `k` négatif entre 0 et `n − 1` (sinon, `(i + k) % n` peut être négatif).
 
 **Un tableau de fréquences trop grand.** `[0] * (10**9 + 1)` provoque `MemoryError`. Le tableau de fréquences ne convient que pour de petites valeurs ; sinon, on utilise un dictionnaire.
 

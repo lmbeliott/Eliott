@@ -252,7 +252,55 @@ int main() {
 
 Le programme affiche `2` : la portion `5 2`.
 
-**Pourquoi c'est juste.** Les valeurs étant positives, raccourcir une portion diminue sa somme. Quand `d` est fixé, la boucle `while` avance `g` tant que `[g, d]` convient : elle examine toutes les portions valides qui finissent en `d` et dont le début est au moins `g`. Une portion `[g', d]` avec `g' < g` n'a pas besoin d'être examinée : `g` a dépassé `g'` à un moment où `[g', d']` convenait, pour un `d' ≤ d`, et cette portion, au moins aussi courte, a déjà été notée. **Coût** : `d` avance `n` fois et `g` avance au plus `n` fois au total, car il ne recule jamais : au plus `2n` étapes, même si un seul tour de `for` peut faire avancer `g` de beaucoup. Avec des valeurs négatives, la propriété n'est plus monotone et la méthode donne des réponses fausses.
+**Pourquoi c'est juste.** Chaque longueur notée est celle d'une fenêtre qui convient. Il reste à voir que la plus courte est notée. Soit `[a, b]` une plus courte portion qui convient, et regardons `g` au début du tour `d = b`.
+
+- Si `g ≤ a`, chaque fenêtre `[g, b]` avec `g ≤ a` contient `[a, b]` ; les valeurs étant positives, sa somme est au moins celle de `[a, b]`, donc au moins `S`. La boucle `while` avance donc `g` au moins jusqu'à `a + 1`, et note au passage la longueur de `[a, b]`.
+- Si `g > a`, alors `g` est passé de `a` à `a + 1` pendant un tour `d' < b`, juste après avoir noté la fenêtre `[a, d']`. Cette fenêtre convient et elle est plus courte que `[a, b]` : c'est impossible.
+
+**Coût** : `d` avance `n` fois et `g` avance au plus `n` fois au total, car il ne recule jamais : au plus `2n` étapes, même si un seul tour de `for` peut faire avancer `g` de beaucoup. Avec des valeurs négatives, une fenêtre plus grande n'a plus forcément une plus grande somme : le premier cas ne tient plus, et la méthode donne des réponses fausses.
+
+**La plus longue portion.** La même méthode traite la monotonie dans l'autre sens : quand toute portion **contenue** dans une portion qui convient convient aussi (une somme au plus `S` avec des valeurs positives, au plus `K` zéros, au plus `K` valeurs différentes…), on cherche la plus **longue** portion qui convient. Pour chaque fin `d`, on ajoute `t[d]`, puis on avance `g` **tant que la fenêtre ne convient pas**. Voici la plus longue portion de somme au plus `S` :
+
+```python
+t = [2, 1, 5, 2, 3, 2]
+S = 7
+g = 0
+somme = 0
+meilleure = 0
+for d in range(len(t)):
+    somme = somme + t[d]
+    while somme > S:
+        somme = somme - t[g]
+        g = g + 1
+    meilleure = max(meilleure, d - g + 1)
+print(meilleure)
+```
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> t = {2, 1, 5, 2, 3, 2};
+    int S = 7;
+    int n = t.size();
+    int g = 0, somme = 0, meilleure = 0;
+    for (int d = 0; d < n; d++) {
+        somme += t[d];
+        while (somme > S) {
+            somme -= t[g];
+            g++;
+        }
+        meilleure = max(meilleure, d - g + 1);
+    }
+    cout << meilleure << "\n";
+    return 0;
+}
+```
+
+Le programme affiche `3` : la portion `2 3 2`. Invariant : après la boucle `while`, `g` est le plus petit début tel que `[g, d]` convienne. En effet, si `[g', d + 1]` convient, `[g', d]`, qui est contenue dedans, convient aussi : le plus petit début valide ne recule jamais quand `d` avance, et `g` n'a jamais besoin de revenir en arrière. La plus longue portion qui finit en `d` est donc `[g, d]`, et l'on essaie toutes les fins. Si `t[d]` dépasse `S` à lui seul, `g` arrive à `d + 1` : la fenêtre est vide, de longueur 0. Le coût est le même : au plus `2n` étapes.
 
 ## Erreurs fréquentes
 
@@ -270,7 +318,7 @@ Le programme affiche `2` : la portion `5 2`.
 
 ## Un exemple complet
 
-**Énoncé.** `N` arbres sont plantés le long d'un chemin, aux positions `X₁, …, X_N` (des entiers, dans le désordre). Compter les paires d'arbres distants d'au plus `D` mètres. `N` peut atteindre 100 000.
+**Énoncé.** `N` arbres sont plantés le long d'un chemin, aux positions `X₁, …, X_N` (des entiers, dans le désordre). Compter les paires d'arbres distants d'au plus `D` mètres, avec `D ≥ 0`. `N` peut atteindre 100 000.
 
 **Idée.** Tester les paires coûte 5 milliards d'opérations. On trie les positions. Pour chaque arbre `d`, les arbres placés avant lui et à distance au plus `D` forment un bloc `g, g + 1, …, d − 1` qui finit juste avant lui : on maintient le début `g` de ce bloc, qui ne recule jamais quand `d` avance.
 

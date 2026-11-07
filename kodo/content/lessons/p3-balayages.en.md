@@ -252,7 +252,55 @@ int main() {
 
 The program prints `2`: the segment `5 2`.
 
-**Why it is correct.** Since the values are positive, shortening a segment decreases its sum. When `d` is fixed, the `while` loop moves `g` forward as long as `[g, d]` works: it examines all the valid segments ending at `d` whose start is at least `g`. A segment `[g', d]` with `g' < g` does not need to be examined: `g` passed `g'` at a moment when `[g', d']` worked, for some `d' ≤ d`, and that segment, at least as short, has already been noted. **Cost**: `d` moves forward `n` times and `g` moves forward at most `n` times in total, since it never moves back: at most `2n` steps, even though a single turn of the `for` loop can move `g` a long way. With negative values, the property is no longer monotonic and the method gives wrong answers.
+**Why it is correct.** Each length noted is that of a window that works. It remains to see that the shortest one is noted. Let `[a, b]` be a shortest segment that works, and look at `g` at the start of the turn `d = b`.
+
+- If `g ≤ a`, each window `[g, b]` with `g ≤ a` contains `[a, b]`; since the values are positive, its sum is at least that of `[a, b]`, so at least `S`. The `while` loop therefore moves `g` at least up to `a + 1`, and notes the length of `[a, b]` on the way.
+- If `g > a`, then `g` went from `a` to `a + 1` during a turn `d' < b`, just after noting the window `[a, d']`. That window works and is shorter than `[a, b]`: this is impossible.
+
+**Cost**: `d` moves forward `n` times and `g` moves forward at most `n` times in total, since it never moves back: at most `2n` steps, even though a single turn of the `for` loop can move `g` a long way. With negative values, a larger window no longer necessarily has a larger sum: the first case no longer holds, and the method gives wrong answers.
+
+**The longest segment.** The same method handles monotonicity in the other direction: when every segment **contained** in a segment that works also works (a sum at most `S` with positive values, at most `K` zeros, at most `K` distinct values…), you look for the **longest** segment that works. For each end `d`, add `t[d]`, then move `g` forward **as long as the window does not work**. Here is the longest segment with sum at most `S`:
+
+```python
+t = [2, 1, 5, 2, 3, 2]
+S = 7
+g = 0
+somme = 0
+meilleure = 0
+for d in range(len(t)):
+    somme = somme + t[d]
+    while somme > S:
+        somme = somme - t[g]
+        g = g + 1
+    meilleure = max(meilleure, d - g + 1)
+print(meilleure)
+```
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> t = {2, 1, 5, 2, 3, 2};
+    int S = 7;
+    int n = t.size();
+    int g = 0, somme = 0, meilleure = 0;
+    for (int d = 0; d < n; d++) {
+        somme += t[d];
+        while (somme > S) {
+            somme -= t[g];
+            g++;
+        }
+        meilleure = max(meilleure, d - g + 1);
+    }
+    cout << meilleure << "\n";
+    return 0;
+}
+```
+
+The program prints `3`: the segment `2 3 2`. Invariant: after the `while` loop, `g` is the smallest start such that `[g, d]` works. Indeed, if `[g', d + 1]` works, `[g', d]`, which is contained in it, works too: the smallest valid start never moves back when `d` moves forward, and `g` never needs to go back. The longest segment ending at `d` is therefore `[g, d]`, and every end is tried. If `t[d]` alone exceeds `S`, `g` reaches `d + 1`: the window is empty, of length 0. The cost is the same: at most `2n` steps.
 
 ## Common mistakes
 
@@ -270,7 +318,7 @@ The program prints `2`: the segment `5 2`.
 
 ## A complete example
 
-**Statement.** `N` trees are planted along a path, at positions `X₁, …, X_N` (integers, in any order). Count the pairs of trees at most `D` metres apart. `N` can reach 100,000.
+**Statement.** `N` trees are planted along a path, at positions `X₁, …, X_N` (integers, in any order). Count the pairs of trees at most `D` metres apart, with `D ≥ 0`. `N` can reach 100,000.
 
 **Idea.** Testing the pairs costs 5 billion operations. Sort the positions. For each tree `d`, the trees placed before it and at distance at most `D` form a block `g, g + 1, …, d − 1` ending just before it: keep track of the start `g` of this block, which never moves back when `d` moves forward.
 

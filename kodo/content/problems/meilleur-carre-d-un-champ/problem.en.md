@@ -27,4 +27,4 @@ Compute the **two-dimensional prefix sums**: `S[i][j]` is the number of trees in
 
 The square whose bottom-right corner is `(i, j)` covers rows `i − K + 1` to `i` and columns `j − K + 1` to `j`. By the same inclusion-exclusion argument, it holds `S[i][j] − S[i−K][j] − S[i][j−K] + S[i−K][j−K]` trees. Go through the corners `(i, j)` row by row, then column by column, and only keep a square if it is **strictly** better than the previous one: the first optimal square met is the one with the smallest row, then the smallest column. The top-left corner is `(i − K + 1, j − K + 1)`.
 
-**Cost.** About N × M operations for `S`, then four reads per square: a little over 10⁵ operations in total. The direct method makes up to (N − K + 1)² × K² additions, that is about 5 × 10⁸ for N = M = 300 and K = 150. The traps: indices shifted by 1, and a forgotten `+ S[i−K][j−K]`.
+**Cost.** About N × M operations for `S`, then four reads per square: a few hundred thousand operations in total for N = M = 300. The direct method makes up to (N − K + 1)² × K² additions, that is about 5 × 10⁸ for N = M = 300 and K = 150. The traps: indices shifted by 1, and a forgotten `+ S[i−K][j−K]`.

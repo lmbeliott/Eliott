@@ -1,5 +1,5 @@
+# nombre de coups pour aller de (a, b) à (c, d), ou -1
 def coups(a, b, c, d):
-    """Nombre de coups pour aller de (a, b) à (c, d), ou -1."""
     total = 0
     while True:
         if c == a and d == b:

@@ -21,7 +21,7 @@ Une seule ligne : les `N` notes dans l'ordre croissant, séparées par des espac
 - 0 ≤ chaque note ≤ 20
 
 ## Indices
-1. Un tri par sélection ou par insertion fait de l'ordre de N² / 2 comparaisons : plus d'un milliard pour N = 50 000. Il faut profiter du fait que les notes ne prennent que 21 valeurs.
+1. Un tri par sélection ou par insertion fait de l'ordre de N² / 2 comparaisons : plus d'un milliard pour N = 50 000. Mais les notes ne prennent que 21 valeurs : on peut en profiter.
 2. Compter combien de copies ont obtenu 0, combien ont obtenu 1, …, combien ont obtenu 20.
 3. Il reste à afficher chaque note autant de fois qu'elle a été comptée, de 0 à 20.
 

@@ -4,7 +4,7 @@ sys.setrecursionlimit(10000)
 def lire_texte(i):
     # lit le texte qui commence à la position i, jusqu'à une ')' ou la fin
     # renvoie (liste des morceaux, longueur développée, position atteinte)
-    # un morceau est une lettre, ou un triplet (répétitions, morceaux du groupe, longueur du groupe)
+    # un morceau est ("lettre", l) ou ("groupe", répétitions, morceaux du groupe, longueur du groupe)
     morceaux = []
     longueur = 0
     while i < len(s) and s[i] != ")":
@@ -15,10 +15,10 @@ def lire_texte(i):
             c = int(s[i:j])
             groupe, lg, i = lire_texte(j + 1)   # j est la position de '('
             i = i + 1                            # saute ')'
-            morceaux.append((c, groupe, lg))
+            morceaux.append(("groupe", c, groupe, lg))
             longueur = longueur + c * lg
         else:
-            morceaux.append(s[i])
+            morceaux.append(("lettre", s[i]))
             longueur = longueur + 1
             i = i + 1
     return morceaux, longueur, i
@@ -26,12 +26,12 @@ def lire_texte(i):
 def chercher(morceaux, k):
     # k-ième lettre (k >= 1) du texte développé décrit par morceaux
     for m in morceaux:
-        if isinstance(m, str):
+        if m[0] == "lettre":
             if k == 1:
-                return m
+                return m[1]
             k = k - 1
         else:
-            c, groupe, lg = m
+            nature, c, groupe, lg = m
             if k <= c * lg:
                 return chercher(groupe, (k - 1) % lg + 1)
             k = k - c * lg

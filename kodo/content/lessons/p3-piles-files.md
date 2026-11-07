@@ -95,6 +95,8 @@ int main() {
 }
 ```
 
+En Python, `x if condition else y` vaut `x` si la condition est vraie et `y` sinon : c'est l'équivalent de `condition ? x : y` en C++. La ligne `attendu = ...` donne donc l'ouvrante qui correspond à la fermante `c`.
+
 Avec `([]())`, la pile passe par `(`, `([`, `(`, `((`, `(` puis devient vide : le programme affiche `OUI`. Avec `([)]`, la fermante `)` trouve `[` au sommet : `NON`. Avec `(()`, une ouvrante reste dans la pile à la fin : `NON`.
 
 **Pourquoi c'est juste.** Invariant : avant chaque caractère, la pile contient, dans l'ordre, les ouvrantes déjà lues et pas encore refermées ; la plus récente est au sommet. Une fermante doit refermer justement celle du sommet. **Coût** : chaque caractère est empilé au plus une fois et dépilé au plus une fois, donc au plus `2n` opérations de pile pour une chaîne de longueur `n`.
@@ -281,7 +283,9 @@ int main() {
 
 Le programme affiche `7 8 5 5 8 -1`. Quand le 5 arrive, la pile contient les positions des valeurs `7 3 1` ; le 1 puis le 3 sont dépilés avec la réponse 5, et le 7 reste.
 
-**Pourquoi c'est juste.** Invariant : avant de traiter la position `i`, la pile contient exactement les positions `j < i` dont aucune valeur entre `j + 1` et `i − 1` n'est plus grande que `t[j]`, et leurs valeurs **décroissent** (au sens large) du bas vers le haut. On parle de **pile monotone**. Quand `t[i]` arrive, les positions en attente plus petites que `t[i]` sont toutes en haut de la pile, grâce à cet ordre : la boucle `while` les trouve toutes, et s'arrête sur la première valeur supérieure ou égale, sous laquelle aucune n'est plus petite. Pour chacune, `t[i]` est bien la première valeur plus grande à sa droite. Les positions qui restent dans la pile à la fin n'ont pas de réponse : elles gardent `-1`.
+**Pourquoi c'est juste.** Invariant : avant de traiter la position `i`, la pile contient exactement les positions **en attente**, c'est-à-dire les `j < i` telles qu'aucune des valeurs `t[j + 1], …, t[i − 1]` n'est plus grande que `t[j]`, rangées de bas en haut par position croissante ; et leurs valeurs **décroissent** (au sens large) du bas vers le haut. On parle de **pile monotone**. Au départ, la pile est vide et aucune position n'est en attente.
+
+Quand `t[i]` arrive, les positions en attente de valeur plus petite que `t[i]` sont toutes en haut de la pile, puisque les valeurs décroissent vers le haut : la boucle `while` les dépile toutes, et s'arrête sur la première valeur supérieure ou égale (ou sur une pile vide). Pour chaque position `j` dépilée, `t[i]` est bien la première valeur plus grande à droite de `j` : les valeurs entre les deux ne dépassaient pas `t[j]`, sinon `j` ne serait plus en attente. Les positions qui restent ne sont pas dépassées par `t[i]` et restent en attente ; on empile enfin `i`, de valeur au plus égale à celle du sommet. L'invariant est donc vrai avant `i + 1`. À la fin, les positions encore dans la pile n'ont jamais été dépassées : elles gardent `-1`.
 
 **Combien d'opérations.** Un seul passage peut dépiler beaucoup d'éléments, et l'on pourrait craindre `n²` opérations. Il faut compter globalement : chaque position est empilée une fois et dépilée au plus une fois. Sur tout le programme, il y a donc au plus `n` dépilements, et la boucle `while` fait au plus `2n` tests au total. L'algorithme fait de l'ordre de `n` opérations, au lieu de `n² / 2`.
 

@@ -7,7 +7,7 @@ Let `f(x) = (A × x + B) mod M`, the remainder of the division of `A × x + B` b
 
 For example, with `M = 10`, `A = 3`, `B = 1`, `X = 2` and `K = 3`, you successively get 7, 2, then 7.
 
-Each test contains `T` questions of this kind.
+The input contains `T` questions of this kind.
 
 ## Input
 - The first line contains `T`.

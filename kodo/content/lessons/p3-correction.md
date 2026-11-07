@@ -139,7 +139,7 @@ Le programme affiche `18 17 9`. Les couples successifs pour `(252, 198)` sont `(
 
 **Terminaison.** `b` est un variant : c'est un entier positif ou nul, et il est remplacé par `a mod b`, strictement plus petit que `b`.
 
-**Coût.** Le variant ne dit pas seulement que la boucle s'arrête : il borne le nombre de tours par la valeur de `b`, ce qui est très pessimiste. On montre mieux : **en deux tours, le premier nombre est au moins divisé par deux**. Après deux tours, `(a, b)` est devenu `(r, r')` avec `r = a mod b`. Si `b ≤ a / 2`, alors `r < b ≤ a / 2`. Sinon, `b > a / 2`, le quotient vaut 1, et `r = a − b < a / 2`. Dans les deux cas, `r < a / 2`. Un nombre inférieur à 10¹⁸ ≈ 2⁶⁰ ne peut être divisé par deux que 60 fois avant d'atteindre 0 : il y a au plus 120 tours environ. Le nombre de tours est donc proportionnel au **nombre de chiffres** de `a`, pas à sa valeur.
+**Coût.** Le variant ne dit pas seulement que la boucle s'arrête : il borne le nombre de tours par la valeur de `b`, ce qui est très pessimiste. On montre mieux : **en deux tours, le premier nombre est plus que divisé par deux**. Après le premier tour, on a toujours `a > b`, puisque le nouveau `b` est le reste d'une division par le nouveau `a`. Partons donc d'un couple `(a, b)` avec `a > b > 0` : deux tours plus tard, il est devenu `(r, r')` avec `r = a mod b`. Si `b ≤ a / 2`, alors `r < b ≤ a / 2`. Sinon, `a / 2 < b < a`, le quotient vaut 1, et `r = a − b < a / 2`. Dans les deux cas, `r < a / 2`. Un nombre inférieur à 10¹⁸ < 2⁶⁰ ne peut être divisé par deux que 60 fois avant d'atteindre 0 : il y a au plus 120 tours environ. Le nombre de tours est donc au plus proportionnel au **nombre de chiffres** des données, et non à leur valeur.
 
 ## L'exponentiation rapide
 
@@ -190,7 +190,7 @@ int main() {
 
 Le programme affiche `323 719476260`. En effet, 3¹³ = 1 594 323, dont les trois derniers chiffres sont 323. On calcule modulo `m` pour garder des nombres petits : en C++, un produit de deux nombres inférieurs à 10⁹ + 7 tient dans un `long long`, alors que 2 à la puissance 10¹⁸ n'aurait aucune chance d'y tenir.
 
-**Correction.** Au départ, `r = 1`, `x = a` et `n = N` : `r × xⁿ = a^N`. Si `n` est impair, remplacer `r` par `r × x` et `n` par `n − 1` ne change pas `r × xⁿ`, puisque `x × xⁿ⁻¹ = xⁿ`. Ensuite `n` est pair, et remplacer `x` par `x²` et `n` par `n / 2` ne change pas `xⁿ`. À la sortie, `n = 0`, donc `x⁰ = 1` et `r = a^N`. **Terminaison** : `n` est un variant, qui est au moins divisé par deux à chaque tour. **Coût** : au plus 60 tours pour `n ≤ 10¹⁸`, et au plus deux multiplications par tour. La même idée, avec le même invariant, permet de composer très vite une fonction avec elle-même, ou de multiplier sans débordement.
+**Correction.** Tous les calculs sont faits modulo `m` (avec `m ≥ 2`), ce qui ne change pas le reste d'un produit. Au départ, `r = 1`, `x = a mod m` et `n = N` : `r × xⁿ ≡ a^N`. Si `n` est impair, remplacer `r` par `r × x` et `n` par `n − 1` ne change pas `r × xⁿ`, puisque `x × xⁿ⁻¹ = xⁿ`. Ensuite `n` est pair, et remplacer `x` par `x²` et `n` par `n / 2` ne change pas `xⁿ`. À la sortie, `n = 0`, donc `x⁰ = 1` et `r ≡ a^N (mod m)` ; comme `r` est compris entre 0 et `m − 1`, c'est exactement le reste de `a^N` par `m`. **Terminaison** : `n` est un variant, qui est au moins divisé par deux à chaque tour. **Coût** : au plus 60 tours pour `n ≤ 10¹⁸`, et au plus deux multiplications par tour. La même idée, avec le même invariant, permet de composer très vite une fonction avec elle-même, ou de multiplier sans débordement.
 
 ## L'écriture en base 2
 
@@ -240,7 +240,37 @@ int main() {
 }
 ```
 
-Le programme affiche `1101 0 10000000000`. Pour 13, les restes successifs sont 1, 0, 1, 1, lus à l'envers. **Correction** : au départ, `k = 0` et `N = q` ; un tour remplace `q` par `q // 2` en rangeant le chiffre `q % 2` au rang `k`, et `q = 2 × (q // 2) + q % 2` conserve l'égalité. À la sortie, `q = 0`, et `N` est la valeur des chiffres obtenus. **Terminaison** : `q` diminue strictement tant qu'il est positif. **Coût** : un tour par chiffre binaire, environ 60 pour 10¹⁸.
+Le programme affiche `1101 0 10000000000`. Pour 13, les restes successifs sont 1, 0, 1, 1, lus à l'envers. **Correction** : au départ, `k = 0` et `N = q` ; un tour remplace `q` par `q // 2` en rangeant le chiffre `q % 2` au rang `k`, puis augmente `k` de 1, et l'égalité `q × 2^k = (q // 2) × 2^(k+1) + (q % 2) × 2^k` montre que l'invariant est conservé. À la sortie, `q = 0`, et `N` est la valeur des chiffres obtenus. Le dernier chiffre rangé, celui de tête, vient de `q = 1` : il vaut 1, et l'écriture n'a pas de zéro de tête. **Terminaison** : `q` diminue strictement tant qu'il est positif. **Coût** : un tour par chiffre binaire, environ 60 pour 10¹⁸.
+
+## Une quantité invariante
+
+Un invariant ne sert pas qu'à prouver une boucle. Face à un processus où l'on choisit librement les opérations et leur ordre, on cherche une quantité que **toutes** les opérations conservent. Elle répond souvent à deux questions : quels états sont impossibles à atteindre, et pourquoi le résultat ne dépend pas des choix.
+
+Exemple : les nombres 1, 2, …, 10 sont écrits au tableau. Une opération efface deux nombres `a` et `b` et écrit `|a − b|` à leur place. Après neuf opérations, il reste un seul nombre. Peut-il valoir 0 ? Essayer toutes les suites de choix serait très long. Mais une opération remplace `a + b` par `|a − b|` dans la somme des nombres écrits, et ces deux valeurs diffèrent de `2 × min(a, b)`, un nombre pair : **la parité de la somme ne change jamais**. Au départ, la somme vaut 55, qui est impaire. Le dernier nombre est donc impair, quels que soient les choix : il ne vaut jamais 0. Le programme suivant fait un choix particulier, combiner à chaque fois le résultat courant avec le nombre suivant.
+
+```python
+x = 1
+for v in range(2, 11):
+    x = abs(x - v)
+print(x, x % 2)
+```
+
+```cpp
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 1;
+    for (int v = 2; v <= 10; v++) {
+        x = abs(x - v);
+    }
+    cout << x << " " << x % 2 << "\n";
+    return 0;
+}
+```
+
+Le programme affiche `5 1` : un nombre impair, comme prévu. Un autre ordre donnerait peut-être un autre nombre, mais jamais un nombre pair. Les quantités invariantes se cherchent parmi les sommes (éventuellement avec des poids), les différences, les parités et les restes modulo un petit entier : on écrit l'effet d'une opération sur chaque compteur, puis on cherche une combinaison que cet effet ne modifie pas. Le variant joue le rôle symétrique : une quantité entière positive qui diminue à chaque opération prouve que le processus s'arrête, quels que soient les choix.
 
 ## Les assertions
 

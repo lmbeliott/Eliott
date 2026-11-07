@@ -167,7 +167,7 @@ int main() {
 }
 ```
 
-Le programme affiche `3 5`. Un tour de la boucle `while` peut avancer `gauche` de plusieurs cases, mais `gauche` ne recule jamais et ne dépasse pas n : sur **toute** l'exécution, la boucle intérieure fait au plus n tours en tout. Le programme est en O(n). On parle de **coût amorti** : une étape isolée peut être chère, mais le total, réparti sur les n étapes, reste petit. Le même raisonnement s'applique à une pile où chaque élément est empilé une fois et dépilé au plus une fois, ou à `append` sur une liste Python, qui recopie parfois toute la liste pour l'agrandir mais coûte O(1) en moyenne sur une suite d'ajouts.
+Le programme affiche `3 5`. Un tour de la boucle `while` peut avancer `gauche` de plusieurs cases, mais `gauche` ne recule jamais et ne dépasse pas n : sur **toute** l'exécution, la boucle intérieure fait au plus n tours en tout. Le programme est en O(n). On parle de **coût amorti** : une étape isolée peut être chère, mais le total, réparti sur les n étapes, reste petit. Le même raisonnement s'applique à une pile où chaque élément est empilé une fois et dépilé au plus une fois, ou à `append` sur une liste Python, qui recopie parfois toute la liste pour l'agrandir mais dont le coût amorti reste O(1) par ajout : sur une suite de n ajouts, le total des recopies est O(n).
 
 ## Les erreurs fréquentes
 
@@ -185,7 +185,7 @@ Le programme affiche `3 5`. Un tour de la boucle `while` peut avancer `gauche` d
 
 **Première idée : chaque nombre séparément.** Pour chaque m, on cherche ses diviseurs en essayant les d jusqu'à √m, en ajoutant d et m/d quand d divise m (une seule fois si d × d = m). C'est O(√m) par nombre, donc O(N√N) en tout : environ 10⁹ opérations pour N = 10⁶. Trop lent, même en C++.
 
-**Deuxième idée : partir des diviseurs.** Plutôt que de chercher les diviseurs de chaque nombre, on part de chaque d et on l'ajoute à tous ses multiples : `s[d] += d`, `s[2d] += d`, `s[3d] += d`… Pour un d donné, il y a ⌊N/d⌋ multiples, donc le nombre total d'additions vaut N/1 + N/2 + … + N/N = N × (1 + 1/2 + … + 1/N). La somme 1 + 1/2 + … + 1/N, appelée **série harmonique**, est proche de ln(N) + 0,58 ; elle vaut environ 14,4 pour N = 10⁶. Le crible coûte donc O(N log N), soit 1,4 × 10⁷ additions : très bien en C++, mais plusieurs secondes en Python.
+**Deuxième idée : partir des diviseurs.** Plutôt que de chercher les diviseurs de chaque nombre, on part de chaque d et on l'ajoute à tous ses multiples : `s[d] += d`, `s[2d] += d`, `s[3d] += d`… Pour un d donné, il y a ⌊N/d⌋ multiples, donc le nombre total d'additions vaut N/1 + N/2 + … + N/N = N × (1 + 1/2 + … + 1/N). La somme H(N) = 1 + 1/2 + … + 1/N s'appelle la **série harmonique**. On la majore en regroupant ses termes par paquets : 1/2 + 1/3 ≤ 2 × 1/2 = 1, puis 1/4 + 1/5 + 1/6 + 1/7 ≤ 4 × 1/4 = 1, puis les huit termes de 1/8 à 1/15, au plus 1/8 chacun, etc. Chaque paquet vaut au plus 1, et il y a au plus log₂(N) paquets après le premier terme : H(N) ≤ 1 + log₂(N). Plus précisément, H(N) est proche de ln(N) + 0,58, soit environ 14,4 pour N = 10⁶. Cette méthode coûte donc O(N log N), soit 1,4 × 10⁷ additions : très bien en C++, mais plusieurs secondes en Python.
 
 **Troisième idée : échanger l'ordre de la somme.** On n'a pas besoin de chaque σ(m), seulement de leur total. Or la deuxième idée montre que le diviseur d est ajouté exactement ⌊N/d⌋ fois. La réponse vaut donc d × ⌊N/d⌋, sommé pour d de 1 à N : une seule boucle, en O(N).
 
@@ -219,6 +219,8 @@ int main() {
 
 **Complexité.** N tours de boucle, O(N) : 10⁶ tours, instantané en C++ et rapide en Python. Le total dépasse 2³¹ dès N ≈ 51 000 : `long long` en C++. On est passé de O(N√N) à O(N log N), puis à O(N), sans rien changer au problème, seulement à la manière de compter. C'est la démarche de tout le chapitre : estimer le coût d'une idée avec les contraintes, et chercher une meilleure façon de compter tant qu'il est trop élevé.
 
+**Et si N valait 10¹² ?** Même O(N) serait trop lent. Une dernière remarque sert souvent dans ce genre de somme : si d × q ≤ N, le plus petit des deux nombres d et q est au plus √N, sinon leur produit dépasserait N. En séparant les termes selon que d ou q est petit, on obtient des boucles de √N tours seulement, soit 10⁶ pour N = 10¹². Ce **découpage autour de √N** revient dans les exercices.
+
 ## À retenir
 
 - On mesure l'efficacité d'un algorithme par le nombre d'opérations élémentaires en fonction de la taille n des données, dans le **pire cas**.
@@ -226,4 +228,4 @@ int main() {
 - Classes courantes, de la plus rapide à la plus lente : O(1), O(log n), O(n), O(n log n), O(n²), O(2^n).
 - Ordre de grandeur : 10⁸ opérations simples par seconde en C++, 10⁷ en Python. Les contraintes de l'énoncé indiquent la complexité attendue : N ≤ 20 pour O(2^N), N ≤ 10⁴ pour O(N²), N ≤ 10⁶ pour O(N log N).
 - Une boucle intérieure n'est pas forcément un facteur n : si un indice ne fait qu'avancer, le coût **amorti** est linéaire.
-- Pour accélérer, on change de façon de compter : partir de chaque diviseur pour atteindre ses multiples, compter la contribution de chaque élément, regrouper les termes égaux (la série harmonique donne O(N log N)).
+- Pour accélérer, on change de façon de compter : partir de chaque diviseur pour atteindre ses multiples, compter la contribution de chaque élément, échanger l'ordre d'une somme ; parcourir les multiples de chaque d coûte O(N log N) (série harmonique), et le découpage autour de √N donne O(√N).

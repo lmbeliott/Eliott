@@ -139,7 +139,7 @@ The program prints `18 17 9`. The successive pairs for `(252, 198)` are `(198, 5
 
 **Termination.** `b` is a variant: it is a non-negative integer, and it is replaced by `a mod b`, strictly smaller than `b`.
 
-**Cost.** The variant does not only say that the loop stops: it bounds the number of turns by the value of `b`, which is very pessimistic. We can show better: **in two turns, the first number is at least halved**. After two turns, `(a, b)` has become `(r, r')` with `r = a mod b`. If `b ≤ a / 2`, then `r < b ≤ a / 2`. Otherwise, `b > a / 2`, the quotient is 1, and `r = a − b < a / 2`. In both cases, `r < a / 2`. A number below 10¹⁸ ≈ 2⁶⁰ can only be halved 60 times before reaching 0: there are at most about 120 turns. So the number of turns is proportional to the **number of digits** of `a`, not to its value.
+**Cost.** The variant does not only say that the loop stops: it bounds the number of turns by the value of `b`, which is very pessimistic. We can show better: **in two turns, the first number is more than halved**. After the first turn, we always have `a > b`, since the new `b` is the remainder of a division by the new `a`. So start from a pair `(a, b)` with `a > b > 0`: two turns later, it has become `(r, r')` with `r = a mod b`. If `b ≤ a / 2`, then `r < b ≤ a / 2`. Otherwise, `a / 2 < b < a`, the quotient is 1, and `r = a − b < a / 2`. In both cases, `r < a / 2`. A number below 10¹⁸ < 2⁶⁰ can only be halved 60 times before reaching 0: there are at most about 120 turns. So the number of turns is at most proportional to the **number of digits** of the inputs, not to their value.
 
 ## Fast exponentiation
 
@@ -190,7 +190,7 @@ int main() {
 
 The program prints `323 719476260`. Indeed, 3¹³ = 1,594,323, whose last three digits are 323. We compute modulo `m` to keep the numbers small: in C++, a product of two numbers below 10⁹ + 7 fits in a `long long`, while 2 to the power 10¹⁸ would have no chance of fitting.
 
-**Correctness.** At the start, `r = 1`, `x = a` and `n = N`: `r × xⁿ = a^N`. If `n` is odd, replacing `r` by `r × x` and `n` by `n − 1` does not change `r × xⁿ`, since `x × xⁿ⁻¹ = xⁿ`. Then `n` is even, and replacing `x` by `x²` and `n` by `n / 2` does not change `xⁿ`. On exit, `n = 0`, so `x⁰ = 1` and `r = a^N`. **Termination**: `n` is a variant, at least halved at each turn. **Cost**: at most 60 turns for `n ≤ 10¹⁸`, and at most two multiplications per turn. The same idea, with the same invariant, lets you compose a function with itself very quickly, or multiply without overflow.
+**Correctness.** All computations are done modulo `m` (with `m ≥ 2`), which does not change the remainder of a product. At the start, `r = 1`, `x = a mod m` and `n = N`: `r × xⁿ ≡ a^N`. If `n` is odd, replacing `r` by `r × x` and `n` by `n − 1` does not change `r × xⁿ`, since `x × xⁿ⁻¹ = xⁿ`. Then `n` is even, and replacing `x` by `x²` and `n` by `n / 2` does not change `xⁿ`. On exit, `n = 0`, so `x⁰ = 1` and `r ≡ a^N (mod m)`; since `r` lies between 0 and `m − 1`, it is exactly the remainder of `a^N` divided by `m`. **Termination**: `n` is a variant, at least halved at each turn. **Cost**: at most 60 turns for `n ≤ 10¹⁸`, and at most two multiplications per turn. The same idea, with the same invariant, lets you compose a function with itself very quickly, or multiply without overflow.
 
 ## Writing in base 2
 
@@ -240,7 +240,37 @@ int main() {
 }
 ```
 
-The program prints `1101 0 10000000000`. For 13, the successive remainders are 1, 0, 1, 1, read backwards. **Correctness**: at the start, `k = 0` and `N = q`; a turn replaces `q` by `q // 2` while storing the digit `q % 2` at rank `k`, and `q = 2 × (q // 2) + q % 2` keeps the equality. On exit, `q = 0`, and `N` is the value of the digits obtained. **Termination**: `q` strictly decreases while it is positive. **Cost**: one turn per binary digit, about 60 for 10¹⁸.
+The program prints `1101 0 10000000000`. For 13, the successive remainders are 1, 0, 1, 1, read backwards. **Correctness**: at the start, `k = 0` and `N = q`; a turn replaces `q` by `q // 2` while storing the digit `q % 2` at rank `k`, then increases `k` by 1, and the equality `q × 2^k = (q // 2) × 2^(k+1) + (q % 2) × 2^k` shows that the invariant is kept. On exit, `q = 0`, and `N` is the value of the digits obtained. The last digit stored, the leading one, comes from `q = 1`: it is 1, so the writing has no leading zero. **Termination**: `q` strictly decreases while it is positive. **Cost**: one turn per binary digit, about 60 for 10¹⁸.
+
+## An invariant quantity
+
+An invariant is not only used to prove a loop. Faced with a process where the operations and their order are chosen freely, look for a quantity that **every** operation preserves. It often answers two questions: which states can never be reached, and why the result does not depend on the choices.
+
+Example: the numbers 1, 2, …, 10 are written on a board. An operation erases two numbers `a` and `b` and writes `|a − b|` in their place. After nine operations, a single number remains. Can it be 0? Trying every sequence of choices would take very long. But an operation replaces `a + b` by `|a − b|` in the sum of the numbers written, and these two values differ by `2 × min(a, b)`, an even number: **the parity of the sum never changes**. At the start, the sum is 55, which is odd. So the last number is odd, whatever the choices: it is never 0. The following program makes one particular choice, always combining the current result with the next number.
+
+```python
+x = 1
+for v in range(2, 11):
+    x = abs(x - v)
+print(x, x % 2)
+```
+
+```cpp
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 1;
+    for (int v = 2; v <= 10; v++) {
+        x = abs(x - v);
+    }
+    cout << x << " " << x % 2 << "\n";
+    return 0;
+}
+```
+
+The program prints `5 1`: an odd number, as expected. Another order might give another number, but never an even one. Invariant quantities are found among sums (possibly with weights), differences, parities and remainders modulo a small integer: write down the effect of an operation on each counter, then look for a combination that this effect does not change. The variant plays the symmetric role: a non-negative integer quantity that decreases at each operation proves that the process stops, whatever the choices.
 
 ## Assertions
 

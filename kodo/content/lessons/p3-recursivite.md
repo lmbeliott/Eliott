@@ -167,7 +167,7 @@ int main() {
 
 Le programme affiche `12 10 81`. Pour `pgcd(84, 36)`, les appels successifs sont `pgcd(36, 12)`, puis `pgcd(12, 0)`, qui renvoie 12. La terminaison vient de ce que le second paramètre diminue strictement, puisque a mod b < b.
 
-La fonction `puissance` fait n appels. Une idée simple réduit beaucoup ce nombre : si n est pair, a^n = (a^(n/2))², et sinon a^n = a × a^(n−1). L'appel pour n se ramène à un appel pour n/2 au plus tous les deux appels : le nombre d'appels est de l'ordre de 2 × log₂(n), soit une centaine pour n = 10¹⁸. Cette **puissance rapide** sera étudiée en détail avec l'arithmétique.
+La fonction `puissance` fait n appels. Une idée simple réduit beaucoup ce nombre : si n est pair, a^n = (a^(n/2))², et sinon a^n = a × a^(n−1). En au plus deux appels, n est au moins divisé par deux : le nombre d'appels est au plus de l'ordre de 2 × log₂(n), soit une centaine pour n = 10¹⁸. C'est l'**exponentiation rapide** du chapitre « Correction, invariants et terminaison », écrite cette fois sous forme récursive ; la preuve par récurrence est immédiate, puisqu'elle recopie les deux égalités.
 
 ## Récursivité sur les listes et les chaînes
 
@@ -340,20 +340,36 @@ Ces nombres grandissent très vite : 2^20 ≈ un million, et 10! ≈ 3,6 million
 
 ## Profondeur de récursion
 
-Chaque cadre occupe de la mémoire, et la pile a une taille limitée. En Python, la profondeur est limitée par défaut à 1 000 appels environ :
+Chaque cadre occupe de la mémoire, et la pile a une taille limitée. Pour le voir, on calcule la suite définie par u(0) = 0 et u(n) = (2 × u(n − 1) + n) mod 1 000 003 :
 
 ```python
-print(factorielle(5000))
+def u(n):
+    if n == 0:
+        return 0
+    return (2 * u(n - 1) + n) % 1000003
+
+print(u(500))
+print(u(100000))
 ```
 
 ```cpp
-// En C++, la limite vient de la taille de la pile (souvent 8 Mo) :
-// une récursion de quelques centaines de milliers ou millions d'appels
-// arrête le programme.
-cout << factorielle(10000000) << "\n";
+#include <iostream>
+using namespace std;
+
+long long u(int n) {
+    if (n == 0) {
+        return 0;
+    }
+    return (2 * u(n - 1) + n) % 1000003;
+}
+
+int main() {
+    cout << u(10000000) << "\n";   // dix millions d'appels imbriqués
+    return 0;
+}
 ```
 
-Python s'arrête avec `RecursionError: maximum recursion depth exceeded`. Quand la profondeur est connue et raisonnable, quelques milliers, on relève la limite au début du programme :
+Python affiche `93168`, puis s'arrête avec `RecursionError: maximum recursion depth exceeded` : par défaut, la profondeur est limitée à 1 000 appels environ. Quand la profondeur est connue et raisonnable, quelques milliers, on relève la limite au début du programme :
 
 ```python
 import sys
@@ -365,7 +381,7 @@ sys.setrecursionlimit(10000)
 // ou on remplace la récursion par une boucle.
 ```
 
-En C++, il n'y a pas de message clair : quand la pile déborde, le programme s'arrête brutalement avec `Segmentation fault (core dumped)`, ce qu'un juge en ligne affiche comme une erreur d'exécution. Dans les deux langages, une récursion de profondeur 10⁵ ou plus est risquée. Si chaque appel ne fait qu'un seul appel récursif, comme `factorielle`, une boucle fait le même travail sans ce risque.
+En C++, la limite vient de la taille de la pile, souvent 8 Mo. Dix millions de cadres ne tiennent pas : le programme s'arrête brutalement, sans message clair, avec `Segmentation fault (core dumped)` sur un ordinateur, ou un message comme `Maximum call stack size exceeded` dans un navigateur. Un juge en ligne l'affiche comme une erreur d'exécution. Dans les deux langages, une récursion de profondeur 10⁵ ou plus est risquée. Si chaque appel ne fait qu'un seul appel récursif, comme ici, une boucle fait le même travail sans ce risque. (Le compilateur C++ transforme parfois de lui-même une récursion très simple, comme `factorielle`, en boucle ; on ne peut pas compter dessus.)
 
 ## Le coût d'une récursion naïve
 
@@ -453,7 +469,7 @@ Le programme affiche `2880067194370816120` instantanément. Chaque valeur de 2 �
 
 ## Les erreurs fréquentes
 
-**Oublier le cas de base**, ou écrire un cas de base jamais atteint : `factorielle(-1)`, ou une fonction qui teste `n == 0` alors que n diminue de 2 à partir d'un nombre impair. Résultat : `RecursionError` en Python, `Segmentation fault` en C++.
+**Oublier le cas de base**, ou écrire un cas de base jamais atteint : `factorielle(-1)`, ou une fonction qui teste `n == 0` alors que n diminue de 2 à partir d'un nombre impair. Résultat : `RecursionError` en Python, débordement de la pile (`Segmentation fault`) en C++.
 
 **Oublier le `return` devant l'appel récursif.** Écrire `pgcd(b, a % b)` au lieu de `return pgcd(b, a % b)` calcule le résultat puis le jette : la fonction renvoie `None`, et un calcul comme `pgcd(84, 36) + 1` provoque `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`.
 

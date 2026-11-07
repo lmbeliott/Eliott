@@ -4,8 +4,8 @@ n = len(chiffre)
 k = min(k, n)   # les lignes au-delà de la n-ième restent vides
 
 
+# ligne (à partir de 0) sur laquelle tombe la lettre d'indice i
 def ligne(i):
-    """Ligne (à partir de 0) sur laquelle tombe la lettre d'indice i."""
     if k == 1:
         return 0
     periode = 2 * k - 2

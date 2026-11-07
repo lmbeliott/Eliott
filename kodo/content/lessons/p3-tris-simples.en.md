@@ -91,7 +91,7 @@ The program prints `1 2 3 4 5`. The states after each insertion are `[2, 5, 4, 1
 
 **Why it is correct.** Invariant: *before step `i`, cells `t[0]` to `t[i − 1]` hold the same elements as at the start, in increasing order*. Step `i` moves `t[i]` back until its left neighbour is less than or equal to it, or until it reaches cell 0; the elements it passes are all larger than it and stay sorted among themselves. So the part `t[0..i]` is sorted. The `while` loop stops, since `j` decreases by 1 at each turn and does not go below 0.
 
-**How many operations.** It all depends on the list. An **inversion** is a pair of positions `i < j` such that `t[i] > t[j]`. Each swap of insertion sort involves two neighbours in the wrong order: it removes exactly one inversion and does not change the other pairs. So the number of swaps equals the number of inversions of the initial list. An already sorted list has none: the sort only makes `n − 1` comparisons. A strictly decreasing list has `n × (n − 1) / 2`, the maximum. Insertion sort is therefore very fast on an **almost sorted** list, and as slow as selection sort in the worst case.
+**How many operations.** It all depends on the list. An **inversion** is a pair of positions `i < j` such that `t[i] > t[j]`. Each swap of insertion sort involves two neighbours in the wrong order: it removes exactly that inversion, and changes nothing for the other pairs, since every other element stays on the same side of the two swapped elements. So the number of swaps equals the number `I` of inversions of the initial list. As for comparisons, each turn of the `while` makes one, and every turn except the last one of each step makes a swap: in total, at most `I + n − 1` comparisons. An already sorted list has no inversion: the sort only makes `n − 1` comparisons. A strictly decreasing list has `n × (n − 1) / 2`, the maximum. Insertion sort is therefore very fast on an **almost sorted** list, and as slow as selection sort in the worst case.
 
 ## Counting sort
 
@@ -186,7 +186,7 @@ The program prints `a le bus chat ours`: `chat` stays in front of `ours`, becaus
 
 ## Python and C++ sorts
 
-Hand-written sorts make about `n² / 2` comparisons in the worst case: 5 billion for `n = 100,000`, far too many. Languages provide a much faster sort, which makes about `n × log₂(n)` comparisons, that is about 1.7 million for `n = 100,000`. Level 4 will explain how; from now on, you are allowed to use it.
+Hand-written sorts make about `n² / 2` comparisons in the worst case: 5 billion for `n = 100,000`, far too many. Languages provide a much faster sort, which makes about `n × log₂(n)` comparisons, that is about 1.7 million for `n = 100,000`. The number `log₂(n)`, the **base-2 logarithm** of `n`, is roughly the number of times `n` must be divided by 2 to reach 1: about 17 for 100,000, since 2¹⁷ = 131,072. Level 4 will explain how; from now on, you are allowed to use it.
 
 In Python, `t.sort()` sorts the list `t` in place, and `sorted(t)` returns a **new** sorted list without changing `t`. The parameter `reverse=True` sorts in decreasing order. The parameter `key` gives a function that computes the key of each element: `sorted(mots, key=len)` sorts words by length. Python's sort is stable.
 

@@ -167,7 +167,7 @@ int main() {
 }
 ```
 
-The program prints `3 5`. One iteration of the `while` loop can move `left` forward by several cells, but `left` never moves back and does not exceed n: over the **whole** execution, the inner loop makes at most n iterations in total. The program is O(n). This is called **amortized cost**: a single step can be expensive, but the total, spread over the n steps, stays small. The same reasoning applies to a stack where each element is pushed once and popped at most once, or to `append` on a Python list, which sometimes copies the whole list to enlarge it but costs O(1) on average over a sequence of appends.
+The program prints `3 5`. One iteration of the `while` loop can move `left` forward by several cells, but `left` never moves back and does not exceed n: over the **whole** execution, the inner loop makes at most n iterations in total. The program is O(n). This is called **amortized cost**: a single step can be expensive, but the total, spread over the n steps, stays small. The same reasoning applies to a stack where each element is pushed once and popped at most once, or to `append` on a Python list, which sometimes copies the whole list to enlarge it but whose amortized cost stays O(1) per append: over a sequence of n appends, the copies add up to O(n).
 
 ## Common mistakes
 
@@ -185,7 +185,7 @@ The program prints `3 5`. One iteration of the `while` loop can move `left` forw
 
 **First idea: each number separately.** For each m, look for its divisors by trying every d up to √m, adding d and m/d when d divides m (only once if d × d = m). This is O(√m) per number, so O(N√N) in total: about 10⁹ operations for N = 10⁶. Too slow, even in C++.
 
-**Second idea: start from the divisors.** Rather than looking for the divisors of each number, start from each d and add it to all its multiples: `s[d] += d`, `s[2d] += d`, `s[3d] += d`… For a given d there are ⌊N/d⌋ multiples, so the total number of additions is N/1 + N/2 + … + N/N = N × (1 + 1/2 + … + 1/N). The sum 1 + 1/2 + … + 1/N, called the **harmonic series**, is close to ln(N) + 0.58; it is about 14.4 for N = 10⁶. The sieve therefore costs O(N log N), that is 1.4 × 10⁷ additions: very good in C++, but several seconds in Python.
+**Second idea: start from the divisors.** Rather than looking for the divisors of each number, start from each d and add it to all its multiples: `s[d] += d`, `s[2d] += d`, `s[3d] += d`… For a given d there are ⌊N/d⌋ multiples, so the total number of additions is N/1 + N/2 + … + N/N = N × (1 + 1/2 + … + 1/N). The sum H(N) = 1 + 1/2 + … + 1/N is called the **harmonic series**. Bound it by grouping its terms into packets: 1/2 + 1/3 ≤ 2 × 1/2 = 1, then 1/4 + 1/5 + 1/6 + 1/7 ≤ 4 × 1/4 = 1, then the eight terms from 1/8 to 1/15, at most 1/8 each, and so on. Each packet is at most 1, and there are at most log₂(N) packets after the first term: H(N) ≤ 1 + log₂(N). More precisely, H(N) is close to ln(N) + 0.58, about 14.4 for N = 10⁶. This method therefore costs O(N log N), that is 1.4 × 10⁷ additions: very good in C++, but several seconds in Python.
 
 **Third idea: swap the order of the sum.** We do not need each σ(m), only their total. The second idea shows that the divisor d is added exactly ⌊N/d⌋ times. So the answer is d × ⌊N/d⌋, summed for d from 1 to N: a single loop, in O(N).
 
@@ -219,6 +219,8 @@ int main() {
 
 **Complexity.** N loop iterations, O(N): 10⁶ iterations, instant in C++ and fast in Python. The total exceeds 2³¹ from N ≈ 51,000: `long long` in C++. We went from O(N√N) to O(N log N), then to O(N), without changing anything in the problem, only in the way of counting. This is the approach of the whole chapter: estimate the cost of an idea with the constraints, and look for a better way of counting as long as it is too high.
 
+**What if N were 10¹²?** Even O(N) would be too slow. One last remark often helps with this kind of sum: if d × q ≤ N, the smaller of the two numbers d and q is at most √N, otherwise their product would exceed N. Splitting the terms according to whether d or q is small gives loops of only √N iterations, that is 10⁶ for N = 10¹². This **split around √N** comes back in the exercises.
+
 ## Key takeaways
 
 - The efficiency of an algorithm is measured by the number of elementary operations as a function of the size n of the data, in the **worst case**.
@@ -226,4 +228,4 @@ int main() {
 - Common classes, from fastest to slowest: O(1), O(log n), O(n), O(n log n), O(n²), O(2^n).
 - Order of magnitude: 10⁸ simple operations per second in C++, 10⁷ in Python. The constraints of the statement indicate the expected complexity: N ≤ 20 for O(2^N), N ≤ 10⁴ for O(N²), N ≤ 10⁶ for O(N log N).
 - An inner loop is not necessarily a factor of n: if an index only moves forward, the **amortized** cost is linear.
-- To speed up, change the way of counting: start from each divisor to reach its multiples, count the contribution of each element, group equal terms (the harmonic series gives O(N log N)).
+- To speed up, change the way of counting: start from each divisor to reach its multiples, count the contribution of each element, swap the order of a sum; going through the multiples of each d costs O(N log N) (harmonic series), and the split around √N gives O(√N).

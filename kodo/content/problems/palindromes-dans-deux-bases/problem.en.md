@@ -3,7 +3,7 @@ title: Palindromes in two bases
 ---
 
 ## Statement
-A number is a palindrome **in base `B`** when its writing in base `B`, without leading zeros, reads the same in both directions. For example, 585 is a palindrome in base 10, and also in base 2, where it is written `1001001001`.
+A number is a palindrome **in base `B`** when its writing in base `B`, without leading zeros, reads the same in both directions. For example, 585 is a palindrome in base 10, and also in base 2, where it is written `1001001001`. The writing in base `B` uses the digits 0 to `B − 1`, and is obtained as in base 10: the last digit of `x` is `x % B`, and the others are those of `x // B`.
 
 Two integers `N` and `B` are given. Count the integers `x` with `1 ≤ x ≤ N` that are palindromes both in base 10 and in base `B`.
 

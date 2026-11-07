@@ -28,6 +28,6 @@ If you sell on day `j`, the best purchase is at the lowest price among days 1 to
 
 On day `j`, compare `P[j] − mini` with `best`, **then** update `mini` with `P[j]`. The order matters: updating `mini` first would allow buying and selling on the same day, with a zero gain, which is wrong when prices drop.
 
-**Invariant.** At the start of turn `j`, `mini` is the minimum of `P[1..j − 1]`, and `best` is the largest gain `P[j'] − P[i]` with `i < j' < j`. It holds before the first turn (`j = 2`), by initialising `mini = P[1]` and `best = P[2] − P[1]`. A turn keeps it: the new pairs are those where you sell on day `j`, and the best of them is `P[j] − mini`. After the `N − 1` turns, `best` is the largest gain over all pairs.
+**Invariant.** At the start of turn `j`, `mini` is the minimum of `P[1..j − 1]`, and `best` is the gain of an actual pair of days, at least the gain `P[j'] − P[i]` of every pair `i < j' < j`. It holds before the first turn (`j = 2`), by initialising `mini = P[1]` and `best = P[2] − P[1]`, the gain of the pair of days (1, 2). A turn keeps it: the new pairs are those where you sell on day `j`, and the best of them is `P[j] − mini`. After the `N − 1` turns, `best` is the gain of a pair, at least that of every pair: it is the largest gain.
 
 **Termination and cost.** The `for` loop makes exactly `N − 1` turns, with a constant number of operations each. This is far less than the `N × (N − 1) / 2` pairs of the naive method. The trap: initialising `best` to 0, which gives a wrong answer when the price only drops.

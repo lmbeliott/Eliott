@@ -205,20 +205,27 @@ using namespace std;
 
 int main() {
     vector<string> mots = {"un", "deux", "trois"};
-    string resultat = "";
+    string resultat = "", avecTirets = "";
     for (string m : mots) {
         for (char &c : m) {
             c = toupper(c);
         }
+        string longueur = to_string(m.size());
         resultat += m;
-        resultat += to_string(m.size());
+        resultat += longueur;
+        if (avecTirets != "") {
+            avecTirets += "-";
+        }
+        avecTirets += m;
+        avecTirets += "-";
+        avecTirets += longueur;
     }
-    cout << resultat << "\n";
+    cout << resultat << "\n" << avecTirets << "\n";
     return 0;
 }
 ```
 
-Python prints `UN2DEUX4TROIS5`, then `UN-2-DEUX-4-TROIS-5`. In C++, a `string` can be modified: `resultat += m` appends at the end without copying what comes before, most of the time. On the other hand, `resultat = resultat + m` builds a new string and copies everything: the difference between these two forms, which look equivalent, can turn an instantaneous program into one that is too slow. To build a string backwards, build it forwards then reverse it once, or fill it from the end.
+The program prints `UN2DEUX4TROIS5`, then `UN-2-DEUX-4-TROIS-5`. C++ has no `join`: the separator is added by hand, between two pieces. A C++ `string` can be modified: `resultat += m` appends at the end without copying what comes before, most of the time. On the other hand, `resultat = resultat + m` builds a new string and copies everything: the difference between these two forms, which look equivalent, can turn an instantaneous program into one that is too slow. To build a string backwards, build it forwards then reverse it once, or fill it from the end.
 
 ## Common mistakes
 
@@ -226,7 +233,7 @@ Python prints `UN2DEUX4TROIS5`, then `UN-2-DEUX-4-TROIS-5`. In C++, a `string` c
 
 **Going past the text.** Without the bound `n − m`, the comparison `t[i + j]` goes past the end and Python stops with `IndexError: string index out of range`. In C++, there is no message: the program reads garbage.
 
-**Counting overlapping occurrences with `count`.** `"aaa".count("aa")` is 1. If the statement counts overlaps, you need the naive search, or calls to `find` that restart one index after the last occurrence found.
+**Counting overlapping occurrences with `count`.** `"aaa".count("aa")` is 1. If the statement counts overlaps, you need the naive search, or calls to `find` that restart just after the start of the last occurrence found (its index plus one).
 
 **Joining numbers.** `" ".join([1, 2, 3])` raises `TypeError: sequence item 0: expected str instance, int found`. Convert each element with `str` before adding it to the list.
 
@@ -243,8 +250,8 @@ Python prints `UN2DEUX4TROIS5`, then `UN-2-DEUX-4-TROIS-5`. In C++, a `string` c
 **Program.**
 
 ```python
+# extends the palindrome s[i+1:j] while s[i] == s[j]; returns its length
 def plus_long_autour(s, i, j):
-    """Extends the palindrome s[i+1:j] while s[i] == s[j]; returns its length."""
     while i >= 0 and j < len(s) and s[i] == s[j]:
         i = i - 1
         j = j + 1

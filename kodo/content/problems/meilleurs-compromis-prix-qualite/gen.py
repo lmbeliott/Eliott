@@ -18,7 +18,7 @@ def test(produits):
 def aleatoire(n, qmax, pmax):
     return [(m, random.randint(0, qmax), random.randint(1, pmax)) for m in noms(n)]
 
-tests = [test([("velo", 7, 300), ("trottinette", 5, 150), ("roller", 4, 200), ("skate", 7, 300), ("tandem", 9, 900)]),
+tests = [test([("velo", 7, 300), ("monocycle", 5, 150), ("roller", 4, 200), ("skate", 7, 300), ("tandem", 9, 900)]),
          test([("a", 5, 10), ("b", 5, 10), ("c", 6, 10), ("d", 2, 5)])]
 tests.append(test([("seul", 0, 1)]))
 tests.append(test([("x", 3, 7), ("y", 3, 7), ("z", 3, 7)]))                 # tous identiques : tous gardés

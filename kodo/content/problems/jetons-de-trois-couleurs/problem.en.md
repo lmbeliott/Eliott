@@ -7,7 +7,7 @@ A bag contains `R` red tokens, `V` green ones and `B` blue ones. An **operation*
 
 Print the smallest number of operations that makes all the tokens the same colour, or `-1` if it is impossible. If all the tokens already have the same colour, the answer is 0.
 
-Each test contains `T` questions.
+The input contains `T` questions.
 
 ## Input
 - The first line contains `T`.

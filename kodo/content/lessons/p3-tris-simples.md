@@ -91,7 +91,7 @@ Le programme affiche `1 2 3 4 5`. Les états après chaque insertion sont `[2, 5
 
 **Pourquoi c'est juste.** Invariant : *avant l'étape `i`, les cases `t[0]` à `t[i − 1]` contiennent les mêmes éléments qu'au départ, dans l'ordre croissant*. L'étape `i` fait reculer `t[i]` jusqu'à ce que son voisin de gauche soit inférieur ou égal, ou qu'il atteigne la case 0 ; les éléments qu'il dépasse sont tous plus grands que lui et restent triés entre eux. La partie `t[0..i]` est donc triée. La boucle `while` s'arrête, car `j` diminue de 1 à chaque tour et ne descend pas sous 0.
 
-**Combien d'opérations.** Tout dépend de la liste. Une **inversion** est une paire de positions `i < j` telle que `t[i] > t[j]`. Chaque échange du tri par insertion porte sur deux voisins dans le mauvais ordre : il supprime exactement une inversion et ne change pas les autres paires. Le nombre d'échanges est donc égal au nombre d'inversions de la liste de départ. Une liste déjà triée n'en a aucune : le tri fait seulement `n − 1` comparaisons. Une liste strictement décroissante en a `n × (n − 1) / 2`, le maximum. Le tri par insertion est donc très rapide sur une liste **presque triée**, et aussi lent que la sélection dans le pire cas.
+**Combien d'opérations.** Tout dépend de la liste. Une **inversion** est une paire de positions `i < j` telle que `t[i] > t[j]`. Chaque échange du tri par insertion porte sur deux voisins dans le mauvais ordre : il supprime exactement cette inversion-là, et ne change rien aux autres paires, car chacun des autres éléments reste du même côté des deux éléments échangés. Le nombre d'échanges est donc égal au nombre `I` d'inversions de la liste de départ. Côté comparaisons, chaque tour du `while` en fait une, et tous les tours sauf le dernier de chaque étape font un échange : au total, au plus `I + n − 1` comparaisons. Une liste déjà triée n'a aucune inversion : le tri fait seulement `n − 1` comparaisons. Une liste strictement décroissante en a `n × (n − 1) / 2`, le maximum. Le tri par insertion est donc très rapide sur une liste **presque triée**, et aussi lent que la sélection dans le pire cas.
 
 ## Le tri par comptage
 
@@ -186,7 +186,7 @@ Le programme affiche `a le bus chat ours` : `chat` reste devant `ours`, car il a
 
 ## Les tris de Python et du C++
 
-Les tris écrits à la main font environ `n² / 2` comparaisons dans le pire cas : 5 milliards pour `n = 100 000`, beaucoup trop. Les langages fournissent un tri bien plus rapide, qui fait de l'ordre de `n × log₂(n)` comparaisons, soit environ 1,7 million pour `n = 100 000`. Le niveau 4 expliquera comment ; à partir de maintenant, on a le droit de s'en servir.
+Les tris écrits à la main font environ `n² / 2` comparaisons dans le pire cas : 5 milliards pour `n = 100 000`, beaucoup trop. Les langages fournissent un tri bien plus rapide, qui fait de l'ordre de `n × log₂(n)` comparaisons, soit environ 1,7 million pour `n = 100 000`. Le nombre `log₂(n)`, le **logarithme en base 2** de `n`, est à peu près le nombre de fois qu'il faut diviser `n` par 2 pour arriver à 1 : environ 17 pour 100 000, puisque 2¹⁷ = 131 072. Le niveau 4 expliquera comment ; à partir de maintenant, on a le droit de s'en servir.
 
 En Python, `t.sort()` trie la liste `t` sur place, et `sorted(t)` renvoie une **nouvelle** liste triée sans modifier `t`. Le paramètre `reverse=True` trie dans l'ordre décroissant. Le paramètre `key` donne une fonction qui calcule la clé de chaque élément : `sorted(mots, key=len)` trie des mots par longueur. Le tri de Python est stable.
 

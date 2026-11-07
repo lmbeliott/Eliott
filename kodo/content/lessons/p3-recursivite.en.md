@@ -167,7 +167,7 @@ int main() {
 
 The program prints `12 10 81`. For `gcd(84, 36)`, the successive calls are `gcd(36, 12)`, then `gcd(12, 0)`, which returns 12. Termination comes from the second parameter strictly decreasing, since a mod b < b.
 
-The function `power` makes n calls. A simple idea reduces this number a lot: if n is even, a^n = (a^(n/2))², otherwise a^n = a × a^(n−1). The call for n leads to a call for n/2 at least every other call: the number of calls is about 2 × log₂(n), around a hundred for n = 10¹⁸. This **fast exponentiation** will be studied in detail with arithmetic.
+The function `power` makes n calls. A simple idea reduces this number a lot: if n is even, a^n = (a^(n/2))², otherwise a^n = a × a^(n−1). Within at most two calls, n is at least halved: the number of calls is at most about 2 × log₂(n), around a hundred for n = 10¹⁸. This is the **fast exponentiation** of the chapter "Correctness, invariants and termination", written this time in recursive form; the proof by induction is immediate, since it copies the two equalities.
 
 ## Recursion on lists and strings
 
@@ -340,20 +340,36 @@ These numbers grow very fast: 2^20 ≈ one million, and 10! ≈ 3.6 million. Ful
 
 ## Recursion depth
 
-Each frame takes memory, and the stack has a limited size. In Python, the depth is limited by default to about 1,000 calls:
+Each frame takes memory, and the stack has a limited size. To see it, compute the sequence defined by u(0) = 0 and u(n) = (2 × u(n − 1) + n) mod 1,000,003:
 
 ```python
-print(factorial(5000))
+def u(n):
+    if n == 0:
+        return 0
+    return (2 * u(n - 1) + n) % 1000003
+
+print(u(500))
+print(u(100000))
 ```
 
 ```cpp
-// In C++, the limit comes from the size of the stack (often 8 MB):
-// a recursion of a few hundred thousand or million calls
-// stops the program.
-cout << factorial(10000000) << "\n";
+#include <iostream>
+using namespace std;
+
+long long u(int n) {
+    if (n == 0) {
+        return 0;
+    }
+    return (2 * u(n - 1) + n) % 1000003;
+}
+
+int main() {
+    cout << u(10000000) << "\n";   // ten million nested calls
+    return 0;
+}
 ```
 
-Python stops with `RecursionError: maximum recursion depth exceeded`. When the depth is known and reasonable, a few thousand, raise the limit at the start of the program:
+Python prints `93168`, then stops with `RecursionError: maximum recursion depth exceeded`: by default, the depth is limited to about 1,000 calls. When the depth is known and reasonable, a few thousand, raise the limit at the start of the program:
 
 ```python
 import sys
@@ -365,7 +381,7 @@ sys.setrecursionlimit(10000)
 // or replace the recursion with a loop.
 ```
 
-In C++, there is no clear message: when the stack overflows, the program stops abruptly with `Segmentation fault (core dumped)`, which an online judge reports as a runtime error. In both languages, a recursion of depth 10⁵ or more is risky. If each call makes a single recursive call, like `factorial`, a loop does the same work without this risk.
+In C++, the limit comes from the size of the stack, often 8 MB. Ten million frames do not fit: the program stops abruptly, with no clear message, with `Segmentation fault (core dumped)` on a computer, or a message like `Maximum call stack size exceeded` in a browser. An online judge reports it as a runtime error. In both languages, a recursion of depth 10⁵ or more is risky. If each call makes a single recursive call, as here, a loop does the same work without this risk. (The C++ compiler sometimes turns a very simple recursion, like `factorial`, into a loop by itself; you cannot count on it.)
 
 ## The cost of naive recursion
 
@@ -453,7 +469,7 @@ The program prints `2880067194370816120` instantly. Each value from 2 to n is co
 
 ## Common mistakes
 
-**Forgetting the base case**, or writing a base case that is never reached: `factorial(-1)`, or a function that tests `n == 0` while n decreases by 2 from an odd number. Result: `RecursionError` in Python, `Segmentation fault` in C++.
+**Forgetting the base case**, or writing a base case that is never reached: `factorial(-1)`, or a function that tests `n == 0` while n decreases by 2 from an odd number. Result: `RecursionError` in Python, a stack overflow (`Segmentation fault`) in C++.
 
 **Forgetting the `return` before the recursive call.** Writing `gcd(b, a % b)` instead of `return gcd(b, a % b)` computes the result and throws it away: the function returns `None`, and a computation like `gcd(84, 36) + 1` causes `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`.
 

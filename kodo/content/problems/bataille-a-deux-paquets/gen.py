@@ -9,7 +9,7 @@ def melange(n):
     random.shuffle(c)
     return c[:n], c[n:]
 
-tests = [test([5, 2, 8], [3, 7, 1]), test([1, 4], [2, 3])]
+tests = [test([4, 2, 6], [3, 5, 1]), test([1, 4], [2, 3])]
 tests.append(test([2], [1]))                          # un seul tour
 tests.append(test([1], [2]))
 tests.append(test([6, 5, 4], [3, 2, 1]))              # le premier gagne tous les tours

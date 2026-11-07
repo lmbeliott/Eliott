@@ -6,8 +6,8 @@ def test(m, questions):
     lignes += [f"{l} {r}" for l, r in questions]
     return "\n".join(lignes) + "\n"
 
-def aleatoire(n, q, longues=False):
-    m = [random.randint(-999, 999) for _ in range(n)]
+def aleatoire(n, q, longues=False, amplitude=999):
+    m = [random.randint(-amplitude, amplitude) for _ in range(n)]
     qs = []
     for _ in range(q):
         if longues:
@@ -26,6 +26,6 @@ tests.append(test([1, -1] * 20, [(1, 40), (1, 39), (2, 40), (10, 21)]))
 tests.append(aleatoire(100, 50))
 tests.append(aleatoire(3000, 1000))
 # grands tests : additionner chaque portion serait trop lent
-tests.append(aleatoire(20000, 6000, True))
-tests.append(aleatoire(20000, 5000))
+tests.append(aleatoire(50000, 10000, True, 9))     # petites valeurs pour garder l'entrée courte
+tests.append(aleatoire(15000, 5000, True))
 print(json.dumps(tests))

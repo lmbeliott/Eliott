@@ -55,7 +55,7 @@ int main() {
 
 The program prints `2`, then `17`. The first loop stops at the first negative value, at index 2: the value `-1`, further on, is never examined. If there were no negative value, the loop would run to the end and `pos` would keep the value `-1`. The second loop skips the negative values and adds `4 + 8 + 5`.
 
-The two ways of writing the search are equivalent. The `while i < n and not found` version puts the whole stopping rule in the condition, which makes reasoning about the loop easier. The `break` version is shorter when the stopping condition is complicated, or when it is discovered in the middle of the loop body. `continue` avoids nesting the whole rest of the body inside an `if`: it is used to discard uninteresting cases early. Two precautions: `break` only leaves the **innermost** loop, not the loops around it; and inside a function, `return` stops both the loop and the function, which is often even clearer.
+The two ways of writing the search are equivalent. The condition `while i < n and not found` gathers the whole stopping rule, which makes reasoning about the loop easier; `break` is shorter when the stop is decided in the middle of the body. `continue` discards uninteresting cases early, without nesting the whole rest of the body inside an `if`. Inside a function, `return` stops both the loop and the function, which is often even clearer.
 
 ## Shifts and rotations
 
@@ -90,7 +90,7 @@ int main() {
 }
 ```
 
-The program prints `4 5 1 2 3`: 12 steps are two full turns, plus 2 steps. This method uses a second array. You can also rotate **in place**, with three reversals: reverse the first `n − k` values, then the last `k`, then the whole array. On the example: `3 2 1 5 4`, then `4 5 1 2 3`. This is correct because reversing the whole array puts the end block at the front, but each block ends up backwards; the first two reversals had turned it backwards in advance. Each value is moved at most twice: the cost is proportional to `n` in both methods.
+The program prints `4 5 1 2 3`: 12 steps are two full turns, plus 2 steps. This method uses a second array. You can also rotate **in place**, with three reversals: reverse the first `n − k` values, then the last `k`, then the whole array. On the example: `3 2 1 5 4`, then `4 5 1 2 3`. Why this is correct: call `A` the block of the first `n − k` values and `B` the block of the last `k`. The array is `A` followed by `B`, and we want `B` followed by `A`. Reversing an array made of a block `X` followed by a block `Y` gives `Y` reversed followed by `X` reversed: the last value goes to the front, and so on. After the first two reversals, the array is `A` reversed followed by `B` reversed; the last reversal therefore gives `B` reversed twice, that is `B`, followed by `A`. Each reversal is done with swaps, as in level 2, and each value is moved at most twice: the cost is proportional to `n` in both methods.
 
 ## Transforming in place
 
@@ -177,7 +177,7 @@ int main() {
 
 The program prints `1 2 4 4 4 9 10`. The condition reads: take from `a` if `b` is exhausted, or if `a` is not and `a[i] ≤ b[j]`. The order of the tests matters: `b[j]` is never read when `j == len(b)`, because `or` stops as soon as its first part is true.
 
-**Why it is correct.** Invariant: `r` contains, sorted, the `i + j` smallest values of the two arrays. Since `a` is sorted, the remaining values of `a` are all at least `a[i]`; likewise for `b`. So the smaller of the two is the smallest of all remaining values, and adding it at the end of `r` keeps the invariant. **Cost.** Each step advances one index: exactly `n + m` steps. The same idea of two indices moving together computes the intersection of two sorted arrays, or the smallest gap between their values.
+**Why it is correct.** Invariant: at the start of each turn, `r` contains `a[0..i − 1]` and `b[0..j − 1]`, in increasing order, and every value of `r` is less than or equal to all remaining values (`a[i..]` and `b[j..]`). It holds at the start, when `r` is empty. Since `a` is sorted, the remaining values of `a` are all at least `a[i]`; likewise for `b`. So the value taken is the smallest of all remaining values: it is at least the last value of `r` (invariant), so `r` stays sorted, and it is less than or equal to everything that remains. The invariant is kept. At the exit, `i = n` and `j = m`: `r` contains all the values, sorted. **Cost.** Each step advances one index: exactly `n + m` steps. The same idea of two indices moving together computes the intersection of two sorted arrays, or the smallest gap between their values.
 
 ## Counting with a frequency array
 
@@ -217,7 +217,7 @@ The program prints `4`: three pairs of `3` and one pair of `1`. Each pair is cou
 
 Many problems ask for a piece of information **for each cell** that depends on the whole array. For example: for each value, the largest of the **other** elements. Recomputing a maximum for each cell costs `n` operations per cell, so `n²` in all. It is better to have a first pass computing once and for all what is needed, then a second one answering for each cell.
 
-Here, the first pass computes the maximum `m1` and the **second maximum** `m2` (the largest once one occurrence of `m1` is removed). For a cell equal to `m1`, the largest of the others is `m2`; for any other cell, it is `m1`. This stays correct when the maximum appears twice: `m2` is then also equal to `m1`.
+Here, the first pass computes the maximum `m1` and the **second maximum** `m2` (the largest once one occurrence of `m1` is removed). For a cell equal to `m1`, the largest of the others is `m2`; for any other cell, it is `m1`. This stays correct when the maximum appears twice: `m2` is then also equal to `m1`. The array must have at least two cells. Invariant of the first pass: after examining `t[0..i]`, `m1` and `m2` are the two largest values of `t[0..i]` (`m1 ≥ m2`, counting repeats). A new value `x` larger than `m1` becomes the maximum and the old maximum becomes the second; otherwise it only replaces `m2`, if it exceeds it.
 
 ```python
 t = [5, 9, 2, 9, 4]
@@ -269,7 +269,7 @@ The program prints `9 9 9 9 9`: the maximum 9 appears twice, so each cell sees a
 
 A **stretch** of an array is a sequence of consecutive cells, `t[l]` to `t[r]` with `l ≤ r`. We look for the stretch whose sum is the largest. There are `n × (n + 1) / 2` stretches: trying them all, even updating the sum as you go, takes on the order of `n²` additions.
 
-A single pass is enough. Let `end[i]` be the largest sum of a stretch that **ends** at index `i`. Such a stretch is either cell `i` alone, or a stretch ending at `i − 1`, extended by `t[i]`; in that case, extending the best one is the right choice. So `end[i] = t[i] + max(end[i − 1], 0)`: extend if the previous best sum is non-negative, and start again from zero otherwise. Since every stretch ends at some index, the answer is the largest `end[i]`.
+A single pass is enough. Let `end[i]` be the largest sum of a stretch that **ends** at index `i`. Such a stretch is either cell `i` alone, with sum `t[i]`, or a stretch ending at `i − 1`, extended by `t[i]`, with sum at most `end[i − 1] + t[i]`, a value reached by extending the best one. So `end[i] = max(t[i], end[i − 1] + t[i]) = t[i] + max(end[i − 1], 0)`: extend if the previous best sum is non-negative, and start again from zero otherwise. Since every stretch ends at some index, the answer is the largest `end[i]`.
 
 ```python
 t = [2, -5, 3, -1, 4, -7, 2]
@@ -306,7 +306,7 @@ int main() {
 }
 ```
 
-The program prints `6`, the sum of `3 -1 4`. The successive values of `courant` are 2, −3, 3, 2, 6, −1, 2: after the −5, the sum −3 is negative, and you start again from the next cell. The variable `courant` equals `end[i]` at the end of each turn: this is the invariant that guarantees correctness. Initialise with `t[0]` and not with 0: if all values are negative, the answer is the largest of them. The cost is one pass.
+The program prints `6`, the sum of `3 -1 4`. The successive values of `courant` are 2, −3, 3, 2, 6, −1, 2: after the −5, the sum −3 is negative, and you start again from the next cell. Invariant: at the end of turn `i`, `courant` equals `end[i]` and `meilleur` the largest of `end[0..i]`; at the exit, `meilleur` is therefore the largest sum of a stretch. Initialise with `t[0]` and not with 0: if all values are negative, the answer is the largest of them. The cost is one pass.
 
 ## Common mistakes
 
@@ -314,7 +314,7 @@ The program prints `6`, the sum of `3 -1 4`. The successive values of `courant` 
 
 **Reading past the end in a merge.** With the condition `a[i] <= b[j]` alone, the loop reads `b[j]` when `j == len(b)`: `IndexError: list index out of range` in Python, an arbitrary value in C++. First test whether an array is exhausted.
 
-**Forgetting the remainder for a rotation.** With `k = 10¹⁸`, `(i + k) % n` works in Python, but overflows in C++ if `k` is an `int`. Compute `k % n` first, with `long long`, bringing a negative `k` between 0 and `n − 1`.
+**Forgetting the remainder for a rotation.** With `k = 10¹⁸`, `(i + k) % n` works in Python. In C++, 10¹⁸ does not fit in an `int`: read `k` into a `long long`, then first compute `((k % n) + n) % n`, which also brings a negative `k` between 0 and `n − 1` (otherwise `(i + k) % n` can be negative).
 
 **A frequency array that is too large.** `[0] * (10**9 + 1)` raises `MemoryError`. The frequency array only suits small values; otherwise, use a dictionary.
 

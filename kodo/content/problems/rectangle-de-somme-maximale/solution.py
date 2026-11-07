@@ -1,8 +1,8 @@
 import sys
 
 
+# plus grande somme d'une portion non vide de t (méthode du cours)
 def meilleure_portion(t):
-    """Plus grande somme d'une portion non vide de t (balayage du cours)."""
     courant = t[0]
     meilleur = t[0]
     for i in range(1, len(t)):

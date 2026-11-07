@@ -9,7 +9,7 @@ samples: 2
 ---
 
 ## Énoncé
-Un nombre est un palindrome **en base `B`** quand son écriture en base `B`, sans zéro de tête, se lit de la même façon dans les deux sens. Par exemple, 585 est un palindrome en base 10, et aussi en base 2, où il s'écrit `1001001001`.
+Un nombre est un palindrome **en base `B`** quand son écriture en base `B`, sans zéro de tête, se lit de la même façon dans les deux sens. Par exemple, 585 est un palindrome en base 10, et aussi en base 2, où il s'écrit `1001001001`. L'écriture en base `B` utilise les chiffres de 0 à `B − 1`, et s'obtient comme en base 10 : le dernier chiffre de `x` est `x % B`, et les autres sont ceux de `x // B`.
 
 Deux entiers `N` et `B` sont donnés. Compter les entiers `x` tels que `1 ≤ x ≤ N` qui sont des palindromes à la fois en base 10 et en base `B`.
 

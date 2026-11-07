@@ -12,7 +12,7 @@ On note `f(x) = (A × x + B) mod M`, le reste de la division de `A × x + B` par
 
 Par exemple, avec `M = 10`, `A = 3`, `B = 1`, `X = 2` et `K = 3`, on obtient successivement 7, 2, puis 7.
 
-Chaque test contient `T` questions de ce type.
+L'entrée contient `T` questions de ce type.
 
 ## Entrée
 - La première ligne contient `T`.

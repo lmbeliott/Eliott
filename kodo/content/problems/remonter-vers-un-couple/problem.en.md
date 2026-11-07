@@ -7,7 +7,7 @@ Start from a pair of positive integers `(x, y)`. A **move** replaces this pair b
 
 Two pairs `(A, B)` and `(C, D)` are given. Print the number of moves needed to go from `(A, B)` to `(C, D)`, or `-1` if it is impossible. One can show that this number, when it exists, does not depend on the moves chosen.
 
-Each test contains `T` questions.
+The input contains `T` questions.
 
 ## Input
 - The first line contains `T`.

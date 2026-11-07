@@ -1,5 +1,5 @@
+# vrai si l'écriture de x en base b se lit pareil dans les deux sens
 def palindrome_en_base(x, b):
-    """Vrai si l'écriture de x en base b se lit pareil dans les deux sens."""
     chiffres = []
     while x > 0:
         chiffres.append(x % b)
@@ -14,8 +14,8 @@ def palindrome_en_base(x, b):
     return True
 
 
+# palindromes décimaux de cette longueur, au plus n, palindromes en base b
 def compter_longueur(longueur, n, b):
-    """Palindromes décimaux de cette longueur, au plus n, palindromes en base b."""
     total = 0
     h = (longueur + 1) // 2
     # on fabrique les palindromes à partir de leur première moitié, dans l'ordre croissant

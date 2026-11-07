@@ -1,18 +1,16 @@
+#include <cctype>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 using namespace std;
 
-// Un morceau est une lettre (groupe = -1) ou un groupe répété c fois.
-struct Morceau {
-    char lettre;
-    long long c;
-    int groupe;        // numéro du texte entre parenthèses, -1 pour une lettre
-};
-
+// Un morceau est un couple (a, g) :
+// - une lettre si g = -1, et a est alors le code de la lettre ;
+// - un groupe sinon : le texte numéro g, répété a fois.
 string s;
-vector<vector<Morceau>> textes;   // textes[g] = morceaux du texte numéro g
-vector<long long> longueurs;      // longueurs[g] = longueur développée du texte g
+vector<vector<pair<long long, int>>> textes;   // textes[g] = morceaux du texte numéro g
+vector<long long> longueurs;                   // longueurs[g] = longueur développée du texte g
 
 // lit le texte qui commence en i, jusqu'à une ')' ou la fin ; renvoie son numéro
 int lire_texte(int &i) {
@@ -29,10 +27,10 @@ int lire_texte(int &i) {
             i++;                         // saute '('
             int sous = lire_texte(i);
             i++;                         // saute ')'
-            textes[g].push_back({' ', c, sous});
+            textes[g].push_back({c, sous});
             longueurs[g] += c * longueurs[sous];
         } else {
-            textes[g].push_back({s[i], 1, -1});
+            textes[g].push_back({s[i], -1});
             longueurs[g] += 1;
             i++;
         }
@@ -42,18 +40,18 @@ int lire_texte(int &i) {
 
 // k-ième lettre (k >= 1) du texte développé numéro g
 char chercher(int g, long long k) {
-    for (const Morceau &m : textes[g]) {
-        if (m.groupe == -1) {
+    for (const pair<long long, int> &m : textes[g]) {
+        if (m.second == -1) {
             if (k == 1) {
-                return m.lettre;
+                return (char)m.first;
             }
             k--;
         } else {
-            long long lg = longueurs[m.groupe];
-            if (k <= m.c * lg) {
-                return chercher(m.groupe, (k - 1) % lg + 1);
+            long long lg = longueurs[m.second];
+            if (k <= m.first * lg) {
+                return chercher(m.second, (k - 1) % lg + 1);
             }
-            k -= m.c * lg;
+            k -= m.first * lg;
         }
     }
     return '?';

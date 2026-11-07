@@ -205,20 +205,27 @@ using namespace std;
 
 int main() {
     vector<string> mots = {"un", "deux", "trois"};
-    string resultat = "";
+    string resultat = "", avecTirets = "";
     for (string m : mots) {
         for (char &c : m) {
             c = toupper(c);
         }
+        string longueur = to_string(m.size());
         resultat += m;
-        resultat += to_string(m.size());
+        resultat += longueur;
+        if (avecTirets != "") {
+            avecTirets += "-";
+        }
+        avecTirets += m;
+        avecTirets += "-";
+        avecTirets += longueur;
     }
-    cout << resultat << "\n";
+    cout << resultat << "\n" << avecTirets << "\n";
     return 0;
 }
 ```
 
-Python affiche `UN2DEUX4TROIS5`, puis `UN-2-DEUX-4-TROIS-5`. En C++, une `string` se modifie : `resultat += m` ajoute à la fin sans recopier ce qui précède, la plupart du temps. En revanche, `resultat = resultat + m` fabrique une nouvelle chaîne et recopie tout : la différence entre ces deux écritures, qui semblent équivalentes, peut transformer un programme instantané en programme trop lent. Pour construire une chaîne à l'envers, on la construit à l'endroit puis on la retourne une fois, ou on la remplit depuis la fin.
+Le programme affiche `UN2DEUX4TROIS5`, puis `UN-2-DEUX-4-TROIS-5`. Le C++ n'a pas de `join` : on y ajoute le séparateur à la main, entre deux morceaux. Une `string` du C++ se modifie : `resultat += m` ajoute à la fin sans recopier ce qui précède, la plupart du temps. En revanche, `resultat = resultat + m` fabrique une nouvelle chaîne et recopie tout : la différence entre ces deux écritures, qui semblent équivalentes, peut transformer un programme instantané en programme trop lent. Pour construire une chaîne à l'envers, on la construit à l'endroit puis on la retourne une fois, ou on la remplit depuis la fin.
 
 ## Erreurs fréquentes
 
@@ -226,7 +233,7 @@ Python affiche `UN2DEUX4TROIS5`, puis `UN-2-DEUX-4-TROIS-5`. En C++, une `string
 
 **Sortir du texte.** Sans la borne `n − m`, la comparaison `t[i + j]` dépasse la fin et Python s'arrête avec `IndexError: string index out of range`. En C++, il n'y a pas de message : le programme lit n'importe quoi.
 
-**Compter avec `count` des occurrences qui se chevauchent.** `"aaa".count("aa")` vaut 1. Si l'énoncé compte les chevauchements, il faut la recherche naïve, ou des appels à `find` qui repartent de l'indice suivant la dernière occurrence trouvée, plus un.
+**Compter avec `count` des occurrences qui se chevauchent.** `"aaa".count("aa")` vaut 1. Si l'énoncé compte les chevauchements, il faut la recherche naïve, ou des appels à `find` qui repartent juste après le début de la dernière occurrence trouvée (son indice plus un).
 
 **Recoller des nombres.** `" ".join([1, 2, 3])` provoque `TypeError: sequence item 0: expected str instance, int found`. On convertit chaque élément avec `str` avant de l'ajouter à la liste.
 
@@ -243,8 +250,8 @@ Python affiche `UN2DEUX4TROIS5`, puis `UN-2-DEUX-4-TROIS-5`. En C++, une `string
 **Programme.**
 
 ```python
+# étend le palindrome s[i+1:j] tant que s[i] == s[j] ; renvoie sa longueur
 def plus_long_autour(s, i, j):
-    """Étend le palindrome s[i+1:j] tant que s[i] == s[j] ; renvoie sa longueur."""
     while i >= 0 and j < len(s) and s[i] == s[j]:
         i = i - 1
         j = j + 1

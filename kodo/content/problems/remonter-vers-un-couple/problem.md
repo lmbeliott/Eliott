@@ -12,7 +12,7 @@ On part d'un couple d'entiers strictement positifs `(x, y)`. Un **coup** remplac
 
 Deux couples `(A, B)` et `(C, D)` sont donnés. Afficher le nombre de coups nécessaires pour passer de `(A, B)` à `(C, D)`, ou `-1` si c'est impossible. On peut montrer que ce nombre, quand il existe, ne dépend pas des coups choisis.
 
-Chaque test contient `T` questions.
+L'entrée contient `T` questions.
 
 ## Entrée
 - La première ligne contient `T`.

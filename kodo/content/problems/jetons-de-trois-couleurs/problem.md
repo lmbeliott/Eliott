@@ -12,7 +12,7 @@ Un sac contient `R` jetons rouges, `V` verts et `B` bleus. Une **opération** co
 
 Afficher le plus petit nombre d'opérations qui rend tous les jetons de la même couleur, ou `-1` si c'est impossible. Si tous les jetons ont déjà la même couleur, la réponse est 0.
 
-Chaque test contient `T` questions.
+L'entrée contient `T` questions.
 
 ## Entrée
 - La première ligne contient `T`.

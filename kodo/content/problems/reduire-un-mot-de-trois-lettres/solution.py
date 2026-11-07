@@ -1,5 +1,5 @@
+# longueur minimale après réductions, suivie de la lettre restante si elle vaut 1
 def reduire(mot):
-    """Longueur minimale après réductions, suivie de la lettre restante si elle vaut 1."""
     nb = [0, 0, 0]
     for c in mot:
         nb[ord(c) - ord("a")] += 1

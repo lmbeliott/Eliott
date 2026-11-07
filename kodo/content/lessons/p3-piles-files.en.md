@@ -95,6 +95,8 @@ int main() {
 }
 ```
 
+In Python, `x if condition else y` is `x` when the condition is true and `y` otherwise: it is the equivalent of `condition ? x : y` in C++. The line `attendu = ...` therefore gives the opening bracket that matches the closing one `c`.
+
 With `([]())`, the stack goes through `(`, `([`, `(`, `((`, `(` then becomes empty: the program prints `OUI`. With `([)]`, the closing `)` finds `[` on top: `NON`. With `(()`, an opening bracket remains in the stack at the end: `NON`.
 
 **Why it is correct.** Invariant: before each character, the stack holds, in order, the opening brackets already read and not yet closed; the most recent is on top. A closing bracket must close precisely the one on top. **Cost**: each character is pushed at most once and popped at most once, so at most `2n` stack operations for a string of length `n`.
@@ -281,7 +283,9 @@ int main() {
 
 The program prints `7 8 5 5 8 -1`. When the 5 arrives, the stack holds the positions of the values `7 3 1`; the 1 then the 3 are popped with the answer 5, and the 7 stays.
 
-**Why it is correct.** Invariant: before processing position `i`, the stack holds exactly the positions `j < i` such that no value between `j + 1` and `i − 1` is greater than `t[j]`, and their values **decrease** (not necessarily strictly) from bottom to top. This is called a **monotonic stack**. When `t[i]` arrives, the waiting positions smaller than `t[i]` are all at the top of the stack, thanks to this order: the `while` loop finds them all, and stops at the first value greater than or equal, below which none is smaller. For each of them, `t[i]` is indeed the first greater value to its right. The positions left in the stack at the end have no answer: they keep `-1`.
+**Why it is correct.** Invariant: before processing position `i`, the stack holds exactly the **waiting** positions, that is the `j < i` such that none of the values `t[j + 1], …, t[i − 1]` is greater than `t[j]`, stored from bottom to top by increasing position; and their values **decrease** (not necessarily strictly) from bottom to top. This is called a **monotonic stack**. At the start, the stack is empty and no position is waiting.
+
+When `t[i]` arrives, the waiting positions with a value smaller than `t[i]` are all at the top of the stack, since values decrease towards the top: the `while` loop pops them all, and stops at the first value greater than or equal (or on an empty stack). For each popped position `j`, `t[i]` is indeed the first greater value to the right of `j`: the values between them did not exceed `t[j]`, otherwise `j` would no longer be waiting. The remaining positions are not exceeded by `t[i]` and keep waiting; finally `i` is pushed, with a value at most that of the top. So the invariant holds before `i + 1`. At the end, the positions still in the stack were never exceeded: they keep `-1`.
 
 **How many operations.** A single step can pop many elements, and you might fear `n²` operations. Count globally instead: each position is pushed once and popped at most once. Over the whole program, there are at most `n` pops, and the `while` loop makes at most `2n` tests in total. The algorithm makes about `n` operations, instead of `n² / 2`.
 

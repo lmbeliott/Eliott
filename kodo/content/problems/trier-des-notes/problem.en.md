@@ -16,7 +16,7 @@ A single line: the `N` marks in increasing order, separated by spaces.
 - 0 ≤ each mark ≤ 20
 
 ## Hints
-1. A selection sort or an insertion sort makes about N² / 2 comparisons: more than a billion for N = 50,000. Use the fact that marks only take 21 values.
+1. A selection sort or an insertion sort makes about N² / 2 comparisons: more than a billion for N = 50,000. But marks only take 21 values: this can be exploited.
 2. Count how many papers got 0, how many got 1, …, how many got 20.
 3. Then print each mark as many times as it was counted, from 0 to 20.
 
