@@ -6,9 +6,9 @@ export interface AvatarDef {
   fr: string
   en: string
   bg: string
-  /** Couleurs des chiffres 1, 2, 3 de la grille */
+  /** Couleurs des chiffres de la grille (1 = première couleur) */
   colors: string[]
-  /** 8 lignes de 8 caractères : '.' = fond, '1'..'3' = couleur */
+  /** Lignes de caractères (8 × 8, 12 × 12 pour les avatars réservés) : '.' = fond, '1'..'7' = couleur */
   px: string[]
 }
 
@@ -31,9 +31,10 @@ export const AVATARS: AvatarDef[] = [
   { id: 'robo', kanji: 'ロボ', fr: 'Robot', en: 'Robot', bg: '#e4e6fb', colors: ["#5a64e6", "#ffffff", "#2a2f6a"], px: ["...3....", "...1....", ".111111.", ".122221.", ".131131.", ".111111.", "..1331..", ".11..11."] },
 ]
 
-/** Avatars réservés (la base refuse « kodo » à tout autre compte que l'administrateur). */
+/** Avatars réservés (la base refuse « forge » à tout autre compte que l'administrateur).
+ *  Katana et marteau de forgeron croisés : la création. Grille 12 × 12. */
 export const SPECIAL_AVATARS: AvatarDef[] = [
-  { id: 'kodo', kanji: '開祖', fr: 'Kodo (fondateur)', en: 'Kodo (founder)', bg: '#16181f', colors: ['#f4f5f8', '#7b86ff', '#f0b43c'], px: ['3......3', '.1...1..', '.1..1...', '.1.1....', '.11.....', '.1.1....', '.1..22..', '31..22.3'] },
+  { id: 'forge', kanji: '鍛冶', fr: 'Katana et marteau (fondateur)', en: 'Katana and hammer (founder)', bg: '#16181f', colors: ["#c9ced8", "#8c2232", "#f0b43c", "#7d8594", "#b9844a", "#aab2c0", "#f4f6fa"], px: ["...........1", "66666.....17", "44444....17.", "44444...17..", "...55..17...", "....5517....", "..3..17.....", "..331755....", "...33..55...", ".22.....55..", "223......55.", "2..........."] },
 ]
 
 const byId = new Map([...AVATARS, ...SPECIAL_AVATARS].map((a) => [a.id, a]))

@@ -105,7 +105,7 @@ n = 3000
 aretes = [(i, i + 1) for i in range(1, n - 1)] + [(n - 1, n), (n, n - 2)]
 tests.append(avec_questions(n, aretes, 1000))
 # Grands cas
-tests.append(avec_questions(5000, aleatoire(5000, 8000), 4000))
+tests.append(avec_questions(5000, aleatoire(5000, 8000), 5000))
 tests.append(avec_questions(4000, grille(40, 100, 0.95), 4000))
 # Grand graphe biparti sauf une arête qui crée un cycle impair loin du départ
 n = 5000

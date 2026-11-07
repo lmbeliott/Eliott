@@ -4,8 +4,10 @@ import { avatarFor, type AvatarDef } from '../lib/avatars'
 import { cx } from './ui'
 
 export const AvatarImage = memo(function AvatarImage({ def, size, className }: { def: AvatarDef; size: number; className?: string }) {
+  const n = def.px.length
+  const pad = n / 8
   return (
-    <svg width={size} height={size} viewBox="-1 -1 10 10" shapeRendering="crispEdges" aria-hidden className={cx('shrink-0', className)} style={{ borderRadius: size * 0.28, background: def.bg }}>
+    <svg width={size} height={size} viewBox={`${-pad} ${-pad} ${n + 2 * pad} ${n + 2 * pad}`} shapeRendering="crispEdges" aria-hidden className={cx('shrink-0', className)} style={{ borderRadius: size * 0.28, background: def.bg }}>
       {def.px.flatMap((row, y) =>
         [...row].map((ch, x) => (ch === '.' ? null : <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={def.colors[Number(ch) - 1]} />)),
       )}

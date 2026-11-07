@@ -38,7 +38,7 @@ tests += [
     test(2, hasard(N, 2)),
     test(3, blocs(N, 3, 0.1)),
     test(26, blocs(N, 26, 0.05)),
-    test(26, "a" * N),                            # chaque a change tous les écarts
-    test(5, hasard(N, 5)),
+    test(26, "a" * 100000),                       # taille maximale, et chaque a change tous les écarts
+    test(5, hasard(30000, 5)),
 ]
 print(json.dumps(tests))
