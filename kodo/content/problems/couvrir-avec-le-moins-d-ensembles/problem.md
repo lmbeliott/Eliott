@@ -34,6 +34,6 @@ On code l'ensemble des quartiers couverts par l'emplacement `i` par un entier `c
 
 Pour ne pas refaire `N` opérations par masque, on remplit un tableau `union[masque]` dans l'ordre croissant : si `b` est le bit le plus bas du masque (`masque & -masque`), d'indice `i`, alors `union[masque] = union[masque − b] | couvre_i`, et `masque − b` est plus petit, donc déjà calculé. On tient de même le nombre de bits à 1 de chaque masque. Un dernier passage trouve la plus petite taille `K` d'un masque qui couvre tout, puis compte les masques de taille `K` qui couvrent tout.
 
-**Complexité.** O(2^N) : environ 260 000 masques, quelques opérations chacun. Recalculer chaque réunion bit par bit coûterait `N` fois plus, soit près de 5 millions d'opérations, ce qui est déjà lent en Python.
+**Complexité.** O(2^N) : environ 260 000 masques, quelques opérations chacun. Recalculer chaque réunion bit par bit coûterait `N` fois plus, soit près de 5 millions d'opérations : cela reste faisable ici, mais plusieurs fois plus lent, et la différence devient décisive dès que `N` grandit un peu.
 
 **Remarque.** Ce problème, la **couverture par ensembles**, est réputé difficile : on ne connaît aucun algorithme qui le résolve en temps polynomial dans le cas général. L'énumération exhaustive n'est raisonnable que parce que `N` est petit.

@@ -1,6 +1,6 @@
 La table des matières d'un livre ou les dossiers d'un ordinateur sont organisés en **arbre** : un élément de départ, qui se divise en sous-parties, qui se divisent à leur tour. Une expression comme `(3 + 4) × (10 − 2 × 3)` a aussi cette forme. Et en rangeant des nombres dans un arbre bien choisi, on peut chercher ou insérer un nombre en ne regardant qu'une petite partie des données.
 
-Ce chapitre définit les arbres binaires, montre comment les ranger dans des tableaux, présente les quatre parcours classiques avec leurs preuves, puis les **arbres binaires de recherche** : leur invariant, leurs opérations, et pourquoi leur efficacité dépend de leur forme.
+Ce chapitre définit les arbres binaires, leurs parcours et leurs preuves, puis les **arbres binaires de recherche** : leur invariant, leurs opérations, et pourquoi leur efficacité dépend de leur forme.
 
 ## Arbres enracinés et arbres binaires
 
@@ -323,7 +323,7 @@ int main() {
 
 Le programme affiche `True False 20`, puis `50 70 None` (`-1` dans la version C++) : 45 est présent, 55 non, le minimum est 20 ; le successeur de 45 est 50, celui de 65 est 70, et 80 n'en a pas.
 
-**Pourquoi le successeur est juste.** Les candidats sont des clés plus grandes que `x`. Soit `y > x` une clé de l'arbre : au dernier nœud commun aux chemins de recherche de `x` et de `y`, on part à gauche vers `x` en notant ce nœud, dont la clé est au plus `y`. Chaque candidat noté ensuite est plus petit que le précédent (on est dans son sous-arbre gauche) : le dernier est au plus égal à toute clé plus grande que `x`.
+**Pourquoi le successeur est juste.** Les candidats notés sont des clés plus grandes que `x`, et chacun est plus petit que le précédent, puisqu'on vient de descendre dans le sous-arbre gauche de celui-ci : le résultat est le dernier noté. Soit `y > x` une clé de l'arbre ; comparons le chemin suivi par la fonction et le chemin de la racine au nœud de `y`. Si le nœud de `y` est sur le chemin suivi, `y` est noté. Sinon, au dernier nœud `w` commun aux deux chemins, ils partent de côtés différents ; comme `x < y`, le chemin suivi part à gauche et l'autre à droite, donc `x < clé(w) < y`, et `w` est noté. Dans les deux cas, une clé au plus égale à `y` est notée, donc le résultat est au plus `y` : c'est bien la plus petite clé plus grande que `x`. S'il n'y a aucune telle clé, rien n'est noté.
 
 ## Le coût dépend de la forme
 
@@ -406,7 +406,7 @@ int main() {
 
 Le programme affiche `1999 1999000`, puis `23 24390`. En insérant les nombres de 1 à 2 000 dans l'ordre croissant, chaque nouvelle clé va tout en bas à droite : l'arbre est un chemin de hauteur 1 999, on dit qu'il est **dégénéré**, et la construction fait près de deux millions de comparaisons, `n²/2`. Avec les mêmes quantités insérées dans un ordre mélangé, la hauteur n'est que de 23 et les comparaisons sont 80 fois moins nombreuses. On montre qu'en moyenne, pour un ordre d'insertion aléatoire, la hauteur est de l'ordre de `log n`.
 
-Pour **garantir** une hauteur en O(log n) quel que soit l'ordre, il existe des **arbres équilibrés** (arbres AVL, arbres rouge-noir) qui se réorganisent après chaque insertion. On ne les programme pas ici ; il suffit de savoir qu'ils existent, et que les ensembles ordonnés `set` et `map` de C++ en sont. Python n'en propose pas : on utilise un dictionnaire, ou une liste triée avec une recherche dichotomique.
+Pour **garantir** une hauteur en O(log n), les **arbres équilibrés** (AVL, rouge-noir) se réorganisent après chaque insertion. On ne les programme pas ici : les `set` et `map` de C++ en sont ; Python n'en propose pas, et l'on utilise un dictionnaire ou une liste triée avec une recherche dichotomique.
 
 ## Les erreurs fréquentes
 

@@ -81,8 +81,12 @@ k2, g2, d2 = abr(random.sample(range(1, 10 ** 6), 1500))
 v = feuille_libre(g1, d1)
 tests.append(texte(*greffe(k1, g1, d1, k2, g2, d2, v, 0 if g1[v] == 0 else 1)))
 # un long chemin ABR, dont la racine casse la propriété
-k, g, d = abr(list(range(1, 3001)))
-k[1] = 5000
+k, g, d = abr(list(range(1, 5001)))
+k[1] = 6000
+tests.append(texte(k, g, d))
+# un long chemin vers la gauche, cassé près du bas : test séparé de chaque sous-arbre trop lent
+k, g, d = abr(list(range(5000, 0, -1)))
+k[4990] = 10 ** 6
 tests.append(texte(k, g, d))
 # ABR équilibré dont une clé profonde est modifiée
 k, g, d = abr(equilibre(list(range(1, 2048))))

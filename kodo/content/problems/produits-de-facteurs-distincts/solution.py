@@ -1,6 +1,3 @@
-import sys
-sys.setrecursionlimit(10000)
-
 n = int(input())
 
 # diviseurs de n supérieurs ou égaux à 2, dans l'ordre croissant

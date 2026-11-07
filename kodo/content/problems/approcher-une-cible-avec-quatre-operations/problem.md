@@ -28,13 +28,13 @@ Un seul entier : le plus petit écart entre un nombre atteignable et `T`.
 
 ## Indices
 1. Une fonction récursive reçoit la liste des nombres disponibles ; pour chaque paire et chaque opération permise, elle s'appelle sur la liste obtenue, qui a un nombre de moins.
-2. Avec 6 nombres, l'arbre des appels a plusieurs millions de nœuds, car la même liste est obtenue par beaucoup de chemins différents (faire `a + b` puis `c × d`, ou `c × d` puis `a + b`).
+2. Avec 6 nombres, essayer chaque paire dans les deux ordres donne un arbre d'une dizaine de millions de nœuds. Une paire suffit dans un seul ordre (le plus grand d'abord), et la même liste est souvent obtenue par plusieurs chemins (faire `a + b` puis `c × d`, ou `c × d` puis `a + b`).
 3. Mémoriser dans un ensemble les listes déjà explorées, triées pour que l'ordre ne compte pas, et ne pas les explorer une deuxième fois.
 
 ## Solution
 **Retour sur trace.** La fonction `explorer(liste)` essaie toutes les paires `(a, b)` de la liste, avec `a ≥ b`, et toutes les opérations permises : `a + b`, `a × b`, `a − b` si `a > b`, `a ÷ b` si `b` divise `a`. Chaque résultat `v` met à jour le meilleur écart, puis on appelle `explorer` sur la liste où `a` et `b` sont remplacés par `v`. Les nombres de départ sont pris en compte avant le premier appel. Tout nombre atteignable apparaît ainsi dans une des listes parcourues, puisque la fonction essaie toutes les étapes possibles depuis chaque liste.
 
-**Taille de l'arbre.** Une liste de `k` nombres a `k(k − 1)/2` paires et au plus 4 résultats par paire. Pour `N = 6`, cela donne jusqu'à 60 × 40 × 24 × 12 × 4 ≈ 2,8 millions de feuilles : trop pour Python. Mais beaucoup de nœuds représentent la même situation : une liste de nombres ne dépend pas de l'ordre dans lequel les étapes ont été faites. On range donc chaque liste, triée et convertie en tuple, dans un ensemble `deja_vus`, et l'on n'explore jamais deux fois la même. Le nombre de listes différentes rencontrées n'est que de quelques dizaines de milliers.
+**Taille de l'arbre.** Une liste de `k` nombres a `k(k − 1)/2` paires et au plus 4 résultats par paire. Pour `N = 6`, cela donne jusqu'à 60 × 40 × 24 × 12 × 4 ≈ 2,8 millions de feuilles ; en pratique, l'arbre a environ un million de nœuds. Si l'on essaie chaque paire dans les deux ordres (`a + b` puis `b + a`, `a × b` puis `b × a`), il en a plus de dix millions : beaucoup trop pour Python. Mais beaucoup de nœuds représentent la même situation : une liste de nombres ne dépend pas de l'ordre dans lequel les étapes ont été faites. On range donc chaque liste, triée et convertie en tuple, dans un ensemble `deja_vus`, et l'on n'explore jamais deux fois la même. Sur les tests, il n'y a qu'environ 65 000 listes différentes.
 
 On s'arrête aussi dès que l'écart vaut 0 : on ne peut pas faire mieux.
 

@@ -27,11 +27,11 @@ Une ligne : pour chaque niveau, du niveau 0 au plus profond, le numéro du nœud
 ## Indices
 1. Le nœud le plus à gauche d'un niveau n'est pas forcément un fils gauche : un niveau peut ne contenir que des fils droits.
 2. Un parcours en largeur qui enfile toujours le fils gauche avant le fils droit visite les nœuds niveau par niveau, et chaque niveau de gauche à droite.
-3. L'arbre peut avoir une hauteur de 10 000 : un parcours récursif risque de dépasser la profondeur autorisée, une file n'a pas ce problème.
+3. L'arbre peut avoir une hauteur de 9 999 (un chemin) : un parcours récursif risque de dépasser la profondeur autorisée, une file n'a pas ce problème.
 
 ## Solution
 On trouve la racine (le seul nœud qui n'est le fils de personne), puis l'on fait un **parcours en largeur** depuis la racine, en enfilant le fils gauche puis le fils droit de chaque nœud, et en notant le niveau de chacun (celui de son père plus 1). Le premier nœud défilé de chaque niveau est le plus à gauche : on l'affiche.
 
 **Pourquoi c'est juste.** Comme pour les distances dans un graphe, les nœuds sortent de la file par niveaux croissants. À l'intérieur d'un niveau, ils sortent de gauche à droite, par récurrence : si le niveau `k` sort de gauche à droite, ses enfants sont enfilés dans l'ordre « enfants du premier nœud (gauche puis droite), enfants du deuxième… », qui est exactement l'ordre de gauche à droite du niveau `k + 1` dans le dessin.
 
-**Complexité.** O(N). Le parcours de l'arbre par niveaux s'appelle aussi le **parcours en ordre de niveau**.
+**Complexité.** Chaque nœud entre une fois dans la file : O(N).

@@ -1,10 +1,10 @@
-Some problems have no known trick: to find the best way to place antennas, colour a map or fill a grid, nothing better is known, in general, than trying the possibilities. But "trying everything" requires method. Each possibility must be listed **exactly once**, those that cannot succeed must be abandoned as early as possible, and the number of cases must be estimated before writing a single line.
+To place antennas, colour a map or fill a grid, nothing better is often known than trying the possibilities. But "trying everything" requires method: list each possibility **exactly once**, abandon as early as possible those that cannot succeed, and estimate the number of cases before writing a single line.
 
-The "Recursion" chapter showed how to generate the subsets and permutations of a list. This chapter goes further: subsets encoded by integers, combinations, then **backtracking** with its two main tools, pruning and symmetry breaking.
+After the subsets and permutations of the "Recursion" chapter, this chapter presents subsets encoded by integers, combinations, then **backtracking** and its two tools: pruning and symmetry breaking.
 
 ## Subsets encoded by integers
 
-A subset of a list of `n` elements is encoded by an integer of `n` bits, called a **mask**: bit `i` is 1 if element `i` is chosen. The `2^n` subsets correspond exactly to the integers from `0` to `2^n − 1`, and a simple loop lists them all, without recursion. The test `mask >> i & 1` tells whether element `i` is taken; `1 << i` is the integer whose only bit set is bit `i`.
+The "Implicit graphs" chapter introduced **masks**: a set of elements numbered from `0` to `n − 1` is encoded by the integer whose bit `i` is 1 if element `i` is in the set; `1 << i` is the mask of `{i}`, and `mask >> i & 1` tells whether `i` is present. The `2^n` subsets of a list of `n` elements therefore correspond exactly to the integers from `0` to `2^n − 1`, and a simple loop lists them all, without recursion.
 
 ```python
 t = [3, 5, 7, 9, 2]
@@ -42,9 +42,53 @@ int main() {
 }
 ```
 
-The program prints the three subsets with sum 12: `6 [5, 7]`, `9 [3, 9]` and `21 [3, 7, 2]`. For example, 21 is `10101` in binary: bits 0, 2 and 4 are set, which denotes the elements 3, 7 and 2.
+The program prints the three subsets with sum 12: `6 [5, 7]`, `9 [3, 9]` and `21 [3, 7, 2]` (21 is `10101`: bits 0, 2 and 4 denote 3, 7 and 2).
 
-This loop costs `2^n × n` operations, since each sum is recomputed from scratch. One can often do better by reusing a result already computed: `mask & -mask` isolates the lowest bit of the mask, and the sum of the mask is that of the mask without this bit (a smaller integer, hence already handled) plus one element. An array of `2^n` sums is filled this way in O(2^n). Masks are also used to encode sets inside a state: in Python, an integer can have as many bits as needed; in C++, a `long long` has 64.
+The other set operations also take a single instruction, the same in Python and C++ except for the last two:
+- `(1 << n) - 1`: the set of all elements (`n` bits set to 1); a mask can also be written in binary with the prefix `0b`: `0b1111110` is 126, the set `{1, 2, 3, 4, 5, 6}`;
+- `a | b` and `a & b`: union and intersection (the bitwise "and" sets to 1 the bits that are 1 in both numbers);
+- `a & ~b`: the elements of `a` that are not in `b`, since `~b` flips every bit of `b`; in particular, `m & ~(1 << i)` removes `i`;
+- `m & (m - 1)`: `m` without its smallest element;
+- `m & -m`: the mask containing only the smallest element of `m`;
+- the number of elements: `bin(m).count("1")` in Python, `__builtin_popcount(m)` in C++;
+- the index of the smallest element, for `m > 0`: `(m & -m).bit_length() - 1` in Python (`bit_length` gives the number of binary digits), `__builtin_ctz(m)` in C++.
+
+**Why these two tricks work.** Subtracting 1 from `m` turns its last 1 bit into 0 and the 0s after it into 1s, without touching the higher bits: it is the borrow of a written subtraction, in binary. The "and" of `m` and `m − 1` therefore erases exactly that bit: `12 = 1100`, `11 = 1011`, `12 & 11 = 1000 = 8`. Next, `~x` equals `−x − 1` (that is its definition, in Python as in C++), so `−m = ~(m − 1)`: above the lowest 1 bit of `m`, the bits of `−m` are the opposite of those of `m`; at its place, `−m` has a 1; below it, 0s. The "and" keeps only that bit: `12 & −12 = 4`.
+
+The previous loop costs `2^n × n` operations, since each sum is recomputed from scratch. A result already computed can be reused: the sum of `m` is that of `m & (m − 1)`, a smaller integer, hence already handled, plus the smallest element of `m`. An array of the `2^n` sums is filled this way in O(2^n).
+
+```python
+t = [3, 5, 7, 9, 2]
+n = len(t)
+total = [0] * (1 << n)
+for m in range(1, 1 << n):
+    i = (m & -m).bit_length() - 1          # index of the smallest element of m
+    total[m] = total[m & (m - 1)] + t[i]   # m without this element: already computed
+print(total[21], sum(1 for m in range(1 << n) if total[m] == 12))
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> t = {3, 5, 7, 9, 2};
+    int n = t.size();
+    vector<int> total(1 << n, 0);
+    for (int m = 1; m < (1 << n); m++) {
+        int i = __builtin_ctz(m);                  // index of the smallest element of m
+        total[m] = total[m & (m - 1)] + t[i];      // m without this element: already computed
+    }
+    int count = 0;
+    for (int m = 0; m < (1 << n); m++)
+        if (total[m] == 12) count++;
+    cout << total[21] << " " << count << "\n";
+    return 0;
+}
+```
+
+The program prints `12 3`: mask 21 encodes `{3, 7, 2}`, and three masks have sum 12. In Python, an integer can have as many bits as needed; in C++, an `int` has 32 and a `long long` 64: beyond 30 elements, write `1LL << i`, `__builtin_popcountll` and `__builtin_ctzll`.
 
 In practice, `2^20 ≈ 10⁶` subsets are listed without difficulty, `2^25 ≈ 3 × 10⁷` already with difficulty in Python, and `2^40` never.
 
@@ -174,7 +218,7 @@ The program prints, for `n` from 4 to 8, the number of solutions and the number 
 
 **Correctness.** Invariant: when `place(row)` is called, the queens of rows `0` to `row − 1` do not threaten each other, and the three arrays describe exactly the columns and diagonals they occupy. A queen is only placed on an unthreatened square, and the arrays are restored on the way back: the invariant is preserved. Every solution is found exactly once, since its placement is the sequence of choices leading to it, and two different branches differ by the column of the same row.
 
-**Cost.** A naive enumeration of the `8^8 ≈ 1.7 × 10⁷` ways to place one queen per row, checked at the end, would make millions of tries for `n = 8`. Backtracking visits only 2,057 nodes: each branch is cut as soon as the new queen is threatened, without developing the next rows. This is the whole point of **checking constraints as early as possible**.
+**Cost.** Listing the `8^8 ≈ 1.7 × 10⁷` ways to place one queen per row, then checking them, would take much longer: backtracking visits only 2,057 nodes, because each branch is cut as soon as the new queen is threatened. This is the whole point of **checking constraints as early as possible**.
 
 ## Pruning with a bound
 
@@ -242,21 +286,19 @@ int main() {
 }
 ```
 
-The program prints `500 104218`: the best sum is 500 (all numbers are even, 501 is impossible), and the search visited 104,218 nodes. Without the bound, it would visit 669,640, and without any cut, the 2,097,151 nodes of the full tree. Sorting in decreasing order helps: large numbers at the front quickly give a good solution, which makes the bound effective.
+The program prints `500 104218`: the best sum is 500 (all numbers are even, 501 is impossible), and the search visited 104,218 nodes. Without the bound, it would visit 669,640, and without any cut, the 2,097,151 nodes of the full tree. Sorting in decreasing order quickly gives a good solution, which makes the bound effective.
 
 A bound must be **optimistic**: it must never underestimate what the branch can reach, otherwise a branch containing the best solution would be cut. Here, `total_sum + rest[i]` is indeed at least any sum reachable in the branch.
 
 ## Counting or finding
 
-Three questions must be told apart. **Is there** a solution? Stop as soon as one is found: the function returns a boolean, and each call returns `True` as soon as a recursive call succeeded. **How many** solutions are there? The whole tree must be visited, and each call returns the sum of the numbers of solutions of its branches. **Which is the best**? The tree is visited while keeping the best value, which allows pruning with a bound.
-
-The first question is often much faster than the second: a single successful branch is enough. But when the answer is "no", the whole tree must be visited to be sure. That is the hard case.
+Three questions must be told apart. **Is there** a solution? Each call returns `True` as soon as a recursive call succeeded: the search stops at the first solution. **How many** are there? Each call returns the sum of the results of its branches, and the whole tree is visited. **Which is the best**? The best value is kept, which allows pruning with a bound. The first question is often the fastest, except when the answer is "no": the whole tree must then be visited to be sure.
 
 ## Estimating the size of the tree
 
-Before programming, estimate the number of nodes: it is the product of the numbers of choices at each level, in the worst case. Subsets: `2^n` leaves. Permutations: `n!`. One queen per row: `n^n`, but `n!` if columns already taken are excluded from the start. A Python loop does a few million operations per second, a C++ program a few hundred million: `10!` ≈ 3.6 million is reasonable, `15!` ≈ 1.3 × 10¹² never is.
+Before programming, estimate the number of nodes: in the worst case, the product of the numbers of choices at each level. Subsets: `2^n` leaves. Permutations: `n!`. One queen per row: `n^n`, but `n!` if columns already taken are excluded from the start. A Python loop does a few million operations per second, a C++ program a few hundred million: `10!` ≈ 3.6 million is reasonable, `15!` ≈ 1.3 × 10¹² never is.
 
-Pruning makes the estimate more delicate, but it can often be justified by a **recurrence**. Suppose that at each node, an element is chosen and one of the two branches removes at least 3 of them (the element and two neighbours, for example). The number of leaves satisfies `T(n) ≤ T(n − 1) + T(n − 3)`, hence `T(n) ≤ 1.47ⁿ`: about 200,000 for `n = 32`, against 4 billion for `2ⁿ`. For a concrete measure, add a call counter, as in the examples above, and test the most unfavourable cases.
+Pruning makes the estimate more delicate, but it can often be justified by a **recurrence**. Suppose that at each node, an element is chosen and one of the two branches removes at least 3 of them (the element and two neighbours, for example). The number of leaves satisfies `T(n) ≤ T(n − 1) + T(n − 3)`, hence, by induction, `T(n) ≤ 1.47ⁿ`, since 1.47³ ≈ 3.18 exceeds 1.47² + 1 ≈ 3.16: about 200,000 for `n = 32`, against 4 billion for `2ⁿ`. For a concrete measure, add a call counter, as in the examples above, and test the most unfavourable cases.
 
 ## Breaking symmetries
 
@@ -273,19 +315,17 @@ One must prove that the rule loses no solution: each family must keep **at least
 
 **Forgetting to undo a choice.** After the recursive call, the state must become exactly what it was: remove the added element, free the column, subtract the object from the packet. Otherwise, the next branches start from a wrong state, and the results are wrong without any error message.
 
-**Copying the state at each call.** Passing `list + [x]` or a copy of the grid at each call is correct, but costs O(n) per node, and can multiply the time by 10 or 100. Modify a single state, then restore it.
+**Copying the state at each call.** Passing `list + [x]` or a copy of the grid is correct, but costs O(n) per node: modify a single state, then restore it.
 
 **A cut that is too aggressive.** A pessimistic bound or a badly justified symmetry rule cuts branches that contained the solution: the program answers fast, but wrong. Always check on small cases against an enumeration with no cut at all.
 
 **Checking too late.** Testing the constraints only once the full solution is built amounts to listing the whole space: check each constraint as soon as its elements are placed.
 
-**Not stopping.** For an existence question, forgetting to propagate `True` upwards makes the search visit the whole tree and can turn an instant answer into a time limit exceeded.
-
 ## Complete example: packets with the same sum
 
 **Statement.** Can a list of positive integers be split into `K` packets with the same sum, each number going into a single packet? The first line gives the numbers, the second `K`; print `YES` or `NO`.
 
-**Idea.** Each packet must sum to `total / K`: if `K` does not divide the total, or if a number exceeds this target, the answer is `NO`. Otherwise, place the numbers one by one, each into a packet where it still fits. Three ideas shrink the tree: sort the numbers in decreasing order (large ones are the most constrained), stop as soon as a split is found, and try only one empty packet, since empty packets are interchangeable.
+**Idea.** Each packet must sum to `total / K`: if `K` does not divide the total, or if a number exceeds this target, the answer is `NO`. Otherwise, place the numbers one by one, each into a packet where it still fits. To shrink the tree, sort the numbers in decreasing order (large ones are the most constrained), stop at the first split found, and try only one empty packet, since they are interchangeable.
 
 ```python
 def fill_packets(i):
@@ -362,15 +402,15 @@ int main() {
 }
 ```
 
-**Checking by hand.** With `4 3 2 3 5 2 1` and `K = 4`, the total is 20 and the target 5. The sorted numbers are `5 4 3 3 2 2 1`. The 5 fills the first packet; the 4 goes into the second; the first 3 fits neither in the first nor in the second packet (4 + 3 > 5) and goes into the third; the second 3 goes into the fourth. The first 2 does not fit into the second packet, but fits into the third (3 + 2 = 5); the second 2 goes into the fourth, and the 1 completes the second. The program prints `YES`. With `2 2 2 2 3 4 5` and `K = 4`, the target is still 5, but the 4 can only be completed by a 1, which does not exist: the program explores every branch and prints `NO`.
+**Checking by hand.** With `4 3 2 3 5 2 1` and `K = 4`, the target is 20 / 4 = 5. The sorted numbers are `5 4 3 3 2 2 1`: the 5, the 4 and the two 3s each take a packet, the two 2s complete the packets of the 3s, and the 1 that of the 4. The program prints `YES` without ever backtracking. With `2 2 2 2 3 4 5` and `K = 4`, the target is still 5, but the 4 can only be completed by a 1, which does not exist: the program explores every branch and prints `NO`.
 
-**Correctness.** Without the empty packet rule, the function tries every way to put each number into a packet where it fits: it finds a split if one exists. The rule loses nothing: if a split puts the current number into an empty packet, the contents of that packet and of the first empty packet can be swapped, since both are empty at that moment.
+**Correctness.** Without the empty packet rule, the function tries every way to put each number into a packet where it fits: it finds a split if one exists. The rule loses nothing: if a split puts the current number into an empty packet other than the first one, swap in it the roles of that packet and of the first empty packet. Since both are empty at that moment, the resulting split is still valid, and it puts the number into the first empty packet.
 
 **Cost.** In the worst case, `Kⁿ` placements. The empty packet rule divides this number by about `K!`, and the limit `packet + number ≤ target` cuts bad branches very early; for about twenty numbers, the search stays fast in practice.
 
 ## Key takeaways
 
-- A subset is encoded by a **mask** of `n` bits: a loop from `0` to `2^n − 1` lists every subset, and the result of the mask without its lowest bit can be reused.
+- A subset is encoded by a **mask** of `n` bits: a loop from `0` to `2^n − 1` lists every subset; `|`, `&`, `~`, `m & (m − 1)` and `m & −m` handle sets, and the result of `m & (m − 1)`, already computed, can be reused.
 - **Backtracking** makes a choice, calls itself, then **undoes** that choice; constraints are checked **as early as possible** to cut dead branches.
 - To optimise, an **optimistic bound** ("at best, this branch gives…") allows abandoning branches that will not beat the best known result.
 - **Finding** a solution stops at the first success; **counting** or proving that there is none requires visiting the whole tree.

@@ -33,6 +33,6 @@ La fonction récursive `compter()` cherche, parmi les cases vides, celle qui a l
 
 **Correction.** Chaque complétion est obtenue exactement une fois : à chaque appel, les branches correspondent à des chiffres différents pour la même case, donc elles ne se recouvrent pas, et aucun chiffre valable n'est oublié.
 
-**Pourquoi choisir la case la plus contrainte.** L'ordre de remplissage ne change pas le résultat, mais il change énormément la taille de l'arbre. Une case qui n'a plus de chiffre possible fait échouer la branche dès maintenant, au lieu de laisser le programme remplir dix autres cases avant de s'en apercevoir. Avec cette règle, le nombre de nœuds visités reste proche du nombre de complétions.
+**Pourquoi choisir la case la plus contrainte.** L'ordre de remplissage ne change pas le résultat, mais il change la taille de l'arbre. Une case qui n'a plus de chiffre possible fait échouer la branche tout de suite, au lieu de laisser le programme remplir d'autres cases avant de s'en apercevoir, et une case à un seul choix ne crée pas de branche. Sur les tests, cette règle divise le nombre de nœuds par 3 à 8 par rapport à un remplissage dans l'ordre de lecture. Ne vérifier les chiffres qu'une fois la grille pleine serait sans espoir : jusqu'à 6³⁴ grilles à essayer.
 
-**Complexité.** Chaque nœud coûte O(36) pour trouver la meilleure case. Le nombre de nœuds dépend de la grille ; sur les tests, il est de l'ordre de quelques dizaines de milliers au plus.
+**Complexité.** Chaque nœud coûte O(36) pour trouver la meilleure case. Le nombre de nœuds dépend de la grille ; sur les tests, il ne dépasse pas 40 000.

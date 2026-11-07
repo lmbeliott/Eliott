@@ -29,6 +29,6 @@ Encode the set of districts covered by site `i` as an integer `cover_i` whose bi
 
 To avoid `N` operations per mask, fill an array `union[mask]` in increasing order: if `b` is the lowest bit of the mask (`mask & -mask`), of index `i`, then `union[mask] = union[mask − b] | cover_i`, and `mask − b` is smaller, hence already computed. The number of bits set in each mask is kept the same way. A last pass finds the smallest size `K` of a mask covering everything, then counts the masks of size `K` that cover everything.
 
-**Complexity.** O(2^N): about 260,000 masks, a few operations each. Recomputing each union bit by bit would cost `N` times more, nearly 5 million operations, which is already slow in Python.
+**Complexity.** O(2^N): about 260,000 masks, a few operations each. Recomputing each union bit by bit would cost `N` times more, nearly 5 million operations: still feasible here, but several times slower, and the difference becomes decisive as soon as `N` grows a little.
 
 **Remark.** This problem, **set cover**, is known to be hard: no algorithm is known that solves it in polynomial time in general. Exhaustive enumeration is reasonable only because `N` is small.

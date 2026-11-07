@@ -22,11 +22,11 @@ One line: for each level, from level 0 to the deepest one, the number of the lef
 ## Hints
 1. The leftmost node of a level is not necessarily a left child: a level may contain only right children.
 2. A breadth-first search that always enqueues the left child before the right child visits the nodes level by level, and each level from left to right.
-3. The tree can have height 10,000: a recursive traversal may exceed the allowed depth, a queue does not have this problem.
+3. The tree can have height 9,999 (a path): a recursive traversal may exceed the allowed depth, a queue does not have this problem.
 
 ## Solution
 Find the root (the only node that is nobody's child), then run a **breadth-first search** from the root, enqueuing the left child then the right child of each node, and recording the level of each one (that of its parent plus 1). The first dequeued node of each level is the leftmost: print it.
 
 **Why it is correct.** As for distances in a graph, nodes leave the queue by increasing level. Inside a level, they leave from left to right, by induction: if level `k` leaves from left to right, its children are enqueued in the order "children of the first node (left then right), children of the second…", which is exactly the left-to-right order of level `k + 1` in the drawing.
 
-**Complexity.** O(N). Traversing the tree by levels is also called **level-order traversal**.
+**Complexity.** Each node enters the queue once: O(N).

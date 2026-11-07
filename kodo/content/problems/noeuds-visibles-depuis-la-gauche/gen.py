@@ -32,9 +32,9 @@ def texte(n, g, d, melanger=True):
 
 tests = []
 tests.append("6\n2 3\n0 4\n0 0\n0 5\n6 0\n0 0\n")
-tests.append("5\n0 2\n0 0\n1 4\n0 0\n0 0\n")
+tests.append("5\n0 2\n0 0\n1 4\n5 0\n0 0\n")
 tests.append("1\n0 0\n")
-n = 5000
+n = 10000
 tests.append(texte(n, [0] * (n + 1), [0] + [i + 1 if i < n else 0 for i in range(1, n + 1)]))   # chemin à droite
 n = 4095
 tests.append(texte(n, [0] + [2 * i if 2 * i <= n else 0 for i in range(1, n + 1)], [0] + [2 * i + 1 if 2 * i + 1 <= n else 0 for i in range(1, n + 1)]))

@@ -1,10 +1,10 @@
-Certains problèmes n'ont pas d'astuce connue : pour trouver la meilleure façon de placer des antennes, de colorier une carte ou de remplir une grille, on ne sait pas faire mieux, dans le cas général, qu'essayer les possibilités. Mais « tout essayer » demande de la méthode. Il faut énumérer chaque possibilité **une fois et une seule**, abandonner au plus tôt celles qui ne peuvent pas aboutir, et estimer le nombre de cas avant d'écrire la moindre ligne.
+Pour placer des antennes, colorier une carte ou remplir une grille, on ne sait souvent pas faire mieux qu'essayer les possibilités. Mais « tout essayer » demande de la méthode : énumérer chaque possibilité **une fois et une seule**, abandonner au plus tôt celles qui ne peuvent pas aboutir, et estimer le nombre de cas avant d'écrire la moindre ligne.
 
-Le chapitre « Récursivité » a montré comment engendrer les sous-ensembles et les permutations d'une liste. Ce chapitre va plus loin : les sous-ensembles codés par des entiers, les combinaisons, puis le **retour sur trace** avec ses deux outils principaux, l'élagage et la suppression des symétries.
+Après les sous-ensembles et les permutations du chapitre « Récursivité », ce chapitre présente les sous-ensembles codés par des entiers, les combinaisons, puis le **retour sur trace** et ses deux outils : l'élagage et la suppression des symétries.
 
 ## Les sous-ensembles codés par des entiers
 
-Un sous-ensemble d'une liste de `n` éléments se code par un entier de `n` bits, appelé **masque** : le bit `i` vaut 1 si l'élément `i` est choisi. Les `2^n` sous-ensembles correspondent exactement aux entiers de `0` à `2^n − 1`, et une simple boucle les énumère tous, sans récursion. Le test `masque >> i & 1` dit si l'élément `i` est pris ; `1 << i` est l'entier dont seul le bit `i` vaut 1.
+Le chapitre « Graphes implicites » a présenté les **masques** : un ensemble d'éléments numérotés de `0` à `n − 1` est codé par l'entier dont le bit `i` vaut 1 si l'élément `i` est dans l'ensemble ; `1 << i` est le masque de `{i}`, et `masque >> i & 1` dit si `i` est présent. Les `2^n` sous-ensembles d'une liste de `n` éléments correspondent donc exactement aux entiers de `0` à `2^n − 1`, et une simple boucle les énumère tous, sans récursion.
 
 ```python
 t = [3, 5, 7, 9, 2]
@@ -42,9 +42,53 @@ int main() {
 }
 ```
 
-Le programme affiche les trois sous-ensembles de somme 12 : `6 [5, 7]`, `9 [3, 9]` et `21 [3, 7, 2]`. Par exemple, 21 s'écrit `10101` en binaire : les bits 0, 2 et 4 sont à 1, ce qui désigne les éléments 3, 7 et 2.
+Le programme affiche les trois sous-ensembles de somme 12 : `6 [5, 7]`, `9 [3, 9]` et `21 [3, 7, 2]` (21 s'écrit `10101` : les bits 0, 2 et 4 désignent 3, 7 et 2).
 
-Cette boucle coûte `2^n × n` opérations, car chaque somme est recalculée depuis le début. On peut souvent faire mieux en réutilisant un résultat déjà calculé : `masque & -masque` isole le bit le plus bas du masque, et la somme du masque est celle du masque privé de ce bit (un entier plus petit, donc déjà traité) plus un élément. On remplit ainsi un tableau de `2^n` sommes en O(2^n). Les masques servent aussi à coder des ensembles dans un état : en Python, un entier peut avoir autant de bits qu'on veut ; en C++, un `long long` en a 64.
+Les autres opérations sur les ensembles s'écrivent aussi en une instruction, la même en Python et en C++ sauf pour les deux dernières :
+- `(1 << n) - 1` : l'ensemble de tous les éléments (`n` bits à 1) ; on peut aussi écrire un masque en binaire avec le préfixe `0b` : `0b1111110` vaut 126, l'ensemble `{1, 2, 3, 4, 5, 6}` ;
+- `a | b` et `a & b` : la réunion et l'intersection (le « et » bit à bit met à 1 les bits qui valent 1 dans les deux nombres) ;
+- `a & ~b` : les éléments de `a` qui ne sont pas dans `b`, car `~b` inverse tous les bits de `b` ; en particulier, `m & ~(1 << i)` retire `i` ;
+- `m & (m - 1)` : `m` privé de son plus petit élément ;
+- `m & -m` : le masque qui ne contient que le plus petit élément de `m` ;
+- le nombre d'éléments : `bin(m).count("1")` en Python, `__builtin_popcount(m)` en C++ ;
+- le numéro du plus petit élément, pour `m > 0` : `(m & -m).bit_length() - 1` en Python (`bit_length` donne le nombre de chiffres binaires), `__builtin_ctz(m)` en C++.
+
+**Pourquoi ces deux astuces marchent.** Soustraire 1 à `m` transforme son dernier bit à 1 en 0 et les 0 qui le suivent en 1, sans toucher aux bits plus hauts : c'est la retenue de la soustraction posée, en binaire. Le « et » de `m` et de `m − 1` efface donc exactement ce bit : `12 = 1100`, `11 = 1011`, `12 & 11 = 1000 = 8`. Ensuite, `~x` vaut `−x − 1` (c'est sa définition, en Python comme en C++), donc `−m = ~(m − 1)` : au-dessus du plus petit bit à 1 de `m`, les bits de `−m` sont l'inverse de ceux de `m` ; à sa place, `−m` a un 1 ; en dessous, des 0. Le « et » ne garde que ce bit : `12 & −12 = 4`.
+
+La boucle précédente coûte `2^n × n` opérations, car chaque somme est recalculée depuis le début. On peut réutiliser un résultat déjà calculé : la somme de `m` est celle de `m & (m − 1)`, un entier plus petit, donc déjà traité, plus le plus petit élément de `m`. On remplit ainsi un tableau des `2^n` sommes en O(2^n).
+
+```python
+t = [3, 5, 7, 9, 2]
+n = len(t)
+somme = [0] * (1 << n)
+for m in range(1, 1 << n):
+    i = (m & -m).bit_length() - 1          # numéro du plus petit élément de m
+    somme[m] = somme[m & (m - 1)] + t[i]   # m privé de cet élément : déjà calculé
+print(somme[21], sum(1 for m in range(1 << n) if somme[m] == 12))
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> t = {3, 5, 7, 9, 2};
+    int n = t.size();
+    vector<int> somme(1 << n, 0);
+    for (int m = 1; m < (1 << n); m++) {
+        int i = __builtin_ctz(m);                  // numéro du plus petit élément de m
+        somme[m] = somme[m & (m - 1)] + t[i];      // m privé de cet élément : déjà calculé
+    }
+    int nb = 0;
+    for (int m = 0; m < (1 << n); m++)
+        if (somme[m] == 12) nb++;
+    cout << somme[21] << " " << nb << "\n";
+    return 0;
+}
+```
+
+Le programme affiche `12 3` : le masque 21 code `{3, 7, 2}`, et trois masques ont une somme de 12. En Python, un entier peut avoir autant de bits qu'on veut ; en C++, un `int` en a 32 et un `long long` 64 : au-delà de 30 éléments, on écrit `1LL << i`, `__builtin_popcountll` et `__builtin_ctzll`.
 
 En pratique, `2^20 ≈ 10⁶` sous-ensembles s'énumèrent sans difficulté, `2^25 ≈ 3 × 10⁷` déjà difficilement en Python, et `2^40` jamais.
 
@@ -174,7 +218,7 @@ Le programme affiche, pour `n` de 4 à 8, le nombre de solutions et le nombre de
 
 **Correction.** Invariant : quand on appelle `placer(ligne)`, les dames des lignes `0` à `ligne − 1` ne se menacent pas deux à deux, et les trois tableaux décrivent exactement les colonnes et diagonales qu'elles occupent. On ne place une dame que sur une case non menacée, et l'on remet les tableaux dans leur état en revenant : l'invariant est conservé. Toute solution est trouvée exactement une fois, car son placement est la suite de choix qui y mène, et deux branches différentes diffèrent par la colonne d'une même ligne.
 
-**Coût.** Une énumération naïve des `8^8 ≈ 1,7 × 10⁷` façons de placer une dame par ligne, vérifiées à la fin, ferait des millions d'essais pour `n = 8`. Le retour sur trace ne visite que 2 057 nœuds : chaque branche est coupée dès que la nouvelle dame est menacée, sans développer les lignes suivantes. C'est tout l'intérêt de **vérifier les contraintes le plus tôt possible**.
+**Coût.** Énumérer les `8^8 ≈ 1,7 × 10⁷` façons de placer une dame par ligne, puis les vérifier, serait bien plus long : le retour sur trace ne visite que 2 057 nœuds, car chaque branche est coupée dès que la nouvelle dame est menacée. C'est tout l'intérêt de **vérifier les contraintes le plus tôt possible**.
 
 ## Élaguer avec une borne
 
@@ -242,21 +286,19 @@ int main() {
 }
 ```
 
-Le programme affiche `500 104218` : la meilleure somme est 500 (tous les nombres sont pairs, 501 est impossible), et la recherche a visité 104 218 nœuds. Sans la borne, elle en visiterait 669 640, et sans aucune coupure, les 2 097 151 nœuds de l'arbre complet. Trier par ordre décroissant aide : les gros nombres placés en tête donnent vite une bonne solution, qui rend la borne efficace.
+Le programme affiche `500 104218` : la meilleure somme est 500 (tous les nombres sont pairs, 501 est impossible), et la recherche a visité 104 218 nœuds. Sans la borne, elle en visiterait 669 640, et sans aucune coupure, les 2 097 151 nœuds de l'arbre complet. Trier par ordre décroissant donne vite une bonne solution, qui rend la borne efficace.
 
 Une borne doit être **optimiste** : elle ne doit jamais sous-estimer ce que la branche peut atteindre, sinon on couperait une branche qui contient la meilleure solution. Ici, `somme + reste[i]` est bien supérieure ou égale à toute somme atteignable dans la branche.
 
 ## Compter ou trouver
 
-Il faut distinguer trois questions. **Existe-t-il** une solution ? On s'arrête dès qu'on en trouve une : la fonction renvoie un booléen, et chaque appel renvoie `True` dès qu'un appel récursif a réussi. **Combien** y a-t-il de solutions ? Il faut parcourir tout l'arbre, et chaque appel renvoie la somme des nombres de solutions de ses branches. **Quelle est la meilleure** ? On parcourt l'arbre en gardant la meilleure valeur, ce qui permet d'élaguer avec une borne.
-
-La première question est souvent beaucoup plus rapide que la deuxième : une seule branche réussie suffit. Mais quand la réponse est « non », il faut parcourir tout l'arbre pour en être sûr. C'est le cas difficile.
+Trois questions se distinguent. **Existe-t-il** une solution ? Chaque appel renvoie `True` dès qu'un appel récursif a réussi : on s'arrête à la première solution. **Combien** y en a-t-il ? Chaque appel renvoie la somme des résultats de ses branches, et l'on parcourt tout l'arbre. **Quelle est la meilleure** ? On garde la meilleure valeur, ce qui permet d'élaguer avec une borne. La première question est souvent la plus rapide, sauf quand la réponse est « non » : il faut alors parcourir tout l'arbre pour en être sûr.
 
 ## Estimer la taille de l'arbre
 
-Avant de programmer, on estime le nombre de nœuds : c'est le produit des nombres de choix à chaque niveau, au pire. Sous-ensembles : `2^n` feuilles. Permutations : `n!`. Placer une dame par ligne : `n^n`, mais `n!` si l'on interdit d'emblée les colonnes déjà prises. Une boucle Python fait quelques millions d'opérations par seconde, un programme C++ quelques centaines de millions : `10!` ≈ 3,6 millions est raisonnable, `15!` ≈ 1,3 × 10¹² ne l'est jamais.
+Avant de programmer, on estime le nombre de nœuds : au pire, le produit des nombres de choix à chaque niveau. Sous-ensembles : `2^n` feuilles. Permutations : `n!`. Placer une dame par ligne : `n^n`, mais `n!` si l'on interdit d'emblée les colonnes déjà prises. Une boucle Python fait quelques millions d'opérations par seconde, un programme C++ quelques centaines de millions : `10!` ≈ 3,6 millions est raisonnable, `15!` ≈ 1,3 × 10¹² ne l'est jamais.
 
-L'élagage rend l'estimation plus délicate, mais on peut souvent la justifier par une **récurrence**. Supposons qu'à chaque nœud, on choisisse un élément et que l'une des deux branches en retire au moins 3 (l'élément et deux voisins, par exemple). Le nombre de feuilles vérifie `T(n) ≤ T(n − 1) + T(n − 3)`, d'où `T(n) ≤ 1,47ⁿ` : environ 200 000 pour `n = 32`, contre 4 milliards pour `2ⁿ`. Pour une mesure concrète, on ajoute un compteur d'appels, comme dans les exemples ci-dessus, et l'on teste les cas les plus défavorables.
+L'élagage rend l'estimation plus délicate, mais on peut souvent la justifier par une **récurrence**. Supposons qu'à chaque nœud, on choisisse un élément et que l'une des deux branches en retire au moins 3 (l'élément et deux voisins, par exemple). Le nombre de feuilles vérifie `T(n) ≤ T(n − 1) + T(n − 3)`, d'où, par récurrence, `T(n) ≤ 1,47ⁿ`, car 1,47³ ≈ 3,18 dépasse 1,47² + 1 ≈ 3,16 : environ 200 000 pour `n = 32`, contre 4 milliards pour `2ⁿ`. Pour une mesure concrète, on ajoute un compteur d'appels, comme dans les exemples ci-dessus, et l'on teste les cas les plus défavorables.
 
 ## Briser les symétries
 
@@ -273,19 +315,17 @@ Il faut prouver que la règle ne perd aucune solution : chaque famille doit gard
 
 **Oublier de défaire un choix.** Après l'appel récursif, l'état doit redevenir exactement ce qu'il était : retirer l'élément ajouté, libérer la colonne, soustraire l'objet du paquet. Sinon, les branches suivantes partent d'un état faux, et les résultats sont faux sans aucun message d'erreur.
 
-**Copier l'état à chaque appel.** Passer `liste + [x]` ou une copie de la grille à chaque appel est juste, mais coûte O(n) par nœud, et peut multiplier le temps par 10 ou 100. On modifie un seul état, puis on le restaure.
+**Copier l'état à chaque appel.** Passer `liste + [x]` ou une copie de la grille est juste, mais coûte O(n) par nœud : on modifie un seul état, puis on le restaure.
 
 **Une coupure trop agressive.** Une borne pessimiste ou une règle de symétrie mal justifiée coupe des branches qui contenaient la solution : le programme répond vite, mais faux. On vérifie toujours sur de petits cas avec une énumération sans aucune coupure.
 
 **Vérifier trop tard.** Ne tester les contraintes qu'une fois la solution complète construite revient à énumérer tout l'espace : on vérifie chaque contrainte dès que ses éléments sont placés.
 
-**Ne pas s'arrêter.** Pour une question d'existence, oublier de propager le `True` vers le haut fait parcourir tout l'arbre et peut transformer une réponse instantanée en dépassement du temps limite.
-
 ## Exemple complet : des paquets de même somme
 
 **Énoncé.** Peut-on répartir une liste d'entiers positifs en `K` paquets de même somme, chaque nombre allant dans un seul paquet ? La première ligne donne les nombres, la deuxième `K` ; afficher `OUI` ou `NON`.
 
-**Idée.** La somme de chaque paquet doit valoir `total / K` : si `K` ne divise pas le total, ou si un nombre dépasse cette cible, la réponse est `NON`. Sinon, on place les nombres un par un, chacun dans un paquet où il tient encore. Trois idées réduisent l'arbre : trier les nombres par ordre décroissant (les gros sont les plus contraints), s'arrêter dès qu'une répartition est trouvée, et n'essayer qu'un seul paquet vide, car les paquets vides sont interchangeables.
+**Idée.** La somme de chaque paquet doit valoir `total / K` : si `K` ne divise pas le total, ou si un nombre dépasse cette cible, la réponse est `NON`. Sinon, on place les nombres un par un, chacun dans un paquet où il tient encore. Pour réduire l'arbre, on trie les nombres par ordre décroissant (les gros sont les plus contraints), on s'arrête à la première répartition trouvée, et l'on n'essaie qu'un seul paquet vide, car ils sont interchangeables.
 
 ```python
 def remplir(i):
@@ -362,15 +402,15 @@ int main() {
 }
 ```
 
-**Vérification à la main.** Avec `4 3 2 3 5 2 1` et `K = 4`, le total vaut 20 et la cible 5. Les nombres triés sont `5 4 3 3 2 2 1`. Le 5 remplit le premier paquet ; le 4 va dans le deuxième ; le premier 3 ne tient ni dans le premier ni dans le deuxième paquet (4 + 3 > 5) et va dans le troisième ; le second 3 va dans le quatrième. Le premier 2 ne tient pas dans le deuxième paquet, mais tient dans le troisième (3 + 2 = 5) ; le second 2 va dans le quatrième, et le 1 complète le deuxième. Le programme affiche `OUI`. Avec `2 2 2 2 3 4 5` et `K = 4`, la cible est encore 5, mais le 4 ne peut être complété que par un 1, qui n'existe pas : le programme explore toutes les branches et affiche `NON`.
+**Vérification à la main.** Avec `4 3 2 3 5 2 1` et `K = 4`, la cible vaut 20 / 4 = 5. Les nombres triés sont `5 4 3 3 2 2 1` : le 5, le 4 et les deux 3 occupent chacun un paquet, les deux 2 complètent les paquets des 3, et le 1 celui du 4. Le programme affiche `OUI` sans jamais revenir en arrière. Avec `2 2 2 2 3 4 5` et `K = 4`, la cible est encore 5, mais le 4 ne peut être complété que par un 1, qui n'existe pas : le programme explore toutes les branches et affiche `NON`.
 
-**Correction.** Sans la règle des paquets vides, la fonction essaie toutes les façons de placer chaque nombre dans un paquet où il tient : elle trouve une répartition s'il en existe une. La règle ne perd rien : si une répartition met le nombre courant dans un paquet vide, on peut échanger les contenus de ce paquet et du premier paquet vide, car ils sont vides tous les deux à ce moment-là.
+**Correction.** Sans la règle des paquets vides, la fonction essaie toutes les façons de placer chaque nombre dans un paquet où il tient : elle trouve une répartition s'il en existe une. La règle ne perd rien : si une répartition met le nombre courant dans un paquet vide autre que le premier, on y échange les rôles de ce paquet et du premier paquet vide. Comme les deux sont vides à ce moment-là, la répartition obtenue est encore valable, et elle place le nombre dans le premier paquet vide.
 
 **Coût.** Au pire, `Kⁿ` placements. La règle des paquets vides divise ce nombre par environ `K!`, et la limite `paquet + nombre ≤ cible` coupe très tôt les mauvaises branches ; pour une vingtaine de nombres, la recherche reste rapide en pratique.
 
 ## À retenir
 
-- Un sous-ensemble se code par un **masque** de `n` bits : une boucle de `0` à `2^n − 1` énumère tous les sous-ensembles, et l'on réutilise le résultat du masque privé de son bit le plus bas.
+- Un sous-ensemble se code par un **masque** de `n` bits : une boucle de `0` à `2^n − 1` énumère tous les sous-ensembles ; `|`, `&`, `~`, `m & (m − 1)` et `m & −m` manipulent les ensembles, et l'on réutilise le résultat de `m & (m − 1)`, déjà calculé.
 - Le **retour sur trace** fait un choix, s'appelle, puis **défait** ce choix ; on vérifie les contraintes **dès que possible** pour couper les branches mortes.
 - Pour optimiser, une **borne optimiste** (« au mieux, cette branche donne… ») permet d'abandonner les branches qui ne battront pas le meilleur résultat connu.
 - **Trouver** une solution s'arrête au premier succès ; **compter** ou prouver qu'il n'y en a pas oblige à parcourir tout l'arbre.

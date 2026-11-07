@@ -33,7 +33,7 @@ On calcule d'abord la liste triée `div` des diviseurs de `N` supérieurs ou ég
 - `reste` lui-même peut être le dernier facteur : cela compte pour 1 (il est au moins égal à `div[i]`, car il est plus grand que le facteur précédent) ;
 - sinon, on choisit le plus petit facteur `f = div[j]`, avec `j ≥ i`, qui divise `reste`, et l'on compte les écritures de `reste / f` avec des facteurs pris à partir de `div[j + 1]`.
 
-**Élagage.** Après `f`, il reste au moins un facteur, plus grand que `f` : `reste / f > f`, donc `f × f < reste`. La boucle sur `j` s'arrête dès que `div[j]² ≥ reste`. La profondeur ne dépasse pas 27, car le produit de 27 facteurs supérieurs ou égaux à 2 dépasse 10⁸.
+**Élagage.** Après `f`, il reste au moins un facteur, plus grand que `f` : `reste / f > f`, donc `f × f < reste`. La boucle sur `j` s'arrête dès que `div[j]² ≥ reste`. Une écriture a au plus 10 facteurs, car des facteurs distincts valent au moins 2, 3, 4…, et 2 × 3 × … × 12 = 479 001 600 dépasse 10⁸ : la profondeur de récursion ne dépasse pas 10.
 
 **Taille de l'arbre.** Chaque appel compte au moins l'écriture « `reste` seul » : le nombre d'appels est exactement la réponse. Le pire cas pour `N ≤ 10⁸` est `N = 86 486 400`, avec 327 873 écritures. Une énumération de tous les produits ordonnés, ou de tous les ensembles de diviseurs (`N` peut en avoir 768), serait sans espoir.
 

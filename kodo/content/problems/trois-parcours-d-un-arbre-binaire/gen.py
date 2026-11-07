@@ -37,7 +37,7 @@ tests.append("1\n0 0\n")
 n = 1000
 tests.append(texte(n, [0] + [i + 1 if i < n else 0 for i in range(1, n + 1)], [0] * (n + 1)))   # chemin à gauche
 tests.append(texte(n, [0] * (n + 1), [0] + [i + 1 if i < n else 0 for i in range(1, n + 1)]))   # chemin à droite
-n = 1023
+n = 1000
 tests.append(texte(n, [0] + [2 * i if 2 * i <= n else 0 for i in range(1, n + 1)], [0] + [2 * i + 1 if 2 * i + 1 <= n else 0 for i in range(1, n + 1)], False))
 for n in [7, 30, 1000, 1000]:
     g, d = arbre_hasard(n)

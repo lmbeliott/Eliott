@@ -28,7 +28,7 @@ First compute the sorted list `div` of the divisors of `N` greater than or equal
 - `rest` itself can be the last factor: this counts for 1 (it is at least `div[i]`, since it is larger than the previous factor);
 - otherwise, choose the smallest factor `f = div[j]`, with `j ≥ i`, that divides `rest`, and count the ways to write `rest / f` with factors taken from `div[j + 1]` on.
 
-**Pruning.** After `f`, at least one factor remains, larger than `f`: `rest / f > f`, so `f × f < rest`. The loop on `j` stops as soon as `div[j]² ≥ rest`. The depth does not exceed 27, since the product of 27 factors at least 2 exceeds 10⁸.
+**Pruning.** After `f`, at least one factor remains, larger than `f`: `rest / f > f`, so `f × f < rest`. The loop on `j` stops as soon as `div[j]² ≥ rest`. A writing has at most 10 factors, since distinct factors are at least 2, 3, 4…, and 2 × 3 × … × 12 = 479,001,600 exceeds 10⁸: the recursion depth does not exceed 10.
 
 **Size of the tree.** Each call counts at least the writing "`rest` alone": the number of calls is exactly the answer. The worst case for `N ≤ 10⁸` is `N = 86,486,400`, with 327,873 writings. Enumerating all ordered products, or all sets of divisors (`N` can have 768 of them), would be hopeless.
 

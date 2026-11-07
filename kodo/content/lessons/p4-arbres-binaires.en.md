@@ -1,6 +1,6 @@
 The table of contents of a book or the folders of a computer are organised as a **tree**: a starting element, which splits into sub-parts, which split in turn. An expression like `(3 + 4) × (10 − 2 × 3)` has this shape too. And by storing numbers in a well-chosen tree, a number can be searched for or inserted while looking at only a small part of the data.
 
-This chapter defines binary trees, shows how to store them in arrays, presents the four classic traversals with their proofs, then **binary search trees**: their invariant, their operations, and why their efficiency depends on their shape.
+This chapter defines binary trees, their traversals and their proofs, then **binary search trees**: their invariant, their operations, and why their efficiency depends on their shape.
 
 ## Rooted trees and binary trees
 
@@ -323,7 +323,7 @@ int main() {
 
 The program prints `True False 20`, then `50 70 None` (`-1` in the C++ version): 45 is present, 55 is not, the minimum is 20; the successor of 45 is 50, that of 65 is 70, and 80 has none.
 
-**Why the successor is correct.** Candidates are keys larger than `x`. Let `y > x` be a key of the tree: at the last node common to the search paths of `x` and `y`, we go left towards `x` and record that node, whose key is at most `y`. Each candidate recorded afterwards is smaller than the previous one (we are in its left subtree): the last one is at most any key larger than `x`.
+**Why the successor is correct.** The recorded candidates are keys larger than `x`, and each is smaller than the previous one, since the search has just gone down into its left subtree: the result is the last one recorded. Let `y > x` be a key of the tree; compare the path followed by the function with the path from the root to the node of `y`. If the node of `y` is on the followed path, `y` is recorded. Otherwise, at the last node `w` common to both paths, they leave on different sides; since `x < y`, the followed path goes left and the other one right, so `x < key(w) < y`, and `w` is recorded. In both cases, a key at most `y` is recorded, so the result is at most `y`: it is indeed the smallest key larger than `x`. If there is no such key, nothing is recorded.
 
 ## The cost depends on the shape
 
@@ -406,7 +406,7 @@ int main() {
 
 The program prints `1999 1999000`, then `23 24390`. Inserting the numbers from 1 to 2,000 in increasing order, each new key goes to the very bottom right: the tree is a path of height 1,999, it is called **degenerate**, and building it takes nearly two million comparisons, `n²/2`. With the same number of values inserted in a mixed order, the height is only 23 and there are 80 times fewer comparisons. One can show that on average, for a random insertion order, the height is of the order of `log n`.
 
-To **guarantee** a height in O(log n) whatever the order, there are **balanced trees** (AVL trees, red-black trees) that reorganise themselves after each insertion. They are not programmed here; it is enough to know that they exist, and that the ordered sets `set` and `map` of C++ are such trees. Python has none: use a dictionary, or a sorted list with binary search.
+To **guarantee** a height in O(log n), **balanced trees** (AVL, red-black) reorganise themselves after each insertion. They are not programmed here: C++ `set` and `map` are such trees; Python has none, and a dictionary or a sorted list with binary search is used instead.
 
 ## Common mistakes
 
