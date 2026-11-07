@@ -48,8 +48,8 @@ export function Heatmap({ days, weeks = 53, className }: { days: { day: string; 
     <figure className={className}>
       <div className="overflow-x-auto pb-1">
         <div
-          className="inline-grid gap-[3px]"
-          style={{ gridTemplateColumns: `2rem repeat(${weeks}, 12px)`, gridTemplateRows: `14px repeat(7, 12px)` }}
+          className="grid min-w-[720px] gap-[3px]"
+          style={{ gridTemplateColumns: `2rem repeat(${weeks}, minmax(10px, 1fr))`, gridTemplateRows: `14px repeat(7, auto)` }}
           role="img"
           aria-label={t(`${plural(lang, activeDays, ['jour actif', 'jours actifs'], ['', ''])} sur les 12 derniers mois`, `${activeDays} active days over the last 12 months`)}
         >
@@ -60,7 +60,7 @@ export function Heatmap({ days, weeks = 53, className }: { days: { day: string; 
           ))}
           {weekdays.map((w, i) =>
             w ? (
-              <span key={i} className="text-xs leading-[12px] text-muted" style={{ gridColumn: 1, gridRow: i + 2 }} aria-hidden>
+              <span key={i} className="self-center text-xs leading-none text-muted" style={{ gridColumn: 1, gridRow: i + 2 }} aria-hidden>
                 {w}
               </span>
             ) : null,
@@ -73,7 +73,7 @@ export function Heatmap({ days, weeks = 53, className }: { days: { day: string; 
               const title = `${formatDate(lang, c.date, { weekday: 'long', day: 'numeric', month: 'long' })} : ${
                 n === 0 ? t('rien', 'nothing') : `${plural(lang, n, ['soumission', 'soumissions'], ['submission', 'submissions'])}${a?.solves ? `, ${plural(lang, a.solves, ['réussite', 'réussites'], ['solve', 'solves'])}` : ''}`
               }`
-              return <span key={c.key} title={title} className={cx('rounded-[3px]', LEVEL_BG[level(n)])} style={{ gridColumn: w + 2, gridRow: d + 2 }} />
+              return <span key={c.key} title={title} className={cx('aspect-square max-h-4 rounded-[3px]', LEVEL_BG[level(n)])} style={{ gridColumn: w + 2, gridRow: d + 2 }} />
             }),
           )}
         </div>

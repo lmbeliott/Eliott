@@ -6,7 +6,8 @@ import { LeaderboardTable } from '../components/LeaderboardTable'
 import { Avatar, Button, CopyButton, Field, Input, Notice, Segmented, Skeleton, cx } from '../components/ui'
 import { useToast } from '../components/Toast'
 import { useAuth } from '../lib/auth'
-import { chapters, chapterTitle, problemById, problemTitle } from '../lib/content'
+import { levels, levelTitle, problemById, problemList, problemTitle } from '../lib/content'
+import { Cell } from '../components/Cell'
 import { formatPoints, plural, timeAgo, useI18n } from '../lib/i18n'
 import { useGroup, useLeaderboard, type GroupMember, type Period } from '../lib/queries'
 import { errorText, supabase } from '../lib/supabase'
@@ -92,55 +93,60 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
     return m
   }, [solves])
   const students = members.filter((m) => m.role === 'membre').sort((a, b) => b.profile.xp - a.profile.xp)
-  if (!students.length) return <p className="text-sm text-ink-2">{t('Aucun élève pour l’instant. Partage le code du groupe pour qu’ils te rejoignent.', 'No students yet. Share the group code so they can join.')}</p>
-  const cols = chapters.filter((c) => c.problems.length > 0)
+  if (!students.length)
+    return <p className="text-sm text-ink-2">{t('Aucun élève pour l’instant. Donne le code du groupe à ta classe : il s’affiche en haut de cette page.', 'No students yet. Give the group code to your class: it is shown at the top of this page.')}</p>
+  // Une cellule par problème, rangées par niveau (DESIGN.md : le motif des cellules).
+  const byLevel = levels.map((l) => ({ level: l, ids: l.chapters.flatMap((c) => c.problems) }))
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-surface">
-      <table className="text-sm">
-        <caption className="sr-only">{t('Problèmes réussis par élève et par chapitre', 'Problems solved per student and chapter')}</caption>
+    <div className="overflow-x-auto rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
+      <table className="w-full text-sm">
+        <caption className="sr-only">{t('Problèmes réussis par élève', 'Problems solved per student')}</caption>
         <thead>
-          <tr className="border-b border-line bg-surface-2 text-xs text-muted">
-            <th scope="col" className="sticky left-0 z-10 min-w-48 bg-surface-2 px-4 py-2 text-left font-medium">
+          <tr className="border-b border-line bg-surface-2 text-left text-xs text-muted">
+            <th scope="col" className="sticky left-0 z-10 h-9 min-w-44 bg-surface-2 px-4 font-medium">
               {t('Élève', 'Student')}
             </th>
-            {cols.map((c, i) => (
-              <th key={c.id} scope="col" className="px-1 py-2 font-medium" title={chapterTitle(lang, c)}>
-                <span className="sr-only">{chapterTitle(lang, c)}</span>
-                <span aria-hidden>{i + 1}</span>
+            {byLevel.map(({ level }) => (
+              <th key={level.id} scope="col" className="px-3 font-medium whitespace-nowrap">
+                {levelTitle(lang, level)}
               </th>
             ))}
-            <th scope="col" className="px-4 py-2 text-right font-medium">
+            <th scope="col" className="px-4 text-right font-medium">
+              {t('Réussis', 'Solved')}
+            </th>
+            <th scope="col" className="px-4 text-right font-medium">
               {t('Points', 'Points')}
             </th>
           </tr>
         </thead>
         <tbody>
           {students.map((m) => {
-            const set = solvedBy.get(m.user_id) ?? new Set()
+            const set = solvedBy.get(m.user_id) ?? new Set<string>()
+            const sel = picked === m.user_id
             return (
-              <tr key={m.user_id} className={cx('border-b border-line last:border-0', picked === m.user_id && 'bg-accent-soft')}>
-                <th scope="row" className={cx('sticky left-0 z-10 px-4 py-2 text-left font-medium', picked === m.user_id ? 'bg-accent-soft' : 'bg-surface')}>
-                  <button type="button" onClick={() => onPick(m)} className="flex items-center gap-2 hover:underline">
+              <tr key={m.user_id} className={cx('border-b border-line last:border-0', sel ? 'bg-accent-soft' : 'hover:bg-surface-2')}>
+                <th scope="row" className={cx('sticky left-0 z-10 px-4 py-2 text-left font-normal', sel ? 'bg-accent-soft' : 'bg-surface')}>
+                  <button type="button" onClick={() => onPick(m)} aria-expanded={sel} className="flex items-center gap-2.5 font-medium hover:underline">
                     <Avatar name={m.profile.display_name} size={24} />
                     <span className="truncate">{m.profile.display_name}</span>
                   </button>
                 </th>
-                {cols.map((c) => {
-                  const done = c.problems.filter((p) => set.has(p)).length
-                  const ratio = done / c.problems.length
-                  return (
-                    <td key={c.id} className="px-1 py-1.5 text-center">
-                      <span
-                        className="inline-flex size-8 items-center justify-center rounded-md text-xs tabular"
-                        style={{ background: done ? `color-mix(in oklab, var(--accent) ${18 + ratio * 72}%, var(--surface))` : 'var(--surface-2)', color: ratio > 0.6 ? 'var(--accent-ink)' : 'var(--ink-2)' }}
-                        title={`${chapterTitle(lang, c)} : ${done}/${c.problems.length}`}
-                      >
-                        {done || ''}
-                      </span>
-                    </td>
-                  )
-                })}
-                <td className="px-4 py-2 text-right tabular">{formatPoints(lang, m.profile.xp)}</td>
+                {byLevel.map(({ level, ids }) => (
+                  <td key={level.id} className="px-3 py-2">
+                    <span className="flex gap-[2px]">
+                      {ids.map((id) => {
+                        const p = problemById(id)!
+                        const done = set.has(id)
+                        return <Cell key={id} size="dense" className="size-2.5 rounded-[2px]" state={done ? 'done' : 'empty'} label={`${m.profile.display_name} : ${problemTitle(lang, p)}${done ? `, ${t('réussi', 'solved')}` : ''}`} />
+                      })}
+                    </span>
+                  </td>
+                ))}
+                <td className="px-4 text-right tabular">
+                  {set.size}
+                  <span className="text-muted">/{problemList.length}</span>
+                </td>
+                <td className="px-4 text-right tabular">{formatPoints(lang, m.profile.xp)}</td>
               </tr>
             )
           })}
@@ -167,7 +173,7 @@ export function GroupPage() {
 
   if (q.isLoading)
     return (
-      <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
+      <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
         <Skeleton className="h-10 w-72" />
         <Skeleton className="mt-6 h-64" />
       </div>
@@ -228,7 +234,7 @@ export function GroupPage() {
   ]
 
   return (
-    <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
       <Link to="/groupes" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
         <ArrowLeft className="size-4" aria-hidden /> {t('Groupes', 'Groups')}
       </Link>
@@ -302,16 +308,10 @@ export function GroupPage() {
         {tab === 'progression' && lead && (
           <>
             <p className="mb-4 text-sm text-ink-2">
-              {t('Chaque case indique le nombre de problèmes réussis dans le chapitre. Clique sur un élève pour voir ses dernières soumissions et son code.', 'Each cell shows how many problems were solved in the chapter. Click a student to see their latest submissions and code.')}
+              {t('Une case par problème, colorée quand l’élève l’a réussi. Clique sur un élève pour voir ses 30 dernières soumissions et son code.', 'One cell per problem, filled once the student solved it. Click a student to see their last 30 submissions and their code.')}
             </p>
             <ProgressGrid members={members} solves={solves} picked={picked?.user_id ?? null} onPick={(m) => setPicked(picked?.user_id === m.user_id ? null : m)} />
             {picked && <StudentPanel member={picked} onClose={() => setPicked(null)} />}
-            <p className="mt-3 text-xs text-muted">
-              {chapters
-                .filter((c) => c.problems.length > 0)
-                .map((c, i) => `${i + 1}. ${chapterTitle(lang, c)}`)
-                .join(' ; ')}
-            </p>
           </>
         )}
         {tab === 'membres' && (

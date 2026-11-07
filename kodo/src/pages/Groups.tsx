@@ -43,7 +43,7 @@ export function Groups() {
           title={t('Groupes', 'Groups')}
           lead={t(
             'Un groupe, c’est une classe, un établissement ou des amis. Il a son propre classement, et l’encadrant suit la progression de chacun.',
-            'A group climbs together: a class, a school or friends. It has its own leaderboard, and the teacher can follow everyone’s progress.',
+            'A group is a class, a school or friends. It has its own leaderboard, and its leader can follow everyone’s progress.',
           )}
         />
         <div className="rounded-xl border border-line bg-surface p-6">
@@ -106,7 +106,7 @@ export function Groups() {
 
   return (
     <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
-      <PageHeader title={t('Groupes', 'Groups')} lead={t('Ta classe, ton établissement, tes amis : chaque groupe a son classement.', 'Your class, your school, your friends: each group has its own leaderboard.')} />
+      <PageHeader title={t('Groupes', 'Groups')} lead={t('Rejoins le groupe de ta classe avec son code à 6 caractères, ou crée le tien : chaque groupe a son classement de la semaine.', 'Join your class group with its 6-character code, or create your own: each group has its own weekly leaderboard.')} />
 
       <section aria-labelledby="mes-cordees">
         <h2 id="mes-cordees" className="text-lg font-semibold">

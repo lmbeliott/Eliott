@@ -57,7 +57,7 @@ export function SignIn() {
       setErrors({ form: errorText(error, lang) })
       return
     }
-    toast(t('Content de te revoir.', 'Welcome back.'), 'ok')
+    toast(t(`Connecté avec ${email.trim()}.`, `Signed in as ${email.trim()}.`), 'ok')
     navigate(back)
   }
 
@@ -72,7 +72,7 @@ export function SignIn() {
   return (
     <AuthLayout
       title={mode === 'login' ? t('Se connecter', 'Sign in') : t('Mot de passe oublié', 'Forgot password')}
-      lead={mode === 'login' ? t('Retrouve ta progression, ta série et tes groupes.', 'Get back to your progress, your streak and your groups.') : t('Entre ton adresse : tu recevras un lien pour choisir un nouveau mot de passe.', 'Enter your email: you will receive a link to choose a new password.')}
+      lead={mode === 'login' ? t('Tes problèmes réussis, tes points, ta série et tes groupes sont liés à ton compte.', 'Your solved problems, points, streak and groups are tied to your account.') : t('Entre ton adresse : tu recevras un lien pour choisir un nouveau mot de passe.', 'Enter your email: you will receive a link to choose a new password.')}
       footer={
         <>
           {t('Pas encore de compte ?', 'No account yet?')}{' '}
@@ -177,7 +177,7 @@ export function SignUp() {
     setBusy(false)
     if (error) return setErrors({ form: errorText(error, lang) })
     if (!data.session) return setConfirmSent(true)
-    toast(t(`Bienvenue sur Kodo, ${f.name.trim()} !`, `Welcome to Kodo, ${f.name.trim()}!`), 'ok')
+    toast(t(`Compte @${f.username} créé.`, `Account @${f.username} created.`), 'ok')
     navigate(back)
   }
 
@@ -201,7 +201,7 @@ export function SignUp() {
   return (
     <AuthLayout
       title={t('Créer un compte', 'Create an account')}
-      lead={t('Garde ta progression, gagne des points et rejoins ta classe.', 'Keep your progress, earn points and join your class.')}
+      lead={t('Ton compte garde tes réussites, tes points et ta série, et te permet de rejoindre le groupe de ta classe. Ce que tu as résolu sans compte sur cet appareil y est transféré.', 'Your account keeps your solves, points and streak, and lets you join your class group. What you solved without an account on this device is transferred to it.')}
       footer={
         <>
           {t('Déjà un compte ?', 'Already have an account?')}{' '}
