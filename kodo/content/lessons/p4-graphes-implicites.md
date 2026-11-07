@@ -314,9 +314,48 @@ Le programme affiche `4 [1, 2, 4, 8, 5]` : il faut passer par 8 pour redescendre
 
 La borne `LIMITE` est indispensable : sans elle, la touche `×2` produit des nombres de plus en plus grands, l'espace d'états est infini, et un parcours qui ne trouve pas la cible ne s'arrête jamais. Quand on borne l'espace, il faut justifier que la borne ne fait pas perdre de solution, ou qu'elle fait partie de l'énoncé.
 
-**Coder un état.** Un état formé de plusieurs nombres se range dans un **tuple** (Python) ou une `pair`, un `array` (C++), qui peut servir de clé de dictionnaire. Quand les composantes sont petites, on peut aussi le coder par un seul entier : un cadenas à 3 molettes est l'entier de 0 à 999 qu'il affiche ; une case et un ensemble de clés parmi 6 deviennent `(clés × R + i) × C + j`. Un entier permet d'utiliser un simple tableau de marquage, bien plus rapide qu'un dictionnaire.
+**Coder un état.** Un état formé de plusieurs nombres se range dans un **tuple** (Python) ou une `pair`, un `array` (C++), qui peut servir de clé de dictionnaire. Quand les composantes sont petites, on préfère le coder par un seul entier, qui indexe un simple tableau de marquage, bien plus rapide qu'un dictionnaire. Un cadenas à 3 molettes est l'entier de 0 à 999 qu'il affiche. Une case `(i, j)` et un nombre `k` de `0` à `K − 1` deviennent `(k × R + i) × C + j`, un entier de `0` à `K × R × C − 1` ; deux états différents ont des codes différents, car on retrouve `j = code % C`, `i = code // C % R` et `k = code // (R × C)`.
 
 **Choisir un état complet.** L'état doit contenir tout ce qui influence la suite. Dans un labyrinthe avec des portes et des clés, la position ne suffit pas : revenir sur une case après avoir ramassé une clé est un vrai progrès. L'état est alors le couple (position, ensemble des clés ramassées). Pour un dé qui roule sur une grille, c'est (position, orientation du dé). Un état incomplet donne des réponses fausses ; un état trop riche rend l'espace trop grand.
+
+## Un ensemble codé par un entier
+
+Pour les clés, il reste à coder un **ensemble** par un nombre. On numérote les éléments possibles de `0` à `n − 1` (la clé `a` est 0, la clé `b` est 1…) et l'on écrit l'ensemble en binaire, sur `n` chiffres : le chiffre de rang `k`, appelé **bit** `k`, vaut 1 si l'élément `k` est dans l'ensemble. L'entier obtenu s'appelle un **masque**. Par exemple, l'ensemble `{0, 2, 3}` s'écrit `1101` en binaire, soit 2⁰ + 2² + 2³ = 13. Les `2^n` ensembles possibles correspondent exactement aux entiers de `0` (l'ensemble vide) à `2^n − 1` (tous les éléments) : avec 6 clés, un masque va de 0 à 63.
+
+Trois opérations, qui s'écrivent de la même façon en Python et en C++, suffisent :
+- `1 << k` (décalage à gauche de `k` rangs) vaut 2^k : c'est le masque de l'ensemble `{k}` ;
+- `m >> k & 1` vaut le bit `k` de `m` : `m >> k` est le quotient de `m` par 2^k, ce qui efface les `k` derniers bits, et `& 1` garde le dernier bit, comme `% 2` ;
+- `m | (1 << k)` ajoute `k` à l'ensemble : le « ou » bit à bit `|` met à 1 chaque bit qui vaut 1 dans l'un des deux nombres. Si `k` était déjà dans l'ensemble, `m` ne change pas.
+
+```python
+m = 0                          # ensemble vide
+for k in (3, 0, 2, 3):         # on ajoute 3, 0, 2, puis 3 une deuxième fois
+    m = m | (1 << k)
+print(m, [k for k in range(6) if m >> k & 1])
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int m = 0;                              // ensemble vide
+    for (int k : {3, 0, 2, 3})              // on ajoute 3, 0, 2, puis 3 une deuxième fois
+        m = m | (1 << k);
+    cout << m << " [";
+    bool premier = true;
+    for (int k = 0; k < 6; k++) {
+        if (m >> k & 1) {
+            cout << (premier ? "" : ", ") << k;
+            premier = false;
+        }
+    }
+    cout << "]\n";
+    return 0;
+}
+```
+
+Le programme affiche `13 [0, 2, 3]`. Dans un labyrinthe à clés, l'état `(i, j, clés)` est codé par `(clés × R + i) × C + j` et indexe un tableau de `64 × R × C` cases. Ramasser la clé `k` donne l'ensemble `clés | (1 << k)` ; une porte de la lettre `k` s'ouvre si `clés >> k & 1` vaut 1.
 
 ## La taille de l'espace d'états
 
@@ -326,7 +365,7 @@ Un parcours visite chaque état au plus une fois et examine toutes ses transitio
 - les ordres possibles de `N` objets forment `N!` états : 40 320 pour `N = 8`, mais plus de 3,6 millions pour `N = 10` ;
 - une grille de 40 × 40 avec 6 clés possibles donne 40 × 40 × 2⁶ = 102 400 états.
 
-En Python, quelques millions d'examens prennent déjà plusieurs secondes : au-delà, il faut une meilleure idée. Souvent, une propriété du problème réduit l'espace **réellement atteint**. Avec deux récipients de 50 000 litres qu'on remplit, vide et transvase, il y a 2,5 × 10⁹ couples de contenus possibles, mais après chaque opération l'un des récipients est vide ou plein : seuls 200 004 états au plus sont atteints, ceux du bord du rectangle des contenus. On range alors les états atteints dans un dictionnaire ou un ensemble, au lieu d'un tableau qui couvrirait tout l'espace.
+En Python, quelques millions d'examens prennent déjà plusieurs secondes : au-delà, il faut une meilleure idée. Souvent, une propriété du problème réduit l'espace **réellement atteint**. Avec deux récipients de 50 000 litres qu'on remplit, vide et transvase, il y a 2,5 × 10⁹ couples de contenus possibles, mais après chaque opération l'un des récipients est vide ou plein : au plus 200 000 états sont atteints, ceux du bord du rectangle des contenus. On range alors les états atteints dans un dictionnaire ou un ensemble, au lieu d'un tableau qui couvrirait tout l'espace.
 
 Une dernière remarque est souvent décisive. Si chaque transition peut être défaite (tourner une molette dans l'autre sens, retourner à nouveau les mêmes crêpes), le graphe est non orienté : la distance de `A` à `B` est celle de `B` à `A`. Pour répondre à beaucoup de questions « combien de coups de `X` jusqu'à la position finale ? », un **seul** parcours depuis la position finale suffit.
 
@@ -337,6 +376,8 @@ Une dernière remarque est souvent décisive. Si chaque transition peut être d�
 **Marquer trop tard.** Comme dans tout parcours en largeur, on marque un état quand il entre dans la file. Sinon, un même état peut y entrer des milliers de fois, et le programme dépasse le temps limite.
 
 **Un ensemble de visités dans une liste.** Tester `etat in visites` sur une liste Python parcourt toute la liste : le parcours devient quadratique. On utilise un `set`, un dictionnaire, ou mieux, un tableau indexé par le code entier de l'état.
+
+**Les priorités des opérateurs de bits.** En C++, `m >> k & 1 == 1` se lit `m >> k & (1 == 1)`, car la comparaison passe avant le `&` : on écrit `(m >> k & 1) == 1`, ou simplement `if (m >> k & 1)`. En C++ encore, `1 << k` est un `int` : pour `k ≥ 31`, il faut `1LL << k`.
 
 **Un espace infini ou trop grand.** Sans borne sur les valeurs, le parcours ne s'arrête pas et finit par `MemoryError`. Avec un état trop riche, il est correct mais trop lent : on recompte les états avant de programmer.
 
@@ -428,5 +469,5 @@ int main() {
 - Sur une grille, les voisins s'obtiennent avec une liste de **décalages** (4 voisins, 8 voisins, cavalier) ; on vérifie les **bords avant** de lire la case, surtout en Python où l'indice `-1` est valide.
 - Le **remplissage** compte les zones d'une grille ; on l'écrit avec une pile ou une file, pas en récursif.
 - Le **parcours à sources multiples** met toutes les sources dans la file au départ : un seul parcours donne la distance à la source la plus proche.
-- Un **état** décrit tout ce qui compte (position, clés, orientation…) ; on le code par un tuple ou, mieux, par un **entier** qui indexe un tableau de marquage.
+- Un **état** décrit tout ce qui compte (position, clés, orientation…) ; on le code par un tuple ou, mieux, par un **entier** qui indexe un tableau de marquage. Un ensemble devient un **masque** : `1 << k`, `m >> k & 1`, `m | (1 << k)`.
 - Le coût d'un parcours est **nombre d'états × transitions par état** : on l'estime avant de programmer, on borne l'espace, et l'on ne stocke que les états atteints quand l'espace est immense.

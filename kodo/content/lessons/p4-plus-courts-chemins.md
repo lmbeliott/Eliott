@@ -10,9 +10,9 @@ Une remarque guide tout le chapitre : si `u` est sur un plus court chemin de `s`
 
 L'opération de base s'appelle le **relâchement** d'une arête `u → v` de longueur `l` : si `dist[u] + l < dist[v]`, on remplace `dist[v]` par `dist[u] + l`. Le tableau `dist` contient toujours des longueurs de chemins réels, donc des valeurs au moins égales aux vraies distances. Les trois algorithmes diffèrent par l'ordre des relâchements.
 
-## La file de priorité
+## Rappel : la file de priorité
 
-Une **file de priorité** reçoit des éléments dans n'importe quel ordre et rend toujours le plus petit. Elle est réalisée par un **tas**, une structure qui fait chaque ajout et chaque retrait en O(log n) opérations pour n éléments présents.
+La file de priorité a été introduite avec les algorithmes gloutons ; Dijkstra en fait un usage intensif, d'où ce rappel. Une **file de priorité** reçoit des éléments dans n'importe quel ordre et rend toujours le plus petit. Elle est réalisée par un **tas**, une structure qui fait chaque ajout et chaque retrait en O(log n) opérations pour n éléments présents.
 
 En Python, le module `heapq` transforme une liste en tas : `heappush(tas, x)` ajoute, `heappop(tas)` retire et renvoie le plus petit. En C++, `priority_queue` de `<queue>` renvoie par défaut le plus **grand** ; pour obtenir le plus petit, on donne trois paramètres : le type, le conteneur `vector`, et le comparateur `greater<>` de `<functional>`. Les couples se comparent d'abord sur leur premier élément, puis sur le second en cas d'égalité.
 

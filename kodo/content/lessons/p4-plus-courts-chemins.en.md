@@ -10,9 +10,9 @@ One remark guides the whole chapter: if `u` lies on a shortest path from `s` to 
 
 The basic operation is called **relaxing** an edge `u → v` of length `l`: if `dist[u] + l < dist[v]`, replace `dist[v]` with `dist[u] + l`. The array `dist` always holds lengths of real paths, hence values at least equal to the true distances. The three algorithms differ in the order of relaxations.
 
-## The priority queue
+## Reminder: the priority queue
 
-A **priority queue** receives elements in any order and always gives back the smallest. It is implemented with a **heap**, a structure that performs each insertion and each removal in O(log n) operations for n elements present.
+The priority queue was introduced with greedy algorithms; Dijkstra relies on it heavily, hence this reminder. A **priority queue** receives elements in any order and always gives back the smallest. It is implemented with a **heap**, a structure that performs each insertion and each removal in O(log n) operations for n elements present.
 
 In Python, the module `heapq` turns a list into a heap: `heappush(tas, x)` adds, `heappop(tas)` removes and returns the smallest. In C++, `priority_queue` from `<queue>` returns the **largest** by default; to get the smallest, give three parameters: the type, the container `vector`, and the comparator `greater<>` from `<functional>`. Pairs are compared on their first element, then on the second in case of a tie.
 

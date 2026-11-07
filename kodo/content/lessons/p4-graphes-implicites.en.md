@@ -314,9 +314,48 @@ The program prints `4 [1, 2, 4, 8, 5]`: you must go through 8 to come back down 
 
 The bound `LIMIT` is essential: without it, the `×2` key produces larger and larger numbers, the state space is infinite, and a search that does not find the target never stops. When the space is bounded, one must justify that the bound loses no solution, or that it is part of the statement.
 
-**Encoding a state.** A state made of several numbers is stored in a **tuple** (Python) or a `pair`, an `array` (C++), which can serve as a dictionary key. When the components are small, it can also be encoded as a single integer: a lock with 3 wheels is the integer from 0 to 999 it displays; a square and a set of keys among 6 become `(keys × R + i) × C + j`. An integer allows a plain marking array, much faster than a dictionary.
+**Encoding a state.** A state made of several numbers is stored in a **tuple** (Python) or a `pair`, an `array` (C++), which can serve as a dictionary key. When the components are small, it is better encoded as a single integer, which indexes a plain marking array, much faster than a dictionary. A lock with 3 wheels is the integer from 0 to 999 it displays. A square `(i, j)` and a number `k` from `0` to `K − 1` become `(k × R + i) × C + j`, an integer from `0` to `K × R × C − 1`; two different states get different codes, since `j = code % C`, `i = code // C % R` and `k = code // (R × C)` can be recovered.
 
 **Choosing a complete state.** The state must contain everything that influences what comes next. In a maze with doors and keys, the position is not enough: coming back to a square after picking up a key is real progress. The state is then the pair (position, set of keys picked up). For a die rolling on a grid, it is (position, orientation of the die). An incomplete state gives wrong answers; a state that is too rich makes the space too large.
+
+## A set encoded as an integer
+
+For the keys, a **set** still has to be encoded as a number. The possible elements are numbered from `0` to `n − 1` (key `a` is 0, key `b` is 1…) and the set is written in binary, on `n` digits: the digit of rank `k`, called **bit** `k`, is 1 if element `k` is in the set. The resulting integer is called a **mask**. For example, the set `{0, 2, 3}` is written `1101` in binary, that is 2⁰ + 2² + 2³ = 13. The `2^n` possible sets correspond exactly to the integers from `0` (the empty set) to `2^n − 1` (all the elements): with 6 keys, a mask goes from 0 to 63.
+
+Three operations, written the same way in Python and C++, are enough:
+- `1 << k` (left shift by `k` places) equals 2^k: it is the mask of the set `{k}`;
+- `m >> k & 1` is bit `k` of `m`: `m >> k` is the quotient of `m` by 2^k, which erases the last `k` bits, and `& 1` keeps the last bit, like `% 2`;
+- `m | (1 << k)` adds `k` to the set: the bitwise "or" `|` sets to 1 every bit that is 1 in either number. If `k` was already in the set, `m` does not change.
+
+```python
+m = 0                          # empty set
+for k in (3, 0, 2, 3):         # add 3, 0, 2, then 3 a second time
+    m = m | (1 << k)
+print(m, [k for k in range(6) if m >> k & 1])
+```
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int m = 0;                              // empty set
+    for (int k : {3, 0, 2, 3})              // add 3, 0, 2, then 3 a second time
+        m = m | (1 << k);
+    cout << m << " [";
+    bool first = true;
+    for (int k = 0; k < 6; k++) {
+        if (m >> k & 1) {
+            cout << (first ? "" : ", ") << k;
+            first = false;
+        }
+    }
+    cout << "]\n";
+    return 0;
+}
+```
+
+The program prints `13 [0, 2, 3]`. In a maze with keys, the state `(i, j, keys)` is encoded as `(keys × R + i) × C + j` and indexes an array of `64 × R × C` cells. Picking up key `k` gives the set `keys | (1 << k)`; a door of letter `k` opens if `keys >> k & 1` equals 1.
 
 ## The size of the state space
 
@@ -326,7 +365,7 @@ A search visits each state at most once and examines all its transitions: its co
 - the orderings of `N` objects form `N!` states: 40,320 for `N = 8`, but more than 3.6 million for `N = 10`;
 - a 40 × 40 grid with 6 possible keys gives 40 × 40 × 2⁶ = 102,400 states.
 
-In Python, a few million examinations already take several seconds: beyond that, a better idea is needed. Often, a property of the problem reduces the space **actually reached**. With two 50,000-litre containers that are filled, emptied and poured into each other, there are 2.5 × 10⁹ possible pairs of contents, but after each operation one of the containers is empty or full: at most 200,004 states are reached, those on the border of the rectangle of contents. The reached states are then stored in a dictionary or a set, instead of an array covering the whole space.
+In Python, a few million examinations already take several seconds: beyond that, a better idea is needed. Often, a property of the problem reduces the space **actually reached**. With two 50,000-litre containers that are filled, emptied and poured into each other, there are 2.5 × 10⁹ possible pairs of contents, but after each operation one of the containers is empty or full: at most 200,000 states are reached, those on the border of the rectangle of contents. The reached states are then stored in a dictionary or a set, instead of an array covering the whole space.
 
 A last remark is often decisive. If every transition can be undone (turning a wheel back, flipping the same pancakes again), the graph is undirected: the distance from `A` to `B` is that from `B` to `A`. To answer many questions "how many moves from `X` to the final position?", a **single** search from the final position is enough.
 
@@ -337,6 +376,8 @@ A last remark is often decisive. If every transition can be undone (turning a wh
 **Marking too late.** As in any breadth-first search, a state is marked when it enters the queue. Otherwise, the same state may enter it thousands of times, and the program exceeds the time limit.
 
 **A visited set stored in a list.** Testing `state in visited` on a Python list scans the whole list: the search becomes quadratic. Use a `set`, a dictionary, or better, an array indexed by the integer code of the state.
+
+**Precedence of bit operators.** In C++, `m >> k & 1 == 1` reads as `m >> k & (1 == 1)`, because the comparison comes before `&`: write `(m >> k & 1) == 1`, or simply `if (m >> k & 1)`. Also in C++, `1 << k` is an `int`: for `k ≥ 31`, use `1LL << k`.
 
 **An infinite or too large space.** Without a bound on the values, the search does not stop and ends with `MemoryError`. With a state that is too rich, it is correct but too slow: count the states again before programming.
 
@@ -428,5 +469,5 @@ int main() {
 - On a grid, neighbours come from a list of **offsets** (4 neighbours, 8 neighbours, knight); check the **borders before** reading the square, especially in Python where index `-1` is valid.
 - **Flood fill** counts the areas of a grid; write it with a stack or a queue, not recursively.
 - The **multi-source search** puts every source in the queue at the start: a single search gives the distance to the closest source.
-- A **state** describes everything that matters (position, keys, orientation…); encode it as a tuple or, better, as an **integer** indexing a marking array.
+- A **state** describes everything that matters (position, keys, orientation…); encode it as a tuple or, better, as an **integer** indexing a marking array. A set becomes a **mask**: `1 << k`, `m >> k & 1`, `m | (1 << k)`.
 - The cost of a search is **number of states × transitions per state**: estimate it before programming, bound the space, and store only the reached states when the space is huge.
