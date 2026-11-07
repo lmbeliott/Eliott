@@ -20,7 +20,7 @@ def requetes_aleatoires(n, q):
 
 tests = [
     explicite([1, 2, 1, 3, 2, 1, 3, 3], [(1, 8), (1, 5), (2, 7), (4, 4)]),
-    genere(10, 5, 42, 4, 6),
+    genere(10, 5, 2, 5, 6),
 ]
 # Cas limites : un seul élément, tout identique, tout différent
 tests.append(explicite([1], [(1, 1)]))
