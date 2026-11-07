@@ -20,6 +20,8 @@
    Vert / rouge / ambre : uniquement les verdicts du juge.
    ------------------------------------------------------------------ */
 :root {
+  --admin-a: #b7791f;
+  --admin-b: #c2410c;
   color-scheme: light;
   --bg: #fafafa;
   --surface: #ffffff;
@@ -62,6 +64,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
+    --admin-a: #f5c451;
+    --admin-b: #ff8a4c;
     --bg: #0e0e11;
     --surface: #16161a;
     --surface-2: #1c1c21;
@@ -100,6 +104,8 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
+  --admin-a: #f5c451;
+  --admin-b: #ff8a4c;
   --bg: #0e0e11;
   --surface: #16161a;
   --surface-2: #1c1c21;
@@ -194,7 +200,7 @@
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Kanji des rangs : M PLUS 1 Code 700 (SIL Open Font License), réduite aux 15 caractères utilisés.
+/* Kanji des rangs : M PLUS 1 Code 700 (SIL Open Font License), réduite aux caractères utilisés (rangs et titre 開祖).
    Gothique technique, dans l'esprit de Mona Sans et de Monaspace. */
 @font-face {
   font-family: "Kodo Rank";
@@ -202,12 +208,20 @@
   font-weight: 700;
   font-display: swap;
   src: url("./assets/rank-kanji.woff2") format("woff2");
-  unicode-range: U+3044, U+4eba, U+521d, U+540d, U+5b50, U+5b88, U+5e2b, U+5f1f, U+5fc3, U+7834, U+7bc4, U+7fd2, U+898b, U+9054, U+96e2;
+  unicode-range: U+3044, U+4eba, U+521d, U+540d, U+5b50, U+5b88, U+5e2b, U+5f1f, U+5fc3, U+7834, U+7956, U+7bc4, U+7fd2, U+898b, U+9054, U+958b, U+96e2;
 }
 .rank-kanji {
   font-family: "Kodo Rank", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
   font-weight: 700;
   letter-spacing: 0;
+}
+/* Nom et titre de l'administrateur : dégradé or-vermillon, lisible en clair comme en sombre. */
+.name-admin {
+  background: linear-gradient(100deg, var(--admin-a), var(--admin-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 650;
 }
 .rank-name {
   font-stretch: 112%;

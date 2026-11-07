@@ -110,7 +110,7 @@ export interface GroupMember {
   user_id: string
   role: 'encadrant' | 'membre'
   joined_at: string
-  profile: Pick<Profile, 'id' | 'username' | 'display_name' | 'school' | 'avatar' | 'xp' | 'solved_count' | 'current_streak' | 'last_streak_day'>
+  profile: Pick<Profile, 'id' | 'username' | 'display_name' | 'school' | 'avatar' | 'staff' | 'xp' | 'solved_count' | 'current_streak' | 'last_streak_day'>
 }
 
 export function useGroup(groupId: string | undefined) {
@@ -123,7 +123,7 @@ export function useGroup(groupId: string | undefined) {
       if (!group) return null
       const { data: members, error: e2 } = await supabase
         .from('group_members')
-        .select('user_id, role, joined_at, profile:profiles(id, username, display_name, school, avatar, xp, solved_count, current_streak, last_streak_day)')
+        .select('user_id, role, joined_at, profile:profiles(id, username, display_name, school, avatar, staff, xp, solved_count, current_streak, last_streak_day)')
         .eq('group_id', groupId!)
       if (e2) throw e2
       const ids = (members ?? []).map((m) => m.user_id)

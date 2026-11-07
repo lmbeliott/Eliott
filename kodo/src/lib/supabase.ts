@@ -15,6 +15,8 @@ export interface Profile {
   display_name: string
   school: string | null
   avatar: string | null
+  /** Rôle d'équipe, modifiable seulement côté base */
+  staff: 'admin' | 'moderateur' | null
   preferred_language: 'python' | 'cpp'
   xp: number
   solved_count: number
@@ -49,6 +51,7 @@ export interface LeaderRow {
   display_name: string
   school: string | null
   avatar: string | null
+  staff: 'admin' | 'moderateur' | null
   xp: number
   /** Total de points (le rang), même pour le classement de la semaine */
   total_xp: number

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { UserName } from './Staff'
 import { UserAvatar } from './UserAvatar'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useMatches, useNavigate } from 'react-router-dom'
 import { Flame, LogOut, Menu, Moon, Settings, Sun, User, X } from 'lucide-react'
@@ -87,7 +88,9 @@ function AccountMenu() {
       {open && (
         <div role="menu" className="anim-rise absolute right-0 top-11 z-40 w-60 rounded-lg border border-line bg-surface p-1.5 shadow-e3">
           <div className="px-3 py-2">
-            <p className="truncate text-sm font-medium">{profile.display_name}</p>
+            <p className="truncate text-sm font-medium">
+              <UserName name={profile.display_name} staff={profile.staff} />
+            </p>
             <p className="truncate text-xs text-muted">@{profile.username}</p>
           </div>
           <div className="my-1 h-px bg-line" />

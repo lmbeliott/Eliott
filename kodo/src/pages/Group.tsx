@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { UserName } from '../components/Staff'
 import { UserAvatar } from '../components/UserAvatar'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -129,7 +130,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
                 <th scope="row" className={cx('sticky left-0 z-10 px-4 py-2 text-left font-normal', sel ? 'bg-accent-soft' : 'bg-surface')}>
                   <button type="button" onClick={() => onPick(m)} aria-expanded={sel} className="flex items-center gap-2.5 font-medium hover:underline">
                     <UserAvatar avatar={m.profile.avatar} seed={m.user_id} size={24} />
-                    <span className="truncate">{m.profile.display_name}</span>
+                    <UserName name={m.profile.display_name} staff={m.profile.staff} className="truncate" />
                   </button>
                 </th>
                 {byLevel.map(({ level, ids }) => (
@@ -326,7 +327,7 @@ export function GroupPage() {
                     <Link to={`/profil/${m.profile.username}`} className="flex min-w-0 items-center gap-3 hover:underline">
                       <UserAvatar avatar={m.profile.avatar} seed={m.user_id} size={32} />
                       <span className="min-w-0">
-                        <span className="block truncate font-medium">{m.profile.display_name}</span>
+                        <UserName name={m.profile.display_name} staff={m.profile.staff} className="block truncate font-medium" />
                         <span className="block text-xs text-muted">
                           {m.role === 'encadrant' ? t('Encadrant', 'Leader') : t('Membre', 'Member')}, {t('arrivé', 'joined')} {timeAgo(lang, m.joined_at)}
                         </span>

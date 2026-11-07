@@ -1,6 +1,7 @@
 // Profil (motif Détail) : identité et faits en ligne, grille personnelle, activité, ligue,
 // distinctions, dernières réussites. Voir DESIGN.md.
 import { useMemo } from 'react'
+import { StaffTitle, UserName } from '../components/Staff'
 import { UserAvatar } from '../components/UserAvatar'
 import { Link, useParams } from 'react-router-dom'
 import { Check, Flame } from 'lucide-react'
@@ -77,7 +78,10 @@ export function ProfilePage() {
           <div className="flex items-center gap-4">
             <UserAvatar avatar={profile.avatar} seed={profile.id} size={56} />
             <div>
-              <h1 className="display text-2xl">{profile.display_name}</h1>
+              <h1 className="display flex flex-wrap items-baseline gap-x-3 text-2xl">
+                <UserName name={profile.display_name} staff={profile.staff} />
+                <StaffTitle staff={profile.staff} className="text-base" />
+              </h1>
               <p className="text-ink-2">
                 @{profile.username}
                 {profile.school && <span className="text-muted"> — {profile.school}</span>}

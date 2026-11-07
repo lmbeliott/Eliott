@@ -78,9 +78,11 @@ def random_case(big):
 
 # Cas aléatoires, autant de OUI que de NON.
 voulu = True
-while len(tests) < 30:
+while len(tests) < 29:
     case = random_case(big=len(tests) >= 26)
     if answer(*case) == voulu:
         tests.append(test(*case))
         voulu = not voulu
+# Diagonale descendante, obstacle sur la même diagonale mais derrière la case.
+tests.append(test(10, 30, 30, 10, 35, 5))
 print(json.dumps(tests))

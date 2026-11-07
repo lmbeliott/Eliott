@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { StaffTitle, UserName } from './Staff'
 import { UserAvatar } from './UserAvatar'
 import { Flame } from 'lucide-react'
 import type { LeaderRow } from '../lib/supabase'
@@ -70,7 +71,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
                     <UserAvatar avatar={r.avatar} seed={r.user_id} size={28} />
                     <span className="min-w-0">
                       <span className="block truncate font-medium text-ink group-hover:underline">
-                        {r.display_name}
+                        <UserName name={r.display_name} staff={r.staff} />
                         {r.is_me && <span className="ml-2 text-xs font-normal text-accent">{t('moi', 'me')}</span>}
                       </span>
                       {!compact && <span className="block truncate text-xs text-muted">@{r.username}</span>}
@@ -80,7 +81,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
                 {!compact && <td className="hidden max-w-52 truncate pr-3 text-ink-2 md:table-cell">{r.school ?? <span className="text-muted">–</span>}</td>}
                 {!compact && (
                   <td className="hidden pr-3 lg:table-cell">
-                    <LeagueBadge league={leagueOf(Number(r.total_xp ?? r.xp)).current} className="font-normal text-ink-2" />
+                    {r.staff === 'admin' ? <StaffTitle staff={r.staff} /> : <LeagueBadge league={leagueOf(Number(r.total_xp ?? r.xp)).current} className="font-normal text-ink-2" />}
                   </td>
                 )}
                 {!compact && <td className="hidden pr-4 text-right tabular text-ink-2 sm:table-cell">{formatNumber(lang, Number(r.solved))}</td>}

@@ -31,7 +31,12 @@ export const AVATARS: AvatarDef[] = [
   { id: 'robo', kanji: 'ロボ', fr: 'Robot', en: 'Robot', bg: '#e4e6fb', colors: ["#5a64e6", "#ffffff", "#2a2f6a"], px: ["...3....", "...1....", ".111111.", ".122221.", ".131131.", ".111111.", "..1331..", ".11..11."] },
 ]
 
-const byId = new Map(AVATARS.map((a) => [a.id, a]))
+/** Avatars réservés (la base refuse « kodo » à tout autre compte que l'administrateur). */
+export const SPECIAL_AVATARS: AvatarDef[] = [
+  { id: 'kodo', kanji: '開祖', fr: 'Kodo (fondateur)', en: 'Kodo (founder)', bg: '#16181f', colors: ['#f4f5f8', '#7b86ff', '#f0b43c'], px: ['3......3', '.1...1..', '.1..1...', '.1.1....', '.11.....', '.1.1....', '.1..22..', '31..22.3'] },
+]
+
+const byId = new Map([...AVATARS, ...SPECIAL_AVATARS].map((a) => [a.id, a]))
 
 /** Avatar choisi, ou à défaut un avatar stable dérivé de l'identifiant du compte. */
 export function avatarFor(chosen: string | null | undefined, seed: string): AvatarDef {
