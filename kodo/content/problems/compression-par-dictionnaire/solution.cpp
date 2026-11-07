@@ -12,12 +12,14 @@ int main() {
 
     unordered_map<string, int> code;   // mot -> code
     for (int i = 0; i < 26; i++) {
-        code[string(1, (char)('a' + i))] = i;
+        string lettre = "";
+        lettre += (char)('a' + i);
+        code[lettre] = i;
     }
     int suivant = 26;                  // prochain code libre
 
     vector<int> codes;
-    string mot(1, texte[0]);
+    string mot = texte.substr(0, 1);   // la première lettre
     for (int i = 1; i < (int)texte.size(); i++) {
         char c = texte[i];
         if (code.count(mot + c) > 0) {
@@ -26,7 +28,8 @@ int main() {
             codes.push_back(code[mot]);
             code[mot + c] = suivant;
             suivant = suivant + 1;
-            mot = string(1, c);        // on repart de la lettre c
+            mot = "";
+            mot += c;                  // on repart de la lettre c
         }
     }
     codes.push_back(code[mot]);

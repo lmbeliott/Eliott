@@ -181,6 +181,7 @@ const TAG_EN: Record<string, string> = {
   mathématiques: 'math',
   'sommes-préfixes': 'prefix sums',
   'deux-pointeurs': 'two pointers',
+  'fenêtre-glissante': 'sliding window',
   dichotomie: 'binary search',
   récursivité: 'recursion',
   backtracking: 'backtracking',

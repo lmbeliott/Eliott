@@ -1,10 +1,11 @@
 #include <iostream>
 #include <set>
+#include <vector>
 using namespace std;
 
 long long etape(long long x, int d) {
     // compte les chiffres de x écrit avec exactement d chiffres (zéros devant compris)
-    int nb[10] = {0};
+    vector<int> nb(10, 0);
     for (int i = 0; i < d; i++) {
         nb[x % 10]++;
         x = x / 10;

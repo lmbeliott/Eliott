@@ -32,7 +32,7 @@ Two cases can happen:
 - the remainder becomes 0: the division stops, the expansion is finite;
 - a remainder already met comes back: from there, the same computations happen again in the same order, and the same digits repeat forever.
 
-Since there are only `D` possible remainders, one of the two cases happens within at most `D` steps. To detect the return of a remainder, keep a dictionary `position` that maps each remainder to the position (in the list of digits) of the digit it produces. When the current remainder is already a key, `position[remainder]` is where the block starts: the digits before it don't repeat, those from it onwards form the block.
+Since there are only `D` possible remainders, one of the two cases happens within at most `D` steps. To detect the return of a remainder, keep a dictionary `position` that maps each remainder to the position (in the string of digits already written) of the digit it produces. When the current remainder is already a key, `position[remainder]` is where the block starts: the digits before it (`chiffres[:debut]`) don't repeat, those from it onwards (`chiffres[debut:]`) form the block.
 
 This block is indeed the shortest one and starts as early as possible: the remainder fully determines the sequence of digits, and two different remainders give different sequences, so the repetition starts exactly at the first remainder that comes back.
 

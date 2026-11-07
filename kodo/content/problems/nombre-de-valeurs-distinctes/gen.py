@@ -12,8 +12,8 @@ tests.append(test([10**9, -10**9, 10**9, 0, -10**9]))    # valeurs extrêmes
 for n, m in [(100, 20), (1000, 1000000), (5000, 50)]:
     tests.append(test([random.randint(-m, m) for _ in range(n)]))
 # grands tests : une recherche dans une liste serait trop lente
-valeurs = list(range(40000))
+valeurs = list(range(-25000, 25000))
 random.shuffle(valeurs)
-tests.append(test(valeurs))                                          # toutes distinctes
-tests.append(test([random.randint(0, 999) for _ in range(20000)]))   # beaucoup de doublons
+tests.append(test(valeurs))                                          # 50 000 valeurs toutes distinctes
+tests.append(test([random.randint(0, 999) for _ in range(8000)]))    # beaucoup de doublons
 print(json.dumps(tests))

@@ -102,7 +102,36 @@ int main() {
 
 The program prints `rdr radar`. The line `envers = c + envers` puts each new character **in front of** those already stored: the word is therefore built backwards. Here, "radar" reads the same both ways: it is a **palindrome**.
 
-Python also lets you extract a piece of a string, a **slice**: `s[a:b]` contains the characters of indices `a` to `b − 1`. `"bonjour"[0:3]` is `"bon"`, `"bonjour"[3:]` is `"jour"` (up to the end), and `"bonjour"[:3]` is `"bon"` (from the start). In C++, write `s.substr(start, length)`: `s.substr(3, 4)` is `"jour"`.
+## Extracting a piece: slices
+
+You often need a piece of a string: the end of a word, its first three letters, a number without its sign. In Python, this piece is called a **slice**: `s[a:b]` is the new string made of the characters of indices `a` to `b − 1`. As with `range`, the first index is included and the second excluded, so the slice contains `b − a` characters. If `a` is omitted, the slice starts at the beginning; if `b` is omitted, it goes to the end.
+
+In C++, write `s.substr(start, length)`. Careful, the second number is a **length**, not an end index: `s[a:b]` is written `s.substr(a, b - a)`. With a single number, `s.substr(start)` goes to the end.
+
+```python
+s = "bonjour"
+print(s[0:3], s[3:7], s[3:], s[:3])
+print(s[1:4], len(s[1:4]))
+print(s[5:100], s[3:] + s[:3])
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s = "bonjour";
+    cout << s.substr(0, 3) << " " << s.substr(3, 4) << " " << s.substr(3) << " " << s.substr(0, 3) << "\n";
+    cout << s.substr(1, 3) << " " << s.substr(1, 3).size() << "\n";
+    cout << s.substr(5, 100) << " " << s.substr(3) + s.substr(0, 3) << "\n";
+    return 0;
+}
+```
+
+Both programs print `bon jour jour bon`, then `onj 3`, then `ur jourbon`. In detail: `s[1:4]` takes indices 1, 2 and 3, that is `onj`, of length 4 − 1 = 3. A slice that goes past the end simply stops at the end, without error: `s[5:100]` is `ur`, and `s[4:2]` is the empty string. Finally, `s[3:] + s[:3]` glues the end and the beginning: you get `jourbon`, the word "rotated" by 3 letters.
+
+In C++, `substr` also tolerates a length that is too large, but not a start beyond the end: `s.substr(8)` on a 7-character string stops the program with `terminate called after throwing an instance of 'std::out_of_range'`. A start equal to the length is allowed and gives the empty string. A slice is a **copy**: building it costs as many operations as it has characters. Python slices work the same way on lists: `t[1:]` is the list without its first element.
 
 ## Comparing strings
 
@@ -163,6 +192,45 @@ The program prints `100 3`, then `e`, then `7`. Three computations come up all t
 
 To test whether a character is a lowercase letter, check that `"a" <= c <= "z"` (in C++, `c >= 'a' && c <= 'z'`), which works precisely because the codes are consecutive.
 
+## Numbers that are too large: working digit by digit
+
+A number read as a string can be handled digit by digit, with `ord(c) - ord("0")`. To recover its value, read the digits from left to right: adding a digit `d` to the right of a number `x` gives `10 × x + d`.
+
+```python
+s = input()
+valeur = 0
+somme = 0
+for c in s:
+    d = ord(c) - ord("0")       # value of the digit
+    valeur = 10 * valeur + d    # add d to the right of valeur
+    somme = somme + d
+print(valeur, somme)
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s;
+    cin >> s;
+    long long valeur = 0;
+    int somme = 0;
+    for (char c : s) {
+        int d = c - '0';            // value of the digit
+        valeur = 10 * valeur + d;   // add d to the right of valeur
+        somme = somme + d;
+    }
+    cout << valeur << " " << somme << "\n";
+    return 0;
+}
+```
+
+With the input `2026`, the program prints `2026 10`: `valeur` goes through 0, 2, 20, 202 then 2026, and `somme` is the sum of the digits.
+
+Why not simply write `int(s)`? For a number of reasonable size, that is the right method. But some exercises give numbers with several thousand digits. In C++, no integer type can hold them: a `long long` stops around 9.2 × 10¹⁸, that is 19 digits. In Python, integers have no limit, but `int()` refuses, for safety, to convert a string of more than 4,300 digits: `ValueError: Exceeds the limit (4300 digits) for integer string conversion`. You must then reason directly on the digits. For instance, a number is divisible by 3 exactly when the sum of its digits is: the question from the introduction is answered without ever computing the number itself.
+
 ## Uppercase, lowercase and other tools
 
 Python provides **methods**, that is operations written after the string and a dot. `s.upper()` gives a copy of `s` in uppercase, `s.lower()` in lowercase; characters that are not letters do not change. `c.isdigit()` tells whether `c` is a digit, `c.isalpha()` whether it is a letter. Finally, `s.count("e")` counts the occurrences of `"e"` in `s`: it is the program written above, in one line.
@@ -171,7 +239,7 @@ In C++, the functions `toupper(c)`, `tolower(c)`, `isdigit(c)` and `isalpha(c)`,
 
 ## Splitting and joining: split and join
 
-You already know `split()`, which cuts a line into words. The result is a **list of strings**, which you can store in a variable and traverse. With an argument, `split` cuts at another separator: `"12:30:05".split(":")` gives `["12", "30", "05"]`.
+You already know `split()`, which cuts a line into words. The result is a **list of strings**, which you can store in a variable, index and traverse like any array. In C++, an array of strings is written `vector<string>`. With an argument, `split` cuts at another separator: `"12:30:05".split(":")` gives `["12", "30", "05"]`.
 
 The reverse operation is `join`. It is written after the string used as the **separator**: `", ".join(mots)` glues the strings of the list `mots`, separating them with a comma and a space. The elements must be strings; for numbers, convert them first with `str`, which does the reverse of `int`: `str(42)` is `"42"`.
 
@@ -283,4 +351,5 @@ int main() {
 - In Python, a string is immutable: build a new one with `+`, starting from `""`. In C++, a `string` can be modified, and `+=` adds at the end. A `char` is written between single quotes.
 - Strings are compared in lexicographic order, which follows the character codes: uppercase before lowercase, and `"10" < "9"`.
 - `ord` and `chr` go from a character to its code and back: `ord(c) - ord("a")` gives the rank of a letter, `ord(c) - ord("0")` the value of a digit. In C++, compute directly on `char`s.
+- A slice `s[a:b]` (in C++, `s.substr(a, b - a)`) copies the characters of indices `a` to `b − 1`. A number too large for `int()` (more than 4,300 digits) or for a `long long` is handled digit by digit: `x` becomes `10 × x + d`.
 - `upper`, `lower`, `split` and `join` (in C++: `toupper`, `tolower`, word-by-word reading and `+=`) transform, cut and glue strings; `str` and `int` convert between numbers and strings.

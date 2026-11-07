@@ -1,11 +1,12 @@
 n = int(input())
-valeurs = input().split()
+valeurs = list(map(int, input().split()))
 vues = set()
-reponse = "AUCUNE"
-for i in range(n):
-    v = int(valeurs[i])
-    if v in vues:
-        reponse = str(v) + " " + str(i + 1)   # position comptée à partir de 1
-        break
-    vues.add(v)
-print(reponse)
+i = 0
+# on avance tant que la valeur lue n'a jamais été vue
+while i < n and valeurs[i] not in vues:
+    vues.add(valeurs[i])
+    i = i + 1
+if i < n:
+    print(valeurs[i], i + 1)        # position comptée à partir de 1
+else:
+    print("AUCUNE")

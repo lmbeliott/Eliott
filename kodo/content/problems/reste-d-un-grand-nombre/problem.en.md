@@ -3,7 +3,7 @@ title: Remainder of a large number
 ---
 
 ## Statement
-Print the remainder of the division of a very large integer `N` by an integer `M`. `N` can have up to 100,000 digits.
+Print the remainder of the division of a very large non-negative integer `N` by an integer `M`. `N` can have up to 100,000 digits: too many for a `long long` in C++, and too many for `int()` in Python as well, which refuses strings of more than 4,300 digits (`ValueError`).
 
 ## Input
 The first line contains `N`, written without useless leading zeros. The second line contains `M`.

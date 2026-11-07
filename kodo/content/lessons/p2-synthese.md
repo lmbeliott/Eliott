@@ -74,6 +74,92 @@ int main() {
 
 Le programme affiche `4 0`. Les deux appels sont de petits tests : la case du centre touche les quatre `#`, la case du coin n'en touche aucun. Si la fonction est juste sur ces exemples, y compris au bord, on peut s'en servir sans y repenser.
 
+## Estimer le temps de calcul
+
+Avant d'écrire un programme, on estime le nombre d'opérations qu'il fera, à partir des contraintes de l'énoncé. Un ordre de grandeur suffit : Python exécute de l'ordre de 10 millions d'opérations simples par seconde, le C++ de l'ordre de quelques centaines de millions. Avec `N ≤ 100 000`, une double boucle sur toutes les paires fait 5 milliards de tours : c'est impossible. Un seul passage avec un dictionnaire en fait 100 000 : c'est immédiat.
+
+Quand le compte est trop grand, trois idées du niveau 2 reviennent souvent :
+
+- **remplacer une recherche dans une liste par un ensemble ou un dictionnaire** : chaque test `in` devient presque instantané ;
+- **chercher le partenaire au lieu d'essayer toutes les paires** : pour compter les paires de somme `K`, on se demande, pour chaque valeur `x`, combien de valeurs `K - x` ont déjà été lues, et un dictionnaire de fréquences répond aussitôt ;
+- **retourner la question** : au lieu de chercher les diviseurs de chaque nombre, on part de chaque diviseur `d` et on visite ses multiples `2d`, `3d`… ; au lieu de traiter chaque requête séparément, on prépare une fois pour toutes l'ensemble de toutes les réponses possibles, puis chaque requête devient un simple test `in`.
+
+## Détecter un cycle
+
+Beaucoup de simulations répètent la même transformation : un nombre devient un autre nombre, un robot passe d'une case à la suivante. Ce qui décrit la situation à un instant donné s'appelle l'**état**. Quand il n'y a qu'un nombre fini d'états possibles, et que l'état suivant ne dépend que de l'état courant, la suite repasse forcément un jour par un état déjà vu. À partir de là, elle refait exactement le même trajet. Elle a donc la forme d'une **queue**, parcourue une seule fois, suivie d'un **cycle**, répété sans fin.
+
+Pour repérer ce moment, on garde un dictionnaire qui associe à chaque état l'**instant** de sa première apparition. Dans l'exemple suivant, l'état est un entier, que l'on remplace à chaque étape par la somme des carrés de ses chiffres. Le programme lit la valeur de départ et un nombre d'étapes `K`, puis affiche l'instant où commence le cycle, la longueur du cycle, et la valeur obtenue après `K` étapes.
+
+```python
+def suivant(x):
+    s = 0
+    while x > 0:
+        s = s + (x % 10) * (x % 10)
+        x = x // 10
+    return s
+
+x, k = map(int, input().split())
+suite = [x]          # suite[t] = valeur après t étapes
+instant = {x: 0}     # valeur -> instant de sa première apparition
+y = suivant(x)
+while y not in instant:
+    instant[y] = len(suite)
+    suite.append(y)
+    y = suivant(y)
+debut = instant[y]
+longueur = len(suite) - debut
+if k < len(suite):
+    valeur = suite[k]
+else:
+    valeur = suite[debut + (k - debut) % longueur]
+print(debut, longueur, valeur)
+```
+
+```cpp
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+
+int suivant(int x) {
+    int s = 0;
+    while (x > 0) {
+        s = s + (x % 10) * (x % 10);
+        x = x / 10;
+    }
+    return s;
+}
+
+int main() {
+    int x;
+    long long k;
+    cin >> x >> k;
+    vector<int> suite = {x};      // suite[t] = valeur après t étapes
+    map<int, int> instant;        // valeur -> instant de sa première apparition
+    instant[x] = 0;
+    int y = suivant(x);
+    while (instant.count(y) == 0) {
+        instant[y] = suite.size();
+        suite.push_back(y);
+        y = suivant(y);
+    }
+    long long debut = instant[y];
+    long long longueur = suite.size() - debut;
+    int valeur;
+    if (k < (long long) suite.size()) {
+        valeur = suite[k];
+    } else {
+        valeur = suite[debut + (k - debut) % longueur];
+    }
+    cout << debut << " " << longueur << " " << valeur << "\n";
+    return 0;
+}
+```
+
+Avec l'entrée `2 1000000`, la suite vaut 2, 4, 16, 37, 58, 89, 145, 42, 20, puis `suivant(20)` redonne 4, déjà vu à l'instant 1. La queue ne contient que 2, le cycle commence à l'instant `debut = 1` et contient `longueur = 9 - 1 = 8` valeurs. Après l'instant `debut`, la suite revient au même endroit toutes les 8 étapes : la valeur à l'instant `K` est donc celle de l'instant `debut + (K - debut) % longueur`, ici 1 + 999 999 % 8 = 8. Le programme affiche `1 8 20` sans simuler un million d'étapes.
+
+La boucle s'arrête, car les états sont en nombre fini : un nombre d'au plus 10 chiffres a une somme des carrés de ses chiffres d'au plus 10 × 81 = 810. Elle fait au plus autant de tours qu'il y a d'états, même si `K` vaut 10¹⁸. Le nombre de valeurs différentes rencontrées est `len(suite)`. Le dictionnaire est indispensable : avec un test `in` sur la liste `suite`, chaque étape reparcourrait tout le chemin déjà fait.
+
 ## Tester les cas limites
 
 Un programme qui donne la bonne réponse sur l'exemple n'est pas forcément juste. Avant de soumettre, on construit de petites entrées pour les **cas limites** du niveau 2, et on calcule la réponse attendue à la main :
@@ -84,7 +170,8 @@ Un programme qui donne la bonne réponse sur l'exemple n'est pas forcément just
 - **les égalités** : quand deux candidats ont le même score, l'énoncé dit lequel choisir, et le programme doit le respecter (premier vu, plus petit…) ;
 - **les arrondis** : une valeur qui tombe exactement au milieu, comme `12,25` à arrondir au dixième ;
 - **les restes négatifs** : en Python `-1 % 26` vaut `25`, en C++ il vaut `-1` ;
-- **les grands nombres** : en C++, tout ce qui peut dépasser 2 × 10⁹ se stocke dans un `long long`.
+- **les grands nombres** : en C++, tout ce qui peut dépasser 2 × 10⁹ se stocke dans un `long long` ;
+- **les nombres d'étapes immenses** : si `K` peut valoir 10¹⁸, on ne simule pas `K` étapes, on cherche un cycle.
 
 ## Lire les messages d'erreur
 
@@ -150,7 +237,7 @@ int distinctes(const string& lettres) {
 
 string colonne(const vector<string>& grille, int j) {
     string c = "";
-    for (const string& ligne : grille) {
+    for (string ligne : grille) {
         c += ligne[j];
     }
     return c;
@@ -164,7 +251,7 @@ int main() {
         cin >> grille[i];
     }
     int meilleur = 0;
-    for (const string& ligne : grille) {
+    for (string ligne : grille) {
         meilleur = max(meilleur, distinctes(ligne));
     }
     for (int j = 0; j < c; j++) {
@@ -182,5 +269,6 @@ int main() {
 - Avant de coder, choisir la structure de chaque information : variable, liste, chaîne, grille, ensemble ou dictionnaire. Un test `in` répété se fait sur un ensemble, pas sur une liste.
 - Rester en nombres entiers tant que c'est possible ; les arrondis se calculent avec des divisions entières.
 - Découper en fonctions qui reçoivent des paramètres et renvoient un résultat, sans lire ni afficher, et tester chacune seule sur de petits exemples.
+- Estimer le nombre d'opérations à partir des contraintes. Une simulation sur un nombre fini d'états finit par boucler : un dictionnaire « état → instant de première apparition » repère le cycle et permet de sauter directement à l'étape `K`.
 - Tester les cas limites : taille 1, bords de grille, doublons, égalités, valeurs au milieu d'un arrondi, restes négatifs, grands nombres.
 - Lire les messages d'erreur (`IndexError`, `KeyError`, `TypeError`, `ValueError`…) ; en C++, une mauvaise réponse sans message fait penser à un indice hors du tableau ou à une clé créée par `[]`.

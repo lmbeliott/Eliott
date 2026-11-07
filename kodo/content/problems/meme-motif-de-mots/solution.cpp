@@ -26,13 +26,21 @@ bool meme_motif(const string& motif, const vector<string>& mots) {
 }
 
 int main() {
-    string motif;
-    cin >> motif;
+    string motif, phrase;
+    getline(cin, motif);
+    getline(cin, phrase);
+    // découpe la phrase en mots : un espace termine le mot en cours
     vector<string> mots;
-    string m;
-    while (cin >> m) {          // lit tous les mots jusqu'à la fin de l'entrée
-        mots.push_back(m);
+    string m = "";
+    for (char c : phrase) {
+        if (c == ' ') {
+            mots.push_back(m);
+            m = "";
+        } else {
+            m += c;
+        }
     }
+    mots.push_back(m);          // le dernier mot n'est suivi d'aucun espace
     if (meme_motif(motif, mots)) {
         cout << "OUI\n";
     } else {

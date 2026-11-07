@@ -88,7 +88,7 @@ Les sections reconnues sont exactement : `Énoncé`, `Entrée`, `Sortie`, `Contr
 
 `difficulty` (facile, moyen, difficile, expert) est déduit du niveau du chapitre ; ne le mets que pour une exception justifiée.
 
-Étiquettes à utiliser : `entrées-sorties`, `arithmétique`, `conditions`, `boucles`, `listes`, `chaînes`, `grilles`, `fonctions`, `tri`, `dictionnaires`, `simulation`, `mathématiques`, `sommes-préfixes`, `deux-pointeurs`, `dichotomie`, `récursivité`, `backtracking`, `glouton`, `graphes`, `parcours-en-largeur`, `parcours-en-profondeur`, `programmation-dynamique`, `dijkstra`, `union-find`, `fenwick`, `arbre-de-segments`, `bits`.
+Étiquettes à utiliser : `entrées-sorties`, `arithmétique`, `conditions`, `boucles`, `listes`, `chaînes`, `grilles`, `fonctions`, `tri`, `dictionnaires`, `simulation`, `mathématiques`, `sommes-préfixes`, `deux-pointeurs`, `fenêtre-glissante`, `dichotomie`, `récursivité`, `backtracking`, `glouton`, `graphes`, `parcours-en-largeur`, `parcours-en-profondeur`, `programmation-dynamique`, `dijkstra`, `union-find`, `fenwick`, `arbre-de-segments`, `bits`.
 
 ### `gen.py`
 

@@ -37,7 +37,7 @@ Deux cas se présentent :
 - le reste devient 0 : la division s'arrête, le développement est fini ;
 - un reste déjà rencontré revient : à partir de là, les mêmes calculs se refont dans le même ordre, et les mêmes chiffres se répètent pour toujours.
 
-Comme il n'existe que `D` restes possibles, l'un des deux cas arrive en au plus `D` étapes. Pour détecter le retour d'un reste, on garde un dictionnaire `position` qui associe à chaque reste la position (dans la liste des chiffres) du chiffre qu'il produit. Quand le reste courant est déjà une clé, `position[reste]` est l'endroit où commence le bloc : les chiffres avant lui ne se répètent pas, ceux à partir de lui forment le bloc.
+Comme il n'existe que `D` restes possibles, l'un des deux cas arrive en au plus `D` étapes. Pour détecter le retour d'un reste, on garde un dictionnaire `position` qui associe à chaque reste la position (dans la chaîne des chiffres déjà écrits) du chiffre qu'il produit. Quand le reste courant est déjà une clé, `position[reste]` est l'endroit où commence le bloc : les chiffres avant lui (`chiffres[:debut]`) ne se répètent pas, ceux à partir de lui (`chiffres[debut:]`) forment le bloc.
 
 Ce bloc est bien le plus court et commence le plus tôt possible : le reste détermine entièrement la suite des chiffres, et deux restes différents donnent des suites différentes, donc la répétition commence exactement au premier reste qui revient.
 

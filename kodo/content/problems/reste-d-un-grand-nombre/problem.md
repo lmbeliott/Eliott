@@ -8,7 +8,7 @@ samples: 2
 ---
 
 ## Énoncé
-Afficher le reste de la division d'un très grand entier `N` par un entier `M`. `N` peut avoir jusqu'à 100 000 chiffres.
+Afficher le reste de la division d'un très grand entier positif ou nul `N` par un entier `M`. `N` peut avoir jusqu'à 100 000 chiffres : c'est trop pour un `long long` en C++, et trop aussi pour `int()` en Python, qui refuse les chaînes de plus de 4 300 chiffres (`ValueError`).
 
 ## Entrée
 La première ligne contient `N`, écrit sans zéro inutile au début. La deuxième ligne contient `M`.

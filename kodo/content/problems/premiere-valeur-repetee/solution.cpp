@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unordered_set>
+#include <vector>
 using namespace std;
 
 int main() {
@@ -7,16 +8,21 @@ int main() {
     cin.tie(nullptr);
     int n;
     cin >> n;
-    unordered_set<int> vues;
+    vector<int> valeurs(n);
     for (int i = 0; i < n; i++) {
-        int v;
-        cin >> v;
-        if (vues.count(v) > 0) {
-            cout << v << " " << i + 1 << "\n";   // position comptée à partir de 1
-            return 0;
-        }
-        vues.insert(v);
+        cin >> valeurs[i];
     }
-    cout << "AUCUNE\n";
+    unordered_set<int> vues;
+    int i = 0;
+    // on avance tant que la valeur lue n'a jamais été vue
+    while (i < n && vues.count(valeurs[i]) == 0) {
+        vues.insert(valeurs[i]);
+        i = i + 1;
+    }
+    if (i < n) {
+        cout << valeurs[i] << " " << i + 1 << "\n";   // position comptée à partir de 1
+    } else {
+        cout << "AUCUNE\n";
+    }
     return 0;
 }

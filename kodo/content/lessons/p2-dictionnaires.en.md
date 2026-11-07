@@ -93,7 +93,7 @@ int main() {
 
 Python prints `KeyError: 'kiwi'`: the key `'kiwi'` does not exist. C++ behaves differently, and it is a trap: `stock["kiwi"]` raises no error, but silently **creates** the key `kiwi` with the value 0. The program prints `0`, then `2`, because the dictionary now contains two keys.
 
-Before reading a key you are not sure about, you therefore test whether it is present. In Python, the operator `in` answers the question "is this key in the dictionary?". In C++, `d.count(key)` is 1 if the key is present and 0 otherwise, without creating anything.
+Before reading a key you are not sure about, you therefore test whether it is present. In Python, the operator `in` answers the question "is this key in the dictionary?", and `not in` the opposite question. In C++, `d.count(key)` is 1 if the key is present and 0 otherwise, without creating anything.
 
 Python also offers a very handy shortcut: `d.get(key, default)` returns the value of the key if it exists, and the **default value** otherwise. C++ has no direct equivalent; you write the test by hand.
 
@@ -205,7 +205,7 @@ int main() {
 The **traversal order** needs care, because it depends on the language and on the structure:
 
 - a Python dictionary is traversed in the **insertion order** of the keys: here `lea`, `tom`, `ali`. The program prints the three names, then `lea 14` and `ali 17`, then `17`;
-- a C++ `map` is traversed in **increasing order of the keys**: here `ali`, `lea`, `tom`. The syntax `auto [name, grade]` (C++17) gives a name to the key and to the value of each pair;
+- a C++ `map` is traversed in **increasing order of the keys**: here `ali`, `lea`, `tom`. The syntax `auto [name, grade]` (C++17) gives a name to the key and to the value of each pair, and `auto` lets the compiler find their types;
 - C++ also offers `unordered_map` (with `#include <unordered_map>`), which is used exactly like `map` and is usually faster, but whose traversal order is arbitrary.
 
 When a problem imposes an output order, don't rely on the order of the dictionary: go through another sequence in the desired order instead, for example the list of data read, or the letters from `a` to `z`. To print the keys in increasing order, Python also provides `sorted(d)`, which returns the sorted list of the keys. Here you use it as a ready-made tool; how to sort a list will be studied in level 3.
@@ -246,7 +246,9 @@ int main() {
 }
 ```
 
-The program prints `wall empty`: cell `(3, 2)` is not cell `(2, 3)`. In C++, the pair is written with the type `pair<int, int>` and the values between curly braces. Careful: `unordered_map` and `unordered_set` don't directly accept `pair`s as keys; use `map` and `set`.
+The program prints `wall empty`: cell `(3, 2)` is not cell `(2, 3)`. In C++, the pair is written with the type `pair<int, int>` and the values between curly braces.
+
+A tuple can be unpacked as in a multiple assignment: if `p = (2, 3)`, then `x, y = p` stores 2 in `x` and 3 in `y`. A list of pairs is therefore traversed with `for x, y in points:`. You can also read `p[0]` and `p[1]`, as in a list. In C++, the two values of a `pair` `p` are called `p.first` and `p.second`, and you add a pair to a `vector<pair<int, int>>` with `points.push_back({x, y})`. Careful: `unordered_map` and `unordered_set` don't directly accept `pair`s as keys; use `map` and `set`.
 
 On the other hand, a **list** cannot be a key in Python. Writing `d[[2, 3]] = 1` stops the program with `TypeError: unhashable type: 'list'`. The reason: a list can be modified afterwards, and its place in the dictionary would become wrong. A tuple cannot be modified. So convert the list into a tuple, or use a tuple directly.
 
@@ -254,7 +256,7 @@ On the other hand, a **list** cannot be a key in Python. Writing `d[[2, 3]] = 1`
 
 A **set** is a collection of elements **without duplicates** and **without order**. You can see it as a dictionary that only has keys. It is used to remember elements already seen and to test their presence very fast.
 
-In Python, `set()` creates an empty set, `add` adds an element, `in` tests presence and `len` gives the number of elements. `set(list)` builds the set of the elements of a list, which removes duplicates. In C++, use `set` (with `#include <set>`): `insert` adds, `count` tests, `size` counts.
+In Python, `set()` creates an empty set, `add` adds an element, `in` tests presence and `len` gives the number of elements. `set(list)` builds the set of the elements of a list (or of the characters of a string), which removes duplicates. In C++, use `set` (with `#include <set>`): `insert` adds, `count` tests, `size` counts.
 
 ```python
 seen = set()
@@ -328,9 +330,11 @@ As with dictionaries, C++ offers `unordered_set`, faster and without order, whil
 
 ## Why a set is faster than a list
 
+The operator `in` also works on a list: `8 in [4, 8, 1]` is `True`, and `x not in t` is `True` when `x` appears nowhere in the list `t`. On a string, `c in s` tests whether the character `c` appears in `s`. C++ has no equivalent for a `vector`: you write a loop that compares each element, with a boolean. This test has a hidden cost.
+
 A test `x in list` compares `x` with the elements of the list one by one, from the start. If `x` is missing, it makes as many comparisons as there are elements. A test `x in set` goes through nothing: from the value of `x`, Python directly computes the place in its memory where `x` would be stored, and looks whether it is there. This computation is called **hashing**, and the structure that uses it a **hash table**. Dictionaries work the same way for their keys. The result: a membership test on a set takes almost the same time whether the set contains ten elements or a million.
 
-The difference becomes huge when there are many tests. To know whether 100,000 values are all different, you store each value after checking that it is not stored already. With a list, the last check compares with 99,999 elements, the one before with 99,998, and so on: in total, about 100,000 × 100,000 / 2, that is 5 billion comparisons, several minutes of computation. With a set, it takes 100,000 fast tests: a fraction of a second.
+The difference becomes huge when there are many tests. To know whether 100,000 values are all different, you store each value after checking that it is not stored already. With a list, the last check compares with 99,999 elements, the one before with 99,998, and so on: in total, about 100,000 × 100,000 / 2, that is 5 billion comparisons, which takes several tens of seconds in Python. With a set, it takes 100,000 fast tests: a fraction of a second.
 
 In C++, `unordered_set` and `unordered_map` are hash tables. `set` and `map` use another organisation, which keeps the elements sorted: each test there takes a few dozen comparisons, which is still very fast. Choose `set` or `map` when increasing order is useful, or when the keys are `pair`s.
 
@@ -376,7 +380,7 @@ The program is correct, but far too slow: an `in` test on a list, repeated at ea
 
 **Statement.** Read `N` distinct words, one per line. Two words are **mirrors** if one is the other written backwards, like `star` and `rats`. Print the number of pairs of mirror words. A palindrome like `level` does not form a pair with itself.
 
-**Idea.** Trying all pairs of words would take N² / 2 comparisons. Instead, read the words one by one, storing those already read in a set. When you read a word `w`, it forms a pair with a word already read exactly when its reverse is in the set. In Python, `w[::-1]` gives the string `w` backwards; in C++, you build it by going through `w` from the last letter to the first. Each pair is thus counted only once, when its second word is read. For a palindrome, the reverse is the word itself: since you test **before** adding `w`, and the words are distinct, it is never counted.
+**Idea.** Trying all pairs of words would take N² / 2 comparisons. Instead, read the words one by one, storing those already read in a set. When you read a word `w`, it forms a pair with a word already read exactly when its reverse is in the set. In Python, the slice `w[::-1]` gives the string `w` backwards: it is a slice `w[a:b]` as in the chapter on strings, but without bounds and with a **step** of -1, which goes through the string from the end to the start. In C++, you build it by going through `w` from the last letter to the first. Each pair is thus counted only once, when its second word is read. For a palindrome, the reverse is the word itself: since you test **before** adding `w`, and the words are distinct, it is never counted.
 
 **Program.**
 
@@ -439,5 +443,5 @@ The program prints `2`. The palindromes `level` and `noon` are not counted, beca
 - Reading a missing key raises `KeyError` in Python and creates the key in C++: test with `in` (Python) or `count` (C++), or use `d.get(key, default)`.
 - To count occurrences: `count[x] = count.get(x, 0) + 1` in Python, `count[x]++` in C++.
 - A set keeps elements without duplicates and without order: `add`, `in`, `len`, and `|`, `&`, `-` for union, intersection and difference. In C++: `set` or `unordered_set`.
-- Membership tests on a set or a dictionary are almost instant, while `x in list` goes through the whole list: on large inputs, that is the difference between a fraction of a second and several minutes.
+- Membership tests on a set or a dictionary are almost instant, while `x in list` goes through the whole list: on large inputs, that is the difference between a fraction of a second and several tens of seconds.
 - Don't modify the keys of a dictionary while going through it, and don't rely on the order of a set or of an `unordered_map` for output.

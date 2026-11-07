@@ -35,4 +35,6 @@ Then go through the positions `i` keeping **two dictionaries**:
 
 For the letter `c` and the word `m` at position `i`, if `c` is already associated with a word other than `m`, or if `m` is already associated with a letter other than `c`, the sentence doesn't follow the pattern. Otherwise, record both associations and continue. If the loop ends without a contradiction, the associations form a correspondence between letters and words that respects both rules.
 
-The trap is to use only the first dictionary: it guarantees that a letter has a single word, but not that two letters have different words. The function lets you return `False` at the first contradiction, without a flag or `break`.
+The trap is to use only the first dictionary: it guarantees that a letter has a single word, but not that two letters have different words. The function lets you return `False` at the first contradiction, without a flag.
+
+In C++, the number of words is not known in advance: read the whole sentence with `getline`, then split it into words by going through its characters, each space ending the current word.

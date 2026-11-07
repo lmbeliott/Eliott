@@ -102,7 +102,36 @@ int main() {
 
 Le programme affiche `rdr radar`. La ligne `envers = c + envers` place chaque nouveau caractère **devant** ceux déjà rangés : le mot est donc construit à l'envers. Ici, « radar » se lit pareil dans les deux sens : c'est un **palindrome**.
 
-Python permet aussi d'extraire un morceau de chaîne, une **tranche** : `s[a:b]` contient les caractères d'indices `a` à `b − 1`. `"bonjour"[0:3]` vaut `"bon"`, `"bonjour"[3:]` vaut `"jour"` (jusqu'à la fin), et `"bonjour"[:3]` vaut `"bon"` (depuis le début). En C++, on écrit `s.substr(debut, longueur)` : `s.substr(3, 4)` vaut `"jour"`.
+## Extraire un morceau : les tranches
+
+On a souvent besoin d'un morceau d'une chaîne : la fin d'un mot, ses trois premières lettres, un nombre sans son signe. En Python, ce morceau s'appelle une **tranche** : `s[a:b]` est la nouvelle chaîne formée des caractères d'indices `a` à `b − 1`. Comme pour `range`, le premier indice est inclus et le second exclu, donc la tranche contient `b − a` caractères. Si on omet `a`, la tranche part du début ; si on omet `b`, elle va jusqu'à la fin.
+
+En C++, on écrit `s.substr(debut, longueur)`. Attention, le second nombre est une **longueur**, et non un indice de fin : `s[a:b]` s'écrit `s.substr(a, b - a)`. Avec un seul nombre, `s.substr(debut)` va jusqu'à la fin.
+
+```python
+s = "bonjour"
+print(s[0:3], s[3:7], s[3:], s[:3])
+print(s[1:4], len(s[1:4]))
+print(s[5:100], s[3:] + s[:3])
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s = "bonjour";
+    cout << s.substr(0, 3) << " " << s.substr(3, 4) << " " << s.substr(3) << " " << s.substr(0, 3) << "\n";
+    cout << s.substr(1, 3) << " " << s.substr(1, 3).size() << "\n";
+    cout << s.substr(5, 100) << " " << s.substr(3) + s.substr(0, 3) << "\n";
+    return 0;
+}
+```
+
+Les deux programmes affichent `bon jour jour bon`, puis `onj 3`, puis `ur jourbon`. Dans le détail : `s[1:4]` prend les indices 1, 2 et 3, soit `onj`, de longueur 4 − 1 = 3. Une tranche qui dépasse la fin s'arrête simplement à la fin, sans erreur : `s[5:100]` vaut `ur`, et `s[4:2]` est la chaîne vide. Enfin, `s[3:] + s[:3]` recolle la fin et le début : on obtient `jourbon`, le mot « tourné » de 3 lettres.
+
+En C++, `substr` tolère aussi une longueur trop grande, mais pas un début au-delà de la fin : `s.substr(8)` sur une chaîne de 7 caractères arrête le programme avec `terminate called after throwing an instance of 'std::out_of_range'`. Un début égal à la longueur est permis et donne la chaîne vide. Une tranche est une **copie** : la construire coûte autant d'opérations qu'elle a de caractères. Sur les tableaux de Python, les tranches marchent de la même façon : `t[1:]` est la liste sans son premier élément.
 
 ## Comparer des chaînes
 
@@ -163,6 +192,45 @@ Le programme affiche `100 3`, puis `e`, puis `7`. Trois calculs reviennent sans 
 
 Pour tester qu'un caractère est une lettre minuscule, on vérifie que `"a" <= c <= "z"` (en C++, `c >= 'a' && c <= 'z'`), ce qui marche justement parce que les codes sont consécutifs.
 
+## Des nombres trop grands : travailler chiffre par chiffre
+
+Un nombre lu comme une chaîne peut être traité chiffre par chiffre, avec `ord(c) - ord("0")`. Pour retrouver sa valeur, on lit les chiffres de gauche à droite : ajouter un chiffre `d` à droite d'un nombre `x` donne `10 × x + d`.
+
+```python
+s = input()
+valeur = 0
+somme = 0
+for c in s:
+    d = ord(c) - ord("0")       # valeur du chiffre
+    valeur = 10 * valeur + d    # on ajoute d à droite de valeur
+    somme = somme + d
+print(valeur, somme)
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s;
+    cin >> s;
+    long long valeur = 0;
+    int somme = 0;
+    for (char c : s) {
+        int d = c - '0';            // valeur du chiffre
+        valeur = 10 * valeur + d;   // on ajoute d à droite de valeur
+        somme = somme + d;
+    }
+    cout << valeur << " " << somme << "\n";
+    return 0;
+}
+```
+
+Avec l'entrée `2026`, le programme affiche `2026 10` : `valeur` passe par 0, 2, 20, 202 puis 2026, et `somme` est la somme des chiffres.
+
+Pourquoi ne pas simplement écrire `int(s)` ? Pour un nombre de taille raisonnable, c'est la bonne méthode. Mais certains exercices donnent des nombres de plusieurs milliers de chiffres. En C++, aucun type entier ne peut les contenir : un `long long` s'arrête vers 9,2 × 10¹⁸, soit 19 chiffres. En Python, les entiers n'ont pas de limite, mais `int()` refuse, par sécurité, de convertir une chaîne de plus de 4 300 chiffres : `ValueError: Exceeds the limit (4300 digits) for integer string conversion`. Il faut alors raisonner directement sur les chiffres. Par exemple, un nombre est divisible par 3 exactement quand la somme de ses chiffres l'est : la question de l'introduction se règle sans jamais calculer le nombre lui-même.
+
 ## Majuscules, minuscules et autres outils
 
 Python fournit des **méthodes**, c'est-à-dire des opérations qu'on écrit après la chaîne et un point. `s.upper()` donne une copie de `s` en majuscules, `s.lower()` en minuscules ; les caractères qui ne sont pas des lettres ne changent pas. `c.isdigit()` dit si `c` est un chiffre, `c.isalpha()` si c'est une lettre. Enfin, `s.count("e")` compte les apparitions de `"e"` dans `s` : c'est le programme écrit plus haut, en une ligne.
@@ -171,7 +239,7 @@ En C++, les fonctions `toupper(c)`, `tolower(c)`, `isdigit(c)` et `isalpha(c)`, 
 
 ## Découper et recoller : split et join
 
-On connaît déjà `split()`, qui découpe une ligne en mots. Le résultat est une **liste de chaînes**, qu'on peut ranger dans une variable et parcourir. Avec un argument, `split` coupe à un autre séparateur : `"12:30:05".split(":")` donne `["12", "30", "05"]`.
+On connaît déjà `split()`, qui découpe une ligne en mots. Le résultat est une **liste de chaînes**, qu'on peut ranger dans une variable, indexer et parcourir comme tout tableau. En C++, un tableau de chaînes s'écrit `vector<string>`. Avec un argument, `split` coupe à un autre séparateur : `"12:30:05".split(":")` donne `["12", "30", "05"]`.
 
 L'opération inverse est `join`. On l'écrit après la chaîne qui sert de **séparateur** : `", ".join(mots)` colle les chaînes de la liste `mots` en les séparant par une virgule et une espace. Les éléments doivent être des chaînes ; pour des nombres, on les convertit d'abord avec `str`, qui fait l'inverse de `int` : `str(42)` vaut `"42"`.
 
@@ -283,4 +351,5 @@ int main() {
 - En Python, une chaîne est immuable : on en construit une nouvelle avec `+`, à partir de `""`. En C++, une `string` se modifie, et `+=` ajoute à la fin. Un `char` s'écrit entre apostrophes.
 - Les chaînes se comparent dans l'ordre lexicographique, qui suit les codes des caractères : majuscules avant minuscules, et `"10" < "9"`.
 - `ord` et `chr` passent d'un caractère à son code : `ord(c) - ord("a")` donne le rang d'une lettre, `ord(c) - ord("0")` la valeur d'un chiffre. En C++, on calcule directement sur les `char`.
+- Une tranche `s[a:b]` (en C++, `s.substr(a, b - a)`) copie les caractères d'indices `a` à `b − 1`. Un nombre trop grand pour `int()` (plus de 4 300 chiffres) ou pour un `long long` se traite chiffre par chiffre : `x` devient `10 × x + d`.
 - `upper`, `lower`, `split` et `join` (en C++ : `toupper`, `tolower`, lecture mot à mot et `+=`) transforment, découpent et recollent les chaînes ; `str` et `int` convertissent entre nombres et chaînes.

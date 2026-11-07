@@ -40,4 +40,6 @@ Ensuite, on parcourt les positions `i` en tenant **deux dictionnaires** :
 
 Pour la lettre `c` et le mot `m` en position `i`, si `c` est déjà associée à un autre mot que `m`, ou si `m` est déjà associé à une autre lettre que `c`, la phrase ne suit pas le motif. Sinon, on enregistre les deux associations et on continue. Si la boucle se termine sans contradiction, les associations forment une correspondance entre lettres et mots qui respecte les deux règles.
 
-Le piège est de n'utiliser que le premier dictionnaire : il garantit qu'une lettre a un seul mot, mais pas que deux lettres ont des mots différents. La fonction permet de renvoyer `False` dès la première contradiction, sans drapeau ni `break`.
+Le piège est de n'utiliser que le premier dictionnaire : il garantit qu'une lettre a un seul mot, mais pas que deux lettres ont des mots différents. La fonction permet de renvoyer `False` dès la première contradiction, sans drapeau.
+
+En C++, on ne connaît pas à l'avance le nombre de mots : on lit la phrase entière avec `getline`, puis on la découpe en mots en parcourant ses caractères, chaque espace terminant le mot en cours.

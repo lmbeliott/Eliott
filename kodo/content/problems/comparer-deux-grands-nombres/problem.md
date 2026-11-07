@@ -2,13 +2,15 @@
 id: comparer-deux-grands-nombres
 title: Comparer deux grands nombres
 chapter: p2-chaines
-order: 6
+order: 7
 tags: [chaînes, conditions]
 samples: 2
 ---
 
 ## Énoncé
 Comparer deux entiers `A` et `B` qui peuvent avoir jusqu'à 10 000 chiffres, et être négatifs. Afficher `<` si `A` est plus petit que `B`, `>` s'il est plus grand, et `=` s'ils sont égaux.
+
+Ces nombres ne tiennent pas dans un `long long` en C++, et en Python, `int()` refuse de convertir une chaîne de plus de 4 300 chiffres (`ValueError`) : il faut les comparer sous forme de chaînes.
 
 ## Entrée
 La première ligne contient `A`, la deuxième `B`. Un nombre négatif commence par le signe `-`. Aucun nombre n'a de zéro inutile au début, et zéro s'écrit toujours `0`, sans signe.

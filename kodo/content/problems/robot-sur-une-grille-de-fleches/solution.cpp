@@ -35,27 +35,23 @@ int main() {
     map<pair<int, int>, long long> instant; // case -> premier instant où le robot y est passé
     chemin.push_back({0, 0});
     instant[{0, 0}] = 0;
-    bool boucle = false;
-    pair<int, int> retour;
-    while ((long long)chemin.size() <= k) {
-        pair<int, int> p = chemin.back();
-        pair<int, int> suivante = case_suivante(grille, p.first, p.second);
-        if (instant.count(suivante) > 0) {
-            boucle = true;                  // le robot repasse par une case connue
-            retour = suivante;
-            break;
-        }
+    pair<int, int> suivante = case_suivante(grille, 0, 0);
+    // on avance tant que l'instant K n'est pas atteint et que la case suivante est nouvelle
+    while ((long long)chemin.size() <= k && instant.count(suivante) == 0) {
         instant[suivante] = chemin.size();
         chemin.push_back(suivante);
+        suivante = case_suivante(grille, suivante.first, suivante.second);
     }
 
     pair<int, int> fin;
     long long distinctes;
-    if (!boucle) {
+    if ((long long)chemin.size() > k) {
+        // K déplacements simulés sans jamais repasser par une case
         fin = chemin[k];
         distinctes = k + 1;
     } else {
-        long long debut = instant[retour];              // premier instant du cycle
+        // la case suivante est déjà connue : le robot tourne en rond
+        long long debut = instant[suivante];            // premier instant du cycle
         long long longueur = chemin.size() - debut;     // nombre de cases du cycle
         fin = chemin[debut + (k - debut) % longueur];
         distinctes = chemin.size();

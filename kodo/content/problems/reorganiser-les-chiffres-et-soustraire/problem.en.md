@@ -17,7 +17,7 @@ A single integer: the number of different values of the sequence.
 
 ## Constraints
 - 1 ≤ D ≤ 10
-- 0 ≤ X < 10^D (in C++, use `long long`)
+- 0 ≤ X < 10ᴰ (in C++, use `long long`)
 
 ## Hints
 1. To get the `D` digits of `x`, leading zeros included, do `x % 10` then `x // 10` exactly `D` times.
@@ -29,6 +29,6 @@ Write a function `etape(x, d)` ("step"). It extracts the `d` digits of `x` with 
 
 The main loop keeps a **set** `vus` of the values already obtained. As long as `x` is not in `vus`, add it and apply the step. When `x` is already in the set, the sequence will now go round in circles, and the size of the set is the answer.
 
-Why does the sequence end up repeating? All its values are numbers from `0` to `10^D - 1`: there are only finitely many. In practice, the repetition comes very fast: a few dozen steps at most for numbers of this size. For `D = 4`, you always end up on `6174` or on `0`, and for `D = 3`, on `495` or `0`.
+Why does the sequence end up repeating? All its values are numbers from 0 to 10ᴰ − 1: there are only finitely many. In practice, the repetition comes very fast: a few dozen steps at most for numbers of this size. For `D = 4`, you always end up on `6174` or on `0`, and for `D = 3`, on `495` or `0`.
 
 The trap is to forget leading zeros: reading the digits with `while x > 0`, the number `0378` would only have three digits, and the next step would give `873 - 378` instead of `8730 - 0378`.

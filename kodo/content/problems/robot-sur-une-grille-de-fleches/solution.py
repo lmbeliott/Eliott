@@ -20,22 +20,21 @@ for i in range(r):
 
 chemin = [(0, 0)]          # chemin[t] = position après t déplacements
 instant = {(0, 0): 0}      # case -> premier instant où le robot y est passé
-retour = None
-while len(chemin) <= k:
-    i, j = chemin[-1]
-    suivante = case_suivante(grille, i, j)
-    if suivante in instant:
-        retour = suivante  # le robot repasse par une case connue : il tourne en rond
-        break
+suivante = case_suivante(grille, 0, 0)
+# on avance tant que l'instant K n'est pas atteint et que la case suivante est nouvelle
+while len(chemin) <= k and suivante not in instant:
     instant[suivante] = len(chemin)
     chemin.append(suivante)
+    i, j = suivante
+    suivante = case_suivante(grille, i, j)
 
-if retour is None:
+if len(chemin) > k:
     # K déplacements simulés sans jamais repasser par une case
     fin = chemin[k]
     distinctes = k + 1
 else:
-    debut = instant[retour]           # premier instant du cycle
+    # la case suivante est déjà connue : le robot tourne en rond
+    debut = instant[suivante]         # premier instant du cycle
     longueur = len(chemin) - debut    # nombre de cases du cycle
     fin = chemin[debut + (k - debut) % longueur]
     distinctes = len(chemin)

@@ -18,4 +18,4 @@ for c in texte[1:]:
 codes.append(code[mot])
 
 print(len(codes))
-print(" ".join(map(str, codes)))
+print(*codes)

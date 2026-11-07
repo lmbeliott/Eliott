@@ -22,7 +22,7 @@ Un seul entier : le nombre de valeurs différentes de la suite.
 
 ## Contraintes
 - 1 ≤ D ≤ 10
-- 0 ≤ X < 10^D (en C++, utiliser des `long long`)
+- 0 ≤ X < 10ᴰ (en C++, utiliser des `long long`)
 
 ## Indices
 1. Pour obtenir les `D` chiffres de `x`, zéros de tête compris, faire exactement `D` fois `x % 10` puis `x // 10`.
@@ -34,6 +34,6 @@ On écrit une fonction `etape(x, d)`. Elle extrait les `d` chiffres de `x` avec 
 
 La boucle principale garde un **ensemble** `vus` des valeurs déjà obtenues. Tant que `x` n'est pas dans `vus`, on l'ajoute et on applique l'étape. Quand `x` est déjà dans l'ensemble, la suite va désormais tourner en rond, et la taille de l'ensemble est la réponse.
 
-Pourquoi la suite finit-elle par se répéter ? Toutes ses valeurs sont des nombres de `0` à `10^D - 1` : il n'y en a qu'un nombre fini. En pratique, la répétition arrive très vite : quelques dizaines d'étapes au plus pour les nombres de cette taille. Pour `D = 4`, on retombe toujours sur `6174` ou sur `0`, et pour `D = 3`, sur `495` ou `0`.
+Pourquoi la suite finit-elle par se répéter ? Toutes ses valeurs sont des nombres de 0 à 10ᴰ − 1 : il n'y en a qu'un nombre fini. En pratique, la répétition arrive très vite : quelques dizaines d'étapes au plus pour les nombres de cette taille. Pour `D = 4`, on retombe toujours sur `6174` ou sur `0`, et pour `D = 3`, sur `495` ou `0`.
 
 Le piège est d'oublier les zéros de tête : en lisant les chiffres avec `while x > 0`, le nombre `0378` n'aurait que trois chiffres, et l'étape suivante donnerait `873 - 378` au lieu de `8730 - 0378`.

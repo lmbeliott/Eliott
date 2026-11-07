@@ -4,8 +4,8 @@
 #include <unordered_set>
 using namespace std;
 
-int DI[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-int DJ[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+vector<int> DI = {-1, -1, -1, 0, 0, 1, 1, 1};   // les 8 directions
+vector<int> DJ = {-1, 0, 1, -1, 1, -1, 0, 1};
 
 void ajouter_lectures(const vector<string>& grille, int i, int j, int di, int dj,
                       unordered_set<string>& lisibles) {

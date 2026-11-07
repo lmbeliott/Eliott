@@ -93,7 +93,7 @@ int main() {
 
 Python affiche `KeyError: 'kiwi'` : la clé `'kiwi'` n'existe pas. Le C++ se comporte autrement, et c'est un piège : `stock["kiwi"]` ne provoque aucune erreur, mais **crée** silencieusement la clé `kiwi` avec la valeur 0. Le programme affiche `0`, puis `2`, car le dictionnaire contient maintenant deux clés.
 
-Avant de lire une clé dont on n'est pas sûr, on teste donc sa présence. En Python, l'opérateur `in` répond à la question « cette clé est-elle dans le dictionnaire ? ». En C++, `d.count(cle)` vaut 1 si la clé est présente et 0 sinon, sans rien créer.
+Avant de lire une clé dont on n'est pas sûr, on teste donc sa présence. En Python, l'opérateur `in` répond à la question « cette clé est-elle dans le dictionnaire ? », et `not in` à la question contraire. En C++, `d.count(cle)` vaut 1 si la clé est présente et 0 sinon, sans rien créer.
 
 Python offre aussi un raccourci très utile : `d.get(cle, defaut)` renvoie la valeur de la clé si elle existe, et la **valeur par défaut** sinon. Le C++ n'a pas d'équivalent direct ; on écrit le test à la main.
 
@@ -205,7 +205,7 @@ int main() {
 La question de l'**ordre de parcours** demande de l'attention, car il dépend du langage et de la structure :
 
 - un dictionnaire Python est parcouru dans l'**ordre d'insertion** des clés : ici `lea`, `tom`, `ali`. Le programme affiche les trois noms, puis `lea 14` et `ali 17`, puis `17` ;
-- un `map` du C++ est parcouru dans l'**ordre croissant des clés** : ici `ali`, `lea`, `tom`. La syntaxe `auto [nom, note]` (C++17) donne un nom à la clé et à la valeur de chaque paire ;
+- un `map` du C++ est parcouru dans l'**ordre croissant des clés** : ici `ali`, `lea`, `tom`. La syntaxe `auto [nom, note]` (C++17) donne un nom à la clé et à la valeur de chaque paire, et `auto` laisse le compilateur trouver leurs types ;
 - le C++ propose aussi `unordered_map` (avec `#include <unordered_map>`), qui s'utilise exactement comme `map` et qui est en général plus rapide, mais dont l'ordre de parcours est quelconque.
 
 Quand un problème impose un ordre d'affichage, on ne compte donc pas sur l'ordre du dictionnaire : on parcourt plutôt une autre séquence dans l'ordre voulu, par exemple la liste des données lues, ou les lettres de `a` à `z`. Pour afficher les clés dans l'ordre croissant, Python fournit aussi `sorted(d)`, qui renvoie la liste triée des clés. On s'en sert ici comme d'un outil tout prêt ; la façon dont on trie une liste sera étudiée au niveau 3.
@@ -246,7 +246,9 @@ int main() {
 }
 ```
 
-Le programme affiche `mur vide` : la case `(3, 2)` n'est pas la case `(2, 3)`. En C++, le couple s'écrit avec le type `pair<int, int>` et les valeurs entre accolades. Attention : `unordered_map` et `unordered_set` n'acceptent pas directement des `pair` comme clés ; on utilise `map` et `set`.
+Le programme affiche `mur vide` : la case `(3, 2)` n'est pas la case `(2, 3)`. En C++, le couple s'écrit avec le type `pair<int, int>` et les valeurs entre accolades.
+
+Un tuple se défait comme dans une affectation multiple : si `p = (2, 3)`, alors `x, y = p` range 2 dans `x` et 3 dans `y`. Une liste de couples se parcourt donc avec `for x, y in points:`. On peut aussi lire `p[0]` et `p[1]`, comme dans une liste. En C++, les deux valeurs d'une `pair` `p` s'appellent `p.first` et `p.second`, et on ajoute un couple à un `vector<pair<int, int>>` avec `points.push_back({x, y})`. Attention : `unordered_map` et `unordered_set` n'acceptent pas directement des `pair` comme clés ; on utilise `map` et `set`.
 
 En revanche, une **liste** ne peut pas servir de clé en Python. Écrire `d[[2, 3]] = 1` arrête le programme avec `TypeError: unhashable type: 'list'`. La raison : une liste peut être modifiée après coup, et sa place dans le dictionnaire deviendrait fausse. Un tuple, lui, ne peut pas être modifié. On convertit donc la liste en tuple, ou on utilise directement un tuple.
 
@@ -254,7 +256,7 @@ En revanche, une **liste** ne peut pas servir de clé en Python. Écrire `d[[2, 
 
 Un **ensemble** est une collection d'éléments **sans doublons** et **sans ordre**. On peut le voir comme un dictionnaire qui n'aurait que des clés. Il sert à se souvenir d'éléments déjà vus et à tester très vite leur présence.
 
-En Python, `set()` crée un ensemble vide, `add` ajoute un élément, `in` teste la présence et `len` donne le nombre d'éléments. `set(liste)` construit l'ensemble des éléments d'une liste, ce qui supprime les doublons. En C++, on utilise `set` (avec `#include <set>`) : `insert` ajoute, `count` teste, `size` compte.
+En Python, `set()` crée un ensemble vide, `add` ajoute un élément, `in` teste la présence et `len` donne le nombre d'éléments. `set(liste)` construit l'ensemble des éléments d'une liste (ou des caractères d'une chaîne), ce qui supprime les doublons. En C++, on utilise `set` (avec `#include <set>`) : `insert` ajoute, `count` teste, `size` compte.
 
 ```python
 vus = set()
@@ -328,9 +330,11 @@ Comme pour les dictionnaires, le C++ propose `unordered_set`, plus rapide et san
 
 ## Pourquoi un ensemble est plus rapide qu'une liste
 
+L'opérateur `in` fonctionne aussi sur une liste : `8 in [4, 8, 1]` vaut `True`, et `x not in t` vaut `True` quand `x` n'apparaît nulle part dans la liste `t`. Sur une chaîne, `c in s` teste si le caractère `c` apparaît dans `s`. Le C++ n'a pas d'équivalent pour un `vector` : on écrit une boucle qui compare chaque élément, avec un booléen. Ce test a un coût caché.
+
 Un test `x in liste` compare `x` aux éléments de la liste un par un, depuis le début. Si `x` est absent, il fait autant de comparaisons qu'il y a d'éléments. Un test `x in ensemble` ne parcourt rien : à partir de la valeur de `x`, Python calcule directement l'endroit de sa mémoire où `x` serait rangé, et regarde s'il y est. Ce calcul s'appelle le **hachage**, et la structure qui l'utilise une **table de hachage**. Les dictionnaires fonctionnent de la même façon pour leurs clés. Le résultat : un test d'appartenance à un ensemble prend presque le même temps, que l'ensemble contienne dix éléments ou un million.
 
-La différence devient énorme quand les tests sont nombreux. Pour savoir si 100 000 valeurs sont toutes différentes, on range chaque valeur après avoir vérifié qu'elle n'est pas déjà rangée. Avec une liste, la dernière vérification compare à 99 999 éléments, l'avant-dernière à 99 998, et ainsi de suite : en tout, environ 100 000 × 100 000 / 2, soit 5 milliards de comparaisons, plusieurs minutes de calcul. Avec un ensemble, il faut 100 000 tests rapides : une fraction de seconde.
+La différence devient énorme quand les tests sont nombreux. Pour savoir si 100 000 valeurs sont toutes différentes, on range chaque valeur après avoir vérifié qu'elle n'est pas déjà rangée. Avec une liste, la dernière vérification compare à 99 999 éléments, l'avant-dernière à 99 998, et ainsi de suite : en tout, environ 100 000 × 100 000 / 2, soit 5 milliards de comparaisons, ce qui prend plusieurs dizaines de secondes en Python. Avec un ensemble, il faut 100 000 tests rapides : une fraction de seconde.
 
 En C++, `unordered_set` et `unordered_map` sont des tables de hachage. Les `set` et `map` utilisent une autre organisation, qui garde les éléments triés : chaque test y demande quelques dizaines de comparaisons, ce qui reste très rapide. On choisit `set` ou `map` quand l'ordre croissant est utile, ou quand les clés sont des `pair`.
 
@@ -376,7 +380,7 @@ Le programme est juste, mais beaucoup trop lent : un test `in` sur une liste, r�
 
 **Énoncé.** On lit `N` mots distincts, un par ligne. Deux mots sont **miroirs** si l'un s'écrit comme l'autre à l'envers, comme `rac` et `car`. Afficher le nombre de paires de mots miroirs. Un palindrome comme `ici` ne forme pas de paire avec lui-même.
 
-**Idée.** Essayer toutes les paires de mots demanderait N² / 2 comparaisons. À la place, on lit les mots un par un, en rangeant ceux déjà lus dans un ensemble. Quand on lit un mot `m`, il forme une paire avec un mot déjà lu exactement quand son envers est dans l'ensemble. En Python, `m[::-1]` donne la chaîne `m` à l'envers ; en C++, on la construit en parcourant `m` de la dernière lettre à la première. Chaque paire est ainsi comptée une seule fois, au moment où l'on lit son second mot. Pour un palindrome, l'envers est le mot lui-même : comme on teste **avant** d'ajouter `m`, et que les mots sont distincts, il n'est jamais compté.
+**Idée.** Essayer toutes les paires de mots demanderait N² / 2 comparaisons. À la place, on lit les mots un par un, en rangeant ceux déjà lus dans un ensemble. Quand on lit un mot `m`, il forme une paire avec un mot déjà lu exactement quand son envers est dans l'ensemble. En Python, la tranche `m[::-1]` donne la chaîne `m` à l'envers : c'est une tranche `m[a:b]` comme au chapitre sur les chaînes, mais sans bornes et avec un **pas** de -1, qui parcourt la chaîne de la fin vers le début. En C++, on la construit en parcourant `m` de la dernière lettre à la première. Chaque paire est ainsi comptée une seule fois, au moment où l'on lit son second mot. Pour un palindrome, l'envers est le mot lui-même : comme on teste **avant** d'ajouter `m`, et que les mots sont distincts, il n'est jamais compté.
 
 **Programme.**
 
@@ -439,5 +443,5 @@ Le programme affiche `2`. Les palindromes `ici` et `elle` ne sont pas comptés, 
 - Lire une clé absente provoque `KeyError` en Python et crée la clé en C++ : on teste avec `in` (Python) ou `count` (C++), ou on utilise `d.get(cle, defaut)`.
 - Pour compter des occurrences : `compte[x] = compte.get(x, 0) + 1` en Python, `compte[x]++` en C++.
 - Un ensemble garde des éléments sans doublons et sans ordre : `add`, `in`, `len`, et `|`, `&`, `-` pour l'union, l'intersection et la différence. En C++ : `set` ou `unordered_set`.
-- Le test d'appartenance à un ensemble ou à un dictionnaire est presque instantané, alors que `x in liste` parcourt toute la liste : sur de grandes entrées, c'est la différence entre une fraction de seconde et plusieurs minutes.
+- Le test d'appartenance à un ensemble ou à un dictionnaire est presque instantané, alors que `x in liste` parcourt toute la liste : sur de grandes entrées, c'est la différence entre une fraction de seconde et plusieurs dizaines de secondes.
 - On ne modifie pas les clés d'un dictionnaire pendant qu'on le parcourt, et on ne compte pas sur l'ordre d'un ensemble ou d'un `unordered_map` pour l'affichage.

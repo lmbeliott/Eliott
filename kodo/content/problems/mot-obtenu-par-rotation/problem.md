@@ -2,7 +2,7 @@
 id: mot-obtenu-par-rotation
 title: Mot obtenu par rotation
 chapter: p2-chaines
-order: 7
+order: 6
 tags: [chaînes]
 samples: 2
 ---

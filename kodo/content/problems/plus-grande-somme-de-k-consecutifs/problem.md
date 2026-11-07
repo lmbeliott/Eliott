@@ -3,7 +3,7 @@ id: plus-grande-somme-de-k-consecutifs
 title: Plus grande somme de K valeurs consécutives
 chapter: p2-tableaux
 order: 7
-tags: [listes, sommes-préfixes]
+tags: [listes, fenêtre-glissante]
 samples: 2
 ---
 

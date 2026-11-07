@@ -1,6 +1,6 @@
 So far, every computation used integers. Yet many simple questions lead to numbers that do not divide evenly. Seven people share €100: each one gets €14.285714… The average of three marks, 12, 15 and 14, is 13.666… And 250 people boarding 60-seat coaches need 5 coaches, not 4.17.
 
-These three examples need three different treatments. In the first one, you want an amount printed with two decimals. In the second, an approximate value. In the third, an **integer**, obtained by rounding up. This chapter introduces decimal numbers, how to print them and how to round them, but also their weakness: they are **approximate**. You will see that a good program often avoids them and reasons with integers, which are always exact.
+These three examples need three different treatments: an amount printed with two decimals, an approximate value, and an **integer** obtained by rounding up. This chapter introduces decimal numbers, how to print them and how to round them, but also their weakness: they are **approximate**. So a good program often avoids them, reasoning with integers, which are always exact.
 
 ## Decimal numbers
 
@@ -30,11 +30,11 @@ int main() {
 
 The Python program prints `3.5`, `5.0`, `5` and `6.0`. The dot in `5.0` shows that `10 / 2` is a float, whereas `10 // 2` is an integer. As soon as a computation mixes an integer and a float, the result is a float: `1.5 * 4` is `6.0`.
 
-In C++, the type of decimal numbers is called `double`. Be careful: the C++ operator `/` depends on the type of its two operands. If both are integers, it is **integer** division, like Python's `//`. `7 / 2` is `3`, not `3.5`. To get a decimal division, at least one of the two numbers must be a `double`: write `7.0 / 2`, or, with integer variables `a` and `b`, `(double) a / b`. This `(double)` is a **conversion**: it turns the integer value of `a` into a float before the division. Finally, `cout` prints `5` for the float `5.0`: in C++, the output does not show the difference between an integer and a float. Worse, `cout` shows only 6 significant digits of a `double`: `cout << 13.0 / 3` prints `4.33333`, and `cout << 1234567.0` prints `1.23457e+06`. To print a float, you therefore fix the number of decimals with `printf` (see below), or convert it to an integer first.
+In C++, the type of decimal numbers is called `double`. Be careful: the C++ operator `/` depends on the type of its two operands. If both are integers, it is **integer** division, like Python's `//`. `7 / 2` is `3`, not `3.5`. To get a decimal division, at least one of the two numbers must be a `double`: write `7.0 / 2`, or, with integer variables `a` and `b`, `(double) a / b`. This `(double)` is a **conversion**: it turns the integer value of `a` into a float before the division. Finally, `cout` prints `5` for the float `5.0`: in C++, the output does not show the difference between an integer and a float. Worse, `cout` shows only 6 significant digits of a `double`: `cout << 1234567.0` prints `1.23457e+06`. So fix the number of decimals with `printf` (see below), or convert to an integer first.
 
 To read a decimal number, replace `int` with `float` in Python: `x = float(input())`. In C++, just declare the variable as `double` before `cin >> x`.
 
-Two tools often go with floats. The **power** is written `**` in Python: `2 ** 10` is `1024`. Between two integers, with an exponent that is zero or positive, the result is an exact integer, however large: `2 ** 100` is `1267650600228229401496703205376`. With a decimal exponent, the result is a float: `x ** 0.5` gives the **square root** of `x`, and `9 ** 0.5` is `3.0`. In C++, include `<cmath>` and write `pow(2, 10)` and `sqrt(x)`. These two functions always return a `double`, hence an approximate value as soon as the result is large: `(long long) pow(3, 39)` gives 4052555153018976256 instead of 4052555153018976267. For an exact integer power in C++, multiply in a loop, with a `long long`. The **absolute value**, which removes the sign of a number, is `abs(x)` in both languages (in C++, with `<cmath>`): `abs(-3.5)` is `3.5` and `abs(-7)` is `7`.
+Two tools often go with floats. The **power** is written `**` in Python: `2 ** 10` is `1024`. Between two integers, with an exponent that is zero or positive, the result is an exact integer: `2 ** 100` is `1267650600228229401496703205376`. With a decimal exponent, the result is a float: `x ** 0.5` gives the **square root** of `x`. In C++, include `<cmath>` and write `pow(2, 10)` and `sqrt(x)`. These two functions always return a `double`, hence an approximate value as soon as the result is large: `(long long) pow(3, 39)` gives 4052555153018976256 instead of 4052555153018976267. For an exact integer power in C++, multiply in a loop, with a `long long`. The **absolute value**, which removes the sign of a number, is `abs(x)` in both languages (in C++, with `<cmath>`): `abs(-3.5)` is `3.5`.
 
 ## Back to an integer: truncate or round
 
@@ -42,7 +42,7 @@ To turn a float into an integer, there are several ways, which do not give the s
 
 `int(x)` **truncates**: it removes the fractional part, without rounding. `int(3.7)` is `3`, and `int(-3.7)` is `-3`. Truncation always goes towards zero. In C++, the conversion `(int) x` or `(long long) x` does exactly the same.
 
-`round(x)` **rounds** to the nearest integer: `round(3.7)` is `4` and `round(3.2)` is `3`. The case of an **exact half**, such as 2.5, is tricky. Python rounds it to the nearest **even** integer: `round(2.5)` is `2` and `round(3.5)` is `4`. C++'s `round` (in `<cmath>`) rounds halves away from zero: `round(2.5)` is `3`. So the two languages disagree on this case.
+`round(x)` **rounds** to the nearest integer: `round(3.7)` is `4` and `round(3.2)` is `3`. The case of an **exact half**, such as 2.5, is tricky. Python rounds it to the nearest **even** integer: `round(2.5)` is `2` and `round(3.5)` is `4`. C++'s `round` (in `<cmath>`) rounds halves away from zero: `round(2.5)` is `3`.
 
 Finally, the **floor** gives the largest integer less than or equal to the number, and the **ceiling** the smallest integer greater than or equal to it. For 3.2, they are 3 and 4; for −3.2, they are −4 and −3. Python provides them as `math.floor(x)` and `math.ceil(x)`, after writing `import math` at the top of the program; C++ as `floor(x)` and `ceil(x)` from `<cmath>`.
 
@@ -64,7 +64,7 @@ int main() {
 }
 ```
 
-Both programs print `-3 -3 -4 -3`. For a positive number, truncation and floor are the same; for a negative number, they differ.
+Both programs print `-3 -3 -4 -3`. Truncation and floor differ only for a negative non-integer number.
 
 ## Rounding without leaving integers
 
@@ -74,7 +74,7 @@ When you divide two integers and want a rounded integer result, it is better not
 - the **ceiling** of a/b is `(a + b - 1) // b`;
 - rounding **to the nearest**, an exact half being rounded up, is `(2 * a + b) // (2 * b)`.
 
-The ceiling formula works as follows. If `a` is a multiple of `b`, adding `b − 1` is not enough to reach the next multiple, and the quotient does not change. Otherwise, the remainder of `a` by `b` is at least 1, and adding `b − 1` crosses exactly the next multiple: the quotient grows by 1. For rounding to the nearest, add one half before taking the floor: a/b + 1/2 = (2a + b)/(2b).
+For the ceiling: if `a` is a multiple of `b`, adding `b − 1` is not enough to reach the next multiple, and the quotient does not change. Otherwise, the remainder of `a` by `b` is at least 1, and adding `b − 1` crosses exactly the next multiple: the quotient grows by 1. For rounding to the nearest, add one half before taking the floor: a/b + 1/2 = (2a + b)/(2b).
 
 ```python
 a = 250
@@ -95,7 +95,7 @@ int main() {
 
 The program prints `4 5 4`. Indeed, 250/60 ≈ 4.17: you fill 4 full coaches, you need 5 for everybody, and the nearest integer is 4. With `a = 240`, it prints `4 4 4`, because the division is exact.
 
-Why not simply write `math.ceil(a / b)`? Because a float only keeps about 16 significant digits. Beyond 2⁵³, about 9 × 10¹⁵, not every integer can be represented. For instance, `int((10**17 + 1) / 1)` is `100000000000000000`: the `+ 1` has been lost. With integers up to 10¹⁸, very common in exercises, only the integer formulas are guaranteed to give the right answer.
+Why not simply write `math.ceil(a / b)`? Because a float only keeps about 16 significant digits. Beyond 2⁵³, about 9 × 10¹⁵, not every integer can be represented. For instance, `int((10**17 + 1) / 1)` is `100000000000000000`: the `+ 1` has been lost. With integers up to 10¹⁸, common in exercises, only the integer formulas are safe.
 
 The square root has the same flaw. For N = 10¹⁸ − 1, `int(N ** 0.5)` (in C++, `(long long) sqrt(N)`) is `1000000000`, whereas 10⁹ × 10⁹ = 10¹⁸ exceeds N: the largest integer whose square does not exceed N is 999,999,999. When N became a float, it was rounded to 10¹⁸. The approximate value is still a good starting point, provided you **check** it, then correct it, with integer computations such as `r * r <= n`, which are exact.
 
@@ -147,13 +147,13 @@ int main() {
 }
 ```
 
-Python prints `0.30000000000000004` then `False`. C++ prints `0.30000000000000004` then `0` (false). The error is tiny, but the equality test `==` fails. C++'s `cout` often hides these errors, because it shows only 6 digits by default: it would print `0.3`. The error is still there.
+Python prints `0.30000000000000004` then `False`. C++ prints `0.30000000000000004` then `0` (false). The error is tiny, but the equality test `==` fails. With `cout`, limited to 6 digits, you would see `0.3`: the error would be hidden, but still there.
 
 Three rules follow.
 
 1. **Never test two floats for equality with `==`.** If you really must compare them, check that they are very close: `abs(a - b) < 1e-9`, where `1e-9` means 10⁻⁹. This value is called a **tolerance**.
-2. **Exact halves are traps.** The number 2.675 is stored as 2.67499999…, so `f"{2.675:.2f}"` gives `2.67`, not `2.68`. This is why serious statements avoid these cases, or impose a rounding rule that you then program with integers.
-3. **Work with integers whenever possible.** A price of €19.99 is stored in cents: 1,999. A duration of 2.5 hours becomes 150 minutes. Additions and comparisons are then exact. You convert to euros or hours only when printing.
+2. **Exact halves are traps.** The number 2.675 is stored as 2.67499999…, so `f"{2.675:.2f}"` gives `2.67`, not `2.68`. And 0.125, stored exactly, gives `0.12`: an exact half is rounded to the even digit, as with `round`. So serious statements avoid these cases, or impose a rounding rule that you program with integers.
+3. **Work with integers whenever possible.** A price of €19.99 is stored in cents: 1,999. Additions and comparisons are then exact. You convert to euros or hours only when printing.
 
 ## Division and remainder of negative numbers
 
@@ -164,7 +164,7 @@ In level 1, `//` and `%` were only used with positive numbers. With negative num
 
 In both languages, the relation a = b × q + r still holds: −7 = 2 × (−4) + 1 in Python, and −7 = 2 × (−3) + (−1) in C++. The two languages agree when `a` is positive or when the division is exact.
 
-Python's version is often the most convenient. A clock showing 10 o'clock that goes back 13 hours shows `(10 - 13) % 24`, that is 21 in Python, but −3 in C++. To get in C++ a remainder always between 0 and b − 1 (with `b > 0`), write `((a % b) + b) % b`. The first `%` gives a remainder between −(b − 1) and b − 1, adding `b` makes it positive, and the second `%` brings it back below `b`.
+Python's version is often more convenient: a clock showing 10 o'clock that goes back 13 hours shows `(10 - 13) % 24`, that is 21 in Python, but −3 in C++. To get in C++ a remainder always between 0 and b − 1 (with `b > 0`), write `((a % b) + b) % b`: the first `%` gives a remainder between −(b − 1) and b − 1, adding `b` makes it zero or positive, and the second `%` brings it back below `b`.
 
 ```python
 h = 10
@@ -196,8 +196,6 @@ One consequence traps beginners in C++: the test `x % 2 == 1` is false for a neg
 **Giving a float to `range`.** `range(n / 2)` causes `TypeError: 'float' object cannot be interpreted as an integer`, because `n / 2` is a float even when `n` is even. Write `range(n // 2)`.
 
 **Reading a decimal number with `int`.** If the line contains `3.5`, `int(input())` causes `ValueError: invalid literal for int() with base 10: '3.5'`. Use `float(input())`.
-
-**Comparing with `==`.** A program that tests `if x == 0.3:` after computations on floats may never enter the `if`. Compare with a tolerance, or work with integers.
 
 ## A complete example
 

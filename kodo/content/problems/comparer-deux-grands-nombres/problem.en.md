@@ -5,6 +5,8 @@ title: Compare two large numbers
 ## Statement
 Compare two integers `A` and `B` that can have up to 10,000 digits, and be negative. Print `<` if `A` is smaller than `B`, `>` if it is larger, and `=` if they are equal.
 
+These numbers do not fit in a `long long` in C++, and in Python, `int()` refuses to convert a string of more than 4,300 digits (`ValueError`): you must compare them as strings.
+
 ## Input
 The first line contains `A`, the second `B`. A negative number starts with the sign `-`. No number has useless leading zeros, and zero is always written `0`, without a sign.
 

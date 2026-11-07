@@ -19,15 +19,15 @@ La première ligne contient l'entier `N`. La deuxième ligne contient les `N` en
 Un seul entier : le nombre de valeurs distinctes.
 
 ## Contraintes
-- 1 ≤ N ≤ 40 000
+- 1 ≤ N ≤ 50 000
 - -10⁹ ≤ chaque entier ≤ 10⁹
 
 ## Indices
 1. Un ensemble ne garde qu'un exemplaire de chaque valeur, même si on l'ajoute plusieurs fois.
 2. Ajouter chaque entier à un ensemble vide, puis afficher la taille de l'ensemble avec `len`.
-3. Avec une liste et un test `if v not in liste`, chaque test parcourt toute la liste : sur 40 000 valeurs distinctes, cela fait environ 800 millions de comparaisons, beaucoup trop.
+3. Avec une liste et un test `if v not in liste`, chaque test parcourt toute la liste : sur 50 000 valeurs distinctes, cela fait plus d'un milliard de comparaisons, beaucoup trop.
 
 ## Solution
 On ajoute les `N` entiers à un **ensemble** (`set` en Python, `unordered_set` ou `set` en C++). Un ensemble ne contient jamais deux fois la même valeur : un ajout d'une valeur déjà présente ne change rien. À la fin, sa taille est exactement le nombre de valeurs distinctes.
 
-Le piège est de construire une liste sans doublons avec `if v not in liste: liste.append(v)`. Le résultat est juste, mais chaque test `in` sur une liste compare `v` à tous les éléments déjà rangés. Quand toutes les valeurs sont distinctes, cela fait 1 + 2 + … + 39 999 comparaisons, soit environ 800 millions : plusieurs secondes en Python. Le test d'appartenance à un ensemble, lui, se fait presque en une seule étape, quelle que soit sa taille.
+Le piège est de construire une liste sans doublons avec `if v not in liste: liste.append(v)`. Le résultat est juste, mais chaque test `in` sur une liste compare `v` à tous les éléments déjà rangés. Quand toutes les valeurs sont distinctes, cela fait 1 + 2 + … + 49 999 comparaisons, soit environ 1,25 milliard : plusieurs secondes en Python, bien au-delà de la limite de temps. Le test d'appartenance à un ensemble, lui, se fait presque en une seule étape, quelle que soit sa taille.

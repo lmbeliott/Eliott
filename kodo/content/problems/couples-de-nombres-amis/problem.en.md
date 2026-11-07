@@ -19,7 +19,7 @@ On the first line, the number of pairs. Then one line per pair, with `a` and `b`
 - 1 ≤ N ≤ 100,000
 
 ## Hints
-1. Computing `s(m)` for each `m` by trying all divisors up to `√m` takes about 20 million operations: too slow in Python. Better compute all the `s(m)` at once, in a list.
+1. Computing `s(m)` for each `m` by trying all divisors up to `√m` takes about 20 million operations: more than a second in Python. You can do far less work by computing all the `s(m)` at once, in a list.
 2. Turn the question around: instead of looking for the divisors of each `m`, start from each divisor `d` and add it to all its multiples `2d, 3d, 4d…` up to `N`.
 3. Then, for each `a`, let `b = s[a]` and check `a < b ≤ N` and `s[b] == a`. The condition `b ≤ N` must be tested before reading `s[b]`.
 

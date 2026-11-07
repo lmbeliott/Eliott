@@ -24,7 +24,7 @@ Sur la première ligne, le nombre de couples. Puis une ligne par couple, avec `a
 - 1 ≤ N ≤ 100 000
 
 ## Indices
-1. Calculer `s(m)` pour chaque `m` en essayant tous les diviseurs jusqu'à `√m` demande environ 20 millions d'opérations : trop lent en Python. Mieux vaut calculer tous les `s(m)` d'un coup, dans une liste.
+1. Calculer `s(m)` pour chaque `m` en essayant tous les diviseurs jusqu'à `√m` demande environ 20 millions d'opérations : plus d'une seconde en Python. On peut faire bien moins en calculant tous les `s(m)` d'un coup, dans une liste.
 2. Retourner la question : au lieu de chercher les diviseurs de chaque `m`, partir de chaque diviseur `d` et l'ajouter à tous ses multiples `2d, 3d, 4d…` jusqu'à `N`.
 3. Ensuite, pour chaque `a`, poser `b = s[a]` et vérifier `a < b ≤ N` et `s[b] == a`. La condition `b ≤ N` doit être testée avant de lire `s[b]`.
 

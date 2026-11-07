@@ -1,6 +1,6 @@
 Jusqu'ici, tous les calculs portaient sur des entiers. Beaucoup de questions simples mènent pourtant à des nombres qui ne tombent pas juste. Sept personnes se partagent 100 € : chacune reçoit 14,285714… €. Une moyenne de trois notes, 12, 15 et 14, vaut 13,666… Et 250 personnes qui montent dans des cars de 60 places ont besoin de 5 cars, pas de 4,17.
 
-Ces trois exemples demandent trois traitements différents. Dans le premier, on veut un montant affiché avec deux décimales. Dans le deuxième, une valeur approchée. Dans le troisième, un **entier**, obtenu en arrondissant vers le haut. Ce chapitre présente les nombres à virgule, la façon de les afficher et de les arrondir, mais aussi leurs défauts : ils sont **approchés**. On verra qu'un bon programme les évite souvent et raisonne avec des entiers, qui sont toujours exacts.
+Ces trois exemples demandent trois traitements différents : un montant affiché avec deux décimales, une valeur approchée, et un **entier** obtenu en arrondissant vers le haut. Ce chapitre présente les nombres à virgule, la façon de les afficher et de les arrondir, mais aussi leur défaut : ils sont **approchés**. Un bon programme les évite donc souvent, en raisonnant avec des entiers, toujours exacts.
 
 ## Les nombres à virgule
 
@@ -30,11 +30,11 @@ int main() {
 
 Le programme Python affiche `3.5`, `5.0`, `5` et `6.0`. Le point de `5.0` montre que `10 / 2` est un flottant, alors que `10 // 2` est un entier. Dès qu'un calcul mélange un entier et un flottant, le résultat est un flottant : `1.5 * 4` vaut `6.0`.
 
-En C++, le type des nombres à virgule s'appelle `double`. Attention, l'opérateur `/` du C++ dépend du type de ses deux opérandes : si les deux sont entiers, c'est la division **entière**, comme le `//` de Python. `7 / 2` vaut `3`, et non `3.5`. Pour obtenir une division décimale, il faut qu'au moins un des deux nombres soit un `double` : on écrit `7.0 / 2`, ou, avec des variables entières `a` et `b`, `(double) a / b`. Ce `(double)` est une **conversion** : il transforme la valeur entière de `a` en flottant avant la division. Enfin, `cout` affiche `5` pour le flottant `5.0` : en C++, l'affichage ne montre pas la différence entre un entier et un flottant. Plus gênant, `cout` n'affiche que 6 chiffres significatifs d'un `double` : `cout << 13.0 / 3` affiche `4.33333`, et `cout << 1234567.0` affiche `1.23457e+06`. Pour afficher un flottant, on fixe donc le nombre de décimales avec `printf` (voir plus bas), ou on le convertit d'abord en entier.
+En C++, le type des nombres à virgule s'appelle `double`. Attention, l'opérateur `/` du C++ dépend du type de ses deux opérandes : si les deux sont entiers, c'est la division **entière**, comme le `//` de Python. `7 / 2` vaut `3`, et non `3.5`. Pour obtenir une division décimale, il faut qu'au moins un des deux nombres soit un `double` : on écrit `7.0 / 2`, ou, avec des variables entières `a` et `b`, `(double) a / b`. Ce `(double)` est une **conversion** : il transforme la valeur entière de `a` en flottant avant la division. Enfin, `cout` affiche `5` pour le flottant `5.0` : en C++, l'affichage ne montre pas la différence entre un entier et un flottant. Plus gênant, `cout` n'affiche que 6 chiffres significatifs d'un `double` : `cout << 1234567.0` affiche `1.23457e+06`. On fixe donc le nombre de décimales avec `printf` (voir plus bas), ou on convertit d'abord en entier.
 
 Pour lire un nombre à virgule, on remplace `int` par `float` en Python : `x = float(input())`. En C++, il suffit de déclarer la variable de type `double` avant `cin >> x`.
 
-Deux outils de calcul servent souvent avec les flottants. La **puissance** s'écrit `**` en Python : `2 ** 10` vaut `1024`. Entre deux entiers, avec un exposant positif ou nul, le résultat est un entier exact, aussi grand soit-il : `2 ** 100` vaut `1267650600228229401496703205376`. Avec un exposant à virgule, le résultat est un flottant : `x ** 0.5` donne la **racine carrée** de `x`, et `9 ** 0.5` vaut `3.0`. En C++, on inclut `<cmath>` et on écrit `pow(2, 10)` et `sqrt(x)`. Ces deux fonctions renvoient toujours un `double`, donc une valeur approchée dès que le résultat est grand : `(long long) pow(3, 39)` donne 4052555153018976256 au lieu de 4052555153018976267. Pour une puissance entière exacte en C++, on multiplie dans une boucle, avec un `long long`. La **valeur absolue**, qui enlève le signe d'un nombre, s'écrit `abs(x)` dans les deux langages (en C++, avec `<cmath>`) : `abs(-3.5)` vaut `3.5` et `abs(-7)` vaut `7`.
+Deux outils de calcul servent souvent avec les flottants. La **puissance** s'écrit `**` en Python : `2 ** 10` vaut `1024`. Entre deux entiers, avec un exposant positif ou nul, le résultat est un entier exact : `2 ** 100` vaut `1267650600228229401496703205376`. Avec un exposant à virgule, le résultat est un flottant : `x ** 0.5` donne la **racine carrée** de `x`. En C++, on inclut `<cmath>` et on écrit `pow(2, 10)` et `sqrt(x)`. Ces deux fonctions renvoient toujours un `double`, donc une valeur approchée dès que le résultat est grand : `(long long) pow(3, 39)` donne 4052555153018976256 au lieu de 4052555153018976267. Pour une puissance entière exacte en C++, on multiplie dans une boucle, avec un `long long`. La **valeur absolue**, qui enlève le signe d'un nombre, s'écrit `abs(x)` dans les deux langages (en C++, avec `<cmath>`) : `abs(-3.5)` vaut `3.5`.
 
 ## Revenir à un entier : tronquer ou arrondir
 
@@ -42,7 +42,7 @@ Pour transformer un flottant en entier, il y a plusieurs façons de faire, qui n
 
 `int(x)` **tronque** : il supprime la partie décimale, sans arrondir. `int(3.7)` vaut `3`, et `int(-3.7)` vaut `-3`. La troncature va donc toujours vers zéro. En C++, la conversion `(int) x` ou `(long long) x` fait exactement la même chose.
 
-`round(x)` **arrondit** à l'entier le plus proche : `round(3.7)` vaut `4` et `round(3.2)` vaut `3`. Le cas d'une **moitié exacte**, comme 2,5, est délicat. Python l'arrondit vers l'entier **pair** le plus proche : `round(2.5)` vaut `2` et `round(3.5)` vaut `4`. Le `round` du C++ (dans `<cmath>`) arrondit les moitiés en s'éloignant de zéro : `round(2.5)` vaut `3`. Les deux langages ne sont donc pas d'accord sur ce cas.
+`round(x)` **arrondit** à l'entier le plus proche : `round(3.7)` vaut `4` et `round(3.2)` vaut `3`. Le cas d'une **moitié exacte**, comme 2,5, est délicat. Python l'arrondit vers l'entier **pair** le plus proche : `round(2.5)` vaut `2` et `round(3.5)` vaut `4`. Le `round` du C++ (dans `<cmath>`) arrondit les moitiés en s'éloignant de zéro : `round(2.5)` vaut `3`.
 
 Enfin, l'**arrondi inférieur** (on dit aussi **partie entière**) donne le plus grand entier inférieur ou égal au nombre, et l'**arrondi supérieur** le plus petit entier supérieur ou égal. Pour 3,2, ce sont 3 et 4 ; pour −3,2, ce sont −4 et −3. Python les fournit avec `math.floor(x)` et `math.ceil(x)`, après avoir écrit `import math` en haut du programme ; le C++ avec `floor(x)` et `ceil(x)` de `<cmath>`.
 
@@ -64,7 +64,7 @@ int main() {
 }
 ```
 
-Les deux programmes affichent `-3 -3 -4 -3`. Pour un nombre positif, la troncature et l'arrondi inférieur coïncident ; pour un nombre négatif, ils diffèrent.
+Les deux programmes affichent `-3 -3 -4 -3`. La troncature et l'arrondi inférieur ne diffèrent que pour un nombre négatif non entier.
 
 ## Arrondir sans quitter les entiers
 
@@ -74,7 +74,7 @@ Quand on divise deux entiers et qu'on veut un résultat entier arrondi, il vaut 
 - l'arrondi **supérieur** de a/b vaut `(a + b - 1) // b` ;
 - l'arrondi **au plus proche**, une moitié exacte étant arrondie vers le haut, vaut `(2 * a + b) // (2 * b)`.
 
-La formule de l'arrondi supérieur se comprend ainsi. Si `a` est un multiple de `b`, ajouter `b − 1` ne suffit pas à atteindre le multiple suivant, et le quotient ne change pas. Sinon, le reste de `a` par `b` vaut au moins 1, et ajouter `b − 1` fait franchir exactement le multiple suivant : le quotient augmente de 1. Pour l'arrondi au plus proche, on ajoute un demi avant de prendre l'arrondi inférieur : a/b + 1/2 = (2a + b)/(2b).
+Pour l'arrondi supérieur : si `a` est un multiple de `b`, ajouter `b − 1` ne suffit pas à atteindre le multiple suivant, et le quotient ne change pas. Sinon, le reste de `a` par `b` vaut au moins 1, et ajouter `b − 1` fait franchir exactement le multiple suivant : le quotient augmente de 1. Pour l'arrondi au plus proche, on ajoute un demi avant de prendre l'arrondi inférieur : a/b + 1/2 = (2a + b)/(2b).
 
 ```python
 a = 250
@@ -95,7 +95,7 @@ int main() {
 
 Le programme affiche `4 5 4`. En effet, 250/60 ≈ 4,17 : on remplit 4 cars complets, il en faut 5 pour tout le monde, et l'entier le plus proche est 4. Avec `a = 240`, il affiche `4 4 4`, car la division tombe juste.
 
-Pourquoi ne pas écrire simplement `math.ceil(a / b)` ? Parce qu'un flottant ne garde qu'environ 16 chiffres significatifs. Au-delà de 2⁵³, soit environ 9 × 10¹⁵, tous les entiers ne sont plus représentables. Par exemple, `int((10**17 + 1) / 1)` vaut `100000000000000000` : le `+ 1` a été perdu. Avec des entiers jusqu'à 10¹⁸, très courants dans les exercices, seules les formules entières donnent à coup sûr la bonne réponse.
+Pourquoi ne pas écrire simplement `math.ceil(a / b)` ? Parce qu'un flottant ne garde qu'environ 16 chiffres significatifs. Au-delà de 2⁵³, soit environ 9 × 10¹⁵, tous les entiers ne sont plus représentables. Par exemple, `int((10**17 + 1) / 1)` vaut `100000000000000000` : le `+ 1` a été perdu. Avec des entiers jusqu'à 10¹⁸, fréquents dans les exercices, seules les formules entières sont sûres.
 
 La racine carrée a le même défaut. Pour N = 10¹⁸ − 1, `int(N ** 0.5)` (en C++, `(long long) sqrt(N)`) vaut `1000000000`, alors que 10⁹ × 10⁹ = 10¹⁸ dépasse N : le plus grand entier dont le carré ne dépasse pas N est 999 999 999. En devenant un flottant, N a été arrondi à 10¹⁸. La valeur approchée reste un bon point de départ, à condition de la **vérifier**, puis de la corriger, avec des calculs entiers comme `r * r <= n`, qui sont exacts.
 
@@ -147,13 +147,13 @@ int main() {
 }
 ```
 
-Python affiche `0.30000000000000004` puis `False`. Le C++ affiche `0.30000000000000004` puis `0` (faux). L'erreur est minuscule, mais le test d'égalité `==` échoue. Le `cout` du C++ cache souvent ces écarts, car il n'affiche que 6 chiffres par défaut : il afficherait `0.3`. L'erreur est pourtant bien là.
+Python affiche `0.30000000000000004` puis `False`. Le C++ affiche `0.30000000000000004` puis `0` (faux). L'erreur est minuscule, mais le test d'égalité `==` échoue. Avec `cout`, limité à 6 chiffres, on verrait `0.3` : l'erreur serait cachée, mais bien là.
 
 On en tire trois règles.
 
 1. **Ne jamais tester l'égalité de deux flottants avec `==`.** Si on doit vraiment les comparer, on vérifie qu'ils sont très proches : `abs(a - b) < 1e-9`, où `1e-9` signifie 10⁻⁹. Cette valeur s'appelle une **tolérance**.
-2. **Les moitiés exactes sont piégées.** Le nombre 2,675 est stocké comme 2,67499999…, donc `f"{2.675:.2f}"` donne `2.67`, et non `2.68`. C'est pourquoi les énoncés sérieux évitent ces cas, ou imposent une règle d'arrondi qu'on programme alors avec des entiers.
-3. **Travailler en entiers quand c'est possible.** Un prix de 19,99 € se range en centimes : 1 999. Une durée de 2,5 heures devient 150 minutes. Les additions et les comparaisons sont alors exactes. On ne convertit en euros ou en heures qu'au moment d'afficher.
+2. **Les moitiés exactes sont piégées.** Le nombre 2,675 est stocké comme 2,67499999…, donc `f"{2.675:.2f}"` donne `2.67`, et non `2.68`. Et 0,125, stocké exactement, donne `0.12` : une moitié exacte est arrondie vers le chiffre pair, comme avec `round`. Les énoncés sérieux évitent donc ces cas, ou imposent une règle d'arrondi qu'on programme avec des entiers.
+3. **Travailler en entiers quand c'est possible.** Un prix de 19,99 € se range en centimes : 1 999. Les additions et les comparaisons sont alors exactes. On ne convertit en euros ou en heures qu'au moment d'afficher.
 
 ## Division et reste des nombres négatifs
 
@@ -164,7 +164,7 @@ Au niveau 1, on n'utilisait `//` et `%` qu'avec des nombres positifs. Avec des n
 
 Dans les deux langages, la relation a = b × q + r reste vraie : −7 = 2 × (−4) + 1 en Python, et −7 = 2 × (−3) + (−1) en C++. Les deux langages coïncident quand `a` est positif ou quand la division tombe juste.
 
-La version de Python est souvent la plus pratique. Une horloge qui indique 10 h et recule de 13 heures indique `(10 - 13) % 24`, soit 21 h en Python, mais −3 en C++. Pour obtenir en C++ un reste toujours compris entre 0 et b − 1 (avec `b > 0`), on écrit `((a % b) + b) % b`. Le premier `%` donne un reste entre −(b − 1) et b − 1, l'ajout de `b` le rend positif, et le second `%` le ramène sous `b`.
+La version de Python est souvent plus pratique : une horloge qui indique 10 h et recule de 13 heures indique `(10 - 13) % 24`, soit 21 h en Python, mais −3 en C++. Pour obtenir en C++ un reste toujours compris entre 0 et b − 1 (avec `b > 0`), on écrit `((a % b) + b) % b` : le premier `%` donne un reste entre −(b − 1) et b − 1, l'ajout de `b` le rend positif ou nul, et le second `%` le ramène sous `b`.
 
 ```python
 h = 10
@@ -196,8 +196,6 @@ Une conséquence piège les débutants en C++ : le test `x % 2 == 1` est faux po
 **Donner un flottant à `range`.** `range(n / 2)` provoque `TypeError: 'float' object cannot be interpreted as an integer`, car `n / 2` est un flottant même si `n` est pair. On écrit `range(n // 2)`.
 
 **Lire un nombre à virgule avec `int`.** Si la ligne contient `3.5`, `int(input())` provoque `ValueError: invalid literal for int() with base 10: '3.5'`. On utilise `float(input())`.
-
-**Comparer avec `==`.** Un programme qui teste `if x == 0.3:` après des calculs sur des flottants peut ne jamais entrer dans le `if`. On compare avec une tolérance, ou on travaille en entiers.
 
 ## Un exemple complet
 
