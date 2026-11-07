@@ -37,6 +37,6 @@ Le problème se fait en deux étapes.
 **Trier.** On veut un ordre sur deux critères : le score décroissant, puis le nom croissant. On construit la liste des couples `(-score, nom)` et on la trie normalement, dans l'ordre croissant. Comme on compare d'abord `-score`, le plus grand score arrive en tête ; et quand les scores sont égaux, les noms départagent dans l'ordre alphabétique. On affiche ensuite chaque nom avec son score, en remettant le score dans le bon sens.
 
 Les pièges :
-- trier par score décroissant avec `reverse=True` (ou en inversant la liste) : les égalités seraient alors aussi dans l'ordre alphabétique **inverse**, ce qui est faux ;
+- trier les couples `(score, nom)` avec `reverse=True` (ou les trier puis inverser la liste) : les égalités seraient alors aussi dans l'ordre alphabétique **inverse**, ce qui est faux ;
 - oublier qu'une couleur peut recevoir plusieurs votes : il faut additionner, pas remplacer ;
 - l'ordre alphabétique des mots qui commencent pareil : `or` passe avant `orange`. Les comparaisons de chaînes de Python et de C++ le font toutes seules.

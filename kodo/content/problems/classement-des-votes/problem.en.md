@@ -32,6 +32,6 @@ The problem takes two steps.
 **Sorting.** We want an order with two criteria: decreasing score, then increasing name. We build the list of pairs `(-score, name)` and sort it normally, in increasing order. Since `-score` is compared first, the highest score comes first; and when the scores are equal, the names break the tie in alphabetical order. Then we print each name with its score, turning the score back the right way round.
 
 The traps:
-- sorting by decreasing score with `reverse=True` (or by reversing the list): ties would then be in **reverse** alphabetical order too, which is wrong;
+- sorting the pairs `(score, name)` with `reverse=True` (or sorting them, then reversing the list): ties would then be in **reverse** alphabetical order too, which is wrong;
 - forgetting that a colour can receive several votes: you must add the points, not replace them;
 - the alphabetical order of words that start the same way: `or` comes before `orange`. String comparisons in Python and C++ handle this on their own.

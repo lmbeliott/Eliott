@@ -29,9 +29,9 @@ Les familles sont affichées dans l'ordre alphabétique de leur premier mot.
 - Chaque mot contient entre 1 et 20 lettres.
 
 ## Indices
-1. Comparer chaque mot avec tous les autres est compliqué. Cherche plutôt une « étiquette » que l'on peut calculer pour chaque mot tout seul, et qui soit la même pour deux anagrammes, et différente sinon.
+1. Comparer chaque mot avec tous les autres est compliqué. Cherche plutôt une « signature » que l'on peut calculer pour chaque mot tout seul, et qui soit la même pour deux anagrammes, et différente sinon.
 2. Que se passe-t-il si tu ranges les lettres de `chien` dans l'ordre alphabétique ? Et celles de `niche` ?
-3. L'étiquette d'un mot, ce sont ses lettres triées : `"".join(sorted(mot))` en Python, ou une copie du mot triée avec `sort` en C++. Range ensuite les mots dans un dictionnaire dont les clés sont les étiquettes et les valeurs des listes de mots. Il reste à trier chaque famille, puis la liste des familles.
+3. La signature d'un mot, ce sont ses lettres triées : `"".join(sorted(mot))` en Python, ou une copie du mot triée avec `sort` en C++. Range ensuite les mots dans un dictionnaire dont les clés sont les signatures et les valeurs des listes de mots. Il reste à trier chaque famille, puis la liste des familles.
 
 ## Solution
 L'idée clé est de donner à chaque mot une **signature** : ses lettres rangées dans l'ordre alphabétique. `chien` et `niche` ont tous deux la signature `cehin`. Deux mots sont des anagrammes exactement quand ils ont la même signature : avoir les mêmes lettres, chacune le même nombre de fois, c'est avoir la même liste de lettres une fois triée. Pour `salle` (`aells`) et `lasse` (`aelss`), les signatures diffèrent.

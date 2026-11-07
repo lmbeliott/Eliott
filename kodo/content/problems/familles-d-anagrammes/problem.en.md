@@ -24,9 +24,9 @@ The families are printed in the alphabetical order of their first word.
 - Each word has between 1 and 20 letters.
 
 ## Hints
-1. Comparing each word with all the others is complicated. Instead, look for a "label" that you can compute for each word on its own, which is the same for two anagrams and different otherwise.
+1. Comparing each word with all the others is complicated. Instead, look for a "signature" that you can compute for each word on its own, which is the same for two anagrams and different otherwise.
 2. What happens if you put the letters of `chien` in alphabetical order? And those of `niche`?
-3. The label of a word is its sorted letters: `"".join(sorted(word))` in Python, or a copy of the word sorted with `sort` in C++. Then store the words in a dictionary whose keys are the labels and whose values are lists of words. All that's left is to sort each family, then the list of families.
+3. The signature of a word is its sorted letters: `"".join(sorted(word))` in Python, or a copy of the word sorted with `sort` in C++. Then store the words in a dictionary whose keys are the signatures and whose values are lists of words. All that's left is to sort each family, then the list of families.
 
 ## Solution
 The key idea is to give each word a **signature**: its letters sorted in alphabetical order. `chien` and `niche` both have the signature `cehin`. Two words are anagrams exactly when they have the same signature: having the same letters, each one the same number of times, means having the same list of letters once sorted. For `salle` (`aells`) and `lasse` (`aelss`), the signatures are different.
