@@ -77,7 +77,11 @@ int main() {
 }
 ```
 
-Ce programme affiche 3, 2 et 0. En Python, le quotient s'écrit `//` (deux barres) ; en C++, il s'écrit `/`, et le résultat est entier dès que les deux nombres sont des entiers. Dans les deux langages, le reste s'écrit `%` (on dit « modulo »). Le reste de la division par `b` est toujours compris entre 0 et b − 1, et il vaut 0 exactement quand le nombre est un multiple de `b`.
+Ce programme affiche 3, 2 et 0. En Python, le quotient s'écrit `//` (deux barres) ; en C++, il s'écrit `/`, et le résultat est entier dès que les deux nombres sont des entiers. Dans les deux langages, le reste s'écrit `%` (on dit « modulo »). Pour un nombre positif, le reste de la division par `b` est toujours compris entre 0 et b − 1, et il vaut 0 exactement quand le nombre est un multiple de `b`.
+
+Le quotient et le reste ont la même priorité que la multiplication : ils passent avant `+` et `-`. Quand plusieurs de ces opérateurs se suivent, l'expression est évaluée **de gauche à droite**. Ainsi `2026 // 10 % 10` se calcule comme `(2026 // 10) % 10`, c'est-à-dire 202 % 10 = 2, et `7 * 9 // 5` comme `(7 * 9) // 5` = 63 // 5 = 12, alors que `7 * (9 // 5)` vaut 7 × 1 = 7. En cas de doute, on ajoute des parenthèses.
+
+Dans ce chapitre, on n'utilise le quotient et le reste qu'avec des nombres positifs. Avec des nombres négatifs, Python et C++ ne donnent pas toujours le même résultat (`-7 // 2` vaut −4 en Python, `-7 / 2` vaut −3 en C++) ; ils coïncident seulement quand la division tombe juste.
 
 Ces deux opérations servent sans cesse :
 
@@ -171,6 +175,8 @@ Après la boucle, `somme` vaut 10 = 1 + 2 + 3 + 4. Le schéma est toujours le m�
 1. **initialiser** l'accumulateur avant la boucle, avec la valeur qui convient pour un total vide (0 pour une somme) ;
 2. le mettre à jour dans le corps de la boucle ;
 3. l'utiliser après la boucle.
+
+En C++, une variable peut aussi être déclarée entre les accolades du corps de la boucle. Elle n'existe alors que pendant un tour : elle est recréée à chaque tour et disparaît à la sortie de la boucle. Cela convient pour un résultat intermédiaire propre à un tour ; un accumulateur, qui doit garder sa valeur d'un tour à l'autre et servir après la boucle, se déclare toujours **avant** la boucle.
 
 Pour un produit, on initialise à 1 et non à 0, sinon le résultat resterait toujours 0 :
 
