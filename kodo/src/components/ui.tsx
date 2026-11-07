@@ -14,10 +14,11 @@ type Size = 'sm' | 'md' | 'lg'
 
 const variants: Record<Variant, string> = {
   // « btn-drawn » : bord fin et ombre pleine décalée, le bouton se soulève au survol (styles.css).
-  primary: 'btn-drawn btn-primary bg-accent text-accent-ink hover:bg-accent-hover',
-  secondary: 'btn-drawn bg-surface text-ink hover:bg-surface-2',
+  // Au survol, seul le geste change (le bouton se soulève) ; au clic, la teinte fonce légèrement.
+  primary: 'btn-drawn btn-primary bg-accent text-accent-ink active:bg-[var(--accent-press)]',
+  secondary: 'btn-drawn bg-surface text-ink active:bg-surface-2',
   ghost: 'text-ink-2 hover:bg-surface-2 hover:text-ink transition-[background-color,color] duration-150 ease-out',
-  danger: 'btn-drawn btn-danger bg-surface text-bad hover:bg-bad-soft',
+  danger: 'btn-drawn btn-danger bg-surface text-bad active:bg-bad-soft',
 }
 const sizes: Record<Size, string> = {
   sm: 'h-8 px-3 text-sm gap-1.5',

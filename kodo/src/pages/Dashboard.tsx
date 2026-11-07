@@ -11,12 +11,12 @@ import { Heatmap } from '../components/Heatmap'
 import { LeagueBadge } from '../components/League'
 import { ProfileError } from '../components/ProfileError'
 import { DifficultyMark, LinkButton, Panel, Skeleton, cx, SectionCell } from '../components/ui'
-import { limitFor, type Verdict } from '../judge/judge'
+import type { Verdict } from '../judge/judge'
 import { useAuth } from '../lib/auth'
 import { chapterById, chapterTitle, loadProblem, problemById, problemList, problemTitle, type CatalogProblem } from '../lib/content'
-import { formatDate, formatNumber, formatPoints as fmtPoints, plural, timeAgo, useI18n, type UiLang } from '../lib/i18n'
+import { formatDate, formatPoints as fmtPoints, plural, timeAgo, useI18n, type UiLang } from '../lib/i18n'
 import { leagueName, leagueOf } from '../lib/leagues'
-import { useCodeLang, useProgress } from '../lib/progress'
+import { useProgress } from '../lib/progress'
 import { useActivity, useDaily, useLeaderboard, useMyGroups } from '../lib/queries'
 import { dayKey, liveStreak, parisDay, parisToday, supabase, type Group } from '../lib/supabase'
 
@@ -170,7 +170,7 @@ export function Dashboard() {
         )}
 
         <aside className="flex flex-col" aria-label={t('Rang et série', 'Rank and streak')}>
-          <LeagueRail points={profile.xp} solved={progress.solved} />
+          <LeagueRail points={profile.xp} />
           <WeekRail
             streak={streak}
             doneToday={doneToday}
@@ -189,10 +189,10 @@ export function Dashboard() {
         >
           {daily.data?.length
             ? t(
-                `${dailyDone} sur ${daily.data.length} réussi${dailyDone > 1 ? 's' : ''}. +50 % de points jusqu’à minuit, heure de Paris (dans ${untilMidnight}).`,
-                `${dailyDone} of ${daily.data.length} solved. +50% points until midnight Paris time (in ${untilMidnight}).`,
+                `${dailyDone} sur ${daily.data.length} réussi${dailyDone > 1 ? 's' : ''} · +50 % jusqu’à minuit (${untilMidnight})`,
+                `${dailyDone} of ${daily.data.length} solved · +50% until midnight (${untilMidnight})`,
               )
-            : t('Un problème par niveau, le même pour tout le monde, renouvelé à minuit, heure de Paris.', 'One problem per level, the same for everyone, renewed at midnight Paris time.')}
+            : null}
         </SectionHead>
         <div className="mt-4">
           <DailyList daily={daily.data} loading={daily.isLoading} solved={progress.solved} />
@@ -227,9 +227,7 @@ export function Dashboard() {
 
         <section aria-labelledby="dash-groupes" className="min-w-0">
           <SectionHead id="dash-groupes" title={t('Groupes', 'Groups')} link={groups.data?.length ? { to: '/groupes', label: t('Gérer les groupes', 'Manage groups') } : undefined}>
-            {groups.data?.length
-              ? t('Chaque groupe a son propre classement.', 'Each group has its own leaderboard.')
-              : ' '}
+            {null}
           </SectionHead>
           <Panel className="mt-4 overflow-hidden">
             {groups.isLoading ? (
@@ -284,7 +282,6 @@ export function Dashboard() {
 function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProblem; tried: boolean; isDaily: boolean; solved: Map<string, unknown> }) {
   const { lang, t } = useI18n()
   const { session } = useAuth()
-  const [codeLang] = useCodeLang()
   const chapter = chapterById(problem.chapter)
   const index = problemList.findIndex((p) => p.id === problem.id)
   const prev = index > 0 ? problemList[index - 1] : null
@@ -311,7 +308,6 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
   const text = data.data ? (lang === 'en' && data.data.text.en ? data.data.text.en : data.data.text.fr) : null
   const sentence = useMemo(() => (text ? firstSentence(text.statement) : []), [text])
   const testCount = data.data ? data.data.samples.length + data.data.tests.length : 0
-  const limitMs = data.data ? limitFor(codeLang, data.data.timeLimitMs) : 0
   const firstTry = Math.floor(problem.points / 5)
   const dailyBonus = isDaily ? Math.floor(problem.points / 2) : 0
 
@@ -392,14 +388,6 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
             ) : (
               <Skeleton className="h-3.5 w-40" />
             )}
-            {data.data && (
-              <p className="text-sm text-ink-2">
-                {t(
-                  `${testCount} tests, ${formatNumber(lang, limitMs / 1000)} s par test en ${codeLang === 'cpp' ? 'C++' : 'Python'}`,
-                  `${testCount} tests, ${formatNumber(lang, limitMs / 1000)} s per test in ${codeLang === 'cpp' ? 'C++' : 'Python'}`,
-                )}
-              </p>
-            )}
           </div>
         )}
 
@@ -425,22 +413,9 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
 
 // ------------------------------------------------------------------ Rail : ligue et semaine
 
-function LeagueRail({ points, solved }: { points: number; solved: Map<string, unknown> }) {
+function LeagueRail({ points }: { points: number }) {
   const { lang, t } = useI18n()
   const l = leagueOf(points)
-  // Combien de problèmes, dans l'ordre du parcours, suffisent pour atteindre le rang suivant.
-  const plan = useMemo(() => {
-    if (!l.next) return null
-    let sum = 0
-    let n = 0
-    for (const p of problemList) {
-      if (solved.has(p.id)) continue
-      sum += p.points
-      n++
-      if (sum >= l.remaining) return { n, sum }
-    }
-    return null
-  }, [l.next, l.remaining, solved])
 
   return (
     <div className="pb-6">
@@ -463,13 +438,6 @@ function LeagueRail({ points, solved }: { points: number; solved: Map<string, un
             <LeagueBadge league={l.current} className="text-xs font-normal text-muted" />
             <span>{t(`encore ${formatPoints(lang, l.remaining)}`, `${formatPoints(lang, l.remaining)} to go`)}</span>
           </div>
-          {plan && (
-            <p className="mt-3 text-sm text-ink-2">
-              {plan.n === 1
-                ? t(`Le prochain problème du parcours rapporte ${formatPoints(lang, plan.sum)}, assez pour y accéder.`, `The next problem of the path is worth ${formatPoints(lang, plan.sum)}, enough to reach it.`)
-                : t(`Les ${plan.n} prochains problèmes du parcours rapportent ${formatPoints(lang, plan.sum)}.`, `The next ${plan.n} problems of the path are worth ${formatPoints(lang, plan.sum)}.`)}
-            </p>
-          )}
         </>
       ) : (
         <>
@@ -515,21 +483,12 @@ function WeekRail({ streak, doneToday, untilMidnight, days }: { streak: number; 
         {doneToday ? (
           <>
             <Check className="mr-1 inline size-4 -translate-y-px text-ok" aria-hidden />
-            {t(
-              `Série de ${plural(lang, streak, ['jour', 'jours'], ['', ''])}, aujourd’hui compté. Une réussite demain la porte à ${streak + 1}.`,
-              `${streak}-day streak, today counted. A solve tomorrow takes it to ${streak + 1}.`,
-            )}
+            {t(`Série de ${plural(lang, streak, ['jour', 'jours'], ['', ''])}, aujourd’hui compté.`, `${streak}-day streak, today counted.`)}
           </>
         ) : streak > 0 ? (
-          t(
-            `Série de ${plural(lang, streak, ['jour', 'jours'], ['', ''])} remise à zéro dans ${untilMidnight} sans nouveau problème ou défi du jour réussi.`,
-            `${streak}-day streak resets in ${untilMidnight} without a new problem or daily challenge solved.`,
-          )
+          t(`Série de ${plural(lang, streak, ['jour', 'jours'], ['', ''])}, à prolonger avant minuit (${untilMidnight}).`, `${streak}-day streak, keep it going before midnight (${untilMidnight}).`)
         ) : (
-          t(
-            `Pas de série en cours. Un nouveau problème ou un défi du jour réussi d’ici minuit (${untilMidnight}) en démarre une.`,
-            `No streak yet. A new problem or daily challenge solved before midnight (${untilMidnight}) starts one.`,
-          )
+          t('Pas de série en cours.', 'No streak yet.')
         )}
       </p>
     </div>

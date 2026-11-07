@@ -621,8 +621,8 @@ function TestDetail({ r, lang, timeLimitMs, custom, skippedAfter, onUseInput }: 
             <Row label={t('Sortie attendue', 'Expected output')}>
               <p className="text-sm text-ink-2">
                 {t(
-                  'Masquée : pour un test caché, le navigateur ne reçoit qu’une empreinte SHA-256 de la sortie attendue, comparée à celle de la sortie obtenue.',
-                  'Hidden: for a hidden test, the browser only receives a SHA-256 hash of the expected output, compared with the hash of the actual output.',
+                  'Masquée pour un test caché.',
+                  'Hidden for a hidden test.',
                 )}
               </p>
             </Row>

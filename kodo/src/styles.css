@@ -40,6 +40,7 @@
   --edge-neutral: rgb(23 23 28 / 0.78);
   --edge-card: rgb(23 23 28 / 0.18);
   --accent-hover: #4748c5;
+  --accent-press: #4a4fca;
   --accent-ink: #ffffff;
   --accent-soft: #eff1ff;
   /* Verdicts : teinte foncée pour le texte, teinte claire pour les cellules (comme en sombre). */
@@ -93,6 +94,8 @@
     --edge-neutral: rgb(237 237 241 / 0.55);
     --edge-card: rgb(237 237 241 / 0.14);
     --accent-hover: #a3aaff;
+  --accent-press: #7c86f4;
+    --accent-press: #7c86f4;
     --accent-ink: #0b0b1a;
     --accent-soft: #1d1f45;
     --ok: #4ac985;

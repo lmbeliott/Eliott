@@ -119,8 +119,8 @@ export function Community() {
       <PageHeader
         title={t('Problèmes de la communauté', 'Community problems')}
         lead={t(
-          'Écrits par des élèves et des encadrants. Sortie de chaque test calculée par la solution de l’auteur avant publication. Aucun point attribué.',
-          'Written by students and teachers. Each test’s output is computed by the author’s solution before publication. No points awarded.',
+          'Proposés par les élèves et les encadrants. Ils ne rapportent pas de points.',
+          'Proposed by students and teachers. They give no points.',
         )}
         actions={
           <LinkButton to={proposeTo}>

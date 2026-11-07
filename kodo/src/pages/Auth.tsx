@@ -15,11 +15,11 @@ const keepRetour = (params: URLSearchParams) => {
 
 const appUrl = (path: string) => `${window.location.origin}${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
 
-function AuthLayout({ title, lead, children, footer }: { title: string; lead: string; children: React.ReactNode; footer: React.ReactNode }) {
+function AuthLayout({ title, lead, children, footer }: { title: string; lead?: string; children: React.ReactNode; footer: React.ReactNode }) {
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-14 sm:px-6">
       <h1 className="text-3xl font-semibold">{title}</h1>
-      <p className="mt-2 text-ink-2">{lead}</p>
+      {lead && <p className="mt-2 text-ink-2">{lead}</p>}
       <div className="mt-8 rounded-xl border border-line bg-surface p-6 shadow-e1">{children}</div>
       <p className="mt-6 text-center text-sm text-ink-2">{footer}</p>
     </div>
@@ -78,7 +78,7 @@ export function SignIn() {
   return (
     <AuthLayout
       title={mode === 'login' ? t('Se connecter', 'Sign in') : t('Mot de passe oublié', 'Forgot password')}
-      lead={mode === 'login' ? t('Problèmes réussis, points, série et groupes sont liés au compte.', 'Solved problems, points, streak and groups are tied to the account.') : t('Un lien pour choisir un nouveau mot de passe est envoyé à cette adresse.', 'A link to choose a new password is sent to this address.')}
+      lead={mode === 'login' ? undefined : t('Un lien pour choisir un nouveau mot de passe est envoyé à cette adresse.', 'A link to choose a new password is sent to this address.')}
       footer={
         <>
           {t('Pas encore de compte ?', 'No account yet?')}{' '}
@@ -204,7 +204,7 @@ export function SignUp() {
         lead={t(`Lien de confirmation envoyé à ${f.email}. Le compte est activé à l’ouverture de ce lien.`, `Confirmation link sent to ${f.email}. The account is activated once the link is opened.`)}
         footer={<Link to={`/connexion${keep}`} className="font-medium underline underline-offset-2">{t('Aller à la connexion', 'Go to sign in')}</Link>}
       >
-        <p className="text-sm text-ink-2">{t('Le message peut arriver dans les courriers indésirables. Les problèmes résolus en invité sur cet appareil sont ajoutés au compte à la première connexion.', 'The email may land in the spam folder. Problems solved as a guest on this device are added to the account at first sign-in.')}</p>
+        <p className="text-sm text-ink-2">{t('Le message peut arriver dans les courriers indésirables.', 'The email may land in the spam folder.')}</p>
       </AuthLayout>
     )
 
@@ -217,7 +217,6 @@ export function SignUp() {
   return (
     <AuthLayout
       title={t('Créer un compte', 'Create an account')}
-      lead={t('Le compte conserve réussites, points et série, et permet de rejoindre le groupe d’une classe. Les problèmes résolus sans compte sur cet appareil y sont transférés.', 'The account keeps solves, points and streak, and gives access to class groups. Problems solved without an account on this device are transferred to it.')}
       footer={
         <>
           {t('Déjà un compte ?', 'Already have an account?')}{' '}

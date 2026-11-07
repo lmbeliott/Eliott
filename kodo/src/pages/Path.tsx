@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { BookOpen, Check } from 'lucide-react'
 import { Cell } from '../components/Cell'
 import { DifficultyMark, LinkButton, Panel, cx } from '../components/ui'
-import { chapters, chapterSummary, chapterTitle, levels, levelSummary, levelTitle, problemById, problemList, problemTitle, totalPoints, type Level } from '../lib/content'
+import { chapters, chapterSummary, chapterTitle, levels, levelSummary, levelTitle, problemById, problemList, problemTitle, type Level } from '../lib/content'
 import { useAuth } from '../lib/auth'
 import { formatNumber, formatPoints, useI18n, type UiLang } from '../lib/i18n'
 import { useProgress } from '../lib/progress'
@@ -74,24 +74,6 @@ export function Path() {
         </div>
       </header>
 
-      <p className="mt-4 text-sm text-muted">
-        {progress.loading ? null : progress.guest ? (
-          <>
-            {t(
-              `Sans compte, réussites conservées dans ce navigateur, sans points. Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus. `,
-              `Without an account, solved problems are kept in this browser and earn no points. The ${total} problems are worth ${formatPoints(lang, totalPoints)} before bonuses. `,
-            )}
-            <Link to="/inscription" className="font-medium text-ink underline underline-offset-2 hover:text-accent">
-              {t('Créer un compte', 'Create an account')}
-            </Link>
-          </>
-        ) : (
-          t(
-            `Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus : +20 % si la première soumission est acceptée, +50 % pour le défi du jour.`,
-            `The ${total} problems are worth ${formatPoints(lang, totalPoints)} before bonuses: +20% if the first submission is accepted, +50% for the daily challenge.`,
-          )
-        )}
-      </p>
 
       <div className="mt-12 flex flex-col gap-12">
         {levels.map((level, li) => {

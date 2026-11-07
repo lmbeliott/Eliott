@@ -460,8 +460,8 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
         }
         title={isNew ? t('Proposer un problème', 'Propose a problem') : t('Modifier le problème', 'Edit the problem')}
         lead={t(
-          'Énoncé, entrées des tests et solution de référence. Sorties attendues calculées dans le navigateur ; la solution reste privée.',
-          'Statement, test inputs and reference solution. Expected outputs computed in the browser; the solution stays private.',
+          'Énoncé, entrées des tests et solution de référence. La solution reste privée.',
+          'Statement, test inputs and reference solution. The solution stays private.',
         )}
         actions={
           <Segmented<'edit' | 'preview'>

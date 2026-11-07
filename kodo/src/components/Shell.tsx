@@ -236,12 +236,6 @@ function Footer() {
       </div>
       <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 text-sm sm:px-6 md:grid-cols-[1fr_auto]">
         <div className="max-w-md">
-          <p className="text-muted">
-            {t(
-              'Code exécuté dans le navigateur : Python 3.14 (Pyodide), C++17 (Clang 22 en WebAssembly).',
-              'Code runs in the browser: Python 3.14 (Pyodide), C++17 (Clang 22 compiled to WebAssembly).',
-            )}
-          </p>
         </div>
         <nav aria-label={t('Pied de page', 'Footer')} className="grid grid-cols-2 gap-x-10 gap-y-2 sm:grid-cols-3">
           {links.map((l) => (
