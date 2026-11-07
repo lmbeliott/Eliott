@@ -25,7 +25,7 @@ int main() {
             x = b[j];
             j++;
         }
-        if (resultat.empty() || resultat.back() != x) {   // les copies sont consécutives
+        if (resultat.size() == 0 || resultat[resultat.size() - 1] != x) {   // les copies sont consécutives
             resultat.push_back(x);
         }
     }
