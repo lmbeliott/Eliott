@@ -5,7 +5,7 @@ title: Tower of Hanoi with three disks
 ## Statement
 Three pegs are labelled `A`, `B` and `C`. Three disks of different sizes are stacked on peg `A`, the largest at the bottom and the smallest at the top. A **move** consists of taking the top disk of a peg and putting it on another peg, provided that a disk is never put on a smaller disk.
 
-Print a sequence of moves that brings the three disks onto peg `C`, with as few moves as possible.
+Print a sequence of moves that brings the three disks onto peg `C`, with as few moves as possible. There is only one shortest sequence of moves.
 
 ## Input
 None: the program reads nothing.

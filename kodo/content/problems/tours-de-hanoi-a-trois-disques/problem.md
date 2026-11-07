@@ -11,7 +11,7 @@ no_input: true
 ## Énoncé
 Trois piquets sont notés `A`, `B` et `C`. Sur le piquet `A` sont empilés trois disques de tailles différentes, le plus grand en bas et le plus petit en haut. Un **déplacement** consiste à prendre le disque du dessus d'un piquet et à le poser sur un autre piquet, à condition de ne jamais poser un disque sur un disque plus petit que lui.
 
-Afficher une suite de déplacements qui amène les trois disques sur le piquet `C`, avec le moins de déplacements possible.
+Afficher une suite de déplacements qui amène les trois disques sur le piquet `C`, avec le moins de déplacements possible. Il n'existe qu'une seule suite de déplacements de longueur minimale.
 
 ## Entrée
 Aucune : le programme ne lit rien.

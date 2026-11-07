@@ -59,7 +59,7 @@ In C++, the body of the loop is written between braces `{` and `}`. Indentation 
 
 ## The loop variable
 
-The `i` in `for i in range(3)` is called the **loop variable**. It takes a new value at each iteration, and you can use it in the body of the loop:
+A **variable** is a name that stands for a value. The `i` in `for i in range(3)` is a special variable, the **loop variable**: the loop itself gives it a new value at each iteration, and you can use it in the body of the loop:
 
 ```python
 for i in range(5):
@@ -88,7 +88,7 @@ Tour 3
 Tour 4
 ```
 
-At the first iteration, `i` is 0; at the second one, 1; and so on. `range(5)` produces the integers 0, 1, 2, 3 and 4: there are indeed 5 of them, but the list **starts at 0** and **stops before 5**. This convention is surprising at first, but almost every programming language shares it: `range(n)` makes exactly n iterations, numbered from 0 to n − 1.
+At the first iteration, `i` is 0; at the second one, 1; and so on. `range(5)` produces the integers 0, 1, 2, 3 and 4: there are indeed 5 of them, but the sequence **starts at 0** and **stops before 5**. This convention is surprising at first, but almost every programming language shares it: `range(n)` makes exactly n iterations, numbered from 0 to n − 1.
 
 The name `i` is a habit, not an obligation. You can write `for k in range(5)` or `for number in range(5)`, as long as you then use the same name in the body.
 
@@ -113,11 +113,11 @@ int main() {
 }
 ```
 
-This program prints 1, 2, 3, 4 and 5, one per line. The number of iterations is b − a, here 6 − 1 = 5. To print the integers from 1 to n included, you therefore write `range(1, n + 1)`: in the introduction example, the value `1001` is given directly to go up to 1,000.
+This program prints 1, 2, 3, 4 and 5, one per line. When `a` is smaller than `b`, the number of iterations is b − a, here 6 − 1 = 5. To print the integers from 1 to n included, you therefore give as bound the number that follows n: `range(1, 11)` to go up to 10, `range(1, 1001)` to go up to 1,000 as in the introduction example. In this chapter, bounds are always numbers written as such in the program.
 
 In C++, the loop `for (int i = 1; i < 6; i++)` reads in three parts:
 
-- `int i = 1`: before the first iteration, the loop variable is created and given the value 1;
+- `int i = 1`: before the first iteration, the loop variable is created and given the value 1; the word `int` (for *integer*) says that `i` holds a whole number;
 - `i < 6`: before each iteration, check that `i` is strictly less than 6; as soon as this is no longer true, the loop stops;
 - `i++`: after each iteration, increase `i` by 1.
 
@@ -270,7 +270,13 @@ Shift the instructions to repeat by 4 spaces.
 
 **In C++, a condition that stays true forever.** In `for (int i = 10; i >= 1; i++)`, `i` increases instead of decreasing: the condition `i >= 1` stays true and the loop does not stop (the site ends up interrupting it, with a time limit exceeded). The update must bring `i` closer to the exit: here `i--`.
 
-**In C++, a semicolon after the `for`.** With `for (int i = 0; i < 3; i++);`, the semicolon alone forms an empty body, repeated 3 times; the block between braces that follows is then no longer in the loop. Never put a `;` right after the closing parenthesis of a `for`.
+**In C++, a semicolon after the `for`.** With `for (int i = 0; i < 3; i++);`, the semicolon alone forms an empty body, repeated 3 times; the block between braces that follows is then no longer in the loop and runs only once. If it uses `i`, the compiler rejects the program, because `i` only exists inside the loop:
+
+```
+error: 'i' was not declared in this scope
+```
+
+Never put a `;` right after the closing parenthesis of a `for`.
 
 ## A complete example
 
@@ -304,7 +310,7 @@ int main() {
 ## Key takeaways
 
 - `for i in range(n):` repeats the body n times, with `i` taking the values 0, 1, …, n − 1. The body is made of the indented lines (Python) or the lines between braces (C++).
-- `range(a, b)` goes from `a` to `b − 1`: the bound `b` is always **excluded**. To go up to `n` included, write `range(1, n + 1)`, or `i <= n` in C++.
+- `range(a, b)` goes from `a` to `b − 1`: the bound `b` is always **excluded**. To go up to 10 included, write `range(1, 11)`, or `i <= 10` in C++.
 - `range(a, b, p)` moves forward by `p` at each iteration; a negative step counts down and stops just before `b`.
 - Only the instructions of the body are repeated; what is written after the loop runs only once.
 - To write a loop, determine the first value, the step and the last value, then check the first and last iterations by hand.

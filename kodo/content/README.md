@@ -20,6 +20,7 @@ Un problème n'est accepté que si `gen.py` produit les tests, si `solution.py` 
 - **Notions** : un exercice du chapitre k n'utilise **que** les notions des chapitres 1 à k du parcours. Au niveau 1, pas de listes avant le niveau 2, pas de fonctions, etc. La solution de référence doit pouvoir être écrite par un élève qui vient de lire le cours.
 - **Esprit olympiades dès le début** : même au niveau 1, chaque exercice est un petit problème d'algorithmique (compter, comparer, simuler, trouver un maximum, construire un motif), pas un exercice de syntaxe. Des tests qui couvrent les cas limites.
 - **Progression** : 6 à 8 exercices par chapitre, du plus simple (application directe du cours) au plus subtil, puis le problème de synthèse, qui combine les notions du chapitre et des chapitres précédents.
+- **Programmation mathématique** (demande explicite du propriétaire du site) : arithmétique, divisibilité, nombres premiers, puissances, combinatoire, géométrie, graphes et plus courts chemins sont au cœur du parcours. À partir du niveau 3, chaque chapitre propose au moins un ou deux exercices à saveur mathématique (une propriété à découvrir, un calcul à rendre efficace), en plus des chapitres qui y sont consacrés.
 - **Exercices sans entrée** (premiers chapitres, avant « Lecture de l'entrée ») : `no_input: true` et `samples: 1` dans le frontmatter ; `gen.py` affiche exactement `[""]`.
 
 ## Style des énoncés

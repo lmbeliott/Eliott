@@ -57,7 +57,7 @@ En C++, un programme a toujours la même forme générale, qu'il faut écrire à
 - `int main() { … }` est la partie principale du programme : les instructions s'écrivent entre les accolades ;
 - `return 0;` termine le programme en signalant que tout s'est bien passé.
 
-L'affichage lui-même se fait avec `cout` (pour *console output*), suivi de `<<` puis de ce qu'on veut afficher. On peut enchaîner plusieurs `<<` à la suite. Le texte `"\n"` est un caractère spécial, le **retour à la ligne** : il fait passer à la ligne suivante. En Python, `print` va à la ligne tout seul à la fin ; en C++, il faut le demander. Enfin, chaque instruction C++ se termine par un point-virgule `;`.
+L'affichage lui-même se fait avec `cout` (pour *console output*), suivi de `<<` puis de ce qu'on veut afficher. On peut enchaîner plusieurs `<<` à la suite. Le texte `"\n"` est un caractère spécial, le **retour à la ligne** : il fait passer à la ligne suivante. En Python, `print` va à la ligne tout seul à la fin ; en C++, il faut le demander. Enfin, chaque instruction C++ se termine par un point-virgule `;`. C'est lui, et non le passage à la ligne, qui marque la fin de l'instruction : une instruction trop longue peut donc s'écrire sur plusieurs lignes.
 
 ## Une suite d'instructions
 
@@ -154,7 +154,7 @@ Il reste 3 places
 1 2 4 8
 ```
 
-En Python, l'espace entre deux valeurs est ajoutée automatiquement : il ne faut donc pas en mettre dans les guillemets, sinon on en obtient deux. En C++, rien n'est ajouté automatiquement : `cout << 1 << 2` affiche `12`, collés. Il faut écrire l'espace soi-même, avec `" "`. On peut aussi l'inclure dans un texte : `cout << "Il reste " << 3 << " places\n";` affiche la même ligne.
+En Python, l'espace entre deux valeurs est ajoutée automatiquement : il ne faut donc pas en mettre dans les guillemets, sinon on en obtient deux. En C++, rien n'est ajouté automatiquement : `cout << 1 << 2` affiche `12`, collés. Il faut écrire l'espace soi-même, avec `" "`. On peut aussi l'inclure dans un texte : `cout << "Il reste " << 3 << " places\n";` affiche la même ligne : le retour à la ligne `\n` peut, lui aussi, s'écrire à l'intérieur d'un texte.
 
 C'est la façon habituelle d'afficher une liste de nombres sur une ligne, par exemple les premiers termes d'une suite.
 
@@ -250,7 +250,7 @@ IndentationError: unexpected indent
 
 En Python, le décalage en début de ligne a un sens précis, qu'on verra au chapitre suivant. Pour l'instant, toutes les instructions commencent tout à gauche.
 
-**Oublier le point-virgule en C++.** Si on écrit `cout << "un" << "\n"` sans `;`, le compilateur signale l'erreur sur la ligne suivante :
+**Oublier le point-virgule en C++.** Si on écrit `cout << "un" << "\n"` sans `;`, le compilateur ne voit pas où l'instruction se termine. Il s'en aperçoit en rencontrant le `cout` de la ligne suivante :
 
 ```
 error: expected ';' before 'cout'

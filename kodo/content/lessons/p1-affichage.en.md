@@ -57,7 +57,7 @@ In C++, a program always has the same overall shape, which must be written every
 - `int main() { … }` is the main part of the program: instructions go between the braces;
 - `return 0;` ends the program, signalling that everything went well.
 
-Printing itself is done with `cout` (for *console output*), followed by `<<` and then what you want to print. Several `<<` can be chained. The text `"\n"` is a special character, the **newline**: it moves to the next line. In Python, `print` moves to the next line by itself at the end; in C++, you have to ask for it. Finally, every C++ instruction ends with a semicolon `;`.
+Printing itself is done with `cout` (for *console output*), followed by `<<` and then what you want to print. Several `<<` can be chained. The text `"\n"` is a special character, the **newline**: it moves to the next line. In Python, `print` moves to the next line by itself at the end; in C++, you have to ask for it. Finally, every C++ instruction ends with a semicolon `;`. The semicolon, not the line break, marks the end of the instruction: a long instruction can therefore be written over several lines.
 
 ## A sequence of instructions
 
@@ -154,7 +154,7 @@ Il reste 3 places
 1 2 4 8
 ```
 
-In Python, the space between two values is added automatically: do not put one inside the quotes, otherwise you get two. In C++, nothing is added automatically: `cout << 1 << 2` prints `12`, stuck together. You must write the space yourself, with `" "`. You can also include it in a text: `cout << "Il reste " << 3 << " places\n";` prints the same line.
+In Python, the space between two values is added automatically: do not put one inside the quotes, otherwise you get two. In C++, nothing is added automatically: `cout << 1 << 2` prints `12`, stuck together. You must write the space yourself, with `" "`. You can also include it in a text: `cout << "Il reste " << 3 << " places\n";` prints the same line: the newline `\n` can also be written inside a text.
 
 This is the usual way to print a list of numbers on one line, for instance the first terms of a sequence.
 
@@ -250,7 +250,7 @@ IndentationError: unexpected indent
 
 In Python, the shift at the start of a line has a precise meaning, which you will see in the next chapter. For now, every instruction starts at the far left.
 
-**Forgetting the semicolon in C++.** If you write `cout << "un" << "\n"` without `;`, the compiler reports the error on the next line:
+**Forgetting the semicolon in C++.** If you write `cout << "un" << "\n"` without `;`, the compiler does not see where the instruction ends. It notices when it meets the `cout` of the next line:
 
 ```
 error: expected ';' before 'cout'

@@ -59,7 +59,7 @@ En C++, le corps de la boucle est écrit entre accolades `{` et `}`. L'indentati
 
 ## La variable de boucle
 
-Le `i` qui apparaît dans `for i in range(3)` s'appelle la **variable de boucle**. Elle prend une nouvelle valeur à chaque tour, et on peut l'utiliser dans le corps de la boucle :
+Une **variable** est un nom qui désigne une valeur. Le `i` qui apparaît dans `for i in range(3)` est une variable particulière, la **variable de boucle** : c'est la boucle elle-même qui lui donne une nouvelle valeur à chaque tour, et on peut l'utiliser dans le corps de la boucle :
 
 ```python
 for i in range(5):
@@ -88,7 +88,7 @@ Tour 3
 Tour 4
 ```
 
-Au premier tour, `i` vaut 0 ; au deuxième, 1 ; et ainsi de suite. `range(5)` produit les entiers 0, 1, 2, 3 et 4 : il y en a bien 5, mais la liste **commence à 0** et **s'arrête avant 5**. Cette convention surprend au début, mais elle est commune à presque tous les langages de programmation : `range(n)` fait exactement n tours, numérotés de 0 à n − 1.
+Au premier tour, `i` vaut 0 ; au deuxième, 1 ; et ainsi de suite. `range(5)` produit les entiers 0, 1, 2, 3 et 4 : il y en a bien 5, mais la suite **commence à 0** et **s'arrête avant 5**. Cette convention surprend au début, mais elle est commune à presque tous les langages de programmation : `range(n)` fait exactement n tours, numérotés de 0 à n − 1.
 
 Le nom `i` est une habitude, pas une obligation. On peut écrire `for k in range(5)` ou `for numero in range(5)`, à condition d'utiliser ensuite le même nom dans le corps.
 
@@ -113,11 +113,11 @@ int main() {
 }
 ```
 
-Ce programme affiche 1, 2, 3, 4 et 5, un par ligne. Le nombre de tours est b − a, ici 6 − 1 = 5. Pour afficher les entiers de 1 à n inclus, on écrit donc `range(1, n + 1)` : on donne directement la valeur `1001` dans l'exemple d'introduction pour aller jusqu'à 1 000.
+Ce programme affiche 1, 2, 3, 4 et 5, un par ligne. Quand `a` est plus petit que `b`, le nombre de tours est b − a, ici 6 − 1 = 5. Pour afficher les entiers de 1 à n inclus, on donne donc comme borne le nombre qui suit n : `range(1, 11)` pour aller jusqu'à 10, `range(1, 1001)` pour aller jusqu'à 1 000 comme dans l'exemple d'introduction. Dans ce chapitre, les bornes sont toujours des nombres écrits tels quels dans le programme.
 
 En C++, la boucle `for (int i = 1; i < 6; i++)` se lit en trois parties :
 
-- `int i = 1` : avant le premier tour, on crée la variable de boucle et on lui donne la valeur 1 ;
+- `int i = 1` : avant le premier tour, on crée la variable de boucle et on lui donne la valeur 1 ; le mot `int` (pour *integer*) indique que `i` contient un nombre entier ;
 - `i < 6` : avant chaque tour, on vérifie que `i` est strictement inférieur à 6 ; dès que ce n'est plus vrai, la boucle s'arrête ;
 - `i++` : après chaque tour, on augmente `i` de 1.
 
@@ -270,7 +270,13 @@ Il faut décaler de 4 espaces les instructions à répéter.
 
 **En C++, une condition qui reste toujours vraie.** Dans `for (int i = 10; i >= 1; i++)`, `i` augmente au lieu de diminuer : la condition `i >= 1` reste vraie et la boucle ne s'arrête pas (le site finit par l'interrompre, avec un dépassement du temps limite). Il faut que la mise à jour rapproche `i` de la sortie : ici `i--`.
 
-**En C++, un point-virgule après le `for`.** Avec `for (int i = 0; i < 3; i++);`, le point-virgule forme à lui seul un corps vide, répété 3 fois ; le bloc entre accolades qui suit n'est alors plus dans la boucle. Il ne faut jamais mettre de `;` juste après la parenthèse fermante d'un `for`.
+**En C++, un point-virgule après le `for`.** Avec `for (int i = 0; i < 3; i++);`, le point-virgule forme à lui seul un corps vide, répété 3 fois ; le bloc entre accolades qui suit n'est alors plus dans la boucle et n'est exécuté qu'une fois. S'il utilise `i`, le compilateur refuse le programme, car `i` n'existe que dans la boucle :
+
+```
+error: 'i' was not declared in this scope
+```
+
+Il ne faut jamais mettre de `;` juste après la parenthèse fermante d'un `for`.
 
 ## Un exemple complet
 
@@ -304,7 +310,7 @@ int main() {
 ## À retenir
 
 - `for i in range(n):` répète le corps n fois, avec `i` qui vaut 0, 1, …, n − 1. Le corps est formé des lignes indentées (Python) ou placées entre accolades (C++).
-- `range(a, b)` va de `a` à `b − 1` : la borne `b` est toujours **exclue**. Pour aller jusqu'à `n` inclus, on écrit `range(1, n + 1)` ou `i <= n` en C++.
+- `range(a, b)` va de `a` à `b − 1` : la borne `b` est toujours **exclue**. Pour aller jusqu'à 10 inclus, on écrit `range(1, 11)`, ou `i <= 10` en C++.
 - `range(a, b, p)` avance de `p` à chaque tour ; un pas négatif compte à rebours et s'arrête juste avant `b`.
 - Seules les instructions du corps sont répétées ; ce qui est écrit après la boucle n'est exécuté qu'une fois.
 - Pour écrire une boucle, on détermine la première valeur, le pas et la dernière valeur, puis on vérifie à la main les premiers et les derniers tours.
