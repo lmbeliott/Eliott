@@ -61,7 +61,7 @@ int main() {
 }
 ```
 
-Le programme affiche `12 9`, puis le tableau modifié `[12, 7, 9, 21]`, puis `21`, le dernier élément. En Python, on peut aussi compter depuis la fin avec des indices négatifs : `t[-1]` est le dernier élément, `t[-2]` l'avant-dernier. Cette écriture n'existe pas en C++.
+Le programme affiche `12 9`, puis le tableau modifié (`[12, 7, 9, 21]` en Python, `12 7 9 21` en C++), puis `21`, le dernier élément. En Python, on peut aussi compter depuis la fin avec des indices négatifs : `t[-1]` est le dernier élément, `t[-2]` l'avant-dernier. Cette écriture n'existe pas en C++.
 
 ## Lire un tableau
 
@@ -138,7 +138,7 @@ Le programme affiche `14`, puis les indices des éléments strictement positifs 
 
 ## Construire un tableau
 
-Un tableau peut grandir. En Python, `t.append(x)` ajoute `x` à la fin de `t`, et sa longueur augmente de 1. En C++, c'est `t.push_back(x)`. On part souvent d'un tableau vide et on y ajoute les éléments un par un.
+Un tableau peut grandir. En Python, `t.append(x)` ajoute `x` à la fin de `t`, et sa longueur augmente de 1. En C++, c'est `t.push_back(x)`. On part souvent d'un tableau vide et on y ajoute les éléments un par un. C'est ainsi qu'on lit `N` valeurs données une par ligne : `t = []`, puis `for i in range(n): t.append(int(input()))`. En C++, rien ne change : `cin` saute les retours à la ligne comme les espaces.
 
 Pour afficher tous les éléments d'un tableau sur une ligne, séparés par des espaces, Python offre une écriture courte : `print(*t)`. L'étoile « déplie » le tableau, comme si on avait écrit `print(t[0], t[1], ...)`. En C++, on fait une boucle.
 

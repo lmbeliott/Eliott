@@ -61,7 +61,7 @@ int main() {
 }
 ```
 
-The program prints `12 9`, then the modified array `[12, 7, 9, 21]`, then `21`, the last element. In Python, you can also count from the end with negative indices: `t[-1]` is the last element, `t[-2]` the one before. This notation does not exist in C++.
+The program prints `12 9`, then the modified array (`[12, 7, 9, 21]` in Python, `12 7 9 21` in C++), then `21`, the last element. In Python, you can also count from the end with negative indices: `t[-1]` is the last element, `t[-2]` the one before. This notation does not exist in C++.
 
 ## Reading an array
 
@@ -138,7 +138,7 @@ The program prints `14`, then the indices of the strictly positive elements: `0 
 
 ## Building an array
 
-An array can grow. In Python, `t.append(x)` adds `x` at the end of `t`, and its length increases by 1. In C++, it is `t.push_back(x)`. You often start from an empty array and add the elements one by one.
+An array can grow. In Python, `t.append(x)` adds `x` at the end of `t`, and its length increases by 1. In C++, it is `t.push_back(x)`. You often start from an empty array and add the elements one by one. This is how you read `N` values given one per line: `t = []`, then `for i in range(n): t.append(int(input()))`. In C++, nothing changes: `cin` skips newlines just like spaces.
 
 To print all the elements of an array on one line, separated by spaces, Python offers a short notation: `print(*t)`. The star "unpacks" the array, as if you had written `print(t[0], t[1], ...)`. In C++, use a loop.
 
