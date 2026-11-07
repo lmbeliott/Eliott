@@ -1,5 +1,5 @@
 ---
-id: moins-de-virages
+id: chemin-avec-le-moins-de-virages
 title: Chemin avec le moins de virages
 chapter: n4-graphes
 order: 6
