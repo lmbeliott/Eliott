@@ -111,6 +111,13 @@
           "summary": "Faire à chaque étape le meilleur choix local, et savoir le justifier.",
           "title_en": "Greedy algorithms",
           "summary_en": "Make the best local choice at each step, and know how to justify it."
+        },
+        {
+          "id": "n3-arithmetique",
+          "title": "Arithmétique",
+          "title_en": "Number theory",
+          "summary": "PGCD, crible des nombres premiers, calculs modulo et puissance rapide.",
+          "summary_en": "GCD, prime sieve, modular arithmetic and fast exponentiation."
         }
       ]
     },
@@ -149,6 +156,34 @@
           "summary": "Arbres de Fenwick, arbres de segments et astuces sur les bits.",
           "title_en": "Data structures",
           "summary_en": "Fenwick trees, segment trees and bit tricks."
+        },
+        {
+          "id": "n4-arbres",
+          "title": "Arbres",
+          "title_en": "Trees",
+          "summary": "Parcours d'arbres, tailles de sous-arbres, diamètre et ancêtre commun.",
+          "summary_en": "Tree traversals, subtree sizes, diameter and lowest common ancestor."
+        },
+        {
+          "id": "n4-chaines-avancees",
+          "title": "Chaînes avancées",
+          "title_en": "Advanced strings",
+          "summary": "Recherche de motifs (KMP, fonction Z), hachage et palindromes.",
+          "summary_en": "Pattern matching (KMP, Z-function), hashing and palindromes."
+        },
+        {
+          "id": "n4-dynamique-avancee",
+          "title": "Programmation dynamique avancée",
+          "title_en": "Advanced dynamic programming",
+          "summary": "Masques de bits, intervalles, arbres et chiffres.",
+          "summary_en": "Bitmasks, intervals, trees and digits."
+        },
+        {
+          "id": "n4-defis",
+          "title": "Défis olympiques",
+          "title_en": "Olympiad challenges",
+          "summary": "Problèmes de finale qui combinent plusieurs idées.",
+          "summary_en": "Final-round problems that combine several ideas."
         }
       ]
     }
