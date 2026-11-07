@@ -39,7 +39,7 @@ On découpe le problème en trois fonctions, chacune facile à vérifier seule.
 - `produit(a, b)` renvoie une liste de `len(a) + len(b) - 1` zéros, puis, pour chaque couple `(i, j)`, ajoute `a[i] × b[j]` à la case `i + j`. C'est exactement la distributivité : `(a₀ + a₁x)(b₀ + b₁x) = a₀b₀ + (a₀b₁ + a₁b₀)x + a₁b₁x²`.
 - `composer(p, q)` applique la **méthode de Horner** : `P(y) = p₀ + y(p₁ + y(p₂ + … + y pₙ))`. On part de `r = [pₙ]`, puis, pour `i` de `n - 1` jusqu'à 0, `r = somme(produit(r, q), [pᵢ])`. À la fin, `r` contient `P(Q(x))`.
 
-Le degré du résultat est exactement `n × m`, car son coefficient de plus haut degré vaut `pₙ × qₘⁿ`, qui n'est pas nul. Les listes calculées ont donc la bonne longueur, et il suffit d'afficher `r`.
+Chaque multiplication par `q` allonge la liste de `m` cases : à la fin, `r` a exactement `n × m + 1` coefficients, et il suffit de l'afficher. Si `m ≥ 1`, le dernier vaut `pₙ × qₘⁿ`, qui n'est pas nul : le degré de `P(Q(x))` est bien `n × m`. Si `m = 0`, `Q` est une constante, et le résultat est l'unique nombre `P(q₀)`, qui peut valoir 0.
 
 Les fonctions renvoient de nouvelles listes et ne modifient pas leurs arguments : on peut réutiliser `q` à chaque tour sans risque. En C++, on passe les tableaux en `const vector<long long> &` pour éviter les copies, et on renvoie un `vector<long long>`.
 

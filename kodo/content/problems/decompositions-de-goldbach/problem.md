@@ -2,7 +2,7 @@
 id: decompositions-de-goldbach
 title: Décompositions de Goldbach
 chapter: p2-fonctions
-order: 3
+order: 2
 tags: [fonctions, mathématiques]
 samples: 2
 ---

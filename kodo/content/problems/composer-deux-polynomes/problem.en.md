@@ -33,7 +33,7 @@ Split the problem into three functions, each easy to check on its own.
 - `multiply(a, b)` returns a list of `len(a) + len(b) - 1` zeros, then, for each pair `(i, j)`, adds `a[i] × b[j]` to cell `i + j`. This is exactly distributivity: `(a₀ + a₁x)(b₀ + b₁x) = a₀b₀ + (a₀b₁ + a₁b₀)x + a₁b₁x²`.
 - `compose(p, q)` applies **Horner's method**: `P(y) = p₀ + y(p₁ + y(p₂ + … + y pₙ))`. Start from `r = [pₙ]`, then, for `i` from `n - 1` down to 0, `r = add(multiply(r, q), [pᵢ])`. At the end, `r` holds `P(Q(x))`.
 
-The degree of the result is exactly `n × m`, because its highest-degree coefficient is `pₙ × qₘⁿ`, which is not zero. The computed lists therefore have the right length, and you just print `r`.
+Each multiplication by `q` makes the list `m` cells longer: in the end, `r` has exactly `n × m + 1` coefficients, and you just print it. If `m ≥ 1`, the last one is `pₙ × qₘⁿ`, which is not zero: the degree of `P(Q(x))` is indeed `n × m`. If `m = 0`, `Q` is a constant, and the result is the single number `P(q₀)`, which can be 0.
 
 The functions return new lists and do not modify their arguments: `q` can safely be reused at each turn. In C++, pass the arrays as `const vector<long long> &` to avoid copies, and return a `vector<long long>`.
 

@@ -13,6 +13,8 @@ Pour chacun des `Q` entiers `N` donnés, afficher sa **racine carrée entière**
 
 Par exemple, pour `N = 30`, on a 5 × 5 = 25 ≤ 30 < 36 = 6 × 6 : on affiche `5 5`.
 
+Attention : les flottants sont approchés. Pour les grands `N`, la racine calculée par `N ** 0.5` ou `sqrt(N)` puis convertie en entier peut être fausse d'une unité, et les tests contiennent de tels cas.
+
 ## Entrée
 La première ligne contient l'entier `Q`. Chacune des `Q` lignes suivantes contient un entier `N`.
 

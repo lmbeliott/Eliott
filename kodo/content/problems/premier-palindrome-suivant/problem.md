@@ -2,7 +2,7 @@
 id: premier-palindrome-suivant
 title: Premier palindrome suivant
 chapter: p2-fonctions
-order: 4
+order: 3
 tags: [fonctions, mathématiques]
 samples: 2
 ---

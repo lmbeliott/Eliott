@@ -182,7 +182,9 @@ for (int i = 0; i < n; i++) {
 
 ## Creating an empty grid
 
-To create a grid of `n` rows and `m` columns filled with zeros, append `n` times a **new** row `[0] * m`. Python offers a shorter way of writing that does exactly the same: `[[0] * m for i in range(n)]` builds a list by evaluating `[0] * m` once for each value of `i`, hence with `n` distinct rows. In C++, `vector<vector<int>> g(n, vector<int>(m, 0));` creates `n` copies of a row of `m` zeros.
+To create a grid of `n` rows and `m` columns filled with zeros, append `n` times a **new** row `[0] * m`. Python offers a shorter way of writing that does exactly the same: `[[0] * m for i in range(n)]` builds a list by evaluating `[0] * m` once for each value of `i`, hence with `n` distinct rows. This form, `[expression for x in ...]`, is called a **list comprehension**: it builds the list of the values of the expression, one for each turn of the loop. In C++, `vector<vector<int>> g(n, vector<int>(m, 0));` creates `n` copies of a row of `m` zeros.
+
+For an empty grid of characters, write in the same way `[["."] * m for i in range(n)]` in Python, and `vector<string> g(n, string(m, '.'));` in C++, where `string(m, '.')` is a string of `m` dots.
 
 ```python
 n, m = 2, 3
@@ -279,15 +281,66 @@ It prints:
 
 The corners have 2 neighbours, the other border cells 3, the inner cells 4.
 
-The **8 neighbours** add the four diagonal cells: the moves are all combinations of `-1`, `0` and `1` for the row and for the column, except `(0, 0)`, which is the cell itself. You can write two lists of 8 elements, or two loops `for a in range(-1, 2)` and `for b in range(-1, 2)` skipping the case `a == 0 and b == 0`.
+The **8 neighbours** add the four diagonal cells: the moves are all combinations of `-1`, `0` and `1` for the row and for the column, except `(0, 0)`, which is the cell itself. You can write two lists of 8 elements, `di = [-1, -1, -1, 0, 0, 1, 1, 1]` and `dj = [-1, 0, 1, -1, 1, -1, 0, 1]`, or two loops `for a in range(-1, 2)` and `for b in range(-1, 2)`, handling the move only if `a != 0 or b != 0`.
 
-The same lists are used to **move in a straight line**: from a cell, repeat `i = i + di[d]` and `j = j + dj[d]` as long as the cell stays inside the grid. This is how you go through all the cells that a chess rook or queen can reach.
+The same moves are used to **go in a straight line**: from a cell, add the move `(a, b)` again and again, as long as the cell stays inside the grid. This is how you go through all the cells that a chess rook or queen can reach. The following function counts the free cells `.` crossed from `(i, j)` in the direction `(a, b)`, up to the border or the first obstacle:
+
+```python
+def reach(g, i, j, a, b):
+    n = len(g)
+    m = len(g[0])
+    k = 0
+    x = i + a
+    y = j + b
+    while 0 <= x < n and 0 <= y < m and g[x][y] == ".":
+        k = k + 1
+        x = x + a
+        y = y + b
+    return k
+
+g = [".....",
+     ".#...",
+     "....."]
+print(reach(g, 0, 0, 0, 1), reach(g, 0, 0, 1, 0), reach(g, 0, 0, 1, 1), reach(g, 2, 4, -1, -1))
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int reach(const vector<string> &g, int i, int j, int a, int b) {
+    int n = g.size();
+    int m = g[0].size();
+    int k = 0;
+    int x = i + a;
+    int y = j + b;
+    while (0 <= x && x < n && 0 <= y && y < m && g[x][y] == '.') {
+        k = k + 1;
+        x = x + a;
+        y = y + b;
+    }
+    return k;
+}
+
+int main() {
+    vector<string> g = {".....",
+                        ".#...",
+                        "....."};
+    cout << reach(g, 0, 0, 0, 1) << " " << reach(g, 0, 0, 1, 0) << " "
+         << reach(g, 0, 0, 1, 1) << " " << reach(g, 2, 4, -1, -1) << "\n";
+    return 0;
+}
+```
+
+The program prints `4 2 0 2`. From the corner `(0, 0)`, to the right, the 4 other cells of row 0 are free; downwards, column 0 has 2; diagonally, the first cell, `(1, 1)`, is a wall. From `(2, 4)` towards the top left, you cross `(1, 3)` and `(0, 2)`, then leave the grid. The order of the conditions of the `while` matters: the bounds first, the cell next, so that you never read a cell that does not exist.
 
 ## Simulating a step
 
 In a **simulation**, the grid evolves in steps, and the new state of each cell depends on the old state of its neighbours. You must then build the new grid in **another** grid. If you modified the grid in place, the cells examined later would see neighbours that were already updated, and not their state at the start of the step.
 
-To start from a copy of the current grid, be careful: `h = g` copies nothing. As for lists passed to a function, `h` becomes a second name for the same grid. Even `list(g)` is not enough: the new list holds the same rows. You must copy **each row**: `h = [list(row) for row in g]`. In C++, on the contrary, `vector<vector<int>> h = g;` makes a real full copy, rows included.
+To start from a copy of the current grid, be careful: `h = g` copies nothing. As for lists passed to a function, `h` becomes a second name for the same grid. Even `list(g)` is not enough: the new list holds the same rows. You must copy **each row**: `h = [list(row) for row in g]`, a list comprehension that builds a copy `list(row)` for each row of `g`. In C++, on the contrary, `vector<vector<int>> h = g;` makes a real full copy, rows included.
 
 Once the new grid is filled, replace the old one: `g = h`. Writing a function `step(g)` that returns the new grid makes the program very readable: the main loop becomes `for t in range(k): g = step(g)`.
 

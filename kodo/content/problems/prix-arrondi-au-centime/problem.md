@@ -30,6 +30,6 @@ Le prix taxe comprise en euros, avec exactement deux chiffres après le point.
 ## Solution
 On travaille en centimes, avec des entiers. Le prix exact est `P × (100 + T) / 100` centimes. Son arrondi au plus proche, moitié vers le haut, est `c = (2 × P × (100 + T) + 100) // 200` (la formule `(2a + b) // (2b)` avec `a = P × (100 + T)` et `b = 100`).
 
-Il reste à afficher `c` centimes en euros : `c / 100` avec deux décimales. Ce dernier passage par un flottant est sans danger, car `c / 100` a exactement deux décimales et l'erreur d'approximation est des milliards de fois plus petite qu'un centime.
+Il reste à afficher `c` centimes en euros : `c / 100` avec deux décimales. Ce dernier passage par un flottant est sans danger, car `c / 100` a exactement deux décimales et vaut au plus 2 × 10⁹ euros : avec environ 16 chiffres significatifs, l'erreur d'approximation reste plus de dix mille fois plus petite qu'un centime, et l'arrondi à deux décimales retombe sur la bonne valeur.
 
 Le piège : calculer directement `P * (100 + T) / 10000` en flottant puis l'afficher avec `.2f`. Avec `P = 1` et `T = 50`, le prix exact est 1,5 centime, qu'il faut arrondir à 2 ; le flottant 0,015 est en réalité stocké comme 0,01499999…, et `.2f` affiche `0.01` au lieu de `0.02`.

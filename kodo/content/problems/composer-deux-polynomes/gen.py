@@ -21,6 +21,8 @@ tests.append(poly(5, [9] * 6) + poly(5, [9] * 6))
 tests.append(poly(5, [-9] * 6) + poly(5, [9, -9, 9, -9, 9, -9]))
 tests.append(poly(5, [0, 0, 0, 0, 0, 1]) + poly(1, [1, 1]))
 tests.append(poly(2, [0, -1, 1]) + poly(2, [0, 0, 1]))
+# Q constante et P(q0) = 0 : un seul coefficient, nul.
+tests.append(poly(2, [-6, 1, 1]) + poly(0, [2]))
 for _ in range(4):
     tests.append(poly(random.randint(0, 5)) + poly(random.randint(0, 5)))
 print(json.dumps(tests))

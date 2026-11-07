@@ -227,6 +227,7 @@ Python stops with `UnboundLocalError: cannot access local variable 'counter' whe
 A function can call another one. A program is then built as an assembly of small bricks. To count the prime **palindromes** (numbers that read the same both ways, like 131) between `a` and `b`, write one function to reverse a number, another one to recognise a palindrome, and reuse `is_prime`.
 
 ```python
+# is_prime is the function written above.
 def reverse_number(n):
     r = 0
     while n > 0:
@@ -248,6 +249,7 @@ print(count_prime_palindromes(1, 200))
 ```
 
 ```cpp
+// is_prime is the function written above.
 int reverse_number(int n) {
     int r = 0;
     while (n > 0) {
@@ -284,6 +286,7 @@ To simplify a fraction `p/q`, you must return two numbers. In Python, write `ret
 In C++, a function returns only one value. You then use **pass by reference**: a parameter declared with `&`, such as `int &a`, is not a copy but **another name** for the variable passed as argument. What the function writes into `a` is written directly into the caller's variable.
 
 ```python
+# gcd is Euclid's function written above.
 def simplify(p, q):
     d = gcd(p, q)
     return p // d, q // d
@@ -293,6 +296,7 @@ print(a, b)
 ```
 
 ```cpp
+// gcd is Euclid's function written above.
 void simplify(long long p, long long q, long long &a, long long &b) {
     long long d = gcd(p, q);
     a = p / d;
@@ -355,13 +359,56 @@ int main() {
 
 The program prints `[1, 5, 4, 3, 2, 6]` in Python and `1 5 4 3 2 6` in C++. The function returns nothing: its effect is the change in the list.
 
-Be careful: **assigning** a new list to the parameter changes nothing for the caller. If the function writes `t = t + [0]`, the local name `t` now refers to another list, and the original list is untouched. To build a new list, return it with `return`. Conversely, if the caller wants to keep its list unchanged, it passes a copy, obtained with `list(t)`.
+A function can also **build** a list and return it. It creates a local list, fills it, then returns it with `return`. In C++, the return type is then `vector<int>`.
 
-In C++, it is the other way round: a parameter `vector<int> t` is a **copy**. The changes are lost at the end of the call, and copying a large array at each call takes time. Write `vector<int> &t` to modify the caller's array, and `const vector<int> &t` to read it without copying it (`const` forbids modifying it). A function can also return an array: `vector<int> squares(int n)`.
+```python
+def divisors(n):
+    result = []
+    for d in range(1, n + 1):
+        if n % d == 0:
+            result.append(d)
+    return result
+
+t = divisors(12)
+print(len(t))
+print(*t)
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> divisors(int n) {
+    vector<int> result;
+    for (int d = 1; d <= n; d++) {
+        if (n % d == 0) {
+            result.push_back(d);
+        }
+    }
+    return result;
+}
+
+int main() {
+    vector<int> t = divisors(12);
+    cout << t.size() << "\n";
+    for (int x : t) {
+        cout << x << " ";
+    }
+    cout << "\n";
+    return 0;
+}
+```
+
+The program prints `6`, then `1 2 3 4 6 12`. Each call creates a new list `result`: two calls `divisors(12)` and `divisors(15)` return two independent lists.
+
+Be careful: **assigning** a new list to the parameter changes nothing for the caller. If the function writes `t = [0] * len(t)`, the local name `t` now refers to another list, and the original list is untouched. To build a new list, return it with `return`, like `divisors` above. Conversely, if the caller wants to keep its list unchanged, it passes a copy, obtained with `list(t)`.
+
+In C++, it is the other way round: a parameter `vector<int> t` is a **copy**. The changes are lost at the end of the call, and copying a large array at each call takes time. Write `vector<int> &t` to modify the caller's array, and `const vector<int> &t` to read it without copying it (`const` forbids modifying it).
 
 ## Common mistakes
 
-**Forgetting `return`.** A function that computes the right result without returning it returns `None`. `print(digit_sum(2026))` then prints `None`, and `digit_sum(7) + 1` causes `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. In C++, the program compiles but the result is garbage; the option `-Wall` shows `warning: control reaches end of non-void function`. A `print` in the function does not replace a `return`: it prints, but passes nothing back to the program.
+**Forgetting `return`.** A function that computes the right result without returning it returns `None`. `print(digit_sum(2026))` then prints `None`, and `digit_sum(7) + 1` causes `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. In C++, the program compiles but the result is garbage; the option `-Wall` shows `warning: no return statement in function returning non-void` (or `control reaches end of non-void function` if only one of the paths forgets the `return`). A `print` in the function does not replace a `return`: it prints, but passes nothing back to the program.
 
 **Returning too early.** In `is_prime`, writing `else: return True` inside the loop would give the answer after the first divisor tested: 9 would be declared prime, because 2 does not divide it. You can only conclude "prime" **after** the loop.
 

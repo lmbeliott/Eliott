@@ -182,7 +182,9 @@ for (int i = 0; i < n; i++) {
 
 ## Créer une grille vide
 
-Pour créer une grille de `n` lignes et `m` colonnes remplie de zéros, on ajoute `n` fois une **nouvelle** ligne `[0] * m`. Python propose une écriture plus courte, qui fait exactement la même chose : `[[0] * m for i in range(n)]` construit une liste en évaluant `[0] * m` une fois pour chaque valeur de `i`, donc avec `n` lignes distinctes. En C++, `vector<vector<int>> g(n, vector<int>(m, 0));` crée `n` copies d'une ligne de `m` zéros.
+Pour créer une grille de `n` lignes et `m` colonnes remplie de zéros, on ajoute `n` fois une **nouvelle** ligne `[0] * m`. Python propose une écriture plus courte, qui fait exactement la même chose : `[[0] * m for i in range(n)]` construit une liste en évaluant `[0] * m` une fois pour chaque valeur de `i`, donc avec `n` lignes distinctes. Cette écriture, `[expression for x in ...]`, s'appelle une **liste en compréhension** : elle fabrique la liste des valeurs de l'expression, une pour chaque tour de la boucle. En C++, `vector<vector<int>> g(n, vector<int>(m, 0));` crée `n` copies d'une ligne de `m` zéros.
+
+Pour une grille de caractères vide, on écrit de même `[["."] * m for i in range(n)]` en Python, et `vector<string> g(n, string(m, '.'));` en C++, où `string(m, '.')` est une chaîne de `m` points.
 
 ```python
 n, m = 2, 3
@@ -279,15 +281,66 @@ Il affiche :
 
 Les coins ont 2 voisins, les autres cases du bord 3, les cases intérieures 4.
 
-Les **8 voisins** ajoutent les quatre cases en diagonale : les déplacements sont toutes les combinaisons de `-1`, `0` et `1` pour la ligne et pour la colonne, sauf `(0, 0)`, qui est la case elle-même. On peut écrire deux listes de 8 éléments, ou deux boucles `for a in range(-1, 2)` et `for b in range(-1, 2)` en sautant le cas `a == 0 and b == 0`.
+Les **8 voisins** ajoutent les quatre cases en diagonale : les déplacements sont toutes les combinaisons de `-1`, `0` et `1` pour la ligne et pour la colonne, sauf `(0, 0)`, qui est la case elle-même. On peut écrire deux listes de 8 éléments, `di = [-1, -1, -1, 0, 0, 1, 1, 1]` et `dj = [-1, 0, 1, -1, 1, -1, 0, 1]`, ou deux boucles `for a in range(-1, 2)` et `for b in range(-1, 2)`, en ne traitant le déplacement que si `a != 0 or b != 0`.
 
-Les mêmes listes servent à **avancer en ligne droite** : à partir d'une case, on répète `i = i + di[d]` et `j = j + dj[d]` tant que la case reste dans la grille. C'est ainsi qu'on parcourt toutes les cases qu'une tour ou une dame d'échecs peut atteindre.
+Les mêmes déplacements servent à **avancer en ligne droite** : à partir d'une case, on ajoute le déplacement `(a, b)` encore et encore, tant que la case reste dans la grille. C'est ainsi qu'on parcourt toutes les cases qu'une tour ou une dame d'échecs peut atteindre. La fonction suivante compte les cases libres `.` traversées depuis `(i, j)` dans la direction `(a, b)`, jusqu'au bord ou au premier obstacle :
+
+```python
+def portee(g, i, j, a, b):
+    n = len(g)
+    m = len(g[0])
+    k = 0
+    x = i + a
+    y = j + b
+    while 0 <= x < n and 0 <= y < m and g[x][y] == ".":
+        k = k + 1
+        x = x + a
+        y = y + b
+    return k
+
+g = [".....",
+     ".#...",
+     "....."]
+print(portee(g, 0, 0, 0, 1), portee(g, 0, 0, 1, 0), portee(g, 0, 0, 1, 1), portee(g, 2, 4, -1, -1))
+```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int portee(const vector<string> &g, int i, int j, int a, int b) {
+    int n = g.size();
+    int m = g[0].size();
+    int k = 0;
+    int x = i + a;
+    int y = j + b;
+    while (0 <= x && x < n && 0 <= y && y < m && g[x][y] == '.') {
+        k = k + 1;
+        x = x + a;
+        y = y + b;
+    }
+    return k;
+}
+
+int main() {
+    vector<string> g = {".....",
+                        ".#...",
+                        "....."};
+    cout << portee(g, 0, 0, 0, 1) << " " << portee(g, 0, 0, 1, 0) << " "
+         << portee(g, 0, 0, 1, 1) << " " << portee(g, 2, 4, -1, -1) << "\n";
+    return 0;
+}
+```
+
+Le programme affiche `4 2 0 2`. Depuis le coin `(0, 0)`, vers la droite, les 4 autres cases de la ligne 0 sont libres ; vers le bas, la colonne 0 en compte 2 ; en diagonale, la première case, `(1, 1)`, est un mur. Depuis `(2, 4)` vers le haut à gauche, on traverse `(1, 3)` et `(0, 2)`, puis on sort de la grille. L'ordre des conditions du `while` compte : les bornes d'abord, la case ensuite, pour ne jamais lire une case qui n'existe pas.
 
 ## Simuler une étape
 
 Dans une **simulation**, la grille évolue par étapes, et le nouvel état de chaque case dépend de l'ancien état de ses voisins. Il faut alors construire la nouvelle grille dans une **autre** grille. Si on modifiait la grille sur place, les cases examinées plus tard verraient des voisins déjà mis à jour, et non leur état au début de l'étape.
 
-Pour partir d'une copie de la grille actuelle, attention : `h = g` ne copie rien. Comme pour les listes passées à une fonction, `h` devient un second nom pour la même grille. Même `list(g)` ne suffit pas : la nouvelle liste contient les mêmes lignes. Il faut copier **chaque ligne** : `h = [list(ligne) for ligne in g]`. En C++, au contraire, `vector<vector<int>> h = g;` fabrique une vraie copie complète, lignes comprises.
+Pour partir d'une copie de la grille actuelle, attention : `h = g` ne copie rien. Comme pour les listes passées à une fonction, `h` devient un second nom pour la même grille. Même `list(g)` ne suffit pas : la nouvelle liste contient les mêmes lignes. Il faut copier **chaque ligne** : `h = [list(ligne) for ligne in g]`, une liste en compréhension qui fabrique une copie `list(ligne)` pour chaque ligne de `g`. En C++, au contraire, `vector<vector<int>> h = g;` fabrique une vraie copie complète, lignes comprises.
 
 Une fois la nouvelle grille remplie, on remplace l'ancienne : `g = h`. Écrire une fonction `etape(g)` qui renvoie la nouvelle grille rend le programme très lisible : la boucle principale devient `for t in range(k): g = etape(g)`.
 

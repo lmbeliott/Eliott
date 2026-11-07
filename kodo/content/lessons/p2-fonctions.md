@@ -227,6 +227,7 @@ Python s'arrête avec `UnboundLocalError: cannot access local variable 'compteur
 Une fonction peut en appeler une autre. On construit ainsi un programme comme un assemblage de petites briques. Pour compter les nombres premiers **palindromes** (qui se lisent pareil dans les deux sens, comme 131) entre `a` et `b`, on écrit une fonction pour renverser un nombre, une autre pour reconnaître un palindrome, et on réutilise `est_premier`.
 
 ```python
+# est_premier est la fonction écrite plus haut.
 def renverser(n):
     r = 0
     while n > 0:
@@ -248,6 +249,7 @@ print(compter(1, 200))
 ```
 
 ```cpp
+// est_premier est la fonction écrite plus haut.
 int renverser(int n) {
     int r = 0;
     while (n > 0) {
@@ -284,6 +286,7 @@ Pour simplifier une fraction `p/q`, il faut renvoyer deux nombres. En Python, on
 En C++, une fonction ne renvoie qu'une valeur. On utilise alors le **passage par référence** : un paramètre déclaré avec `&`, comme `int &a`, n'est pas une copie mais un **autre nom** pour la variable passée en argument. Ce que la fonction écrit dans `a` est écrit directement dans la variable de l'appelant.
 
 ```python
+# pgcd est la fonction d'Euclide écrite plus haut.
 def simplifier(p, q):
     d = pgcd(p, q)
     return p // d, q // d
@@ -293,6 +296,7 @@ print(a, b)
 ```
 
 ```cpp
+// pgcd est la fonction d'Euclide écrite plus haut.
 void simplifier(long long p, long long q, long long &a, long long &b) {
     long long d = pgcd(p, q);
     a = p / d;
@@ -355,13 +359,56 @@ int main() {
 
 Le programme affiche `[1, 5, 4, 3, 2, 6]` en Python et `1 5 4 3 2 6` en C++. La fonction ne renvoie rien : son effet est la modification de la liste.
 
-Attention : **affecter** une nouvelle liste au paramètre ne change rien pour l'appelant. Si la fonction écrit `t = t + [0]`, le nom local `t` désigne désormais une autre liste, et la liste de départ est intacte. Pour fabriquer une nouvelle liste, on la renvoie avec `return`. À l'inverse, si l'appelant veut garder sa liste intacte, il passe une copie, obtenue avec `list(t)`.
+Une fonction peut aussi **fabriquer** une liste et la renvoyer. Elle crée une liste locale, la remplit, puis la renvoie avec `return`. En C++, le type de retour est alors `vector<int>`.
 
-En C++, c'est le contraire : un paramètre `vector<int> t` est une **copie**. Les modifications sont perdues à la fin de l'appel, et copier un grand tableau à chaque appel coûte du temps. On écrit `vector<int> &t` pour modifier le tableau de l'appelant, et `const vector<int> &t` pour le lire sans le copier (`const` interdit de le modifier). Une fonction peut aussi renvoyer un tableau : `vector<int> carres(int n)`.
+```python
+def diviseurs(n):
+    resultat = []
+    for d in range(1, n + 1):
+        if n % d == 0:
+            resultat.append(d)
+    return resultat
+
+t = diviseurs(12)
+print(len(t))
+print(*t)
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> diviseurs(int n) {
+    vector<int> resultat;
+    for (int d = 1; d <= n; d++) {
+        if (n % d == 0) {
+            resultat.push_back(d);
+        }
+    }
+    return resultat;
+}
+
+int main() {
+    vector<int> t = diviseurs(12);
+    cout << t.size() << "\n";
+    for (int x : t) {
+        cout << x << " ";
+    }
+    cout << "\n";
+    return 0;
+}
+```
+
+Le programme affiche `6`, puis `1 2 3 4 6 12`. Chaque appel crée une nouvelle liste `resultat` : deux appels `diviseurs(12)` et `diviseurs(15)` renvoient deux listes indépendantes.
+
+Attention : **affecter** une nouvelle liste au paramètre ne change rien pour l'appelant. Si la fonction écrit `t = [0] * len(t)`, le nom local `t` désigne désormais une autre liste, et la liste de départ est intacte. Pour fabriquer une nouvelle liste, on la renvoie avec `return`, comme `diviseurs` ci-dessus. À l'inverse, si l'appelant veut garder sa liste intacte, il passe une copie, obtenue avec `list(t)`.
+
+En C++, c'est le contraire : un paramètre `vector<int> t` est une **copie**. Les modifications sont perdues à la fin de l'appel, et copier un grand tableau à chaque appel coûte du temps. On écrit `vector<int> &t` pour modifier le tableau de l'appelant, et `const vector<int> &t` pour le lire sans le copier (`const` interdit de le modifier).
 
 ## Les erreurs fréquentes
 
-**Oublier le `return`.** Une fonction qui calcule le bon résultat sans le renvoyer renvoie `None`. `print(somme_chiffres(2026))` affiche alors `None`, et `somme_chiffres(7) + 1` provoque `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. En C++, le programme compile mais le résultat est n'importe quoi ; l'option `-Wall` affiche `warning: control reaches end of non-void function`. Un `print` dans la fonction ne remplace pas un `return` : il affiche, mais ne transmet rien au programme.
+**Oublier le `return`.** Une fonction qui calcule le bon résultat sans le renvoyer renvoie `None`. `print(somme_chiffres(2026))` affiche alors `None`, et `somme_chiffres(7) + 1` provoque `TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'`. En C++, le programme compile mais le résultat est n'importe quoi ; l'option `-Wall` affiche `warning: no return statement in function returning non-void` (ou `control reaches end of non-void function` si seul un des chemins oublie le `return`). Un `print` dans la fonction ne remplace pas un `return` : il affiche, mais ne transmet rien au programme.
 
 **Renvoyer trop tôt.** Dans `est_premier`, écrire `else: return True` dans la boucle donnerait la réponse après le premier diviseur testé : 9 serait déclaré premier, car 2 ne le divise pas. On ne peut conclure « premier » qu'**après** la boucle.
 

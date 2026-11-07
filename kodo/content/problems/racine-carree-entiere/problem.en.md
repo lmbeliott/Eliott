@@ -7,6 +7,8 @@ For each of the `Q` given integers `N`, print its **integer square root** `R`, t
 
 For example, for `N = 30`, we have 5 × 5 = 25 ≤ 30 < 36 = 6 × 6: print `5 5`.
 
+Beware: floats are approximate. For large `N`, the root computed by `N ** 0.5` or `sqrt(N)` then converted to an integer can be off by one, and the tests contain such cases.
+
 ## Input
 The first line contains the integer `Q`. Each of the next `Q` lines contains an integer `N`.
 

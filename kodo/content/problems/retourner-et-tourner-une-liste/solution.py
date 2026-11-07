@@ -24,4 +24,4 @@ for i in range(q):
         retourner(t, int(morceaux[1]) - 1, int(morceaux[2]) - 1)
     else:
         tourner(t, int(morceaux[1]))
-print(" ".join(map(str, t)))
+print(*t)

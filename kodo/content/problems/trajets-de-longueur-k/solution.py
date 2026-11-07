@@ -23,4 +23,4 @@ for etape in range(k - 1):
     c = produit(c, a)       # on allonge les trajets d'une route
 
 for i in range(n):
-    print(" ".join(map(str, c[i])))
+    print(*c[i])

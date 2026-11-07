@@ -32,9 +32,9 @@ int main() {
         char c;
         cin >> c;
         if (c == 'R') {
-            int l, d;
-            cin >> l >> d;
-            retourner(t, l - 1, d - 1);
+            int a, b;
+            cin >> a >> b;
+            retourner(t, a - 1, b - 1);
         } else {
             int k;
             cin >> k;

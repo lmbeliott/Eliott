@@ -2,7 +2,7 @@
 id: parfait-abondant-ou-deficient
 title: Parfait, abondant ou déficient
 chapter: p2-fonctions
-order: 2
+order: 4
 tags: [fonctions, mathématiques]
 samples: 2
 ---

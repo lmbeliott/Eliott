@@ -4,7 +4,7 @@ title: Reverse and rotate a list
 
 ## Statement
 A list of `N` integers undergoes `Q` operations, of two kinds:
-- `R L D`: **reverse** the part going from position `L` to position `D` (positions numbered from 1). For example, `R 2 4` turns `1 2 3 4 5` into `1 4 3 2 5`.
+- `R A B`: **reverse** the part going from position `A` to position `B` (positions numbered from 1). For example, `R 2 4` turns `1 2 3 4 5` into `1 4 3 2 5`.
 - `T K`: **rotate** the list by `K` places to the left: the first `K` elements move to the end, in the same order. For example, `T 2` turns `1 2 3 4 5` into `3 4 5 1 2`.
 
 Print the list after all the operations.
@@ -12,7 +12,7 @@ Print the list after all the operations.
 ## Input
 - The first line contains two integers `N` and `Q`.
 - The second line contains the `N` integers of the list.
-- Each of the next `Q` lines contains an operation: the letter `R` followed by two integers `L` and `D`, or the letter `T` followed by one integer `K`.
+- Each of the next `Q` lines contains an operation: the letter `R` followed by two integers `A` and `B`, or the letter `T` followed by one integer `K`.
 
 ## Output
 A single line: the `N` integers of the final list, separated by spaces.
@@ -20,7 +20,7 @@ A single line: the `N` integers of the final list, separated by spaces.
 ## Constraints
 - 1 ≤ N ≤ 1,000
 - 1 ≤ Q ≤ 300
-- 1 ≤ L ≤ D ≤ N
+- 1 ≤ A ≤ B ≤ N
 - 0 ≤ K < N
 - The integers of the list are between 1 and 10⁹.
 
@@ -30,7 +30,7 @@ A single line: the `N` integers of the final list, separated by spaces.
 3. Beware of a function that would write `t = …`: assigning a new list to the parameter does not change the caller's list.
 
 ## Solution
-The function `reverse_part(t, i, j)` is the one from the lesson: while `i < j`, it swaps `t[i]` and `t[j]`, then moves `i` and `j` closer. It directly modifies the list passed as argument (in C++, the parameter is a `vector<int> &`). For the operation `R L D`, call it with `L - 1` and `D - 1`, because the positions of the statement start at 1.
+The function `reverse_part(t, i, j)` is the one from the lesson: while `i < j`, it swaps `t[i]` and `t[j]`, then moves `i` and `j` closer. It directly modifies the list passed as argument (in C++, the parameter is a `vector<int> &`). For the operation `R A B`, call it with `A - 1` and `B - 1`, because the positions of the statement start at 1.
 
 To rotate by `K` places, use a neat trick: reverse the first `K` elements, then the last `N - K`, then the whole list. On `1 2 3 4 5` with `K = 2`: `2 1 5 4 3`, then `3 4 5 1 2`. Indeed, reversing the whole list moves the end block to the front, but each block ends up backwards; the first two reversals had turned them backwards in advance, which puts them back in the right order. The function `rotate(t, k)` therefore just calls `reverse_part` three times. If `K = 0`, nothing changes (the first part is empty).
 

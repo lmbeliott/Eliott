@@ -25,6 +25,6 @@ The price including tax in euros, with exactly two digits after the dot.
 ## Solution
 Work in cents, with integers. The exact price is `P × (100 + T) / 100` cents. Its rounding to the nearest, half up, is `c = (2 × P × (100 + T) + 100) // 200` (the formula `(2a + b) // (2b)` with `a = P × (100 + T)` and `b = 100`).
 
-It remains to print `c` cents in euros: `c / 100` with two decimals. This last step through a float is safe, because `c / 100` has exactly two decimals and the approximation error is billions of times smaller than a cent.
+It remains to print `c` cents in euros: `c / 100` with two decimals. This last step through a float is safe, because `c / 100` has exactly two decimals and is at most 2 × 10⁹ euros: with about 16 significant digits, the approximation error stays more than ten thousand times smaller than a cent, and rounding to two decimals lands on the right value.
 
 The trap: computing `P * (100 + T) / 10000` directly as a float and printing it with `.2f`. With `P = 1` and `T = 50`, the exact price is 1.5 cents, which must be rounded to 2; the float 0.015 is actually stored as 0.01499999…, and `.2f` prints `0.01` instead of `0.02`.

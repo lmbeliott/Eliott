@@ -30,11 +30,11 @@ int main() {
 
 The Python program prints `3.5`, `5.0`, `5` and `6.0`. The dot in `5.0` shows that `10 / 2` is a float, whereas `10 // 2` is an integer. As soon as a computation mixes an integer and a float, the result is a float: `1.5 * 4` is `6.0`.
 
-In C++, the type of decimal numbers is called `double`. Be careful: the C++ operator `/` depends on the type of its two operands. If both are integers, it is **integer** division, like Python's `//`. `7 / 2` is `3`, not `3.5`. To get a decimal division, at least one of the two numbers must be a `double`: write `7.0 / 2`, or, with integer variables `a` and `b`, `(double) a / b`. This `(double)` is a **conversion**: it turns the integer value of `a` into a float before the division. Finally, `cout` prints `5` for the float `5.0`: in C++, the output does not show the difference between an integer and a float.
+In C++, the type of decimal numbers is called `double`. Be careful: the C++ operator `/` depends on the type of its two operands. If both are integers, it is **integer** division, like Python's `//`. `7 / 2` is `3`, not `3.5`. To get a decimal division, at least one of the two numbers must be a `double`: write `7.0 / 2`, or, with integer variables `a` and `b`, `(double) a / b`. This `(double)` is a **conversion**: it turns the integer value of `a` into a float before the division. Finally, `cout` prints `5` for the float `5.0`: in C++, the output does not show the difference between an integer and a float. Worse, `cout` shows only 6 significant digits of a `double`: `cout << 13.0 / 3` prints `4.33333`, and `cout << 1234567.0` prints `1.23457e+06`. To print a float, you therefore fix the number of decimals with `printf` (see below), or convert it to an integer first.
 
 To read a decimal number, replace `int` with `float` in Python: `x = float(input())`. In C++, just declare the variable as `double` before `cin >> x`.
 
-Two tools often go with floats. The **power** is written `**` in Python: `2 ** 10` is `1024`, and `x ** 0.5` gives the square root of `x`. In C++, include `<cmath>` and write `pow(2, 10)` and `sqrt(x)`, which give `double`s. The **absolute value**, which removes the sign of a number, is `abs(x)` in both languages: `abs(-3.5)` is `3.5`.
+Two tools often go with floats. The **power** is written `**` in Python: `2 ** 10` is `1024`. Between two integers, with an exponent that is zero or positive, the result is an exact integer, however large: `2 ** 100` is `1267650600228229401496703205376`. With a decimal exponent, the result is a float: `x ** 0.5` gives the **square root** of `x`, and `9 ** 0.5` is `3.0`. In C++, include `<cmath>` and write `pow(2, 10)` and `sqrt(x)`. These two functions always return a `double`, hence an approximate value as soon as the result is large: `(long long) pow(3, 39)` gives 4052555153018976256 instead of 4052555153018976267. For an exact integer power in C++, multiply in a loop, with a `long long`. The **absolute value**, which removes the sign of a number, is `abs(x)` in both languages (in C++, with `<cmath>`): `abs(-3.5)` is `3.5` and `abs(-7)` is `7`.
 
 ## Back to an integer: truncate or round
 
@@ -96,6 +96,8 @@ int main() {
 The program prints `4 5 4`. Indeed, 250/60 ≈ 4.17: you fill 4 full coaches, you need 5 for everybody, and the nearest integer is 4. With `a = 240`, it prints `4 4 4`, because the division is exact.
 
 Why not simply write `math.ceil(a / b)`? Because a float only keeps about 16 significant digits. Beyond 2⁵³, about 9 × 10¹⁵, not every integer can be represented. For instance, `int((10**17 + 1) / 1)` is `100000000000000000`: the `+ 1` has been lost. With integers up to 10¹⁸, very common in exercises, only the integer formulas are guaranteed to give the right answer.
+
+The square root has the same flaw. For N = 10¹⁸ − 1, `int(N ** 0.5)` (in C++, `(long long) sqrt(N)`) is `1000000000`, whereas 10⁹ × 10⁹ = 10¹⁸ exceeds N: the largest integer whose square does not exceed N is 999,999,999. When N became a float, it was rounded to 10¹⁸. The approximate value is still a good starting point, provided you **check** it, then correct it, with integer computations such as `r * r <= n`, which are exact.
 
 ## Printing an exact number of decimals
 
@@ -234,5 +236,5 @@ int main() {
 - `int(x)` truncates towards zero, `round(x)` rounds to the nearest (exact halves differ between languages), `floor` and `ceil` round down and up.
 - For `a ≥ 0` and `b > 0`: ceiling `(a + b - 1) // b`, nearest `(2 * a + b) // (2 * b)`. These integer formulas are exact, even for very large numbers.
 - To print exactly k decimals: `f"{x:.2f}"` in Python, `printf("%.2f\n", x)` in C++.
-- Floats are approximate: no `==` between floats, and prefer counting in integers (cents, minutes).
+- Floats are approximate, and so are `pow` and `sqrt`: no `==` between floats, and prefer counting in integers (cents, minutes), or check an approximate result with integers.
 - With negative numbers, Python's `//` and `%` round down, C++'s `/` and `%` round towards zero; in C++, `((a % b) + b) % b` gives a remainder between 0 and b − 1.

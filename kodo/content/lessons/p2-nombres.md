@@ -30,11 +30,11 @@ int main() {
 
 Le programme Python affiche `3.5`, `5.0`, `5` et `6.0`. Le point de `5.0` montre que `10 / 2` est un flottant, alors que `10 // 2` est un entier. Dès qu'un calcul mélange un entier et un flottant, le résultat est un flottant : `1.5 * 4` vaut `6.0`.
 
-En C++, le type des nombres à virgule s'appelle `double`. Attention, l'opérateur `/` du C++ dépend du type de ses deux opérandes : si les deux sont entiers, c'est la division **entière**, comme le `//` de Python. `7 / 2` vaut `3`, et non `3.5`. Pour obtenir une division décimale, il faut qu'au moins un des deux nombres soit un `double` : on écrit `7.0 / 2`, ou, avec des variables entières `a` et `b`, `(double) a / b`. Ce `(double)` est une **conversion** : il transforme la valeur entière de `a` en flottant avant la division. Enfin, `cout` affiche `5` pour le flottant `5.0` : en C++, l'affichage ne montre pas la différence entre un entier et un flottant.
+En C++, le type des nombres à virgule s'appelle `double`. Attention, l'opérateur `/` du C++ dépend du type de ses deux opérandes : si les deux sont entiers, c'est la division **entière**, comme le `//` de Python. `7 / 2` vaut `3`, et non `3.5`. Pour obtenir une division décimale, il faut qu'au moins un des deux nombres soit un `double` : on écrit `7.0 / 2`, ou, avec des variables entières `a` et `b`, `(double) a / b`. Ce `(double)` est une **conversion** : il transforme la valeur entière de `a` en flottant avant la division. Enfin, `cout` affiche `5` pour le flottant `5.0` : en C++, l'affichage ne montre pas la différence entre un entier et un flottant. Plus gênant, `cout` n'affiche que 6 chiffres significatifs d'un `double` : `cout << 13.0 / 3` affiche `4.33333`, et `cout << 1234567.0` affiche `1.23457e+06`. Pour afficher un flottant, on fixe donc le nombre de décimales avec `printf` (voir plus bas), ou on le convertit d'abord en entier.
 
 Pour lire un nombre à virgule, on remplace `int` par `float` en Python : `x = float(input())`. En C++, il suffit de déclarer la variable de type `double` avant `cin >> x`.
 
-Deux outils de calcul servent souvent avec les flottants. La **puissance** s'écrit `**` en Python : `2 ** 10` vaut `1024`, et `x ** 0.5` donne la racine carrée de `x`. En C++, on inclut `<cmath>` et on écrit `pow(2, 10)` et `sqrt(x)`, qui donnent des `double`. La **valeur absolue**, qui enlève le signe d'un nombre, s'écrit `abs(x)` dans les deux langages : `abs(-3.5)` vaut `3.5`.
+Deux outils de calcul servent souvent avec les flottants. La **puissance** s'écrit `**` en Python : `2 ** 10` vaut `1024`. Entre deux entiers, avec un exposant positif ou nul, le résultat est un entier exact, aussi grand soit-il : `2 ** 100` vaut `1267650600228229401496703205376`. Avec un exposant à virgule, le résultat est un flottant : `x ** 0.5` donne la **racine carrée** de `x`, et `9 ** 0.5` vaut `3.0`. En C++, on inclut `<cmath>` et on écrit `pow(2, 10)` et `sqrt(x)`. Ces deux fonctions renvoient toujours un `double`, donc une valeur approchée dès que le résultat est grand : `(long long) pow(3, 39)` donne 4052555153018976256 au lieu de 4052555153018976267. Pour une puissance entière exacte en C++, on multiplie dans une boucle, avec un `long long`. La **valeur absolue**, qui enlève le signe d'un nombre, s'écrit `abs(x)` dans les deux langages (en C++, avec `<cmath>`) : `abs(-3.5)` vaut `3.5` et `abs(-7)` vaut `7`.
 
 ## Revenir à un entier : tronquer ou arrondir
 
@@ -96,6 +96,8 @@ int main() {
 Le programme affiche `4 5 4`. En effet, 250/60 ≈ 4,17 : on remplit 4 cars complets, il en faut 5 pour tout le monde, et l'entier le plus proche est 4. Avec `a = 240`, il affiche `4 4 4`, car la division tombe juste.
 
 Pourquoi ne pas écrire simplement `math.ceil(a / b)` ? Parce qu'un flottant ne garde qu'environ 16 chiffres significatifs. Au-delà de 2⁵³, soit environ 9 × 10¹⁵, tous les entiers ne sont plus représentables. Par exemple, `int((10**17 + 1) / 1)` vaut `100000000000000000` : le `+ 1` a été perdu. Avec des entiers jusqu'à 10¹⁸, très courants dans les exercices, seules les formules entières donnent à coup sûr la bonne réponse.
+
+La racine carrée a le même défaut. Pour N = 10¹⁸ − 1, `int(N ** 0.5)` (en C++, `(long long) sqrt(N)`) vaut `1000000000`, alors que 10⁹ × 10⁹ = 10¹⁸ dépasse N : le plus grand entier dont le carré ne dépasse pas N est 999 999 999. En devenant un flottant, N a été arrondi à 10¹⁸. La valeur approchée reste un bon point de départ, à condition de la **vérifier**, puis de la corriger, avec des calculs entiers comme `r * r <= n`, qui sont exacts.
 
 ## Afficher un nombre précis de décimales
 
@@ -234,5 +236,5 @@ int main() {
 - `int(x)` tronque vers zéro, `round(x)` arrondit au plus proche (les moitiés exactes diffèrent selon le langage), `floor` et `ceil` arrondissent vers le bas et vers le haut.
 - Pour `a ≥ 0` et `b > 0` : arrondi supérieur `(a + b - 1) // b`, arrondi au plus proche `(2 * a + b) // (2 * b)`. Ces formules entières sont exactes, même pour de très grands nombres.
 - Pour afficher exactement k décimales : `f"{x:.2f}"` en Python, `printf("%.2f\n", x)` en C++.
-- Les flottants sont approchés : pas de `==` entre flottants, et on préfère compter en entiers (centimes, minutes).
+- Les flottants sont approchés, et donc aussi `pow` et `sqrt` : pas de `==` entre flottants, et on préfère compter en entiers (centimes, minutes), ou vérifier un résultat approché avec des entiers.
 - Avec des négatifs, `//` et `%` de Python arrondissent vers le bas, `/` et `%` du C++ vers zéro ; en C++, `((a % b) + b) % b` donne un reste entre 0 et b − 1.

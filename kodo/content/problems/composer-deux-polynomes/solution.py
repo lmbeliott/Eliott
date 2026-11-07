@@ -38,4 +38,4 @@ def lire_polynome():
 
 p = lire_polynome()
 q = lire_polynome()
-print(" ".join(map(str, composer(p, q))))
+print(*composer(p, q))
