@@ -74,6 +74,92 @@ int main() {
 
 The program prints `4 0`. The two calls are small tests: the centre cell touches the four `#`, the corner cell touches none. If the function is correct on these examples, edge included, you can use it without thinking about it again.
 
+## Estimating the running time
+
+Before writing a program, estimate the number of operations it will perform, from the constraints of the statement. An order of magnitude is enough: Python runs about 10 million simple operations per second, C++ a few hundred million. With `N ≤ 100,000`, a double loop over all pairs makes 5 billion iterations: that is impossible. A single pass with a dictionary makes 100,000: that is immediate.
+
+When the count is too large, three ideas from level 2 come back often:
+
+- **replace a search in a list with a set or a dictionary**: each `in` test becomes almost instant;
+- **look for the partner instead of trying all pairs**: to count the pairs with sum `K`, ask, for each value `x`, how many values `K - x` have already been read, and a frequency dictionary answers at once;
+- **turn the question around**: instead of looking for the divisors of each number, start from each divisor `d` and visit its multiples `2d`, `3d`…; instead of handling each query separately, prepare once and for all the set of all possible answers, then each query becomes a simple `in` test.
+
+## Detecting a cycle
+
+Many simulations repeat the same transformation: a number becomes another number, a robot moves from one cell to the next. What describes the situation at a given time is called the **state**. When there are only finitely many possible states, and the next state depends only on the current one, the sequence must one day come back to a state already seen. From then on, it follows exactly the same path again. It therefore has the shape of a **tail**, gone through once, followed by a **cycle**, repeated forever.
+
+To spot that moment, keep a dictionary that maps each state to the **time** of its first appearance. In the following example, the state is an integer, replaced at each step by the sum of the squares of its digits. The program reads the starting value and a number of steps `K`, then prints the time when the cycle starts, the length of the cycle, and the value obtained after `K` steps.
+
+```python
+def next_value(x):
+    s = 0
+    while x > 0:
+        s = s + (x % 10) * (x % 10)
+        x = x // 10
+    return s
+
+x, k = map(int, input().split())
+seq = [x]            # seq[t] = value after t steps
+first_time = {x: 0}  # value -> time of its first appearance
+y = next_value(x)
+while y not in first_time:
+    first_time[y] = len(seq)
+    seq.append(y)
+    y = next_value(y)
+start = first_time[y]
+length = len(seq) - start
+if k < len(seq):
+    value = seq[k]
+else:
+    value = seq[start + (k - start) % length]
+print(start, length, value)
+```
+
+```cpp
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+
+int next_value(int x) {
+    int s = 0;
+    while (x > 0) {
+        s = s + (x % 10) * (x % 10);
+        x = x / 10;
+    }
+    return s;
+}
+
+int main() {
+    int x;
+    long long k;
+    cin >> x >> k;
+    vector<int> seq = {x};        // seq[t] = value after t steps
+    map<int, int> first_time;     // value -> time of its first appearance
+    first_time[x] = 0;
+    int y = next_value(x);
+    while (first_time.count(y) == 0) {
+        first_time[y] = seq.size();
+        seq.push_back(y);
+        y = next_value(y);
+    }
+    long long start = first_time[y];
+    long long length = seq.size() - start;
+    int value;
+    if (k < (long long) seq.size()) {
+        value = seq[k];
+    } else {
+        value = seq[start + (k - start) % length];
+    }
+    cout << start << " " << length << " " << value << "\n";
+    return 0;
+}
+```
+
+With the input `2 1000000`, the sequence is 2, 4, 16, 37, 58, 89, 145, 42, 20, then `next_value(20)` gives 4 again, already seen at time 1. The tail contains only 2, the cycle starts at time `start = 1` and contains `length = 9 - 1 = 8` values. After time `start`, the sequence comes back to the same place every 8 steps: the value at time `K` is therefore the one at time `start + (K - start) % length`, here 1 + 999,999 % 8 = 8. The program prints `1 8 20` without simulating a million steps.
+
+The loop stops because the states are finitely many: a number with at most 10 digits has a sum of squared digits of at most 10 × 81 = 810. It makes at most as many iterations as there are states, even if `K` is 10¹⁸. The number of different values met is `len(seq)`. The dictionary is essential: with an `in` test on the list `seq`, each step would go through the whole path again.
+
 ## Testing edge cases
 
 A program that gives the right answer on the example is not necessarily correct. Before submitting, build small inputs for the **edge cases** of level 2, and compute the expected answer by hand:
@@ -84,7 +170,8 @@ A program that gives the right answer on the example is not necessarily correct.
 - **ties**: when two candidates have the same score, the statement says which one to choose, and the program must respect it (first seen, smallest…);
 - **rounding**: a value that falls exactly halfway, like `12.25` to be rounded to the tenth;
 - **negative remainders**: in Python `-1 % 26` is `25`, in C++ it is `-1`;
-- **large numbers**: in C++, anything that can exceed 2 × 10⁹ is stored in a `long long`.
+- **large numbers**: in C++, anything that can exceed 2 × 10⁹ is stored in a `long long`;
+- **huge numbers of steps**: if `K` can be 10¹⁸, do not simulate `K` steps, look for a cycle.
 
 ## Reading error messages
 
@@ -150,7 +237,7 @@ int distinct(const string& letters) {
 
 string column(const vector<string>& grid, int j) {
     string c = "";
-    for (const string& row : grid) {
+    for (string row : grid) {
         c += row[j];
     }
     return c;
@@ -164,7 +251,7 @@ int main() {
         cin >> grid[i];
     }
     int best = 0;
-    for (const string& row : grid) {
+    for (string row : grid) {
         best = max(best, distinct(row));
     }
     for (int j = 0; j < c; j++) {
@@ -182,5 +269,6 @@ int main() {
 - Before coding, choose the structure of each piece of information: variable, list, string, grid, set or dictionary. A repeated `in` test is done on a set, not on a list.
 - Stay with integers as long as possible; rounding is computed with integer divisions.
 - Split into functions that receive parameters and return a result, without reading or printing, and test each one alone on small examples.
+- Estimate the number of operations from the constraints. A simulation over finitely many states ends up looping: a dictionary "state → time of first appearance" spots the cycle and lets you jump directly to step `K`.
 - Test edge cases: size 1, grid edges, duplicates, ties, values halfway for rounding, negative remainders, large numbers.
 - Read error messages (`IndexError`, `KeyError`, `TypeError`, `ValueError`…); in C++, a wrong answer without a message points to an index outside the array or a key created by `[]`.

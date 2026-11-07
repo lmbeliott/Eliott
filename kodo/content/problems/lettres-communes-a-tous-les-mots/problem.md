@@ -2,7 +2,7 @@
 id: lettres-communes-a-tous-les-mots
 title: Lettres communes à tous les mots
 chapter: p2-dictionnaires
-order: 4
+order: 5
 tags: [dictionnaires, chaînes]
 samples: 2
 ---

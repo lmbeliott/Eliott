@@ -2,7 +2,7 @@
 id: meme-motif-de-mots
 title: Même motif de mots
 chapter: p2-synthese
-order: 5
+order: 4
 tags: [dictionnaires, chaînes, fonctions]
 samples: 3
 ---

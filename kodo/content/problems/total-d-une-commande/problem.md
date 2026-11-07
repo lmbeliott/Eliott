@@ -2,7 +2,7 @@
 id: total-d-une-commande
 title: Total d'une commande
 chapter: p2-dictionnaires
-order: 5
+order: 4
 tags: [dictionnaires]
 samples: 2
 ---

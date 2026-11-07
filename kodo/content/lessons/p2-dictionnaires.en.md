@@ -1,4 +1,4 @@
-A shop wants to know the stock of each of its items: 12 apples, 30 pears, 0 kiwis. With a list, you would have to number the items and remember that cell 0 is for apples, cell 1 for pears… And to find the stock of kiwis, you would have to go through a list of names until you reach `kiwi`. That is long to write, and slow as soon as there are thousands of items.
+A shop wants to know the stock of each of its items: 12 apples, 30 pears, 0 kiwis. With a list, you would have to number the items (cell 0 for apples, cell 1 for pears…), and finding the stock of kiwis would mean going through the list of names: that is slow as soon as there are thousands of items.
 
 This chapter introduces two structures that solve this problem. A **dictionary** stores values not at positions 0, 1, 2…, but under freely chosen names: words, large numbers, points of the plane. A **set** is a collection without duplicates that answers the question "is this element present?" very fast. With them, you count occurrences, detect repetitions and look things up in a single step, where a list would require going through everything.
 

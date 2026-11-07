@@ -2,7 +2,7 @@
 id: generations-d-un-automate-cellulaire
 title: Générations d'un automate cellulaire
 chapter: p2-synthese
-order: 4
+order: 5
 tags: [grilles, simulation, fonctions]
 samples: 2
 ---
