@@ -36,7 +36,7 @@ Say that a mask `y` is **included** in `m` if `y | m = m`. The OR of two values 
 
 Complexity: **O(N + 16 × 2¹⁶ + Q)**.
 
-Why simple ideas fail: trying all pairs costs N² / 2 ≈ 1.1 × 10⁸ operations, too many for Python. Grouping equal values does not help: the large tests have more than 10 000 distinct values. For each query, going through all its submasks and all pairs of submasks costs up to 3¹⁶ operations per query.
+Why simple ideas fail: trying all pairs costs N² / 2 ≈ 1.1 × 10⁸ operations, too many for Python. Grouping equal values does not help: one of the large tests has more than 13 000 distinct values. For each query, going through all its submasks and all pairs of submasks costs up to 3¹⁶ operations per query.
 
 Traps:
 - A pair uses two **different** indices: it is `F × (F - 1) / 2`, not `F²`.

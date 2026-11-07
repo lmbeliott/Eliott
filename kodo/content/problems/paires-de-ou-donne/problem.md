@@ -41,7 +41,7 @@ Disons qu'un masque `y` est **inclus** dans `m` si `y | m = m`. Le OU de deux va
 
 Complexité : **O(N + 16 × 2¹⁶ + Q)**.
 
-Pourquoi les idées simples échouent : essayer toutes les paires coûte N² / 2 ≈ 1,1 × 10⁸ opérations, trop pour Python. Regrouper les valeurs égales n'aide pas : les grands tests ont plus de 10 000 valeurs distinctes. Pour chaque requête, parcourir tous ses sous-masques et toutes les paires de sous-masques coûte jusqu'à 3¹⁶ opérations par requête.
+Pourquoi les idées simples échouent : essayer toutes les paires coûte N² / 2 ≈ 1,1 × 10⁸ opérations, trop pour Python. Regrouper les valeurs égales n'aide pas : un des grands tests a plus de 13 000 valeurs distinctes. Pour chaque requête, parcourir tous ses sous-masques et toutes les paires de sous-masques coûte jusqu'à 3¹⁶ opérations par requête.
 
 Pièges :
 - Une paire utilise deux indices **différents** : c'est `F × (F - 1) / 2`, pas `F²`.

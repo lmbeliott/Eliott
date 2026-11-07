@@ -194,24 +194,25 @@
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Kanji des rangs : Shippori Mincho B1 (SIL Open Font License), réduite aux 15 caractères utilisés. */
+/* Kanji des rangs : M PLUS 1 Code 700 (SIL Open Font License), réduite aux 15 caractères utilisés.
+   Gothique technique, dans l'esprit de Mona Sans et de Monaspace. */
 @font-face {
   font-family: "Kodo Rank";
   font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
   font-display: swap;
   src: url("./assets/rank-kanji.woff2") format("woff2");
   unicode-range: U+3044, U+4eba, U+521d, U+540d, U+5b50, U+5b88, U+5e2b, U+5f1f, U+5fc3, U+7834, U+7bc4, U+7fd2, U+898b, U+9054, U+96e2;
 }
 .rank-kanji {
-  font-family: "Kodo Rank", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-family: "Kodo Rank", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 .rank-name {
-  font-stretch: 125%;
+  font-stretch: 112%;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
