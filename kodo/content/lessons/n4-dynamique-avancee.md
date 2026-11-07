@@ -133,4 +133,4 @@ Ici, les zéros de tête sont sans effet. Quand ils comptent, comme pour une rè
 - Masque de bits : quand l'ordre passé n'importe pas, `2ᴺ` ensembles remplacent `N!` ordres. O(2ᴺ × N) pour N ≤ 20.
 - Intervalles : un choix qui coupe la suite en morceaux indépendants donne `f[l][r]`, calculé par longueurs croissantes ou `l` décroissant.
 - Arbres : quelques états par sommet, combinés depuis les enfants. Avec `p[i] < i`, une simple boucle de `N` à `1`.
-- Chiffres : borne collée, puis suites libres. La partie libre ne dépend pas de la borne : précalcule-la une fois.
+- Chiffres : borne collée, puis suites libres. La partie libre ne dépend pas de la borne : elle se précalcule une fois.

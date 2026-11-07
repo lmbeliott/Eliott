@@ -126,9 +126,9 @@ int main() {
 }
 ```
 
-Remarque que `somme_chiffres` modifie `n`, mais seulement sa copie locale : la variable `n` de la boucle n'est pas touchée.
+`somme_chiffres` modifie `n`, mais seulement sa copie locale : la variable `n` de la boucle n'est pas touchée.
 
-Une bonne méthode : avant d'écrire le programme, demande-toi « de quelles petites questions ai-je besoin ? ». Chaque question devient une fonction, avec un nom qui dit ce qu'elle fait (`est_bissextile`, `en_minutes`, `chiffres`…). Une fonction peut appeler une autre fonction : écris d'abord les plus simples, vérifie-les sur un ou deux exemples à la main, puis construis les suivantes par-dessus.
+Une bonne méthode : avant d'écrire le programme, se demander « de quelles petites questions a-t-on besoin ? ». Chaque question devient une fonction, avec un nom qui dit ce qu'elle fait (`est_bissextile`, `en_minutes`, `chiffres`…). Une fonction peut appeler une autre fonction : on écrit d'abord les plus simples, on les vérifie sur un ou deux exemples à la main, puis on construit les suivantes par-dessus.
 
 ## À retenir
 
@@ -136,4 +136,4 @@ Une bonne méthode : avant d'écrire le programme, demande-toi « de quelles pet
 - `return` renvoie le résultat et arrête la fonction ; c'est le programme principal qui affiche.
 - Les variables d'une fonction sont locales ; les paramètres nombres et chaînes sont des copies (une liste Python, elle, est partagée).
 - En C++, on précise le type renvoyé et le type des paramètres, et on écrit la fonction avant `main`.
-- Pour un problème compliqué, découpe-le en petites fonctions, écris et vérifie d'abord les plus simples.
+- Un problème compliqué se découpe en petites fonctions ; les plus simples sont écrites et vérifiées d'abord.

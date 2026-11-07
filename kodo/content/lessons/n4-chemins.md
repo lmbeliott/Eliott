@@ -107,7 +107,7 @@ void unit(int a, int b) {
 
 L'union-find sait **ajouter** des arêtes, pas en retirer. L'astuce est souvent de traiter les événements dans un ordre choisi : on trie les arêtes (par exemple par poids) et on les ajoute une à une. C'est l'idée de l'**algorithme de Kruskal** : en ajoutant les arêtes de la moins chère à la plus chère, et seulement celles qui relient deux groupes différents, on obtient le réseau le moins cher qui relie tout.
 
-Si des questions dépendent d'un seuil (« avec les arêtes de poids au plus `S`… »), on peut aussi les trier par seuil et y répondre **hors ligne**, en ajoutant les arêtes au fur et à mesure. Pense alors à garder l'indice de chaque question pour afficher les réponses dans l'ordre de l'entrée.
+Si des questions dépendent d'un seuil (« avec les arêtes de poids au plus `S`… »), on peut aussi les trier par seuil et y répondre **hors ligne**, en ajoutant les arêtes au fur et à mesure. Il faut alors garder l'indice de chaque question pour afficher les réponses dans l'ordre de l'entrée.
 
 ## À retenir
 

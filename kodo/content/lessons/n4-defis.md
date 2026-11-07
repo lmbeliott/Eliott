@@ -1,8 +1,8 @@
-Les problèmes de finale ne demandent presque jamais un algorithme nouveau. Ils en **combinent** deux ou trois que tu connais déjà, et toute la difficulté est de voir comment les assembler. Ce chapitre rassemble les combinaisons qui reviennent le plus souvent, et quelques outils qui manquent encore.
+Les problèmes de finale ne demandent presque jamais un algorithme nouveau. Ils en **combinent** deux ou trois déjà connus, et toute la difficulté est de voir comment les assembler. Ce chapitre rassemble les combinaisons qui reviennent le plus souvent, et quelques outils qui manquent encore.
 
 ## Chercher la réponse, puis vérifier
 
-Quand on demande « la plus grande valeur telle que… », demande-toi si la question **inverse** est plus simple : « cette valeur `x` convient-elle ? ». Si la réponse est monotone (vraie jusqu'à un seuil, fausse ensuite), une dichotomie sur `x` la trouve avec environ 30 vérifications. La vérification est souvent un parcours en largeur, un glouton ou une programmation dynamique. Quand la réponse est forcément une des valeurs de l'entrée, fais la dichotomie sur la liste triée de ces valeurs.
+Quand on demande « la plus grande valeur telle que… », il faut se demander si la question **inverse** est plus simple : « cette valeur `x` convient-elle ? ». Si la réponse est monotone (vraie jusqu'à un seuil, fausse ensuite), une dichotomie sur `x` la trouve avec environ 30 vérifications. La vérification est souvent un parcours en largeur, un glouton ou une programmation dynamique. Quand la réponse est forcément une des valeurs de l'entrée, la dichotomie se fait sur la liste triée de ces valeurs.
 
 ## Hors ligne : changer l'ordre des questions
 
@@ -13,7 +13,7 @@ Si toutes les questions sont connues dès le début, rien n'oblige à y répondr
 
 Pour ajouter une valeur sur tout un intervalle `[x, y]` et lire un seul point, on travaille sur les **différences** : `+v` en `x`, `-v` en `y + 1`. La valeur en `l` est alors une somme de préfixe.
 
-Quand union-find doit aussi fusionner des ensembles (des couleurs, des valeurs…), verse toujours le **plus petit dans le plus grand**. Un élément déplacé arrive dans un ensemble au moins deux fois plus grand, donc il ne bouge que `log₂ N` fois.
+Quand union-find doit aussi fusionner des ensembles (des couleurs, des valeurs…), on verse toujours le **plus petit dans le plus grand**. Un élément déplacé arrive dans un ensemble au moins deux fois plus grand, donc il ne bouge que `log₂ N` fois.
 
 ```python
 def fusionne(a, b):            # a et b sont des racines différentes
@@ -66,7 +66,7 @@ long long binom(int n, int k) {
 }
 ```
 
-Pour éviter des cases interdites, trie-les et compte, pour chacune, les chemins qui l'atteignent **sans** passer par une autre avant. On retire alors, pour chaque case `j` plus tôt, les chemins dont la *première* case interdite est `j`. Penser au **complémentaire** (« au moins un » = tout − « aucun ») simplifie souvent le reste.
+Pour éviter des cases interdites, on les trie et on compte, pour chacune, les chemins qui l'atteignent **sans** passer par une autre avant. On retire alors, pour chaque case `j` plus tôt, les chemins dont la *première* case interdite est `j`. Penser au **complémentaire** (« au moins un » = tout − « aucun ») simplifie souvent le reste.
 
 ## Jeux : Sprague-Grundy
 
@@ -90,16 +90,16 @@ int mex(const vector<int>& valeurs) {
 }
 ```
 
-Pour **compter les coups gagnants**, cherche les coups qui ramènent le XOR total à `0`.
+Pour **compter les coups gagnants**, on cherche les coups qui ramènent le XOR total à `0`.
 
 ## Les grandes entrées générées
 
-Pour garder des fichiers de test petits, certains énoncés décrivent un générateur pseudo-aléatoire. Recopie-le exactement, dans l'ordre des appels. Le calcul modulo 2⁶⁴ est automatique en C++ avec `unsigned long long`. En Python, il faut prendre le reste (`% 2**64`) à chaque étape.
+Pour garder des fichiers de test petits, certains énoncés décrivent un générateur pseudo-aléatoire. Il faut le recopier exactement, dans l'ordre des appels. Le calcul modulo 2⁶⁴ est automatique en C++ avec `unsigned long long`. En Python, il faut prendre le reste (`% 2**64`) à chaque étape.
 
 ## À retenir
 
 - Dichotomie sur la réponse : transforme « trouver le meilleur » en « vérifier une valeur ».
-- Hors ligne : trie les questions pour que les données ne fassent que s'ajouter (union-find, balayage + Fenwick).
+- Hors ligne : trier les questions pour que les données ne fassent que s'ajouter (union-find, balayage + Fenwick).
 - Union-find avec ensembles : toujours le petit dans le grand, O(N log N).
 - Combinatoire modulo p : factorielles, inverse par Fermat, complémentaire et « première case interdite ».
 - Jeux : mex, XOR des jeux indépendants, et un coup gagnant ramène le XOR à `0`.

@@ -1,4 +1,4 @@
-Dynamic programming always rests on the same question: **what do you need to know about the past to decide what comes next?** This chapter presents four kinds of state that keep coming back in contests: a set encoded in bits, an interval, a tree vertex and a prefix of digits.
+Dynamic programming always rests on the same question: **what must be known about the past to decide what comes next?** This chapter presents four kinds of state that keep coming back in contests: a set encoded in bits, an interval, a tree vertex and a prefix of digits.
 
 ## Over subsets: a bitmask
 
@@ -61,7 +61,7 @@ There are O(N²) intervals. If each one tries O(N) cut points, the total is O(N�
 
 ## On trees
 
-We root the tree and compute, for each vertex, a few values that summarize its subtree. They are combined from those of the children. You must choose these **states** so that the parent has all the useful information, and nothing more: every extra state multiplies the work. Classic example: the maximum-weight independent set (no two neighbours chosen), with `taken[v]` and `not_taken[v]`.
+We root the tree and compute, for each vertex, a few values that summarize its subtree. They are combined from those of the children. These **states** must be chosen so that the parent has all the useful information, and nothing more: every extra state multiplies the work. Classic example: the maximum-weight independent set (no two neighbours chosen), with `taken[v]` and `not_taken[v]`.
 
 When every vertex `i ≥ 2` has a parent `p[i] < i`, going through `i` from `N` down to `1` handles the children before their parent, without recursion:
 
@@ -83,7 +83,7 @@ for (int v = n; v >= 2; v--) {
 cout << max(taken[1], notTaken[1]) << "\n";
 ```
 
-If the constraint is about a larger distance, you need more states: for example, knowing whether a **child** of the vertex is chosen.
+If the constraint is about a larger distance, more states are needed: for example, knowing whether a **child** of the vertex is chosen.
 
 ## Over digits
 
@@ -126,11 +126,11 @@ long long count(long long x) {  // integers of [0, x]
 }
 ```
 
-Here, leading zeros have no effect. When they matter, as with a rule about two neighbouring digits, handle the numbers shorter than `X` separately.
+Here, leading zeros have no effect. When they matter, as with a rule about two neighbouring digits, the numbers shorter than `X` are handled separately.
 
 ## Key takeaways
 
 - Bitmask: when the past order doesn't matter, `2ᴺ` sets replace `N!` orders. O(2ᴺ × N) for N ≤ 20.
 - Intervals: a choice that cuts the sequence into independent pieces gives `f[l][r]`, computed by increasing length or decreasing `l`.
 - Trees: a few states per vertex, combined from the children. With `p[i] < i`, a simple loop from `N` down to `1`.
-- Digits: stuck to the bound, then free sequences. The free part doesn't depend on the bound: precompute it once.
+- Digits: stuck to the bound, then free sequences. The free part doesn't depend on the bound: it is precomputed once.

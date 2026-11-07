@@ -25,7 +25,7 @@ long long pgcd(long long a, long long b) {
 // pgcd(84, 36) vaut 12
 ```
 
-C'est très rapide : O(log(min(a, b))), une centaine d'étapes au plus même pour 10¹⁸. Le PPCM (plus petit commun multiple) s'en déduit : `ppcm(a, b) = a / pgcd(a, b) × b`. Divise **avant** de multiplier, pour éviter un dépassement en C++.
+C'est très rapide : O(log(min(a, b))), une centaine d'étapes au plus même pour 10¹⁸. Le PPCM (plus petit commun multiple) s'en déduit : `ppcm(a, b) = a / pgcd(a, b) × b`. Diviser **avant** de multiplier évite un dépassement en C++.
 
 ## Le crible d'Ératosthène
 
@@ -90,7 +90,7 @@ Autre astuce utile : parmi les nombres de 1 à n, exactement `n // d` sont des m
 
 ## Calculer modulo M
 
-Quand un résultat est énorme, on demande souvent son reste modulo M. Les restes se calculent au fur et à mesure : `(a + b) mod M` et `(a × b) mod M` ne dépendent que de `a mod M` et `b mod M`. On réduit donc après **chaque** opération, et les nombres restent petits. Pour une soustraction, ajoute M avant de réduire, pour ne pas obtenir de reste négatif en C++. Attention : la **division** ne marche pas comme ça ; `(a / b) mod M` ne se calcule pas à partir des restes.
+Quand un résultat est énorme, on demande souvent son reste modulo M. Les restes se calculent au fur et à mesure : `(a + b) mod M` et `(a × b) mod M` ne dépendent que de `a mod M` et `b mod M`. On réduit donc après **chaque** opération, et les nombres restent petits. Pour une soustraction, on ajoute M avant de réduire, pour ne pas obtenir de reste négatif en C++. Attention : la **division** ne marche pas comme ça ; `(a / b) mod M` ne se calcule pas à partir des restes.
 
 ## La puissance rapide
 
@@ -126,5 +126,5 @@ C'est O(log N). En C++, si M ≤ 10⁹, le produit de deux restes est inférieur
 - L'algorithme d'Euclide calcule le PGCD en O(log n) ; le PPCM vaut `a / pgcd(a, b) × b`.
 - Le crible raye les multiples de chaque nombre premier p à partir de p × p ; il suffit d'aller jusqu'à √N.
 - Les diviseurs vont par paires (d, n / d) : on les trouve tous en O(√n).
-- Modulo M, réduis après chaque addition et chaque multiplication ; ne divise jamais.
+- Modulo M, réduire après chaque addition et chaque multiplication ; ne jamais diviser.
 - La puissance rapide calcule A^N mod M en O(log N) en coupant N en deux.

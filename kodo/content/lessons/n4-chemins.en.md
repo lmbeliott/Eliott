@@ -43,11 +43,11 @@ while (!heap.empty()) {
 
 A vertex can be in the heap several times with different distances: only the smallest one counts, the others are **outdated** and we ignore them. The complexity is **O((N + M) log M)**. In C++, `priority_queue` gives the **largest** element: `greater` turns it into a min-heap. (In C++, `INFINITY` is already a macro from `<cmath>`, hence the name `INFINITY_`.) Dijkstra requires **non-negative** weights.
 
-## Model before you compute
+## Model before computing
 
 Many problems reduce to Dijkstra after a transformation.
 
-- A **cost on the vertices** (a price to pay for each vertex you pass through) can be moved onto the edges entering them.
+- A **cost on the vertices** (a price to pay for each vertex passed through) can be moved onto the edges entering them.
 - A **limited resource** (a maximum number of special edges, of jokers…) is added to the state: a vertex of the new graph is a pair `(vertex, resource used)`. The state graph has more vertices, but the algorithm stays the same, and its arcs are computed on the fly.
 
 ## Union-find
@@ -107,7 +107,7 @@ void unite(int a, int b) {
 
 Union-find can **add** edges, not remove them. The trick is often to handle the events in a chosen order: we sort the edges (for example by weight) and add them one by one. This is the idea behind **Kruskal's algorithm**: by adding the edges from the cheapest to the most expensive, and only those that link two different groups, we get the cheapest network that connects everything.
 
-If questions depend on a threshold ("using edges of weight at most `S`…"), you can also sort them by threshold and answer them **offline**, adding the edges along the way. Remember to keep each question's index so you can print the answers in input order.
+If questions depend on a threshold ("using edges of weight at most `S`…"), we can also sort them by threshold and answer them **offline**, adding the edges along the way. Each question's index must then be kept to print the answers in input order.
 
 ## Key takeaways
 
@@ -115,4 +115,4 @@ If questions depend on a threshold ("using edges of weight at most `S`…"), you
 - Complexity O((N + M) log M), much better than O(N × M), and than O(N²) when the graph is sparse (M much smaller than N²).
 - A cost on the vertices or a limited resource is modelled by changing the edges or the state.
 - Union-find: `find` and `unite`, with path compression and union by size.
-- Sorting edges and questions lets you handle everything by only adding edges.
+- Sorting edges and questions makes it possible to handle everything by only adding edges.

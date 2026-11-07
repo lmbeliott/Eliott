@@ -63,11 +63,11 @@ while (!q.empty()) {
 }
 ```
 
-At the end, `dist[v]` is the minimum number of edges to go from `1` to `v`, or `-1` if `v` is unreachable. Each vertex enters the queue only once and each edge is looked at twice: the search costs **O(N + M)**. Mark a vertex **when you add it** to the queue, otherwise it may enter it several times.
+At the end, `dist[v]` is the minimum number of edges to go from `1` to `v`, or `-1` if `v` is unreachable. Each vertex enters the queue only once and each edge is looked at twice: the search costs **O(N + M)**. A vertex is marked **when it is added** to the queue, otherwise it may enter it several times.
 
 ## Depth-first search and components
 
-**Depth-first search** (DFS) goes as deep as possible before backtracking. Written recursively, it exceeds Python's recursion limit (1 000 calls) on a long chain: use an explicit **stack**.
+**Depth-first search** (DFS) goes as deep as possible before backtracking. Written recursively, it exceeds Python's recursion limit (1 000 calls) on a long chain: an explicit **stack** is used instead.
 
 A **connected component** is a group of vertices linked together. To count them, we start a search from each vertex not visited yet: each search we start discovers a new component, entirely.
 
@@ -114,7 +114,7 @@ For components, both BFS and DFS work; for a **distance**, only BFS works.
 
 ## Two-colouring
 
-Sometimes you want to give each vertex a label `0` or `1`, so that the two ends of every edge get different labels. A BFS does it: the start gets `0`, and each new neighbour gets the label opposite to the vertex it was reached from. If a neighbour that already has a label carries **the same** label as the current vertex, the graph contains an odd-length cycle: it is impossible.
+Sometimes we want to give each vertex a label `0` or `1`, so that the two ends of every edge get different labels. A BFS does it: the start gets `0`, and each new neighbour gets the label opposite to the vertex it was reached from. If a neighbour that already has a label carries **the same** label as the current vertex, the graph contains an odd-length cycle: it is impossible.
 
 ```python
 colour = [-1] * (n + 1)   # -1: no label yet
@@ -151,13 +151,13 @@ while (!q.empty()) {
 }
 ```
 
-The label of the start only decides its own component: as when counting components, start a search from each vertex with no label yet, and handle each component separately.
+The label of the start only decides its own component: as when counting components, we start a search from each vertex with no label yet, and handle each component separately.
 
 ## Shortest path on a grid
 
 A grid is an implicit graph: each free cell is a vertex linked to its four free neighbours, which we compute on the fly. A BFS from the starting cell gives the distance to every cell.
 
-Be careful in Python: with `sys.stdin.buffer`, each line you read is a `bytes` object, and `line[j]` is a **number**, not a character. The test `line[j] != '#'` would then always be true. Decode the lines with `.decode()`, as below, or compare with `ord('#')`.
+Be careful in Python: with `sys.stdin.buffer`, each line read is a `bytes` object, and `line[j]` is a **number**, not a character. The test `line[j] != '#'` would then always be true. The lines must be decoded with `.decode()`, as below, or compared with `ord('#')`.
 
 ```python
 r, c = int(data[0]), int(data[1])
@@ -194,14 +194,14 @@ while (!q.empty()) {
 }
 ```
 
-To get the distance from each cell to the **nearest** of several sources, put all the sources in the queue at the start, at distance `0`, then run a single BFS: this is **multi-source BFS**.
+To get the distance from each cell to the **nearest** of several sources, we put all the sources in the queue at the start, at distance `0`, then run a single BFS: this is **multi-source BFS**.
 
-You can also chain two BFS. If something spreads through the grid while you move, a first BFS (often multi-source) computes the minute `t[x]` at which it reaches each cell. The second BFS, from your position, enters a cell at minute `d` only if `d < t[x]`: you get there first.
+Two BFS can also be chained. If something spreads through the grid during the move, a first BFS (often multi-source) computes the minute `t[x]` at which it reaches each cell. The second BFS, from the starting position, enters a cell at minute `d` only if `d < t[x]`: the cell is reached first.
 
 ## Key takeaways
 
 - A graph is stored as **adjacency lists**: O(N + M) memory.
-- **BFS** (with a queue) gives shortest distances in number of edges, in O(N + M); mark vertices as soon as they are added.
+- **BFS** (with a queue) gives shortest distances in number of edges, in O(N + M); vertices are marked as soon as they are added.
 - **DFS** (with a stack, no deep recursion in Python) and BFS find the **connected components**: one search per unvisited vertex.
-- **Two-colouring**: alternate labels `0`/`1` during the search; two neighbours with the same label make it impossible. Handle each component on its own.
-- On a grid, neighbours are computed on the fly; several sources are handled with a single BFS, and two BFS in a row let you stay ahead of something that spreads.
+- **Two-colouring**: alternate labels `0`/`1` during the search; two neighbours with the same label make it impossible. Each component is handled on its own.
+- On a grid, neighbours are computed on the fly; several sources are handled with a single BFS, and two BFS in a row make it possible to stay ahead of something that spreads.

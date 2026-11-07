@@ -36,7 +36,7 @@ vector<int> fonctionZ(const string& s) {
 }
 ```
 
-Pour trouver un motif `P` dans un texte `T`, calcule la fonction Z de `P + "#" + T` : `P` commence à la position `i` du texte quand la valeur correspondante vaut `|P|`. La **fonction préfixe** de KMP (`π[i]` = plus long bord de `s[0..i]`) rend les mêmes services. Choisis celle que tu préfères.
+Pour trouver un motif `P` dans un texte `T`, on calcule la fonction Z de `P + "#" + T` : `P` commence à la position `i` du texte quand la valeur correspondante vaut `|P|`. La **fonction préfixe** de KMP (`π[i]` = plus long bord de `s[0..i]`) rend les mêmes services : les deux sont interchangeables.
 
 Un mot de longueur `n` a la **période** `p` (`s[i] = s[i + p]` partout) exactement quand `z[p] = n - p`. Il s'écrit `U U … U` avec `|U| = p` si en plus `p` divise `n`.
 
@@ -69,7 +69,7 @@ ull mulmod(ull a, ull b) {
 ull hache(int a, int b) { return (h[b] + M - mulmod(h[a], pw[b - a])) % M; }
 ```
 
-Deux morceaux égaux ont le même hachage. L'inverse est seulement *très probable* : deux mots différents peuvent entrer en **collision**. Avec `k` hachages et un module `M`, il y a environ `k² / (2M)` paires en collision. Pour 50 000 fenêtres et `M ≈ 10⁹`, une collision est presque sûre. Prends donc `M = 2⁶¹ - 1`, ou deux modules d'environ 10⁹ à la fois. Évite les calculs « modulo 2⁶⁴ » par simple débordement des entiers : le mot de Thue-Morse (`a`, `ab`, `abba`, `abbabaab`…, chaque étape ajoute la copie avec `a` et `b` échangés) produit des collisions pour toutes les bases.
+Deux morceaux égaux ont le même hachage. L'inverse est seulement *très probable* : deux mots différents peuvent entrer en **collision**. Avec `k` hachages et un module `M`, il y a environ `k² / (2M)` paires en collision. Pour 50 000 fenêtres et `M ≈ 10⁹`, une collision est presque sûre. On prend donc `M = 2⁶¹ - 1`, ou deux modules d'environ 10⁹ à la fois. Les calculs « modulo 2⁶⁴ » par simple débordement des entiers sont à proscrire : le mot de Thue-Morse (`a`, `ab`, `abba`, `abbabaab`…, chaque étape ajoute la copie avec `a` et `b` échangés) produit des collisions pour toutes les bases.
 
 Le hachage se marie bien avec la **dichotomie** : pour trouver la plus grande longueur qui vérifie une propriété monotone, on teste chaque longueur en O(N) avec un dictionnaire de hachages.
 

@@ -1,4 +1,4 @@
-Jusqu'ici, tes programmes faisaient toujours la même chose, quelles que soient les données. Avec une **condition**, ton programme peut faire des choix : afficher un message ou un autre, selon les nombres qu'il a lus.
+Jusqu'ici, les programmes faisaient toujours la même chose, quelles que soient les données. Avec une **condition**, un programme peut faire des choix : afficher un message ou un autre, selon les nombres qu'il a lus.
 
 ## Si… sinon
 
@@ -39,7 +39,7 @@ Une condition compare souvent deux valeurs. Les opérateurs sont les mêmes en P
 
 Attention au double égal : `x = 5` range 5 dans `x`, alors que `x == 5` **demande** si `x` vaut 5.
 
-Lis bien les énoncés : « au moins 8 » s'écrit `>= 8`, « plus de 8 » ou « strictement supérieur à 8 » s'écrit `> 8`, « au plus 8 » s'écrit `<= 8`.
+Les énoncés sont à lire avec soin : « au moins 8 » s'écrit `>= 8`, « plus de 8 » ou « strictement supérieur à 8 » s'écrit `> 8`, « au plus 8 » s'écrit `<= 8`.
 
 Le reste de la division, `%`, est très utile dans les conditions. Par exemple, un nombre est pair quand le reste de sa division par 2 vaut 0 :
 
@@ -121,16 +121,16 @@ if (vent > 60 || temperature < -20) {
 }
 ```
 
-Pour vérifier qu'un nombre est entre deux valeurs, Python accepte l'écriture des mathématiques : `12 <= age <= 17`. En C++, il faut écrire `12 <= age && age <= 17`. Attention : `12 <= age <= 17` est accepté par le compilateur C++, mais il ne fait pas du tout ce que tu crois !
+Pour vérifier qu'un nombre est entre deux valeurs, Python accepte l'écriture des mathématiques : `12 <= age <= 17`. En C++, il faut écrire `12 <= age && age <= 17`. Attention : `12 <= age <= 17` est accepté par le compilateur C++, mais il ne fait pas du tout ce qu'on croit.
 
 ## Tester les cas limites
 
-Quand ton programme est écrit, essaie-le avec les valeurs « frontières » : si la règle dit « au moins 30 », teste 29, 30 et 31. C'est là que se cachent la plupart des erreurs.
+Une fois le programme écrit, on l'essaie avec les valeurs « frontières » : si la règle dit « au moins 30 », on teste 29, 30 et 31. C'est là que se cachent la plupart des erreurs.
 
 ## À retenir
 
 - `if` / `else` permettent de choisir. En Python : deux-points et indentation ; en C++ : parenthèses et accolades.
 - `==` compare, `=` range une valeur.
 - Avec `elif` (`else if`), seul le premier test vrai est exécuté : l'ordre des tests compte.
-- `and`, `or`, `not` en Python s'écrivent `&&`, `||`, `!` en C++. En C++, pas de `a <= x <= b` : écris `a <= x && x <= b`.
-- Teste toujours les valeurs aux frontières.
+- `and`, `or`, `not` en Python s'écrivent `&&`, `||`, `!` en C++. En C++, pas de `a <= x <= b` : on écrit `a <= x && x <= b`.
+- Toujours tester les valeurs aux frontières.

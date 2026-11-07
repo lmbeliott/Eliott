@@ -26,7 +26,7 @@ for (int i = 1; i <= n; i++) {
 }
 ```
 
-Les nombres de façons grandissent très vite : prends le modulo à chaque addition. Le coût est le nombre d'états multiplié par le coût d'une transition, ici O(N).
+Les nombres de façons grandissent très vite : on prend le modulo à chaque addition. Le coût est le nombre d'états multiplié par le coût d'une transition, ici O(N).
 
 ## Chemins dans une grille
 
@@ -54,7 +54,7 @@ for (int i = 0; i < r; i++) {
 }
 ```
 
-Il y a énormément de chemins, mais seulement `R × C` états. Pour **compter** les chemins optimaux, garde un deuxième tableau : le nombre de chemins qui atteignent le maximum, en n'additionnant que ceux des cases qui réalisent ce maximum.
+Il y a énormément de chemins, mais seulement `R × C` états. Pour **compter** les chemins optimaux, on garde un deuxième tableau : le nombre de chemins qui atteignent le maximum, en n'additionnant que ceux des cases qui réalisent ce maximum.
 
 ## Le sac à dos
 
@@ -76,7 +76,7 @@ for (auto [p, v] : objets) {
 }
 ```
 
-Coût : O(N × W). L'initialisation choisit le sens de `best[w]` : avec des `0` partout, c'est « poids au plus `w` » ; avec `best[0] = 0` et une valeur « impossible » ailleurs, c'est « poids **exactement** `w` ». Dans ce cas, il ne faut jamais prolonger un état impossible : avec `-1` comme valeur impossible, `best[w - p] + v` donnerait une valeur à un poids inatteignable. Teste-le avant la mise à jour :
+Coût : O(N × W). L'initialisation choisit le sens de `best[w]` : avec des `0` partout, c'est « poids au plus `w` » ; avec `best[0] = 0` et une valeur « impossible » ailleurs, c'est « poids **exactement** `w` ». Dans ce cas, il ne faut jamais prolonger un état impossible : avec `-1` comme valeur impossible, `best[w - p] + v` donnerait une valeur à un poids inatteignable. Il faut le tester avant la mise à jour :
 
 ```python
 IMPOSSIBLE = -1
@@ -133,8 +133,8 @@ Coût : O(N log N). Avec `bisect_right` (`upper_bound`), on obtiendrait la plus 
 
 ## À retenir
 
-- Définis précisément l'**état**, la **transition** (souvent : la dernière décision) et les **cas de base**.
-- Remplis le tableau dans un ordre où chaque case ne dépend que de cases déjà calculées.
+- Définir précisément l'**état**, la **transition** (souvent : la dernière décision) et les **cas de base**.
+- Remplir le tableau dans un ordre où chaque case ne dépend que de cases déjà calculées.
 - Coût = nombre d'états × coût d'une transition.
 - Sac à dos 0/1 : boucle sur le poids **décroissante** ; l'initialisation décide entre « au plus » et « exactement ».
 - La plus longue sous-suite croissante se calcule en O(N log N) avec un tableau trié et une dichotomie.

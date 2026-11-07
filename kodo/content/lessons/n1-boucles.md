@@ -1,4 +1,4 @@
-Pour afficher 100 nombres, tu ne vas pas écrire 100 fois `print` ! Une **boucle** répète un bloc d'instructions autant de fois qu'il le faut. C'est grâce aux boucles qu'un programme de quelques lignes peut traiter des milliers de données.
+Afficher 100 nombres ne demande pas d'écrire 100 fois `print`. Une **boucle** répète un bloc d'instructions autant de fois qu'il le faut. C'est grâce aux boucles qu'un programme de quelques lignes peut traiter des milliers de données.
 
 ## Répéter N fois : la boucle for
 
@@ -105,11 +105,11 @@ for (int i = 1; i <= 100; i++) {
 cout << compteur << "\n";
 ```
 
-Le programme affiche `14`. Regarde bien les décalages : le `if` est dans la boucle, et l'ajout de 1 est dans le `if`.
+Le programme affiche `14`. Les décalages sont importants : le `if` est dans la boucle, et l'ajout de 1 est dans le `if`.
 
 ## Répéter tant que : la boucle while
 
-Parfois, on ne sait pas à l'avance combien de tours il faudra. Tu mets 15 euros de côté chaque semaine pour t'acheter un vélo à 200 euros. Combien de semaines dois-tu attendre ?
+Parfois, on ne sait pas à l'avance combien de tours il faudra. On met 15 euros de côté chaque semaine pour acheter un vélo à 200 euros. Combien de semaines faut-il attendre ?
 
 ```python
 economies = 0
@@ -130,13 +130,13 @@ while (economies < 200) {
 cout << semaines << "\n";
 ```
 
-La boucle `while` vérifie la condition **avant** chaque tour. Tant qu'elle est vraie, le bloc est répété ; dès qu'elle devient fausse, la boucle s'arrête et le programme continue après. Ici, il affiche `14` : après 13 semaines, tu n'as que 195 euros.
+La boucle `while` vérifie la condition **avant** chaque tour. Tant qu'elle est vraie, le bloc est répété ; dès qu'elle devient fausse, la boucle s'arrête et le programme continue après. Ici, il affiche `14` : après 13 semaines, on n'a que 195 euros.
 
-Attention : si la condition ne devient jamais fausse, la boucle tourne sans fin et ton programme ne s'arrête pas. Vérifie que chaque tour rapproche de la sortie.
+Attention : si la condition ne devient jamais fausse, la boucle tourne sans fin et le programme ne s'arrête pas. Chaque tour doit rapprocher de la sortie.
 
 ## À retenir
 
 - `for i in range(n)` en Python, `for (int i = 0; i < n; i++)` en C++ : le bloc est répété `n` fois, avec `i` qui va de 0 à `n - 1`.
 - `range(début, fin, pas)` s'arrête juste avant `fin`.
 - Accumulateur et compteur : on les met à 0 **avant** la boucle, on les modifie **dans** la boucle, on les affiche **après**.
-- `while condition` répète tant que la condition est vraie : assure-toi qu'elle finira par devenir fausse.
+- `while condition` répète tant que la condition est vraie, qui doit finir par devenir fausse.

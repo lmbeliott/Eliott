@@ -8,7 +8,7 @@ On dispose de pièces de valeur 1, 3 et 4. Pour payer 6 avec le moins de pièces
 
 Une voiture suit une route bordée de stations-service, aux kilomètres `r[0] < r[1] < …`, et parcourt au plus D km avec un plein. Elle part de la première station, réservoir plein, et veut atteindre la dernière en s'arrêtant le moins de fois possible pour refaire le plein. Choix glouton : à chaque fois, aller jusqu'à la station **la plus loin** qu'elle peut atteindre.
 
-Pourquoi est-ce optimal ? Comparons avec n'importe quel autre plan. Après le premier trajet, le glouton est au moins aussi loin que l'autre plan, puisqu'il a pris la station la plus lointaine. Et s'il est au moins aussi loin après k arrêts, il l'est encore après k + 1 arrêts : toute station que l'autre plan atteint au trajet suivant est aussi à portée du glouton. Le glouton **reste devant** à chaque étape : il n'a donc jamais besoin de plus d'arrêts que n'importe quel autre plan.
+Pourquoi est-ce optimal ? On compare avec n'importe quel autre plan. Après le premier trajet, le glouton est au moins aussi loin que l'autre plan, puisqu'il a pris la station la plus lointaine. Et s'il est au moins aussi loin après k arrêts, il l'est encore après k + 1 arrêts : toute station que l'autre plan atteint au trajet suivant est aussi à portée du glouton. Le glouton **reste devant** à chaque étape : il n'a donc jamais besoin de plus d'arrêts que n'importe quel autre plan.
 
 ```python
 r = [0, 4, 9, 11, 17, 20, 26]
@@ -56,7 +56,7 @@ Une autre façon de prouver un glouton : partir d'une solution optimale **quelco
 
 Exemple : une imprimante doit imprimer N documents, l'un après l'autre. Le document i demande t_i minutes, et la personne qui l'a envoyé attend jusqu'à la fin de son impression. Pour minimiser la somme des attentes, le glouton imprime d'abord les documents **les plus courts**.
 
-Preuve : prenons un ordre où deux documents voisins a puis b vérifient t_a > t_b. Si on les échange, les attentes des autres documents ne changent pas. Avant l'échange, b attendait t_a minutes de plus à cause de a ; après, c'est a qui attend t_b minutes de plus à cause de b. Comme t_b < t_a, la somme diminue. Un ordre optimal n'a donc aucune paire de voisins mal rangés : il est trié.
+Preuve : soit un ordre où deux documents voisins a puis b vérifient t_a > t_b. Si on les échange, les attentes des autres documents ne changent pas. Avant l'échange, b attendait t_a minutes de plus à cause de a ; après, c'est a qui attend t_b minutes de plus à cause de b. Comme t_b < t_a, la somme diminue. Un ordre optimal n'a donc aucune paire de voisins mal rangés : il est trié.
 
 ```python
 t = [7, 2, 5]
@@ -117,12 +117,12 @@ Ce schéma sert souvent pour fabriquer le plus petit (ou le plus grand) nombre p
 
 ## Vérifier son glouton
 
-Avant de faire confiance à un glouton, écris aussi une solution **force brute** qui essaie toutes les possibilités (lente, mais sûre), et compare les deux sur des centaines de petits tests aléatoires. Un seul désaccord prouve que le glouton est faux, et le petit test fautif aide à comprendre pourquoi.
+Avant de faire confiance à un glouton, on écrit aussi une solution **force brute** qui essaie toutes les possibilités (lente, mais sûre), et on compare les deux sur des centaines de petits tests aléatoires. Un seul désaccord prouve que le glouton est faux, et le petit test fautif aide à comprendre pourquoi.
 
 ## À retenir
 
 - Un glouton fait à chaque étape le meilleur choix local, sans revenir en arrière : il est rapide, souvent O(N log N) à cause du tri.
-- Une idée gloutonne naturelle peut être fausse : cherche un contre-exemple avant d'y croire.
+- Une idée gloutonne naturelle peut être fausse : chercher un contre-exemple avant d'y croire.
 - Pour prouver un glouton : montrer qu'il « reste devant » toute autre solution, ou qu'on peut échanger des éléments d'une solution optimale pour retrouver le choix du glouton sans perdre.
 - Une pile permet de revenir sur les derniers choix : on dépile ce qui est moins bon que le nouvel élément, en O(N) au total.
-- Compare toujours ton glouton à une force brute sur de petits tests aléatoires.
+- Toujours comparer le glouton à une force brute sur de petits tests aléatoires.

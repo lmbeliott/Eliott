@@ -21,7 +21,7 @@ long long factorial(int n) {
 // factorial(5) is 120
 ```
 
-Two rules must be respected: there must be a **base case** that does not call the function again, and each call must get closer to that case. Otherwise, the function calls itself forever and the program crashes. In Python, the depth is limited to about 1 000 nested calls: to go further, you need `sys.setrecursionlimit`, or a loop.
+Two rules must be respected: there must be a **base case** that does not call the function again, and each call must get closer to that case. Otherwise, the function calls itself forever and the program crashes. In Python, the depth is limited to about 1 000 nested calls: going further takes `sys.setrecursionlimit`, or a loop.
 
 ## Listing all the possibilities
 
@@ -72,7 +72,7 @@ void explore() {
 
 The choices are tried from the smallest to the largest at each place, so the permutations come out in **lexicographic order** (dictionary order), without sorting. This is often the order asked for in problem statements.
 
-You can picture all these calls as a **tree**: the root is the empty list, each call is a node, and each choice is a branch. There are N! leaves: 3 628 800 for N = 10. So listing everything is only possible for small values of N.
+All these calls can be pictured as a **tree**: the root is the empty list, each call is a node, and each choice is a branch. There are N! leaves: 3 628 800 for N = 10. So listing everything is only possible for small values of N.
 
 ## Backtracking and pruning
 
@@ -121,7 +121,7 @@ void search(int i, int total) {
 }
 ```
 
-Good pruning changes everything: on some problems, it reduces billions of cases to a few thousand. To prune well, ask yourself: "with this beginning, is it still possible to find a solution, or a solution better than the best one found so far?" If the answer is no, go back up. Two tricks often help: handle the most constraining elements first (the biggest, the rarest), and don't try two identical choices that would lead to the same solutions.
+Good pruning changes everything: on some problems, it reduces billions of cases to a few thousand. To prune well, the question to ask is: "with this beginning, is it still possible to find a solution, or a solution better than the best one found so far?" If the answer is no, go back up. Two tricks often help: handle the most constraining elements first (the biggest, the rarest), and don't try two identical choices that would lead to the same solutions.
 
 ## Key takeaways
 

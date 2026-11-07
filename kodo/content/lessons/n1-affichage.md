@@ -1,4 +1,4 @@
-Un programme est une suite d'instructions que l'ordinateur exécute dans l'ordre, de haut en bas. Dans ce chapitre, tu vas apprendre les trois gestes de base de tout programme : **afficher**, **calculer** et **lire** des nombres.
+Un programme est une suite d'instructions que l'ordinateur exécute dans l'ordre, de haut en bas. Ce chapitre présente les trois gestes de base de tout programme : **afficher**, **calculer** et **lire** des nombres.
 
 ## Afficher un message
 
@@ -20,7 +20,7 @@ int main() {
 
 En Python, `print` affiche ce qu'on lui donne, puis passe à la ligne. Le texte s'écrit entre guillemets ; les nombres, sans guillemets.
 
-En C++, un programme a toujours cette forme : les deux premières lignes préparent l'affichage et la lecture, et tes instructions se placent entre les accolades de `int main()`. `cout << …` affiche, et `"\n"` passe à la ligne. Chaque instruction se termine par un point-virgule. Dans la suite, on ne montrera que l'intérieur de `main`.
+En C++, un programme a toujours cette forme : les deux premières lignes préparent l'affichage et la lecture, et les instructions se placent entre les accolades de `int main()`. `cout << …` affiche, et `"\n"` passe à la ligne. Chaque instruction se termine par un point-virgule. Dans la suite, on ne montrera que l'intérieur de `main`.
 
 ## Les variables
 
@@ -52,9 +52,9 @@ Voici les opérations sur les nombres entiers :
 - `//` en Python, `/` en C++ : le quotient de la division entière, par exemple 17 divisé par 5 donne `3` ;
 - `%` dans les deux langages : le reste de cette division, par exemple 17 % 5 donne `2`, car 17 = 3 × 5 + 2.
 
-Comme en mathématiques, les multiplications et les divisions passent avant les additions et les soustractions : `2 + 3 * 4` vaut `14`. Utilise des parenthèses pour changer l'ordre : `(2 + 3) * 4` vaut `20`.
+Comme en mathématiques, les multiplications et les divisions passent avant les additions et les soustractions : `2 + 3 * 4` vaut `14`. Les parenthèses changent l'ordre : `(2 + 3) * 4` vaut `20`.
 
-Attention : en Python, `/` donne un nombre à virgule (`17 / 5` vaut `3.4`). Pour compter des objets entiers, utilise `//`.
+Attention : en Python, `/` donne un nombre à virgule (`17 / 5` vaut `3.4`). Pour compter des objets entiers, on utilise `//`.
 
 Le quotient et le reste servent souvent à faire des conversions. Par exemple, combien d'heures et de minutes dans 135 minutes ?
 
@@ -76,7 +76,7 @@ Le programme affiche `2 15` : 135 minutes, c'est 2 heures et 15 minutes.
 
 ## Lire les données
 
-Dans chaque problème, ton programme reçoit des données : c'est l'**entrée**. Pour lire un nombre seul sur sa ligne :
+Dans chaque problème, le programme reçoit des données : c'est l'**entrée**. Pour lire un nombre seul sur sa ligne :
 
 ```python
 n = int(input())
@@ -87,7 +87,7 @@ int n;
 cin >> n;
 ```
 
-En Python, `input()` lit une ligne entière, sous forme de **texte**. `int(…)` transforme ce texte en nombre entier. Sans cette conversion, `"3" + "4"` donnerait le texte `"34"`, et non le nombre `7` !
+En Python, `input()` lit une ligne entière, sous forme de **texte**. `int(…)` transforme ce texte en nombre entier. Sans cette conversion, `"3" + "4"` donnerait le texte `"34"`, et non le nombre `7`.
 
 Pour lire plusieurs nombres écrits sur une même ligne, séparés par des espaces :
 
@@ -116,14 +116,14 @@ cout << "Total : " << total << "\n";
 cout << 3 << " " << 4 << "\n";
 ```
 
-Les deux programmes affichent `Total : 12`, puis `3 4` sur la ligne suivante. En Python, `print` met une espace entre les éléments séparés par des virgules. En C++, `cout` n'ajoute rien : c'est à toi d'écrire les espaces.
+Les deux programmes affichent `Total : 12`, puis `3 4` sur la ligne suivante. En Python, `print` met une espace entre les éléments séparés par des virgules. En C++, `cout` n'ajoute rien : les espaces sont à écrire soi-même.
 
-Ta réponse est comparée mot à mot avec la réponse attendue. Les majuscules et la ponctuation comptent, et rien d'autre ne doit être affiché. N'écris donc pas `print("Résultat :", x)` quand on attend seulement le nombre : ta réponse serait refusée. Sur Kodo, le texte entre les parenthèses de `input(…)` n'est pas affiché, mais ailleurs il le serait : prends l'habitude d'écrire `input()` sans message.
+La sortie est comparée mot à mot avec la réponse attendue. Les majuscules et la ponctuation comptent, et rien d'autre ne doit être affiché. Écrire `print("Résultat :", x)` quand seul le nombre est attendu fait donc refuser la réponse. Sur Kodo, le texte entre les parenthèses de `input(…)` n'est pas affiché, mais ailleurs il le serait : mieux vaut écrire `input()` sans message.
 
 ## À retenir
 
-- `print(…)` en Python, `cout << …` en C++ pour afficher ; en C++, les espaces et les `"\n"` sont à écrire toi-même.
+- `print(…)` en Python, `cout << …` en C++ pour afficher ; en C++, les espaces et les `"\n"` sont à écrire soi-même.
 - Une variable range une valeur : `x = x + 1` calcule `x + 1`, puis range le résultat dans `x`.
-- `input()` lit du texte : convertis-le avec `int(…)`. Plusieurs nombres sur une ligne : `map(int, input().split())` en Python, `cin >> a >> b;` en C++.
+- `input()` lit du texte, à convertir avec `int(…)`. Plusieurs nombres sur une ligne : `map(int, input().split())` en Python, `cin >> a >> b;` en C++.
 - Division entière : `//` en Python, `/` entre deux `int` en C++. Reste : `%`.
-- Affiche exactement ce qui est demandé, rien de plus.
+- Afficher exactement ce qui est demandé, rien de plus.

@@ -121,7 +121,7 @@ void chercher(int i, int total) {
 }
 ```
 
-Un bon élagage change tout : sur certains problèmes, il réduit des milliards de cas à quelques milliers. Pour bien élaguer, demande-toi : « avec ce début, est-il encore possible de trouver une solution, ou une solution meilleure que la meilleure déjà trouvée ? » Si la réponse est non, on remonte. Deux astuces aident souvent : traiter d'abord les éléments les plus contraignants (les plus gros, les plus rares), et ne pas essayer deux choix identiques qui mèneraient aux mêmes solutions.
+Un bon élagage change tout : sur certains problèmes, il réduit des milliards de cas à quelques milliers. Pour bien élaguer, la question à se poser : « avec ce début, est-il encore possible de trouver une solution, ou une solution meilleure que la meilleure déjà trouvée ? » Si la réponse est non, on remonte. Deux astuces aident souvent : traiter d'abord les éléments les plus contraignants (les plus gros, les plus rares), et ne pas essayer deux choix identiques qui mèneraient aux mêmes solutions.
 
 ## À retenir
 

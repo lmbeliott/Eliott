@@ -1,4 +1,4 @@
-Une **chaîne de caractères** (en anglais *string*), c'est du texte : un mot, une phrase, un code secret. Dans ce chapitre, tu vas apprendre à lire un texte lettre par lettre, à tester ses lettres et à fabriquer de nouveaux mots.
+Une **chaîne de caractères** (en anglais *string*), c'est du texte : un mot, une phrase, un code secret. Ce chapitre montre comment lire un texte lettre par lettre, tester ses lettres et fabriquer de nouveaux mots.
 
 ## Une chaîne, c'est une liste de lettres
 
@@ -47,7 +47,7 @@ cout << nb << "\n";
 
 En C++, un caractère seul s'écrit entre apostrophes (`'e'`, de type `char`) et une chaîne entre guillemets (`"bonjour"`, de type `string`). En Python, les deux s'écrivent indifféremment avec `"` ou `'`.
 
-Quand tu as besoin de la position de la lettre (pour regarder sa voisine, ou pour parcourir le mot à l'envers), boucle plutôt sur les indices : `for i in range(len(mot))` en Python, `for (int i = 0; i < (int)mot.size(); i++)` en C++.
+Quand la position de la lettre compte (pour regarder sa voisine, ou pour parcourir le mot à l'envers), mieux vaut boucler sur les indices : `for i in range(len(mot))` en Python, `for (int i = 0; i < (int)mot.size(); i++)` en C++.
 
 ## Tester une lettre
 
@@ -100,7 +100,7 @@ En Python, `ord` donne le code d'un caractère et `chr` fait l'inverse. En C++, 
 
 ## Lire du texte
 
-`input()` en Python lit **toute une ligne**, espaces compris. En C++, `cin >> mot` lit un seul mot (il s'arrête au premier espace) ; pour une ligne entière, on utilise `getline(cin, ligne)`. Attention : après un `cin >> n`, le retour à la ligne n'a pas encore été lu. Ajoute `cin.ignore();` avant le `getline`, sinon tu obtiens une ligne vide.
+`input()` en Python lit **toute une ligne**, espaces compris. En C++, `cin >> mot` lit un seul mot (il s'arrête au premier espace) ; pour une ligne entière, on utilise `getline(cin, ligne)`. Attention : après un `cin >> n`, le retour à la ligne n'a pas encore été lu. Il faut ajouter `cin.ignore();` avant le `getline`, sinon on obtient une ligne vide.
 
 ```python
 n = int(input())

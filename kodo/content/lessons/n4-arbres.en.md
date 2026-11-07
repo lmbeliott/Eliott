@@ -1,12 +1,12 @@
-A **tree** is a connected graph with no cycle: `N` vertices, `N - 1` edges, and a single path between any two vertices. Once you choose a **root**, every other vertex has a **parent** (the neighbour on the root's side) and **children**. The **subtree** of `v` is made of `v` and all its descendants.
+A **tree** is a connected graph with no cycle: `N` vertices, `N - 1` edges, and a single path between any two vertices. Once a **root** is chosen, every other vertex has a **parent** (the neighbour on the root's side) and **children**. The **subtree** of `v` is made of `v` and all its descendants.
 
 ## Storing a rooted tree
 
-The problems of this chapter often give the tree by the parent of each vertex `2, 3, …, N`, the root being `1`. From it, build the lists of children. Be careful: the numbers do not follow the hierarchy, a child may have a smaller number than its parent.
+The problems of this chapter often give the tree by the parent of each vertex `2, 3, …, N`, the root being `1`. From it, we deduce the lists of children. Be careful: the numbers do not follow the hierarchy, a child may have a smaller number than its parent.
 
 ## Traversing without recursion
 
-A breadth-first search from the root produces a list `order` where each vertex appears **after its parent**. Use it to compute the depths too. Read **backwards**, the same list processes each vertex **after all its children**: that is the right direction to carry information from the leaves up to the root, like the sizes of the subtrees.
+A breadth-first search from the root produces a list `order` where each vertex appears **after its parent**. We also use it to compute the depths. Read **backwards**, the same list processes each vertex **after all its children**: that is the right direction to carry information from the leaves up to the root, like the sizes of the subtrees.
 
 ```python
 children = [[] for _ in range(n + 1)]
@@ -44,7 +44,7 @@ Why not a recursive function? On a path-shaped tree, the depth reaches `N`, and 
 
 The **diameter** is the longest path of the tree. Two breadth-first searches are enough: the vertex `a` farthest from any vertex is an end of a longest path, and the vertex `b` farthest from `a` is the other end. The middle of the path from `a` to `b` is the **centre**: one vertex if the diameter is even, two neighbours if it is odd. All the longest paths go through it.
 
-This trick only works with positive lengths: with negative edge weights, you need dynamic programming over the subtrees.
+This trick only works with positive lengths: with negative edge weights, dynamic programming over the subtrees is needed.
 
 ## Rerooting
 
@@ -69,7 +69,7 @@ for (int v : order)              // from the root down to the leaves
 
 ## Lowest common ancestor and binary lifting
 
-The path between `u` and `v` goes up to their **lowest common ancestor** (LCA), then down again; its length is `depth[u] + depth[v] - 2 × depth[lca]`. To find it quickly, precompute `up[j][v]`, the ancestor located `2ʲ` levels above `v` (or `0`): climbing `2ʲ` levels means climbing `2ʲ⁻¹` levels twice. To climb `k` levels, follow the bits of `k`.
+The path between `u` and `v` goes up to their **lowest common ancestor** (LCA), then down again; its length is `depth[u] + depth[v] - 2 × depth[lca]`. To find it quickly, we precompute `up[j][v]`, the ancestor located `2ʲ` levels above `v` (or `0`): climbing `2ʲ` levels means climbing `2ʲ⁻¹` levels twice. To climb `k` levels, we follow the bits of `k`.
 
 ```python
 up = [parent]                    # parent[1] = 0
@@ -108,7 +108,7 @@ int lca(int u, int v) {
 }
 ```
 
-Once both vertices are on the same level, lift them together by decreasing jumps, as long as they do not meet: they stop just below the common ancestor. With `LOG` such that `2^LOG > N`, the table costs O(N log N), and each question O(log N).
+Once both vertices are on the same level, we lift them together by decreasing jumps, as long as they do not meet: they stop just below the common ancestor. With `LOG` such that `2^LOG > N`, the table costs O(N log N), and each question O(log N).
 
 ## Key takeaways
 

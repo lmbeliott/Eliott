@@ -1,4 +1,4 @@
-Prefix sums give the sum of `a[l..r]` in O(1)… as long as the array doesn't change: a single modification forces you to recompute everything, in O(N). The structures in this chapter do both operations, modify and query, in **O(log N)**. They rely on binary representation: let's start there.
+Prefix sums give the sum of `a[l..r]` in O(1)… as long as the array doesn't change: a single modification forces a full recomputation, in O(N). The structures in this chapter do both operations, modify and query, in **O(log N)**. They rely on binary representation, covered first.
 
 ## Bitwise operations
 
@@ -9,7 +9,7 @@ The operators `&` (and), `|` (or), `^` (exclusive or), `<<` and `>>` (shifts) wo
 - `x | (1 << p)` sets bit `p` to `1`; `x ^ (1 << p)` flips it.
 - `x & -x` isolates the lowest bit set to `1`: `12 & -12 = 4`, because `12 = 1100` in binary.
 
-An integer can encode a **set** of elements numbered from `0` to `k - 1`: element `p` is present if bit `p` is `1`. This is called a **mask**. Then `a & b` is the intersection, `a | b` the union, and `(a & b) == a` tests whether `a` is included in `b`. Keep the parentheses: in C++, `==` has higher precedence than `&`, `|` and `^`, so `a & b == a` reads as `a & (b == a)`. Going through all the sets means going through the integers from `0` to `2ᵏ - 1`.
+An integer can encode a **set** of elements numbered from `0` to `k - 1`: element `p` is present if bit `p` is `1`. This is called a **mask**. Then `a & b` is the intersection, `a | b` the union, and `(a & b) == a` tests whether `a` is included in `b`. The parentheses are required: in C++, `==` has higher precedence than `&`, `|` and `^`, so `a & b == a` reads as `a & (b == a)`. Going through all the sets means going through the integers from `0` to `2ᵏ - 1`.
 
 ```python
 k = 3
@@ -28,7 +28,7 @@ for (int m = 0; m < (1 << k); m++) {
 }
 ```
 
-To go through the **subsets** of a mask `b`, start from `a = b` and do `a = (a - 1) & b` until `0`, without forgetting `0` itself. To get, for **every** mask `m`, the sum of a value `c[a]` over all the `a` included in `m`, there is something faster than enumerating: the **sum over subsets** handles the bits one by one, in O(k × 2ᵏ).
+To go through the **subsets** of a mask `b`, we start from `a = b` and do `a = (a - 1) & b` until `0`, without forgetting `0` itself. To get, for **every** mask `m`, the sum of a value `c[a]` over all the `a` included in `m`, there is something faster than enumerating: the **sum over subsets** handles the bits one by one, in O(k × 2ᵏ).
 
 ```python
 S = c[:]                         # c[a]: value of mask a
@@ -146,11 +146,11 @@ int rangeMax(int l, int r) {   // max of a[l..r-1], values >= 0
 }
 ```
 
-The query uses at most two nodes per level. A node's maximum also lets you **discard** a whole block in one go, which makes it possible to find the first element that is large enough by going down the tree.
+The query uses at most two nodes per level. A node's maximum also serves to **discard** a whole block in one go, which makes it possible to find the first element that is large enough by going down the tree.
 
 ## Key takeaways
 
-- `1 << p`, `(x >> p) & 1` and `x & -x` are the basic moves on bits; a mask encodes a set. In C++, use parentheses: `(a & b) == a`.
+- `1 << p`, `(x >> p) & 1` and `x & -x` are the basic moves on bits; a mask encodes a set. In C++, parentheses are required: `(a & b) == a`.
 - The sum over subsets computes, for all masks at once, a sum over their subsets in O(k × 2ᵏ).
 - Fenwick tree: modification and prefix sum in O(log N), by adding or removing `i & -i`.
 - Segment tree: any associative operation, modification and query in O(log N).

@@ -74,13 +74,13 @@ vector<vector<bool>> vue(h, vector<bool>(w, false));
 vue[1][3] = true;
 ```
 
-En Python, n'écris pas `[[False] * w] * h` : cela crée `h` fois **la même** ligne, et modifier une case modifierait toute la colonne. Autre détail : on ne peut pas changer un caractère d'une chaîne Python. Pour modifier la grille elle-même, lis chaque ligne avec `list(input())`, ce qui donne une liste de caractères. En C++, un `vector<string>` se modifie directement, et on peut aussi utiliser un `vector<vector<char>>`.
+En Python, éviter `[[False] * w] * h` : cela crée `h` fois **la même** ligne, et modifier une case modifierait toute la colonne. Autre détail : on ne peut pas changer un caractère d'une chaîne Python. Pour modifier la grille elle-même, on lit chaque ligne avec `list(input())`, ce qui donne une liste de caractères. En C++, un `vector<string>` se modifie directement, et on peut aussi utiliser un `vector<vector<char>>`.
 
 ## Les voisins d'une case
 
 Les quatre voisines de la case `(i, j)` sont celle du dessus `(i - 1, j)`, du dessous `(i + 1, j)`, de gauche `(i, j - 1)` et de droite `(i, j + 1)`. Plutôt que d'écrire quatre fois le même code, on range les quatre **décalages** dans une liste et on boucle dessus.
 
-Attention aux bords : une case du bord a des voisines qui sortent de la grille. Il faut **toujours** vérifier qu'une case est dans la grille avant de la lire. En Python, c'est d'autant plus traître que `grille[-1]` ne provoque pas d'erreur : c'est la dernière ligne !
+Attention aux bords : une case du bord a des voisines qui sortent de la grille. Il faut **toujours** vérifier qu'une case est dans la grille avant de la lire. En Python, c'est d'autant plus traître que `grille[-1]` ne provoque pas d'erreur : c'est la dernière ligne.
 
 ```python
 nb = 0   # nombre de murs voisins de la case (i, j)
@@ -116,6 +116,6 @@ Pour faire avancer un robot ou un pion, on garde sa position `(l, c)` et sa dire
 
 - `grille[i][j]` : la ligne `i` d'abord, puis la colonne `j`, en partant de `0` en haut à gauche.
 - Deux boucles imbriquées parcourent toutes les cases.
-- Avant de lire une case voisine, vérifie toujours qu'elle est dans la grille.
+- Avant de lire une case voisine, toujours vérifier qu'elle est dans la grille.
 - Une liste de décalages `(dl, dc)` évite de recopier quatre fois le même code.
 - Une deuxième grille (de booléens, de compteurs…) permet de noter ce qu'on a déjà vu.

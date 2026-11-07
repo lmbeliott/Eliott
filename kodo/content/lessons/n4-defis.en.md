@@ -1,19 +1,19 @@
-Final-round problems almost never ask for a new algorithm. They **combine** two or three that you already know, and the whole difficulty is seeing how to put them together. This chapter gathers the combinations that come up most often, and a few tools that are still missing.
+Final-round problems almost never ask for a new algorithm. They **combine** two or three already known ones, and the whole difficulty is seeing how to put them together. This chapter gathers the combinations that come up most often, and a few tools that are still missing.
 
 ## Search for the answer, then check
 
-When you are asked for "the greatest value such that…", ask yourself whether the **reverse** question is simpler: "does this value `x` work?". If the answer is monotone (true up to a threshold, false after), a binary search on `x` finds it with about 30 checks. The check is often a breadth-first search, a greedy or a dynamic program. When the answer must be one of the values in the input, binary search over the sorted list of these values.
+When a problem asks for "the greatest value such that…", it is worth checking whether the **reverse** question is simpler: "does this value `x` work?". If the answer is monotone (true up to a threshold, false after), a binary search on `x` finds it with about 30 checks. The check is often a breadth-first search, a greedy or a dynamic program. When the answer must be one of the values in the input, the binary search runs over the sorted list of these values.
 
 ## Offline: change the order of the questions
 
-If all the questions are known from the start, nothing forces you to answer them in order. **Sort** them by the parameter that makes the problem grow, then put the answers back in input order.
+If all the questions are known from the start, nothing forces answering them in order. We **sort** them by the parameter that makes the problem grow, then put the answers back in input order.
 
 - Questions "with the edges of weight ≤ t": by increasing `t`, edges are only ever added, and union-find is enough.
-- Questions on intervals `[l, r]`: by increasing `r`, you move a **sweep** forward and a Fenwick tree keeps the useful information for each `l`.
+- Questions on intervals `[l, r]`: by increasing `r`, a **sweep** moves forward and a Fenwick tree keeps the useful information for each `l`.
 
-To add a value over a whole interval `[x, y]` and read a single point, work on the **differences**: `+v` at `x`, `-v` at `y + 1`. The value at `l` is then a prefix sum.
+To add a value over a whole interval `[x, y]` and read a single point, we work on the **differences**: `+v` at `x`, `-v` at `y + 1`. The value at `l` is then a prefix sum.
 
-When union-find must also merge sets (colours, values…), always pour the **smaller into the larger**. A moved element lands in a set at least twice as large, so it only moves `log₂ N` times.
+When union-find must also merge sets (colours, values…), we always pour the **smaller into the larger**. A moved element lands in a set at least twice as large, so it only moves `log₂ N` times.
 
 ```python
 def merge(a, b):               # a and b are different roots
@@ -35,7 +35,7 @@ void merge(int a, int b) {     // a and b are different roots
 
 ## Counting modulo a prime
 
-To count paths or choices, you need binomial coefficients `C(n, k)` modulo `p = 10⁹ + 7`. Precompute the factorials, then the inverse of the last one with Fermat's little theorem (`x^(p-2)` is the inverse of `x`), and the others going backwards.
+To count paths or choices, binomial coefficients `C(n, k)` modulo `p = 10⁹ + 7` are needed. We precompute the factorials, then the inverse of the last one with Fermat's little theorem (`x^(p-2)` is the inverse of `x`), and the others going backwards.
 
 ```python
 P = 10**9 + 7
@@ -66,7 +66,7 @@ long long binom(int n, int k) {
 }
 ```
 
-To avoid forbidden cells, sort them and count, for each one, the paths that reach it **without** going through another one first. For each earlier cell `j`, you subtract the paths whose *first* forbidden cell is `j`. Thinking of the **complement** ("at least one" = all − "none") often simplifies the rest.
+To avoid forbidden cells, we sort them and count, for each one, the paths that reach it **without** going through another one first. For each earlier cell `j`, we subtract the paths whose *first* forbidden cell is `j`. Thinking of the **complement** ("at least one" = all − "none") often simplifies the rest.
 
 ## Games: Sprague-Grundy
 
@@ -90,11 +90,11 @@ int mex(const vector<int>& values) {
 }
 ```
 
-To **count the winning moves**, look for the moves that bring the total XOR back to `0`.
+To **count the winning moves**, we look for the moves that bring the total XOR back to `0`.
 
 ## Large generated inputs
 
-To keep test files small, some statements describe a pseudo-random generator. Copy it exactly, following the order of the calls. Computing modulo 2⁶⁴ is automatic in C++ with `unsigned long long`. In Python, you must take the remainder (`% 2**64`) at each step.
+To keep test files small, some statements describe a pseudo-random generator. It must be copied exactly, following the order of the calls. Computing modulo 2⁶⁴ is automatic in C++ with `unsigned long long`. In Python, the remainder (`% 2**64`) must be taken at each step.
 
 ## Key takeaways
 

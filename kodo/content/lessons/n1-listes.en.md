@@ -1,4 +1,4 @@
-With a loop, you know how to read `N` numbers and add them up. But at each turn, the new number replaces the old one in the variable: once the loop is over, you can't go back. To keep **all** the numbers in memory, you need a **list**. In C++, it's called a **vector**.
+A loop can read `N` numbers and add them up. But at each turn, the new number replaces the old one in the variable: once the loop is over, there is no going back. Keeping **all** the numbers in memory takes a **list**. In C++, it's called a **vector**.
 
 ## Creating a list
 
@@ -22,7 +22,7 @@ A list is a row of numbered cells. The number of a cell is called its **position
 
 In a list of `N` elements, the positions go from `0` to `N - 1`. Cell `N` doesn't exist: in Python, using it causes an error; in C++, the program reads garbage or crashes.
 
-In C++, add `#include <vector>` at the top of your program, next to `#include <iostream>`.
+In C++, `#include <vector>` goes at the top of the program, next to `#include <iostream>`.
 
 ## Reading a list
 
@@ -44,7 +44,7 @@ for (int i = 0; i < n; i++) {
 
 In Python, `input().split()` cuts the line, `map(int, …)` converts each piece, and `list(…)` puts everything in a list. In C++, `vector<int> marks(n)` creates `n` cells, then the loop fills them one by one.
 
-You can also start from an empty list and add elements at the end:
+A list can also start empty, with elements added at the end:
 
 ```python
 squares = []
@@ -81,9 +81,9 @@ for (int i = 0; i < n; i++) {
 }
 ```
 
-The first loop gives each value directly. The second one gives the position `i`, and `marks[i]` is the value stored at that position. Going through the positions is useful when you need the position itself, or when you want to compare a cell with its **neighbor**. For example, to compare each cell with the previous one, `marks[i - 1]`, you start `i` at 1, because cell 0 has no previous cell.
+The first loop gives each value directly. The second one gives the position `i`, and `marks[i]` is the value stored at that position. Going through the positions is useful when the position itself matters, or to compare a cell with its **neighbor**. For example, to compare each cell with the previous one, `marks[i - 1]`, `i` starts at 1, because cell 0 has no previous cell.
 
-To go through a list backwards, just make the position go from `N - 1` down to `0`.
+To go through a list backwards, the position goes from `N - 1` down to `0`.
 
 ## Printing a list on one line
 
@@ -104,7 +104,7 @@ In Python, `end=" "` tells `print` to write a space instead of moving to the nex
 
 ## Finding the maximum
 
-To find the largest value, you look for it just like you would by hand: you remember the largest value seen so far, and replace it as soon as you find something bigger.
+The largest value is found the same way as by hand: remember the largest value seen so far, and replace it as soon as something bigger shows up.
 
 ```python
 largest = marks[0]
@@ -124,16 +124,16 @@ for (int x : marks) {
 cout << largest << "\n";
 ```
 
-We start with the first element of the list, not with 0: if all the values were negative, 0 would be a wrong answer. Python also has `max(marks)`, but you need to know how to do it yourself, because you often want more than the value: its position, for example.
+The search starts with the first element of the list, not with 0: if all the values were negative, 0 would be a wrong answer. Python also has `max(marks)`, but writing the loop by hand matters, because the goal is often more than the value: its position, for example.
 
 ## Several passes
 
-A list keeps the values: so you can go through it a first time to compute something (a sum, a maximum), then a second time to use that result on each element. That's impossible with a simple reading loop.
+A list keeps the values: so it can be gone through a first time to compute something (a sum, a maximum), then a second time to use that result on each element. That's impossible with a simple reading loop.
 
 ## Key takeaways
 
 - A list (a `vector` in C++) keeps several values; the positions go from `0` to `N - 1`.
 - Reading a list: `list(map(int, input().split()))` in Python; `vector<int> v(n)` and a loop of `cin` in C++.
-- You go through a list by values (`for x in my_list`) or by positions (`for i in range(n)`); with neighbors, watch the boundaries.
+- A list is gone through by values (`for x in my_list`) or by positions (`for i in range(n)`); with neighbors, watch the boundaries.
 - For a maximum, start from the first element and compare it with all the others.
-- A list lets you go through the data several times.
+- A list allows several passes over the data.

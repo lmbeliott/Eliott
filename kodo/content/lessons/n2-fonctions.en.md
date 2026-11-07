@@ -1,4 +1,4 @@
-When a program grows, it quickly becomes hard to read: dozens of lines, loops inside loops, the same calculation copied in three places. **Functions** let you give a name to a piece of calculation, then reuse it as many times as you want.
+When a program grows, it quickly becomes hard to read: dozens of lines, loops inside loops, the same calculation copied in three places. **Functions** give a name to a piece of calculation, which can then be reused as many times as needed.
 
 ## Defining and calling a function
 
@@ -26,9 +26,9 @@ int main() {
 }
 ```
 
-The function is written only once and used twice. If it contains a mistake, you fix it in a single place.
+The function is written only once and used twice. If it contains a mistake, the fix happens in a single place.
 
-In C++, you have to give the **type** of what the function returns (`int`, `bool`, `string`…) and the type of each parameter. The function must be written **before** `main`, otherwise the compiler doesn't know it yet. A function that returns nothing has the type `void`.
+In C++, the function must state the **type** of what it returns (`int`, `bool`, `string`…) and the type of each parameter. The function must be written **before** `main`, otherwise the compiler doesn't know it yet. A function that returns nothing has the type `void`.
 
 A function can also return text. In C++, its type is then `string`, and `to_string(n)` turns a number into text:
 
@@ -81,13 +81,13 @@ int main() {
 
 ## Tidy variables
 
-The variables created inside a function, and its parameters, are **local**: they only exist during the call. So two functions can each have a variable called `total` without mixing them up. To get a value out of a function, you return it with `return`.
+The variables created inside a function, and its parameters, are **local**: they only exist during the call. So two functions can each have a variable called `total` without mixing them up. A value leaves a function through `return`.
 
 In C++, parameters are **copies**: if the function changes its parameter `n`, the variable passed by the main program doesn't change. In Python, it's the same for numbers and strings (but careful: a list changed inside a function is changed for everyone).
 
 ## Splitting a problem
 
-The real power of functions is cutting a big problem into small, simple pieces. For example, to count the numbers from 1 to 1,000 whose digits add up to 10, you first write a function for the sum of the digits, then use it in the main loop:
+The real power of functions is cutting a big problem into small, simple pieces. For example, to count the numbers from 1 to 1,000 whose digits add up to 10, the first step is a function for the sum of the digits, then the main loop uses it:
 
 ```python
 def digit_sum(n):
@@ -126,14 +126,14 @@ int main() {
 }
 ```
 
-Notice that `digit_sum` changes `n`, but only its own local copy: the variable `n` of the loop isn't touched.
+`digit_sum` changes `n`, but only its own local copy: the variable `n` of the loop isn't touched.
 
-A good method: before writing the program, ask yourself "which small questions do I need to answer?". Each question becomes a function, with a name that says what it does (`is_leap_year`, `to_minutes`, `digits`…). A function can call another function: write the simplest ones first, check them by hand on one or two examples, then build the next ones on top of them.
+A good method: before writing the program, list the small questions that need an answer. Each question becomes a function, with a name that says what it does (`is_leap_year`, `to_minutes`, `digits`…). A function can call another function: the simplest ones come first, checked by hand on one or two examples, then the next ones are built on top of them.
 
 ## Key takeaways
 
-- A function gives a name to a calculation: you write it once, and call it as often as you want.
+- A function gives a name to a calculation: written once, called as often as needed.
 - `return` gives back the result and stops the function; the main program does the printing.
 - The variables of a function are local; number and string parameters are copies (a Python list is shared).
-- In C++, you give the return type and the type of each parameter, and you write the function before `main`.
-- For a complicated problem, split it into small functions, and write and check the simplest ones first.
+- In C++, the return type and the type of each parameter are stated, and the function is written before `main`.
+- A complicated problem splits into small functions; the simplest ones are written and checked first.

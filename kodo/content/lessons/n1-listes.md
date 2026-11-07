@@ -1,4 +1,4 @@
-Avec une boucle, tu sais lire `N` nombres et en faire la somme. Mais à chaque tour, le nouveau nombre remplace l'ancien dans la variable : une fois la boucle finie, tu ne peux plus revenir en arrière. Pour garder **tous** les nombres en mémoire, il faut une **liste**. En C++, on dit un **vector**.
+Avec une boucle, on sait lire `N` nombres et en faire la somme. Mais à chaque tour, le nouveau nombre remplace l'ancien dans la variable : une fois la boucle finie, impossible de revenir en arrière. Pour garder **tous** les nombres en mémoire, il faut une **liste**. En C++, on dit un **vector**.
 
 ## Créer une liste
 
@@ -22,7 +22,7 @@ Une liste est une rangée de cases numérotées. Le numéro d'une case s'appelle
 
 Dans une liste de `N` éléments, les positions vont de `0` à `N - 1`. La case `N` n'existe pas : en Python, y accéder provoque une erreur ; en C++, le programme lit n'importe quoi ou plante.
 
-En C++, ajoute `#include <vector>` en haut de ton programme, à côté de `#include <iostream>`.
+En C++, il faut ajouter `#include <vector>` en haut du programme, à côté de `#include <iostream>`.
 
 ## Lire une liste
 
@@ -128,12 +128,12 @@ On commence avec le premier élément de la liste, et pas avec 0 : si toutes les
 
 ## Plusieurs parcours
 
-Une liste garde les valeurs : tu peux donc la parcourir une première fois pour calculer quelque chose (une somme, un maximum), puis une seconde fois pour utiliser ce résultat sur chaque élément. C'est impossible avec une simple boucle de lecture.
+Une liste garde les valeurs : on peut donc la parcourir une première fois pour calculer quelque chose (une somme, un maximum), puis une seconde fois pour utiliser ce résultat sur chaque élément. C'est impossible avec une simple boucle de lecture.
 
 ## À retenir
 
 - Une liste (un `vector` en C++) garde plusieurs valeurs ; les positions vont de `0` à `N - 1`.
 - Lire une liste : `list(map(int, input().split()))` en Python ; `vector<int> v(n)` et une boucle de `cin` en C++.
-- On parcourt par les valeurs (`for x in liste`) ou par les positions (`for i in range(n)`) ; avec les voisins, fais attention aux bornes.
-- Pour un maximum, pars du premier élément et compare-le à tous les autres.
+- On parcourt par les valeurs (`for x in liste`) ou par les positions (`for i in range(n)`) ; avec les voisins, attention aux bornes.
+- Pour un maximum, partir du premier élément et le comparer à tous les autres.
 - Une liste permet de parcourir les données plusieurs fois.

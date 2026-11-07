@@ -26,7 +26,7 @@ for (int i = 1; i <= n; i++) {
 }
 ```
 
-The numbers of ways grow very fast: take the modulo at each addition. The cost is the number of states times the cost of one transition, here O(N).
+The numbers of ways grow very fast: we take the modulo at each addition. The cost is the number of states times the cost of one transition, here O(N).
 
 ## Paths in a grid
 
@@ -54,7 +54,7 @@ for (int i = 0; i < r; i++) {
 }
 ```
 
-There are a huge number of paths, but only `R × C` states. To **count** the optimal paths, keep a second array: the number of paths reaching the maximum, adding up only those of the cells that achieve this maximum.
+There are a huge number of paths, but only `R × C` states. To **count** the optimal paths, we keep a second array: the number of paths reaching the maximum, adding up only those of the cells that achieve this maximum.
 
 ## The knapsack
 
@@ -76,7 +76,7 @@ for (auto [p, v] : items) {
 }
 ```
 
-Cost: O(N × W). The initialisation decides the meaning of `best[w]`: with `0` everywhere, it is "weight at most `w`"; with `best[0] = 0` and an "impossible" value elsewhere, it is "weight **exactly** `w`". In that case, never extend an impossible state: with `-1` as the impossible value, `best[w - p] + v` would give a value to a weight that cannot be reached. Test it before the update:
+Cost: O(N × W). The initialisation decides the meaning of `best[w]`: with `0` everywhere, it is "weight at most `w`"; with `best[0] = 0` and an "impossible" value elsewhere, it is "weight **exactly** `w`". In that case, an impossible state must never be extended: with `-1` as the impossible value, `best[w - p] + v` would give a value to a weight that cannot be reached. It must be tested before the update:
 
 ```python
 IMPOSSIBLE = -1
@@ -129,7 +129,7 @@ for (int x : a) {
 cout << tails.size() << "\n";
 ```
 
-Cost: O(N log N). With `bisect_right` (`upper_bound`), you would get the longest **non-decreasing** subsequence.
+Cost: O(N log N). With `bisect_right` (`upper_bound`), we would get the longest **non-decreasing** subsequence.
 
 ## Key takeaways
 

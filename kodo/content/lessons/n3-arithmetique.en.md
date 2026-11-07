@@ -1,4 +1,4 @@
-Number theory problems often hide very large numbers: 10¹², 10¹⁸. Trying everything one by one is then impossible. A few classic tools let you compute quickly, without ever going through these numbers.
+Number theory problems often hide very large numbers: 10¹², 10¹⁸. Trying everything one by one is then impossible. A few classic tools compute quickly, without ever going through these numbers.
 
 ## The GCD with Euclid's algorithm
 
@@ -25,11 +25,11 @@ long long gcd(long long a, long long b) {
 // gcd(84, 36) is 12
 ```
 
-It is very fast: O(log(min(a, b))), about a hundred steps at most even for 10¹⁸. The LCM (least common multiple) follows from it: `lcm(a, b) = a / gcd(a, b) × b`. Divide **before** multiplying, to avoid an overflow in C++.
+It is very fast: O(log(min(a, b))), about a hundred steps at most even for 10¹⁸. The LCM (least common multiple) follows from it: `lcm(a, b) = a / gcd(a, b) × b`. Dividing **before** multiplying avoids an overflow in C++.
 
 ## The sieve of Eratosthenes
 
-To find all the primes up to N, write down all the numbers, then for each number p still present (it is prime), cross out its multiples. Start at p × p: the smaller multiples have a prime divisor smaller than p, so they are already crossed out. And you can stop at p ≤ √N.
+To find all the primes up to N, all the numbers are written down, then for each number p still present (it is prime), its multiples are crossed out. Crossing out starts at p × p: the smaller multiples have a prime divisor smaller than p, so they are already crossed out. And stopping at p ≤ √N is enough.
 
 ```python
 n = 50
@@ -56,7 +56,7 @@ for (int p = 2; p * p <= n; p++) {
 // the x such that is_prime[x]: 2, 3, 5, ..., 47
 ```
 
-The sieve costs O(N log log N), almost O(N). The same idea works on an interval [L, R] far from 0: you only need to cross out the multiples of the primes up to √R.
+The sieve costs O(N log log N), almost O(N). The same idea works on an interval [L, R] far from 0: crossing out the multiples of the primes up to √R is enough.
 
 ## Counting divisors
 
@@ -86,11 +86,11 @@ int number_of_divisors(long long n) {
 // number_of_divisors(36) is 9
 ```
 
-Another useful trick: among the numbers from 1 to n, exactly `n // d` are multiples of d. To count divisors over many numbers at once, you can reason divisor by divisor.
+Another useful trick: among the numbers from 1 to n, exactly `n // d` are multiples of d. To count divisors over many numbers at once, the reasoning can go divisor by divisor.
 
 ## Computing modulo M
 
-When a result is huge, you are often asked for its remainder modulo M. Remainders can be computed along the way: `(a + b) mod M` and `(a × b) mod M` only depend on `a mod M` and `b mod M`. So reduce after **every** operation, and the numbers stay small. For a subtraction, add M before reducing, so as not to get a negative remainder in C++. Careful: **division** does not work like this; `(a / b) mod M` cannot be computed from the remainders.
+When a result is huge, problems often ask for its remainder modulo M. Remainders can be computed along the way: `(a + b) mod M` and `(a × b) mod M` only depend on `a mod M` and `b mod M`. So reduce after **every** operation, and the numbers stay small. For a subtraction, add M before reducing, so as not to get a negative remainder in C++. Careful: **division** does not work like this; `(a / b) mod M` cannot be computed from the remainders.
 
 ## Fast exponentiation
 
@@ -125,6 +125,6 @@ This is O(log N). In C++, if M ≤ 10⁹, the product of two remainders is below
 
 - Euclid's algorithm computes the GCD in O(log n); the LCM is `a / gcd(a, b) × b`.
 - The sieve crosses out the multiples of each prime p starting from p × p; going up to √N is enough.
-- Divisors come in pairs (d, n / d): you find them all in O(√n).
+- Divisors come in pairs (d, n / d): all of them are found in O(√n).
 - Modulo M, reduce after every addition and every multiplication; never divide.
 - Fast exponentiation computes A^N mod M in O(log N) by cutting N in half.

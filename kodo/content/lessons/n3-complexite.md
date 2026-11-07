@@ -1,12 +1,12 @@
-Désormais, un programme juste ne suffit plus : il doit aussi être **rapide**, sinon il échoue sur les grands tests. Heureusement, on peut prévoir sa vitesse avant de l'écrire, en comptant ses opérations.
+Désormais, un programme juste ne suffit plus : il doit aussi être **rapide**, sinon il échoue sur les grands tests. On peut heureusement prévoir sa vitesse avant de l'écrire, en comptant ses opérations.
 
 ## Estimer le nombre d'opérations
 
-Retiens ces ordres de grandeur : en une seconde, un programme C++ fait environ 10⁸ opérations simples, et un programme Python environ 10⁷ (et encore moins dans le navigateur).
+Ordres de grandeur à retenir : en une seconde, un programme C++ fait environ 10⁸ opérations simples, et un programme Python environ 10⁷ (et encore moins dans le navigateur).
 
 On décrit la vitesse d'un algorithme par sa **complexité**, notée O(…) : on compte les opérations en fonction de la taille N de l'entrée, en ne gardant que le terme le plus gros. Une boucle sur N éléments est en O(N). Deux boucles imbriquées sur N éléments font N × N tours : O(N²).
 
-Avant de coder, remplace N par sa valeur maximale :
+Avant de coder, on remplace N par sa valeur maximale :
 
 | N maximal | ce qui passe en C++ | ce qui passe en Python |
 | --- | --- | --- |
@@ -55,7 +55,7 @@ Les sommes préfixes servent aussi à **compter**. Une portion de A à B a une s
 
 ## Deux pointeurs et fenêtre glissante
 
-Cherchons la plus longue suite de cases consécutives dont la somme ne dépasse pas une limite, avec des nombres **positifs**. Essayer chaque début et chaque fin, c'est O(N²).
+On cherche la plus longue suite de cases consécutives dont la somme ne dépasse pas une limite, avec des nombres **positifs**. Essayer chaque début et chaque fin, c'est O(N²).
 
 On garde plutôt une **fenêtre** de `debut` à `fin` et sa somme. On avance `fin` d'une case à la fois. Si la fenêtre devient trop lourde, on avance `debut` jusqu'à ce qu'elle redevienne correcte. Comme les nombres sont positifs, allonger une fenêtre trop lourde ne la rend jamais correcte : `debut` n'a jamais besoin de reculer.
 
@@ -97,8 +97,8 @@ Attention au sens de la boucle. Ici, on cherche la plus **longue** fenêtre corr
 
 ## À retenir
 
-- Avant de coder, remplace N par son maximum dans la complexité : en Python, vise au plus quelques millions d'opérations.
+- Avant de coder, remplacer N par son maximum dans la complexité : en Python, viser au plus quelques millions d'opérations.
 - Les sommes préfixes donnent la somme de n'importe quelle portion en O(1), après un calcul en O(N).
 - Une somme de portion se ramène à une différence de deux `pref` : avec un dictionnaire, on compte les portions qui ont une somme donnée.
 - Deux pointeurs qui n'avancent que vers la droite coûtent O(N) en tout, même avec une boucle dans une boucle.
-- Pense aux dépassements : avec de grandes sommes, utilise des `long long` en C++.
+- Attention aux dépassements : avec de grandes sommes, des `long long` en C++.

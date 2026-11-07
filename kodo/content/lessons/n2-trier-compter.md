@@ -1,4 +1,4 @@
-Classer des coureurs, compter les votes d'un concours, ranger des mots par familles : trier et compter sont deux gestes que l'on retrouve partout. Les deux langages font déjà le gros du travail pour toi, il suffit de savoir s'en servir.
+Classer des coureurs, compter les votes d'un concours, ranger des mots par familles : trier et compter sont deux gestes que l'on retrouve partout. Les deux langages font déjà le gros du travail ; reste à savoir s'en servir.
 
 ## Trier une liste
 
@@ -19,7 +19,7 @@ sort(temps.begin(), temps.end(), greater<int>());
 cout << temps[0] << "\n";                      // 6003 : le plus grand
 ```
 
-Les chaînes se trient dans l'ordre alphabétique. Attention donc aux nombres lus comme du texte : `"950"` passe **après** `"1000"`, car on compare d'abord `"9"` et `"1"`. Pense à convertir avec `int` avant de trier.
+Les chaînes se trient dans l'ordre alphabétique. Attention donc aux nombres lus comme du texte : `"950"` passe **après** `"1000"`, car on compare d'abord `"9"` et `"1"`. Il faut convertir avec `int` avant de trier.
 
 ## Trier selon plusieurs critères
 
@@ -140,6 +140,6 @@ Attention : en Python, une clé de dictionnaire doit être une chaîne, un nombr
 ## À retenir
 
 - `sort` range une liste dans l'ordre croissant ; les chaînes se comparent dans l'ordre alphabétique.
-- Les couples se trient d'abord par leur premier élément : mets-y le critère principal, et `-score` pour un ordre décroissant.
-- Pour compter des lettres ou des petits entiers, un tableau de compteurs suffit ; pour des mots, utilise un dictionnaire.
+- Les couples se trient d'abord par leur premier élément : le critère principal y va en premier, avec `-score` pour un ordre décroissant.
+- Pour compter des lettres ou des petits entiers, un tableau de compteurs suffit ; pour des mots, un dictionnaire.
 - Un dictionnaire de listes regroupe les éléments qui ont la même clé ; cette clé peut être une chaîne calculée, mais pas une liste.

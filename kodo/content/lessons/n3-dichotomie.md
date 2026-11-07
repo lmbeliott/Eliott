@@ -1,4 +1,4 @@
-Dans le jeu du nombre mystère, quelqu'un choisit un nombre entre 1 et 1 000 et répond « plus grand » ou « plus petit » à tes propositions. En proposant toujours le milieu des valeurs encore possibles, tu élimines la moitié des candidats à chaque fois : 10 questions suffisent, car 2¹⁰ = 1 024. C'est la **dichotomie**. Avec N valeurs possibles, il faut environ log₂(N) étapes : 17 pour 100 000, 60 pour 10¹⁸.
+Dans le jeu du nombre mystère, quelqu'un choisit un nombre entre 1 et 1 000 et répond « plus grand » ou « plus petit » à chaque proposition. En proposant toujours le milieu des valeurs encore possibles, on élimine la moitié des candidats à chaque fois : 10 questions suffisent, car 2¹⁰ = 1 024. C'est la **dichotomie**. Avec N valeurs possibles, il faut environ log₂(N) étapes : 17 pour 100 000, 60 pour 10¹⁸.
 
 ## Chercher dans une liste triée
 
@@ -39,7 +39,7 @@ int premier_au_moins(const vector<int>& t, int x) {
 
 L'intervalle rétrécit à chaque tour : la boucle s'arrête toujours. Pour compter les entiers **égaux** à x : `premier_au_moins(t, x + 1) − premier_au_moins(t, x)`.
 
-Cette fonction existe déjà (`bisect_left` en Python, `lower_bound` en C++), mais sache l'écrire : la même boucle sert ailleurs. Et la liste doit être **triée** : trie-la d'abord, une fois, en O(N log N) ; chaque recherche coûte ensuite O(log N) au lieu de O(N).
+Cette fonction existe déjà (`bisect_left` en Python, `lower_bound` en C++), mais il faut savoir l'écrire : la même boucle sert ailleurs. Et la liste doit être **triée** : on la trie d'abord, une fois, en O(N log N) ; chaque recherche coûte ensuite O(log N) au lieu de O(N).
 
 ## Chercher la réponse elle-même
 
@@ -83,13 +83,13 @@ Le coût total vaut (nombre de tours) × (coût d'une vérification) : pour une 
 
 ## Les pièges classiques
 
-- **Les bornes de départ.** Vérifie que `trop_petit` ne convient pas et que `suffisant` convient.
-- **La boucle infinie.** Ne mélange pas les deux modèles : `gauche = milieu + 1` / `droite = milieu` avec `while gauche < droite`, et `suffisant = milieu` / `trop_petit = milieu` avec `while suffisant - trop_petit > 1`.
-- **Les dépassements en C++.** Les bornes peuvent dépasser 2³¹ : utilise des `long long`. Dans la vérification, une somme peut même dépasser 2⁶³ : arrête-la dès que tu sais que la réponse est « oui ».
+- **Les bornes de départ.** Vérifier que `trop_petit` ne convient pas et que `suffisant` convient.
+- **La boucle infinie.** Ne pas mélanger les deux modèles : `gauche = milieu + 1` / `droite = milieu` avec `while gauche < droite`, et `suffisant = milieu` / `trop_petit = milieu` avec `while suffisant - trop_petit > 1`.
+- **Les dépassements en C++.** Les bornes peuvent dépasser 2³¹ : il faut des `long long`. Dans la vérification, une somme peut même dépasser 2⁶³ : on l'arrête dès que la réponse « oui » est certaine.
 
 ## À retenir
 
 - La dichotomie divise l'intervalle de recherche par deux à chaque étape : O(log N) étapes.
 - Dans une liste triée, on cherche le premier indice où une condition devient vraie, avec un intervalle `[gauche, droite)`.
 - Quand la question « v convient-il ? » passe de non à oui une seule fois, on peut chercher la réponse par dichotomie, même sans liste.
-- Choisis des bornes sûres, garde un seul modèle de boucle, et pense aux `long long`.
+- Des bornes sûres, un seul modèle de boucle, et des `long long` en C++.

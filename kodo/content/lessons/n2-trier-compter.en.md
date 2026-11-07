@@ -1,8 +1,8 @@
-Ranking racers, counting the votes of a contest, sorting words into families: sorting and counting are two moves you'll find everywhere. Both languages already do most of the work for you; you just need to know how to use them.
+Ranking racers, counting the votes of a contest, sorting words into families: sorting and counting show up everywhere. Both languages already do most of the work; what remains is knowing how to use them.
 
 ## Sorting a list
 
-In Python, `my_list.sort()` sorts the list in place, from smallest to largest. In C++, you use `sort` on a `vector`, giving the start and the end of what to sort.
+In Python, `my_list.sort()` sorts the list in place, from smallest to largest. In C++, `sort` works on a `vector`, giving the start and the end of what to sort.
 
 ```python
 times = [5412, 4987, 5120, 6003]
@@ -19,11 +19,11 @@ sort(times.begin(), times.end(), greater<int>());
 cout << times[0] << "\n";                      // 6003: the largest
 ```
 
-Strings are sorted in alphabetical order. So watch out for numbers read as text: `"950"` comes **after** `"1000"`, because `"9"` and `"1"` are compared first. Remember to convert with `int` before sorting.
+Strings are sorted in alphabetical order. So watch out for numbers read as text: `"950"` comes **after** `"1000"`, because `"9"` and `"1"` are compared first. Convert with `int` before sorting.
 
 ## Sorting with several criteria
 
-You often sort items that carry several pieces of information, like a bib number and a time. You store them in **pairs**: a tuple in Python, a `pair` in C++. Two pairs are compared by their first element first, and only if those are equal, by their second element. So you put first whatever should decide the ranking.
+Items to sort often carry several pieces of information, like a bib number and a time. They are stored in **pairs**: a tuple in Python, a `pair` in C++. Two pairs are compared by their first element first, and only if those are equal, by their second element. So whatever should decide the ranking goes first.
 
 To sort by **decreasing** score, then by **increasing** name, here's a trick: sort the pairs `(-score, name)` in the normal increasing order. The highest score has the smallest `-score`, so it comes first.
 
@@ -51,7 +51,7 @@ for (auto& r : ranking) {
 
 ## Counting with an array of counters
 
-When the values to count are small integers or letters, an array is enough: cell `k` counts how many times the value `k` appears. For letters, you use 26 cells, and the letter `c` goes into cell `ord(c) - ord("a")` (in C++: `c - 'a'`).
+When the values to count are small integers or letters, an array is enough: cell `k` counts how many times the value `k` appears. For letters, 26 cells are used, and the letter `c` goes into cell `ord(c) - ord("a")` (in C++: `c - 'a'`).
 
 ```python
 count = [0] * 26
@@ -71,7 +71,7 @@ cout << count['t' - 'a'] << "\n";   // 2
 
 ## Counting with a dictionary
 
-When the values are words, or numbers too big for an array, you use a **dictionary**: it associates a **value** with each **key**. In Python, you have to create the key before increasing it. In C++, a `map` automatically creates a missing key with the value `0`, and it keeps its keys sorted.
+When the values are words, or numbers too big for an array, a **dictionary** does the job: it associates a **value** with each **key**. In Python, the key must be created before it is increased. In C++, a `map` automatically creates a missing key with the value `0`, and it keeps its keys sorted.
 
 ```python
 votes = ["green", "blue", "green", "red", "green"]
@@ -95,11 +95,11 @@ for (auto& p : count) {
 }
 ```
 
-In Python, you go through a dictionary in the order in which the keys were added: `sorted(count)` gives the keys in alphabetical order. In C++, `unordered_map` is used like `map` and is a bit faster, but its keys are not kept in any particular order.
+In Python, a dictionary is gone through in the order in which the keys were added: `sorted(count)` gives the keys in alphabetical order. In C++, `unordered_map` is used like `map` and is a bit faster, but its keys are not kept in any particular order.
 
 ## Grouping
 
-A dictionary can also hold **lists**: you put together the items that share the same property, called the key. Here, we group words by their length:
+A dictionary can also hold **lists**: the items that share the same property, called the key, are put together. Here, words are grouped by their length:
 
 ```python
 groups = {}
@@ -119,7 +119,7 @@ for (string word : {"salt", "rice", "tomato", "apple", "bread"}) {
 cout << groups[4][0] << " " << groups[4][1] << "\n";   // salt rice
 ```
 
-The whole art of grouping is choosing the right key: a value you compute for each item, which is the same for two items exactly when they belong in the same group.
+The whole art of grouping is choosing the right key: a value computed for each item, which is the same for two items exactly when they belong in the same group.
 
 The key can be any value computed from the item, including a string built from it. In Python, `sorted` applied to a string gives the **list** of its sorted letters, and `"".join(...)` glues those letters back into a string. In C++, `sort` sorts the letters of a `string` directly.
 
@@ -140,6 +140,6 @@ Careful: in Python, a dictionary key must be a string, a number or a tuple, neve
 ## Key takeaways
 
 - `sort` puts a list in increasing order; strings are compared in alphabetical order.
-- Pairs are sorted by their first element first: put the main criterion there, and use `-score` for a decreasing order.
-- To count letters or small integers, an array of counters is enough; for words, use a dictionary.
+- Pairs are sorted by their first element first: the main criterion goes there, with `-score` for a decreasing order.
+- To count letters or small integers, an array of counters is enough; for words, a dictionary.
 - A dictionary of lists groups together the items that have the same key; that key can be a computed string, but not a list.

@@ -36,7 +36,7 @@ vector<int> zFunction(const string& s) {
 }
 ```
 
-To find a pattern `P` in a text `T`, compute the Z-function of `P + "#" + T`: `P` starts at position `i` of the text when the matching value equals `|P|`. The KMP **prefix function** (`π[i]` = longest border of `s[0..i]`) does the same jobs. Pick the one you prefer.
+To find a pattern `P` in a text `T`, we compute the Z-function of `P + "#" + T`: `P` starts at position `i` of the text when the matching value equals `|P|`. The KMP **prefix function** (`π[i]` = longest border of `s[0..i]`) does the same jobs: the two are interchangeable.
 
 A word of length `n` has **period** `p` (`s[i] = s[i + p]` everywhere) exactly when `z[p] = n - p`. It can be written `U U … U` with `|U| = p` if, in addition, `p` divides `n`.
 
@@ -69,9 +69,9 @@ ull mulmod(ull a, ull b) {
 ull hashOf(int a, int b) { return (h[b] + M - mulmod(h[a], pw[b - a])) % M; }
 ```
 
-Two equal pieces have the same hash. The converse is only *very likely*: two different words can **collide**. With `k` hashes and a modulus `M`, about `k² / (2M)` pairs collide. For 50 000 windows and `M ≈ 10⁹`, a collision is almost certain. So take `M = 2⁶¹ - 1`, or two moduli around 10⁹ at the same time. Avoid computing "modulo 2⁶⁴" by plain integer overflow: the Thue-Morse word (`a`, `ab`, `abba`, `abbabaab`…, each step appends the copy with `a` and `b` swapped) produces collisions for every base.
+Two equal pieces have the same hash. The converse is only *very likely*: two different words can **collide**. With `k` hashes and a modulus `M`, about `k² / (2M)` pairs collide. For 50 000 windows and `M ≈ 10⁹`, a collision is almost certain. So we take `M = 2⁶¹ - 1`, or two moduli around 10⁹ at the same time. Computing "modulo 2⁶⁴" by plain integer overflow is ruled out: the Thue-Morse word (`a`, `ab`, `abba`, `abbabaab`…, each step appends the copy with `a` and `b` swapped) produces collisions for every base.
 
-Hashing goes well with **binary search**: to find the greatest length that satisfies a monotone property, test each length in O(N) with a dictionary of hashes.
+Hashing goes well with **binary search**: to find the greatest length that satisfies a monotone property, we test each length in O(N) with a dictionary of hashes.
 
 ## Palindromes: Manacher's algorithm
 
@@ -102,7 +102,7 @@ for (int i = 0, c = 0, d = 0; i < m; i++) {
 }
 ```
 
-The palindrome centered at `i` has `p[i]` letters in the original word and starts at position `(i - p[i]) / 2`. Removing the first and last letters of a palindrome still gives a palindrome: this remark lets you go from the maximal palindromes to all the others.
+The palindrome centered at `i` has `p[i]` letters in the original word and starts at position `(i - p[i]) / 2`. Removing the first and last letters of a palindrome still gives a palindrome: this remark leads from the maximal palindromes to all the others.
 
 ## Key takeaways
 

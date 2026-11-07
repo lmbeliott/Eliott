@@ -1,4 +1,4 @@
-Les sommes préfixes donnent la somme de `a[l..r]` en O(1)… tant que le tableau ne change pas : une modification oblige à tout recalculer, en O(N). Les structures de ce chapitre font les deux opérations, modifier et interroger, en **O(log N)**. Elles reposent sur l'écriture binaire : commençons par là.
+Les sommes préfixes donnent la somme de `a[l..r]` en O(1)… tant que le tableau ne change pas : une modification oblige à tout recalculer, en O(N). Les structures de ce chapitre font les deux opérations, modifier et interroger, en **O(log N)**. Elles reposent sur l'écriture binaire, présentée en premier.
 
 ## Les opérations sur les bits
 
@@ -9,7 +9,7 @@ Les opérateurs `&` (et), `|` (ou), `^` (ou exclusif), `<<` et `>>` (décalages)
 - `x | (1 << p)` met le bit `p` à `1` ; `x ^ (1 << p)` l'inverse.
 - `x & -x` isole le bit à `1` le plus faible : `12 & -12 = 4`, car `12 = 1100` en binaire.
 
-Un entier peut coder un **ensemble** d'éléments numérotés de `0` à `k - 1` : l'élément `p` est présent si le bit `p` vaut `1`. On l'appelle un **masque**. Alors `a & b` est l'intersection, `a | b` la réunion, et `(a & b) == a` teste si `a` est inclus dans `b`. Garde les parenthèses : en C++, `==` est prioritaire sur `&`, `|` et `^`, et `a & b == a` se lit `a & (b == a)`. Parcourir tous les ensembles revient à parcourir les entiers de `0` à `2ᵏ - 1`.
+Un entier peut coder un **ensemble** d'éléments numérotés de `0` à `k - 1` : l'élément `p` est présent si le bit `p` vaut `1`. On l'appelle un **masque**. Alors `a & b` est l'intersection, `a | b` la réunion, et `(a & b) == a` teste si `a` est inclus dans `b`. Les parenthèses sont indispensables : en C++, `==` est prioritaire sur `&`, `|` et `^`, et `a & b == a` se lit `a & (b == a)`. Parcourir tous les ensembles revient à parcourir les entiers de `0` à `2ᵏ - 1`.
 
 ```python
 k = 3
@@ -28,7 +28,7 @@ for (int m = 0; m < (1 << k); m++) {
 }
 ```
 
-Pour parcourir les **sous-ensembles** d'un masque `b`, pars de `a = b` et fais `a = (a - 1) & b` jusqu'à `0`, sans oublier `0` lui-même. Pour obtenir, pour **chaque** masque `m`, la somme d'une valeur `c[a]` sur tous les `a` inclus dans `m`, il y a plus rapide que d'énumérer : la **somme sur les sous-ensembles** traite les bits un par un, en O(k × 2ᵏ).
+Pour parcourir les **sous-ensembles** d'un masque `b`, on part de `a = b` et on fait `a = (a - 1) & b` jusqu'à `0`, sans oublier `0` lui-même. Pour obtenir, pour **chaque** masque `m`, la somme d'une valeur `c[a]` sur tous les `a` inclus dans `m`, il y a plus rapide que d'énumérer : la **somme sur les sous-ensembles** traite les bits un par un, en O(k × 2ᵏ).
 
 ```python
 S = c[:]                         # c[a] : valeur du masque a
@@ -150,7 +150,7 @@ La requête utilise au plus deux nœuds par niveau. Le maximum d'un nœud sert a
 
 ## À retenir
 
-- `1 << p`, `(x >> p) & 1` et `x & -x` sont les gestes de base sur les bits ; un masque code un ensemble. En C++, mets des parenthèses : `(a & b) == a`.
+- `1 << p`, `(x >> p) & 1` et `x & -x` sont les gestes de base sur les bits ; un masque code un ensemble. En C++, parenthèses obligatoires : `(a & b) == a`.
 - La somme sur les sous-ensembles calcule, pour tous les masques à la fois, une somme sur leurs sous-ensembles en O(k × 2ᵏ).
 - Fenwick : modification et somme de préfixe en O(log N), en ajoutant ou retirant `i & -i`.
 - Arbre de segments : toute opération associative, modification et requête en O(log N).
