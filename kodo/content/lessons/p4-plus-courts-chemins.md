@@ -219,7 +219,7 @@ Le programme affiche `8 : 1 3 2 4 5`. La remontée est juste : quand `v` est tra
 
 ## Bellman-Ford : longueurs négatives
 
-Des longueurs négatives apparaissent avec des gains ou des contraintes de la forme `x_B − x_A ≤ C`. Un **cycle négatif**, un cycle de longueur totale strictement négative, rend la distance de certains sommets égale à « moins l'infini » : on peut tourner autant de fois qu'on veut pour diminuer la longueur.
+Des longueurs négatives apparaissent avec des gains ou des contraintes de la forme `x_B − x_A ≤ C`. Un **cycle négatif**, de longueur totale strictement négative, rend certaines distances égales à « moins l'infini » : on peut y tourner indéfiniment.
 
 L'algorithme de **Bellman-Ford** fait des **tours** : à chaque tour, il relâche **toutes** les arêtes, dans un ordre quelconque. Invariant : après `k` tours, `dist[v]` est au plus la longueur de n'importe quel chemin de `s` à `v` ayant au plus `k` arêtes. Si un chemin de `k + 1` arêtes arrive en `v` par `u → v`, sa partie jusqu'à `u` a `k` arêtes, donc après `k` tours `dist[u]` est au plus sa longueur, et le relâchement de `u → v` au tour suivant conclut.
 
@@ -471,9 +471,9 @@ int main() {
 3 5 20
 ```
 
-le meilleur trajet sans coupon est `1 → 3 → 4 → 5`, de coût 8. Avec le coupon, on peut prendre `1 → 3` (2) puis la route `3 – 5` gratuitement : coût 2. Le programme affiche `2` : la route la plus chère devient la meilleure.
+le meilleur trajet sans coupon est `1 → 3 → 4 → 5`, de coût 8. Avec le coupon, on peut prendre `1 → 3` (2) puis la route `3 – 5` gratuitement : coût 2. Le programme affiche `2`.
 
-**Pourquoi c'est juste.** Un trajet de `1` à `N` avec, au plus, une route gratuite correspond à un chemin de même coût dans le graphe dédoublé : on reste à l'étage 0 jusqu'à la route gratuite, on monte à l'étage 1 par l'arc de longueur 0, puis on reste à l'étage 1. Réciproquement, un chemin du graphe dédoublé ne monte qu'une fois, puisqu'aucun arc ne redescend : il décrit un trajet avec au plus une route gratuite. Les longueurs sont positives ou nulles : Dijkstra s'applique. **Coût** : `2N` sommets et au plus `6M` arcs, donc O((N + M) log N). Essayer chaque route gratuite à tour de rôle coûterait `M` exécutions de Dijkstra.
+**Pourquoi c'est juste.** Un trajet avec au plus une route gratuite correspond à un chemin de même coût dans le graphe dédoublé : étage 0 jusqu'à la route gratuite, montée par l'arc de longueur 0, puis étage 1. Réciproquement, aucun arc ne redescend : un chemin du graphe dédoublé monte au plus une fois et décrit un tel trajet. Les longueurs sont positives ou nulles : Dijkstra s'applique. **Coût** : `2N` sommets et au plus `6M` arcs, donc O((N + M) log N). Essayer chaque route gratuite à tour de rôle coûterait `M` exécutions de Dijkstra.
 
 ## À retenir
 
