@@ -70,7 +70,7 @@ export function LeaderboardTable({ rows, loading, compact, empty }: { rows: Lead
                     <span className="min-w-0">
                       <span className="block truncate font-medium text-ink group-hover:underline">
                         {r.display_name}
-                        {r.is_me && <span className="ml-2 text-xs font-normal text-accent">{t('toi', 'you')}</span>}
+                        {r.is_me && <span className="ml-2 text-xs font-normal text-accent">{t('moi', 'me')}</span>}
                       </span>
                       {!compact && <span className="block truncate text-xs text-muted">@{r.username}</span>}
                     </span>

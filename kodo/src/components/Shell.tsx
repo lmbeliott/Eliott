@@ -121,10 +121,10 @@ function Stats() {
   const streak = liveStreak(profile)
   return (
     <Link to={`/profil/${profile.username}`} className="hidden items-center gap-4 rounded-md px-2 py-1 text-sm hover:bg-surface-2 sm:flex">
-      <span className="tabular font-medium" title={t('Tes points', 'Your points')}>
+      <span className="tabular font-medium" title={t('Points', 'Points')}>
         {formatPoints(lang, profile.xp)}
       </span>
-      <span className="flex items-center gap-1.5 tabular" title={t('Ta série de jours', 'Your day streak')}>
+      <span className="flex items-center gap-1.5 tabular" title={t('Série de jours', 'Day streak')}>
         <Flame className={cx('size-4', streak > 0 ? 'text-warn' : 'text-muted')} aria-hidden />
         <span className="font-medium">{streak}</span>
         <span className="sr-only">{t('jours de suite', 'days in a row')}</span>
@@ -234,8 +234,8 @@ function Footer() {
         <div className="max-w-md">
           <p className="text-muted">
             {t(
-              'Ton code s’exécute dans ton navigateur : Python 3.14 avec Pyodide, C++17 avec Clang 22 compilé en WebAssembly.',
-              'Your code runs in your browser: Python 3.14 with Pyodide, C++17 with Clang 22 compiled to WebAssembly.',
+              'Code exécuté dans le navigateur : Python 3.14 (Pyodide), C++17 (Clang 22 en WebAssembly).',
+              'Code runs in the browser: Python 3.14 (Pyodide), C++17 (Clang 22 compiled to WebAssembly).',
             )}
           </p>
         </div>
@@ -259,8 +259,8 @@ export function Shell() {
   useGuestSync((n) =>
     toast(
       lang === 'en'
-        ? `${plural(lang, n, ['problème', 'problèmes'], ['problem', 'problems'])} solved as a guest are now saved to your account.`
-        : `${plural(lang, n, ['problème résolu', 'problèmes résolus'], ['', ''])} en invité ${n > 1 ? 'sont' : 'est'} maintenant enregistré${n > 1 ? 's' : ''} sur ton compte.`,
+        ? `${plural(lang, n, ['problème', 'problèmes'], ['problem', 'problems'])} solved as a guest added to the account.`
+        : `${plural(lang, n, ['problème résolu', 'problèmes résolus'], ['', ''])} en invité ajouté${n > 1 ? 's' : ''} au compte.`,
       'ok',
     ),
   )

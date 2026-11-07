@@ -39,8 +39,8 @@ export function SignIn() {
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     const errs: typeof errors = {}
-    if (!emailOk(email)) errs.email = t('Entre une adresse e-mail valide, par exemple nom@exemple.fr.', 'Enter a valid email address, for example name@example.com.')
-    if (mode === 'login' && !password) errs.password = t('Entre ton mot de passe.', 'Enter your password.')
+    if (!emailOk(email)) errs.email = t('Adresse e-mail attendue, par exemple nom@exemple.fr.', 'Email address expected, for example name@example.com.')
+    if (mode === 'login' && !password) errs.password = t('Mot de passe requis.', 'Password required.')
     setErrors(errs)
     if (Object.keys(errs).length) return
     setBusy(true)
@@ -63,8 +63,8 @@ export function SignIn() {
 
   if (mode === 'forgot' && sent) {
     return (
-      <AuthLayout title={t('Vérifie ta boîte mail', 'Check your inbox')} lead={t(`Si un compte existe pour ${email}, un lien pour choisir un nouveau mot de passe vient d’y être envoyé.`, `If an account exists for ${email}, a link to choose a new password has just been sent there.`)} footer={<button type="button" onClick={() => { setMode('login'); setSent(false) }} className="font-medium underline underline-offset-2">{t('Revenir à la connexion', 'Back to sign in')}</button>}>
-        <p className="text-sm text-ink-2">{t('Pense à regarder dans les courriers indésirables.', 'Remember to check your spam folder.')}</p>
+      <AuthLayout title={t('Lien envoyé', 'Link sent')} lead={t(`Si un compte existe pour ${email}, un lien pour choisir un nouveau mot de passe y a été envoyé.`, `If an account exists for ${email}, a link to choose a new password has been sent there.`)} footer={<button type="button" onClick={() => { setMode('login'); setSent(false) }} className="font-medium underline underline-offset-2">{t('Revenir à la connexion', 'Back to sign in')}</button>}>
+        <p className="text-sm text-ink-2">{t('Le message peut arriver dans les courriers indésirables.', 'The email may land in the spam folder.')}</p>
       </AuthLayout>
     )
   }
@@ -72,7 +72,7 @@ export function SignIn() {
   return (
     <AuthLayout
       title={mode === 'login' ? t('Se connecter', 'Sign in') : t('Mot de passe oublié', 'Forgot password')}
-      lead={mode === 'login' ? t('Tes problèmes réussis, tes points, ta série et tes groupes sont liés à ton compte.', 'Your solved problems, points, streak and groups are tied to your account.') : t('Entre ton adresse : tu recevras un lien pour choisir un nouveau mot de passe.', 'Enter your email: you will receive a link to choose a new password.')}
+      lead={mode === 'login' ? t('Problèmes réussis, points, série et groupes sont liés au compte.', 'Solved problems, points, streak and groups are tied to the account.') : t('Un lien pour choisir un nouveau mot de passe est envoyé à cette adresse.', 'A link to choose a new password is sent to this address.')}
       footer={
         <>
           {t('Pas encore de compte ?', 'No account yet?')}{' '}
@@ -119,7 +119,7 @@ export function SignIn() {
           {mode === 'login' ? t('Se connecter', 'Sign in') : t('Envoyer le lien', 'Send the link')}
         </Button>
         <button type="button" onClick={() => { setMode(mode === 'login' ? 'forgot' : 'login'); setErrors({}) }} className="self-start text-sm text-ink-2 underline underline-offset-2 hover:text-ink">
-          {mode === 'login' ? t('Mot de passe oublié ?', 'Forgot your password?') : t('Revenir à la connexion', 'Back to sign in')}
+          {mode === 'login' ? t('Mot de passe oublié ?', 'Forgot password?') : t('Revenir à la connexion', 'Back to sign in')}
         </button>
       </form>
     </AuthLayout>
@@ -139,9 +139,9 @@ export function SignUp() {
   const [confirmSent, setConfirmSent] = useState(false)
 
   const validate = (key: keyof typeof f, v: string): string | undefined => {
-    if (key === 'name' && v.trim().length < 1) return t('Indique un prénom ou un nom.', 'Enter a first name or a name.')
+    if (key === 'name' && v.trim().length < 1) return t('Prénom ou nom requis.', 'First name or name required.')
     if (key === 'username' && !/^[a-z0-9_]{3,20}$/.test(v)) return t('3 à 20 caractères : lettres minuscules, chiffres ou _.', '3 to 20 characters: lowercase letters, digits or _.')
-    if (key === 'email' && !emailOk(v)) return t('Entre une adresse e-mail valide, par exemple nom@exemple.fr.', 'Enter a valid email address, for example name@example.com.')
+    if (key === 'email' && !emailOk(v)) return t('Adresse e-mail attendue, par exemple nom@exemple.fr.', 'Email address expected, for example name@example.com.')
     if (key === 'password' && v.length < 8) return t('Au moins 8 caractères.', 'At least 8 characters.')
   }
   const update = (key: keyof typeof f, v: string) => {
@@ -184,24 +184,24 @@ export function SignUp() {
   if (confirmSent)
     return (
       <AuthLayout
-        title={t('Confirme ton adresse', 'Confirm your email')}
-        lead={t(`Un lien de confirmation vient d’être envoyé à ${f.email}. Clique dessus pour activer ton compte.`, `A confirmation link has just been sent to ${f.email}. Click it to activate your account.`)}
+        title={t('Confirmation de l’adresse e-mail', 'Email confirmation')}
+        lead={t(`Lien de confirmation envoyé à ${f.email}. Le compte est activé à l’ouverture de ce lien.`, `Confirmation link sent to ${f.email}. The account is activated once the link is opened.`)}
         footer={<Link to="/connexion" className="font-medium underline underline-offset-2">{t('Aller à la connexion', 'Go to sign in')}</Link>}
       >
-        <p className="text-sm text-ink-2">{t('Pense à regarder dans les courriers indésirables. Tes problèmes résolus en invité seront ajoutés à ton compte à la première connexion.', 'Remember to check your spam folder. Problems you solved as a guest will be added to your account when you first sign in.')}</p>
+        <p className="text-sm text-ink-2">{t('Le message peut arriver dans les courriers indésirables. Les problèmes résolus en invité sur cet appareil sont ajoutés au compte à la première connexion.', 'The email may land in the spam folder. Problems solved as a guest on this device are added to the account at first sign-in.')}</p>
       </AuthLayout>
     )
 
   const fields: { key: keyof typeof f; label: string; type: string; auto: string; hint?: string }[] = [
     { key: 'name', label: t('Prénom ou nom affiché', 'Display name'), type: 'text', auto: 'given-name', hint: t('Visible dans les classements.', 'Shown on leaderboards.') },
-    { key: 'username', label: t('Pseudo', 'Username'), type: 'text', auto: 'username', hint: t('Pour l’adresse de ton profil : minuscules, chiffres, _.', 'For your profile address: lowercase, digits, _.') },
+    { key: 'username', label: t('Pseudo', 'Username'), type: 'text', auto: 'username', hint: t('Utilisé dans l’adresse du profil : minuscules, chiffres, _.', 'Used in the profile address: lowercase, digits, _.') },
     { key: 'email', label: t('Adresse e-mail', 'Email address'), type: 'email', auto: 'email' },
     { key: 'password', label: t('Mot de passe', 'Password'), type: 'password', auto: 'new-password', hint: t('Au moins 8 caractères.', 'At least 8 characters.') },
   ]
   return (
     <AuthLayout
       title={t('Créer un compte', 'Create an account')}
-      lead={t('Ton compte garde tes réussites, tes points et ta série, et te permet de rejoindre le groupe de ta classe. Ce que tu as résolu sans compte sur cet appareil y est transféré.', 'Your account keeps your solves, points and streak, and lets you join your class group. What you solved without an account on this device is transferred to it.')}
+      lead={t('Le compte conserve réussites, points et série, et permet de rejoindre le groupe d’une classe. Les problèmes résolus sans compte sur cet appareil y sont transférés.', 'The account keeps solves, points and streak, and gives access to class groups. Problems solved without an account on this device are transferred to it.')}
       footer={
         <>
           {t('Déjà un compte ?', 'Already have an account?')}{' '}
@@ -232,7 +232,7 @@ export function SignUp() {
           {t('Créer mon compte', 'Create my account')}
         </Button>
         <p className="text-xs text-muted">
-          {t('Ton code et tes résultats sont enregistrés pour ta progression et visibles par les responsables de tes groupes. Ton adresse e-mail n’est jamais affichée.', 'Your code and results are saved for your progress and visible to the leaders of your groups. Your email address is never shown.')}
+          {t('Code et résultats enregistrés pour le suivi de la progression, visibles par les encadrants des groupes rejoints. L’adresse e-mail n’est jamais affichée.', 'Code and results are saved to track progress and are visible to the leaders of joined groups. The email address is never shown.')}
         </p>
       </form>
     </AuthLayout>

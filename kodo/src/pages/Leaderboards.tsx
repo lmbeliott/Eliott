@@ -24,8 +24,8 @@ export function Leaderboards() {
       <PageHeader
         title={t('Classements', 'Leaderboards')}
         lead={t(
-          'Chaque problème réussi rapporte des points : 50 en Facile, 100 en Moyen, 200 en Difficile, 400 en Expert. Bonus de 20 % au premier essai, de 50 % pour le défi du jour.',
-          'Every solved problem earns points: 50 for Easy, 100 for Medium, 200 for Hard, 400 for Expert. A 20% bonus on the first try, 50% for the daily challenge.',
+          'Points par problème réussi : 50 en Facile, 100 en Moyen, 200 en Difficile, 400 en Expert. Bonus de 20 % au premier essai, de 50 % pour le défi du jour.',
+          'Points per solved problem: 50 for Easy, 100 for Medium, 200 for Hard, 400 for Expert. 20% bonus on the first try, 50% for the daily challenge.',
         )}
       />
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -58,9 +58,9 @@ export function Leaderboards() {
         empty={
           <div className="rounded-lg border border-line bg-surface p-6">
             <p className="font-medium">
-              {period === 'week' ? t('Personne n’a encore marqué de points cette semaine.', 'Nobody has scored yet this week.') : t('Le classement est encore vide.', 'The leaderboard is still empty.')}
+              {period === 'week' ? t('Aucun point marqué cette semaine.', 'No points scored this week.') : t('Classement vide pour l’instant.', 'Leaderboard empty so far.')}
             </p>
-            <p className="mt-1 text-sm text-ink-2">{t('Résous un problème pour y inscrire ton nom.', 'Solve a problem to put your name on it.')}</p>
+            <p className="mt-1 text-sm text-ink-2">{t('Un problème réussi suffit pour y figurer.', 'One solved problem is enough to appear here.')}</p>
             <LinkButton to="/parcours" size="sm" className="mt-4">
               {t('Ouvrir le parcours', 'Open the path')}
             </LinkButton>

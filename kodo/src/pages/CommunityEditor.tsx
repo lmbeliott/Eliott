@@ -200,7 +200,7 @@ function InputList({
                 {size > 2000 && (
                   <p className={cx('mt-1 text-xs', tooBig ? 'text-bad' : 'text-muted')}>
                     {sizeLabel(size)}
-                    {tooBig && t(` : un exemple est limité à ${sizeLabel(maxBytes!)}.`, ` : an example is limited to ${sizeLabel(maxBytes!)}.`)}
+                    {tooBig && t(` : au-delà de la limite de ${sizeLabel(maxBytes!)} par exemple.`, ` : over the ${sizeLabel(maxBytes!)} limit per example.`)}
                   </p>
                 )}
               </div>
@@ -252,7 +252,7 @@ export function CommunityEditor() {
     return (
       <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-4 px-4 py-16 sm:px-6">
         <h1 className="display text-2xl">{t('Proposer un problème', 'Propose a problem')}</h1>
-        <p className="max-w-[60ch] text-ink-2">{t('Il faut un compte pour proposer un problème : il est publié sous ton pseudo.', 'You need an account to propose a problem: it is published under your username.')}</p>
+        <p className="max-w-[60ch] text-ink-2">{t('Compte requis pour proposer un problème : chaque problème est publié sous le pseudo de son auteur.', 'An account is required to propose a problem: each problem is published under its author’s username.')}</p>
         <div className="flex gap-2">
           <LinkButton to={`/connexion?retour=${encodeURIComponent('/communaute/proposer')}`}>{t('Se connecter', 'Sign in')}</LinkButton>
           <LinkButton to={`/inscription?retour=${encodeURIComponent('/communaute/proposer')}`} variant="secondary">
@@ -350,10 +350,10 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
       const bigSample = report.results.find((r) => r.sample && bytes(r.stdout) > SAMPLE_BYTES)
       const error = bad
         ? bad.status === 'timeout'
-          ? t(`Le test ${bad.index + 1} dépasse la limite de temps (${limitFor(snapshot.refLang, snapshot.time_limit_ms) / 1000} s). Allège le test ou augmente la limite.`, `Test ${bad.index + 1} exceeds the time limit (${limitFor(snapshot.refLang, snapshot.time_limit_ms) / 1000} s). Shrink the test or raise the limit.`)
-          : t(`Ta solution s’arrête sur une erreur au test ${bad.index + 1}.`, `Your solution stops with an error on test ${bad.index + 1}.`)
+          ? t(`Test ${bad.index + 1} : limite de temps dépassée (${limitFor(snapshot.refLang, snapshot.time_limit_ms) / 1000} s). Réduire le test ou augmenter la limite.`, `Test ${bad.index + 1}: time limit exceeded (${limitFor(snapshot.refLang, snapshot.time_limit_ms) / 1000} s). Shrink the test or raise the limit.`)
+          : t(`Solution de référence interrompue par une erreur au test ${bad.index + 1}.`, `Reference solution stopped with an error on test ${bad.index + 1}.`)
         : empty
-          ? t(`Ta solution n’affiche rien pour le test ${empty.index + 1}.`, `Your solution prints nothing for test ${empty.index + 1}.`)
+          ? t(`Aucune sortie de la solution de référence pour le test ${empty.index + 1}.`, `No output from the reference solution for test ${empty.index + 1}.`)
           : bigSample
             ? t(`La sortie de l’exemple ${bigSample.index + 1} dépasse ${sizeLabel(SAMPLE_BYTES)}.`, `The output of example ${bigSample.index + 1} exceeds ${sizeLabel(SAMPLE_BYTES)}.`)
             : undefined
@@ -451,8 +451,8 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
         }
         title={isNew ? t('Proposer un problème', 'Propose a problem') : t('Modifier le problème', 'Edit the problem')}
         lead={t(
-          'Écris l’énoncé et les entrées des tests. Ta solution calcule les sorties attendues dans ton navigateur ; elle reste privée.',
-          'Write the statement and the test inputs. Your solution computes the expected outputs in your browser; it stays private.',
+          'Énoncé, entrées des tests et solution de référence. Sorties attendues calculées dans le navigateur ; la solution reste privée.',
+          'Statement, test inputs and reference solution. Expected outputs computed in the browser; the solution stays private.',
         )}
         actions={
           <Segmented<'edit' | 'preview'>
@@ -492,7 +492,7 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
                 {d.sampleInputs.map((s, i) => (
                   <div key={i} className="mb-3 grid gap-2 sm:grid-cols-2">
                     <pre className="overflow-x-auto rounded-md bg-surface-2 p-3 font-mono text-sm">{s}</pre>
-                    <pre className="overflow-x-auto rounded-md bg-surface-2 p-3 font-mono text-sm text-ink-2">{upToDate ? verified!.samples[i]?.output : t('(sortie calculée par ta solution)', '(output computed by your solution)')}</pre>
+                    <pre className="overflow-x-auto rounded-md bg-surface-2 p-3 font-mono text-sm text-ink-2">{upToDate ? verified!.samples[i]?.output : t('(sortie calculée par la solution de référence)', '(output computed by the reference solution)')}</pre>
                   </div>
                 ))}
               </section>
@@ -528,11 +528,11 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
                   <Field label={t('Entrée', 'Input')} htmlFor="c-input" hint={t('Ce que le programme lit, ligne par ligne.', 'What the program reads, line by line.')}>
                     <textarea id="c-input" rows={4} value={d.input_spec} maxLength={4000} onChange={(e) => set('input_spec', e.target.value)} className={areaClass} />
                   </Field>
-                  <Field label={t('Sortie', 'Output')} htmlFor="c-output" hint={t('Ce qu’il doit afficher, exactement.', 'What it must print, exactly.')}>
+                  <Field label={t('Sortie', 'Output')} htmlFor="c-output" hint={t('Ce que le programme affiche, au caractère près.', 'What the program prints, exactly.')}>
                     <textarea id="c-output" rows={4} value={d.output_spec} maxLength={4000} onChange={(e) => set('output_spec', e.target.value)} className={areaClass} />
                   </Field>
                 </div>
-                <Field label={t('Contraintes (facultatif)', 'Constraints (optional)')} htmlFor="c-constraints" hint={t('Bornes des valeurs : elles disent quelle complexité est attendue.', 'Value bounds: they tell which complexity is expected.')}>
+                <Field label={t('Contraintes (facultatif)', 'Constraints (optional)')} htmlFor="c-constraints" hint={t('Bornes des valeurs, qui indiquent la complexité attendue.', 'Value bounds, which indicate the expected complexity.')}>
                   <textarea id="c-constraints" rows={3} value={d.constraints} maxLength={3000} onChange={(e) => set('constraints', e.target.value)} className={areaClass} />
                 </Field>
               </Section>
@@ -540,7 +540,7 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
               <Section
                 n={2}
                 title={t('Solution de référence', 'Reference solution')}
-                lead={t('Elle calcule la sortie attendue de chaque test. Seuls toi et les modérateurs peuvent la lire.', 'It computes the expected output of each test. Only you and the moderators can read it.')}
+                lead={t('Calcule la sortie attendue de chaque test. Lisible uniquement par l’auteur et les modérateurs.', 'Computes the expected output of each test. Readable only by the author and moderators.')}
               >
                 <div className="overflow-hidden rounded-lg border border-line bg-surface">
                   <div className="flex h-11 items-center justify-between border-b border-line bg-surface-2 pl-4 pr-1.5">
@@ -557,7 +557,7 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
                     />
                   </div>
                   <div className="h-80">
-                    <CodeEditor value={d.refCode} onChange={(v) => set('refCode', v)} lang={d.refLang} label={t('Solution de référence', 'Reference solution')} placeholder={t('# Lis l’entrée, affiche la réponse', '# Read the input, print the answer')} />
+                    <CodeEditor value={d.refCode} onChange={(v) => set('refCode', v)} lang={d.refLang} label={t('Solution de référence', 'Reference solution')} placeholder={t('# Lire l’entrée, afficher la réponse', '# Read the input, print the answer')} />
                   </div>
                 </div>
               </Section>
@@ -566,8 +566,8 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
                 n={3}
                 title={t('Tests', 'Tests')}
                 lead={t(
-                  'Les exemples apparaissent dans l’énoncé avec leur sortie. Les tests cachés vérifient les soumissions : mets des cas limites et de grandes entrées, pour qu’une solution trop lente échoue.',
-                  'Examples appear in the statement with their output. Hidden tests check submissions: include edge cases and large inputs, so that a solution that is too slow fails.',
+                  'Exemples affichés dans l’énoncé avec leur sortie. Tests cachés utilisés pour vérifier les soumissions : prévoir des cas limites et de grandes entrées, pour qu’une solution trop lente échoue.',
+                  'Examples are shown in the statement with their output. Hidden tests check submissions: include edge cases and large inputs so that a solution that is too slow fails.',
                 )}
               >
                 <div>
@@ -627,14 +627,14 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
                 </details>
               </Section>
 
-              <Section n={4} title={t('Calculer les sorties', 'Compute the outputs')} lead={t(`Ta solution s’exécute sur les ${d.sampleInputs.length + d.testInputs.length} entrées, avec les limites de temps des élèves.`, `Your solution runs on the ${d.sampleInputs.length + d.testInputs.length} inputs, with the students’ time limits.`)}>
+              <Section n={4} title={t('Calculer les sorties', 'Compute the outputs')} lead={t(`Solution de référence exécutée sur les ${d.sampleInputs.length + d.testInputs.length} entrées, avec les limites de temps des élèves.`, `Reference solution run on the ${d.sampleInputs.length + d.testInputs.length} inputs, with the students’ time limits.`)}>
                 <div className="flex flex-wrap items-center gap-3">
                   <Button type="button" variant="secondary" onClick={computeOutputs} loading={run?.running} disabled={run?.running || !d.refCode.trim()}>
                     {!run?.running && <Play className="size-4" aria-hidden />}
                     {t('Calculer les sorties', 'Compute the outputs')}
                   </Button>
                   {upToDate && !run?.running && <span className="text-sm text-ok">{t('Sorties à jour pour cette version.', 'Outputs up to date for this version.')}</span>}
-                  {verified && !upToDate && !run?.running && <span className="text-sm text-warn">{t('Tests ou solution modifiés : recalcule les sorties.', 'Tests or solution changed: compute the outputs again.')}</span>}
+                  {verified && !upToDate && !run?.running && <span className="text-sm text-warn">{t('Tests ou solution modifiés : sorties à recalculer.', 'Tests or solution changed: outputs need recomputing.')}</span>}
                 </div>
                 {runItems && (
                   <div aria-live="polite" className="flex flex-col gap-4">
@@ -697,9 +697,9 @@ function Editor({ isNew, initial, initialVerified, status }: { isNew: boolean; i
             </Button>
             <p className="mt-3 text-xs text-muted">
               {isNew
-                ? t('Publié sous ton pseudo, sans points. Trois signalements le masquent jusqu’à l’avis d’un modérateur.', 'Published under your username, with no points. Three reports hide it until a moderator reviews it.')
+                ? t('Publié sous le pseudo du compte, sans points. Masqué après trois signalements, jusqu’à l’avis d’un modérateur.', 'Published under the account’s username, with no points. Hidden after three reports until a moderator reviews it.')
                 : status === 'hidden'
-                  ? t('Masqué par la modération : tes modifications restent invisibles des autres.', 'Hidden by moderators: your changes stay invisible to others.')
+                  ? t('Masqué par la modération : modifications invisibles des autres utilisateurs.', 'Hidden by moderators: changes stay invisible to other users.')
                   : t('Les réussites déjà enregistrées sont gardées.', 'Solves already recorded are kept.')}
             </p>
           </div>

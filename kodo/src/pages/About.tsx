@@ -58,8 +58,8 @@ export function About() {
   const ms = (n: number) => `${formatNumber(lang, n / 1000)} s`
   const facts: [string, string][] = [
     [t('Comparaison des sorties', 'Output comparison'), t('Mot à mot : les espaces et retours à la ligne en trop sont ignorés, les majuscules comptent.', 'Word by word: extra spaces and line breaks are ignored, capital letters matter.')],
-    [t('Taille de sortie', 'Output size'), t(`Au plus ${formatNumber(lang, OUTPUT_LIMIT / 1e6)} Mo par test ; au-delà, le test est faux.`, `At most ${formatNumber(lang, OUTPUT_LIMIT / 1e6)} MB per test; beyond that, the test fails.`)],
-    ['input("…")', t('Le texte de la question n’est pas affiché : il ne fausse pas ta sortie.', 'The prompt text is not printed, so it does not spoil your output.')],
+    [t('Taille de sortie', 'Output size'), t(`Au plus ${formatNumber(lang, OUTPUT_LIMIT / 1e6)} Mo par test ; au-delà, test échoué.`, `At most ${formatNumber(lang, OUTPUT_LIMIT / 1e6)} MB per test; beyond that, the test fails.`)],
+    ['input("…")', t('Texte de la question non affiché : la sortie n’est pas faussée.', 'Prompt text not printed: the output is unaffected.')],
     [t('Exceptions en C++', 'C++ exceptions'), t('Désactivées (-fno-exceptions) : try et throw ne compilent pas.', 'Disabled (-fno-exceptions): try and throw do not compile.')],
     [t('Pile en C++', 'C++ stack'), t('32 Mo, pour les parcours récursifs profonds.', '32 MB, for deep recursive traversals.')],
     [t('Tests cachés', 'Hidden tests'), t('Leur entrée est affichée quand ils échouent, jamais leur sortie attendue.', 'Their input is shown when they fail, never their expected output.')],
@@ -69,12 +69,12 @@ export function About() {
       <PageHeader
         title={t('Règles et limites du juge', 'Rules and judge limits')}
         lead={t(
-          `Comment les ${problemList.length} problèmes sont notés, ce que le juge accepte, et qui voit ton code.`,
-          `How the ${problemList.length} problems are scored, what the judge accepts, and who sees your code.`,
+          `Notation des ${problemList.length} problèmes, fonctionnement du juge et visibilité du code.`,
+          `Scoring of the ${problemList.length} problems, how the judge works, and who can see submitted code.`,
         )}
       />
 
-      <Section id="points" title={t('Points', 'Points')} lead={t('Un problème rapporte ses points une seule fois, à sa première réussite.', 'A problem pays its points once, the first time you solve it.')}>
+      <Section id="points" title={t('Points', 'Points')} lead={t('Points attribués une seule fois par problème, à la première réussite.', 'Points awarded once per problem, on the first solve.')}>
         <Table
           head={[t('Difficulté', 'Difficulty'), t('Points', 'Points')]}
           rows={[
@@ -85,7 +85,7 @@ export function About() {
         />
       </Section>
 
-      <Section id="ligues" title={t('Ligues', 'Leagues')} lead={t('Ta ligue dépend de ton total de points.', 'Your league depends on your total points.')}>
+      <Section id="ligues" title={t('Ligues', 'Leagues')} lead={t('Ligue déterminée par le total de points.', 'League set by total points.')}>
         <Table head={[t('Ligue', 'League'), t('À partir de', 'From')]} rows={LEAGUES.map((l) => [<LeagueBadge league={l} className="font-normal" />, formatPoints(lang, l.min)])} />
       </Section>
 
@@ -96,13 +96,13 @@ export function About() {
       >
         <p className="max-w-[65ch] text-ink-2">
           {t(
-            'Ta série avance d’un jour quand tu réussis un problème que tu n’avais jamais réussi, ou un problème du défi du jour. Un jour sans réussite la remet à zéro ; ton record reste sur ton profil.',
-            'Your streak grows by one day when you solve a problem you had never solved, or a daily challenge problem. A day without a solve resets it; your record stays on your profile.',
+            'La série avance d’un jour avec la première réussite d’un problème, ou la réussite d’un problème du défi du jour. Un jour sans réussite la remet à zéro ; le record reste affiché sur le profil.',
+            'The streak grows by one day with the first solve of a problem, or a solve of a daily challenge problem. A day without a solve resets it; the record stays on the profile.',
           )}
         </p>
       </Section>
 
-      <Section id="juge" title={t('Le juge', 'The judge')} lead={t('Ton programme s’exécute dans ton navigateur, test par test.', 'Your program runs in your browser, one test at a time.')}>
+      <Section id="juge" title={t('Le juge', 'The judge')} lead={t('Programme exécuté dans le navigateur, test par test.', 'Runs in the browser, one test at a time.')}>
         <div className="flex flex-col gap-6">
           <Table
             head={[t('Langage', 'Language'), t('Temps par test (énoncé à 1 s)', 'Time per test (1 s statement)')]}
@@ -113,8 +113,8 @@ export function About() {
           />
           <p className="max-w-[65ch] text-sm text-ink-2">
             {t(
-              'La limite affichée sur chaque problème vaut pour le C++ ; Python a 5 fois plus (au moins 3 s), le C++ 2 fois plus (au moins 1,5 s), car tout s’exécute en WebAssembly. Au premier lancement, le navigateur télécharge Python (7,5 Mo) ou le compilateur C++ (27,4 Mo), puis les garde en cache.',
-              'The limit shown on each problem is the C++ one; Python gets 5 times more (at least 3 s) and C++ twice as much (at least 1.5 s), because everything runs in WebAssembly. On first use, your browser downloads Python (7.5 MB) or the C++ compiler (27.4 MB), then keeps them cached.',
+              'La limite affichée sur chaque problème est multipliée, car tout s’exécute en WebAssembly : 5 fois pour Python (au moins 3 s), 2 fois pour le C++ (au moins 0,5 s). Au premier lancement, le navigateur télécharge Python (7,5 Mo) ou le compilateur C++ (27,4 Mo), puis les garde en cache.',
+              'The limit shown on each problem is multiplied, because everything runs in WebAssembly: 5 times for Python (at least 3 s), 2 times for C++ (at least 0.5 s). On first use, the browser downloads Python (7.5 MB) or the C++ compiler (27.4 MB), then caches them.',
             )}
           </p>
           <dl className="divide-y divide-line overflow-hidden rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
@@ -128,11 +128,11 @@ export function About() {
         </div>
       </Section>
 
-      <Section id="code" title={t('Qui voit ton code', 'Who sees your code')}>
+      <Section id="code" title={t('Visibilité du code', 'Code visibility')}>
         <p className="max-w-[65ch] text-ink-2">
           {t(
-            'Toi, et les encadrants des groupes dont tu fais partie. Les autres élèves voient seulement quels problèmes tu as réussis, tes points et ta série. Ton adresse e-mail n’est affichée nulle part. Tu peux supprimer ton compte et toutes tes soumissions depuis les ',
-            'You, and the leaders of the groups you belong to. Other students only see which problems you solved, your points and your streak. Your email address is never shown. You can delete your account and all your submissions from ',
+            'Code visible uniquement par son auteur et par les encadrants de ses groupes. Les autres élèves voient seulement les problèmes réussis, les points et la série. Adresse e-mail jamais affichée. Suppression du compte et de toutes les soumissions depuis les ',
+            'Code is visible only to its author and to the leaders of the author’s groups. Other students only see solved problems, points and streak. The email address is never shown. The account and all submissions can be deleted from ',
           )}
           <Link to="/compte" className="text-accent underline underline-offset-2">
             {t('paramètres', 'settings')}

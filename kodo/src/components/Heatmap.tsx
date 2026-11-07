@@ -51,7 +51,7 @@ export function Heatmap({ days, weeks = 53, className }: { days: { day: string; 
           className="grid min-w-[720px] gap-[3px]"
           style={{ gridTemplateColumns: `2rem repeat(${weeks}, minmax(10px, 1fr))`, gridTemplateRows: `14px repeat(7, auto)` }}
           role="img"
-          aria-label={t(`${plural(lang, activeDays, ['jour actif', 'jours actifs'], ['', ''])} sur les 12 derniers mois`, `${activeDays} active days over the last 12 months`)}
+          aria-label={t(`${plural(lang, activeDays, ['jour actif', 'jours actifs'], ['', ''])} sur les 12 derniers mois`, `${activeDays} active ${activeDays === 1 ? 'day' : 'days'} over the last 12 months`)}
         >
           {months.map((m) => (
             <span key={m.col} className="text-xs leading-none text-muted" style={{ gridColumn: m.col + 2, gridRow: 1 }} aria-hidden>
@@ -71,7 +71,7 @@ export function Heatmap({ days, weeks = 53, className }: { days: { day: string; 
               const a = byDay.get(c.key)
               const n = a?.submissions ?? 0
               const title = `${formatDate(lang, c.date, { weekday: 'long', day: 'numeric', month: 'long' })} : ${
-                n === 0 ? t('rien', 'nothing') : `${plural(lang, n, ['soumission', 'soumissions'], ['submission', 'submissions'])}${a?.solves ? `, ${plural(lang, a.solves, ['réussite', 'réussites'], ['solve', 'solves'])}` : ''}`
+                n === 0 ? t('aucune soumission', 'no submissions') : `${plural(lang, n, ['soumission', 'soumissions'], ['submission', 'submissions'])}${a?.solves ? `, ${plural(lang, a.solves, ['réussite', 'réussites'], ['solve', 'solves'])}` : ''}`
               }`
               return <span key={c.key} title={title} className={cx('aspect-square max-h-4 rounded-[3px]', LEVEL_BG[level(n)])} style={{ gridColumn: w + 2, gridRow: d + 2 }} />
             }),

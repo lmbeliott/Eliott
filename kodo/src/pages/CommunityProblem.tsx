@@ -37,7 +37,7 @@ function ReportForm({ id, onDone }: { id: string; onDone: () => void }) {
           { reason, details },
           {
             onSuccess: () => {
-              toast(t('Signalement envoyé. Trois signalements masquent le problème jusqu’à l’avis d’un modérateur.', 'Report sent. Three reports hide the problem until a moderator reviews it.'))
+              toast(t('Signalement envoyé. Problème masqué après trois signalements, jusqu’à l’avis d’un modérateur.', 'Report sent. The problem is hidden after three reports until a moderator reviews it.'))
               onDone()
             },
           },
@@ -45,7 +45,7 @@ function ReportForm({ id, onDone }: { id: string; onDone: () => void }) {
       }}
     >
       <fieldset>
-        <legend className="text-sm font-medium">{t('Pourquoi signaler ce problème ?', 'Why report this problem?')}</legend>
+        <legend className="text-sm font-medium">{t('Motif du signalement', 'Reason for the report')}</legend>
         <div className="mt-2 flex flex-col gap-1">
           {reasons.map(([v, label], i) => (
             <label key={v} className="flex min-h-8 items-center gap-2 text-sm text-ink-2">
@@ -109,7 +109,7 @@ function Actions({ id, authorId, status }: { id: string; authorId: string; statu
           className={cx(iconBtn, c?.voted && 'text-accent hover:text-accent')}
           aria-pressed={!!c?.voted}
           disabled={!session || vote.isPending || !c}
-          title={session ? t('Problème utile', 'Useful problem') : t('Connecte-toi pour voter', 'Sign in to vote')}
+          title={session ? t('Problème utile', 'Useful problem') : t('Connexion requise pour voter', 'Sign-in required to vote')}
           onClick={() => vote.mutate(!c?.voted, { onError })}
         >
           <ThumbsUp className="size-4" aria-hidden />
@@ -137,7 +137,7 @@ function Actions({ id, authorId, status }: { id: string; authorId: string; statu
         </>
       )}
       {!mine && session && (
-        <button type="button" className={iconBtn} disabled={!!c?.reported} aria-expanded={reporting} onClick={() => setReporting((v) => !v)} title={c?.reported ? t('Tu l’as déjà signalé', 'You already reported it') : undefined}>
+        <button type="button" className={iconBtn} disabled={!!c?.reported} aria-expanded={reporting} onClick={() => setReporting((v) => !v)} title={c?.reported ? t('Déjà signalé', 'Already reported') : undefined}>
           <Flag className="size-4" aria-hidden />
           <span className="hidden sm:inline">{c?.reported ? t('Signalé', 'Reported') : t('Signaler', 'Report')}</span>
         </button>
@@ -195,7 +195,7 @@ export function CommunityProblem() {
       <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-4 px-4 py-20 sm:px-6">
         <h1 className="display text-2xl">{t('Ce problème n’est pas disponible', 'This problem is not available')}</h1>
         <p className="max-w-[60ch] text-ink-2">
-          {t('Son auteur l’a retiré ou supprimé, ou la modération l’a masqué.', 'Its author withdrew or deleted it, or moderators hid it.')}
+          {t('Retiré ou supprimé par son auteur, ou masqué par la modération.', 'Withdrawn or deleted by its author, or hidden by moderators.')}
         </p>
         <LinkButton to="/communaute">{t('Voir les problèmes de la communauté', 'See community problems')}</LinkButton>
       </div>
@@ -220,8 +220,8 @@ export function CommunityProblem() {
       {meta.status !== 'published' && (
         <div className={cx('border-b px-4 py-2 text-sm sm:px-6', meta.status === 'hidden' ? 'border-bad/30 bg-bad-soft' : 'border-line bg-surface-2')}>
           {meta.status === 'hidden'
-            ? t('Masqué par la modération après des signalements : seuls toi et les modérateurs le voient.', 'Hidden by moderators after reports: only you and the moderators can see it.')
-            : t('Retiré : seul toi le vois. Republie-le pour qu’il réapparaisse dans la liste.', 'Withdrawn: only you can see it. Republish it to bring it back to the list.')}
+            ? t('Masqué par la modération après des signalements : visible uniquement par l’auteur et les modérateurs.', 'Hidden by moderators after reports: visible only to the author and moderators.')
+            : t('Retiré : visible uniquement par l’auteur. « Republier » le remet dans la liste.', 'Withdrawn: visible only to the author. “Republish” puts it back in the list.')}
         </div>
       )}
       <div className="flex items-center justify-between gap-2 border-b border-line bg-surface px-3 py-1.5 lg:hidden">

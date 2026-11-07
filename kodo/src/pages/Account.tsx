@@ -35,7 +35,7 @@ export function Account() {
   if (ready && !session)
     return (
       <div className="mx-auto max-w-2xl px-4 py-14 sm:px-6">
-        <PageHeader title={t('Paramètres', 'Settings')} lead={t('Connecte-toi pour modifier ton profil.', 'Sign in to edit your profile.')} />
+        <PageHeader title={t('Paramètres', 'Settings')} lead={t('Connexion requise pour modifier le profil.', 'Sign-in required to edit the profile.')} />
         <LinkButton to="/connexion">{t('Se connecter', 'Sign in')}</LinkButton>
       </div>
     )
@@ -50,7 +50,7 @@ export function Account() {
   const saveProfile = async (e: FormEvent) => {
     e.preventDefault()
     const errs: typeof errors = {}
-    if (!form.display_name.trim()) errs.display_name = t('Indique un nom affiché.', 'Enter a display name.')
+    if (!form.display_name.trim()) errs.display_name = t('Nom affiché requis.', 'Display name required.')
     if (!/^[a-z0-9_]{3,20}$/.test(form.username)) errs.username = t('3 à 20 caractères : lettres minuscules, chiffres ou _.', '3 to 20 characters: lowercase letters, digits or _.')
     setErrors(errs)
     if (Object.keys(errs).length) return
@@ -86,7 +86,7 @@ export function Account() {
     const { error } = await supabase.rpc('delete_my_account')
     if (error) return setDeleteError(errorText(error, lang))
     await supabase.auth.signOut()
-    toast(t('Ton compte a été supprimé.', 'Your account has been deleted.'), 'ok')
+    toast(t('Compte supprimé.', 'Account deleted.'), 'ok')
     navigate('/')
   }
 
@@ -96,7 +96,7 @@ export function Account() {
 
       {recovering && (
         <div className="mb-8">
-          <Notice tone="warn">{t('Choisis ton nouveau mot de passe ci-dessous.', 'Choose your new password below.')}</Notice>
+          <Notice tone="warn">{t('Nouveau mot de passe à définir ci-dessous.', 'Set a new password below.')}</Notice>
         </div>
       )}
 
@@ -109,7 +109,7 @@ export function Account() {
           <Field label={t('Nom affiché', 'Display name')} htmlFor="display_name" error={errors.display_name}>
             <Input id="display_name" value={form.display_name} maxLength={40} onChange={(e) => (setForm({ ...form, display_name: e.target.value }), setErrors({ ...errors, display_name: undefined }))} aria-invalid={!!errors.display_name} />
           </Field>
-          <Field label={t('Pseudo', 'Username')} htmlFor="username" error={errors.username} hint={t(`Ton profil : /profil/${form.username}`, `Your profile: /profil/${form.username}`)}>
+          <Field label={t('Pseudo', 'Username')} htmlFor="username" error={errors.username} hint={t(`Adresse du profil : /profil/${form.username}`, `Profile address: /profil/${form.username}`)}>
             <Input id="username" value={form.username} maxLength={20} onChange={(e) => (setForm({ ...form, username: e.target.value.toLowerCase() }), setErrors({ ...errors, username: undefined }))} aria-invalid={!!errors.username} />
           </Field>
           <Field label={t('Établissement (facultatif)', 'School (optional)')} htmlFor="school" hint={t('Affiché dans les classements.', 'Shown on leaderboards.')}>
@@ -176,7 +176,7 @@ export function Account() {
           {t('Supprimer mon compte', 'Delete my account')}
         </h2>
         <p className="mt-1 text-sm text-ink-2">
-          {t('Ton profil, tes soumissions, ta progression et ta place dans les groupes sont effacés définitivement.', 'Your profile, submissions, progress and group memberships are permanently erased.')}
+          {t('Profil, soumissions, progression et appartenance aux groupes effacés définitivement.', 'Profile, submissions, progress and group memberships are permanently erased.')}
         </p>
         {deleteError && (
           <div className="mt-3">
@@ -184,7 +184,7 @@ export function Account() {
           </div>
         )}
         <div className="mt-4 flex flex-wrap items-end gap-3">
-          <Field label={t(`Tape « ${profile.username} » pour confirmer`, `Type “${profile.username}” to confirm`)} htmlFor="confirm-account">
+          <Field label={t(`Saisir « ${profile.username} » pour confirmer`, `Type “${profile.username}” to confirm`)} htmlFor="confirm-account">
             <Input id="confirm-account" value={confirmDelete} onChange={(e) => setConfirmDelete(e.target.value)} autoComplete="off" />
           </Field>
           <Button variant="danger" disabled={confirmDelete !== profile.username} onClick={deleteAccount}>

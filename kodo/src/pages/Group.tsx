@@ -55,7 +55,7 @@ function StudentPanel({ member, onClose }: { member: GroupMember; onClose: () =>
       {subs.isLoading ? (
         <Skeleton className="mt-4 h-24" />
       ) : !subs.data?.length ? (
-        <p className="mt-3 text-sm text-muted">{t('Aucune soumission pour l’instant.', 'No submissions yet.')}</p>
+        <p className="mt-3 text-sm text-muted">{t('Aucune soumission.', 'No submissions.')}</p>
       ) : (
         <ul className="mt-3 divide-y divide-line">
           {subs.data.map((s) => {
@@ -94,7 +94,7 @@ function ProgressGrid({ members, solves, onPick, picked }: { members: GroupMembe
   }, [solves])
   const students = members.filter((m) => m.role === 'membre').sort((a, b) => b.profile.xp - a.profile.xp)
   if (!students.length)
-    return <p className="text-sm text-ink-2">{t('Aucun élève pour l’instant. Donne le code du groupe à ta classe : il s’affiche en haut de cette page.', 'No students yet. Give the group code to your class: it is shown at the top of this page.')}</p>
+    return <p className="text-sm text-ink-2">{t('Aucun élève. La classe rejoint le groupe avec le code affiché en haut de cette page.', 'No students. The class joins with the code shown at the top of this page.')}</p>
   // Une cellule par problème, rangées par niveau (DESIGN.md : le motif des cellules).
   const byLevel = levels.map((l) => ({ level: l, ids: l.chapters.flatMap((c) => c.problems) }))
   return (
@@ -195,7 +195,7 @@ export function GroupPage() {
     const { error } = await supabase.from('group_members').delete().eq('group_id', id).eq('user_id', m.user_id)
     if (error) toast(errorText(error, lang), 'error')
     else {
-      toast(t(`${m.profile.display_name} a été retiré du groupe.`, `${m.profile.display_name} was removed from the group.`), 'ok')
+      toast(t(`${m.profile.display_name} retiré du groupe.`, `${m.profile.display_name} removed from the group.`), 'ok')
       refresh()
     }
   }
@@ -265,10 +265,10 @@ export function GroupPage() {
           </p>
         </div>
         <div className="rounded-lg border border-line bg-surface px-4 py-3">
-          <p className="text-xs text-muted">{t('Code pour rejoindre', 'Code to join')}</p>
+          <p className="text-xs text-muted">{t('Code d’accès', 'Join code')}</p>
           <div className="flex items-center gap-3">
             <span className="font-mono text-2xl font-semibold tracking-[0.25em]">{group.join_code}</span>
-            <CopyButton text={shareUrl} label={t('Copier le lien d’invitation', 'Copy the invite link')} />
+            <CopyButton text={shareUrl} label={t('Copier le lien d’invitation', 'Copy invite link')} />
           </div>
         </div>
       </header>
@@ -301,14 +301,14 @@ export function GroupPage() {
               ]}
             />
             <div className="mt-4">
-              <LeaderboardTable rows={board.data} loading={board.isLoading} empty={<p className="text-sm text-muted">{t('Personne n’a encore marqué de points.', 'Nobody has scored yet.')}</p>} />
+              <LeaderboardTable rows={board.data} loading={board.isLoading} empty={<p className="text-sm text-muted">{t('Aucun point marqué pour l’instant.', 'No points scored yet.')}</p>} />
             </div>
           </>
         )}
         {tab === 'progression' && lead && (
           <>
             <p className="mb-4 text-sm text-ink-2">
-              {t('Une case par problème, colorée quand l’élève l’a réussi. Clique sur un élève pour voir ses 30 dernières soumissions et son code.', 'One cell per problem, filled once the student solved it. Click a student to see their last 30 submissions and their code.')}
+              {t('Une case par problème, colorée une fois réussi. Sélectionner un élève pour afficher ses 30 dernières soumissions et son code.', 'One cell per problem, filled once solved. Select a student to show their last 30 submissions and code.')}
             </p>
             <ProgressGrid members={members} solves={solves} picked={picked?.user_id ?? null} onPick={(m) => setPicked(picked?.user_id === m.user_id ? null : m)} />
             {picked && <StudentPanel member={picked} onClose={() => setPicked(null)} />}
@@ -352,10 +352,10 @@ export function GroupPage() {
                   {t('Supprimer le groupe', 'Delete the group')}
                 </h2>
                 <p className="mt-1 text-sm text-ink-2">
-                  {t('Les membres et le classement du groupe disparaissent. Les réussites de chacun restent sur leur profil.', 'Members and the group leaderboard are removed. Everyone keeps their solves on their own profile.')}
+                  {t('Membres et classement du groupe supprimés. Les réussites restent sur le profil de chaque membre.', 'Members and the group leaderboard are removed. Solves stay on each member’s profile.')}
                 </p>
                 <div className="mt-4 flex flex-wrap items-end gap-3">
-                  <Field label={t(`Tape « ${group.name} » pour confirmer`, `Type “${group.name}” to confirm`)} htmlFor="confirm-delete">
+                  <Field label={t(`Saisir « ${group.name} » pour confirmer`, `Type “${group.name}” to confirm`)} htmlFor="confirm-delete">
                     <Input id="confirm-delete" value={confirmName} onChange={(e) => setConfirmName(e.target.value)} autoComplete="off" />
                   </Field>
                   <Button variant="danger" disabled={confirmName.trim() !== group.name} onClick={remove}>
@@ -364,7 +364,7 @@ export function GroupPage() {
                 </div>
               </section>
             )}
-            {!me && <Notice>{t('Tu ne fais pas partie de ce groupe.', 'You are not a member of this group.')}</Notice>}
+            {!me && <Notice>{t('Ce compte ne fait pas partie de ce groupe.', 'This account is not a member of this group.')}</Notice>}
           </div>
         )}
       </div>

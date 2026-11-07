@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             role={t.tone === 'error' ? 'alert' : 'status'}
           >
             <div className="flex-1">{t.text}</div>
-            <button type="button" onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))} className="text-muted hover:text-ink" aria-label={document.documentElement.lang === 'en' ? 'Close' : 'Fermer'}>
+            <button type="button" onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))} className="text-muted hover:text-ink" aria-label={document.documentElement.lang === 'en' ? 'Close notification' : 'Fermer la notification'}>
               <X className="size-4" />
             </button>
           </div>

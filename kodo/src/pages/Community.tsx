@@ -119,8 +119,8 @@ export function Community() {
       <PageHeader
         title={t('Problèmes de la communauté', 'Community problems')}
         lead={t(
-          'Écrits par des élèves et des encadrants. Avant publication, la solution de l’auteur a calculé la sortie de chaque test. Ces problèmes ne rapportent pas de points.',
-          'Written by students and teachers. Before publication, the author’s solution computed the output of every test. These problems give no points.',
+          'Écrits par des élèves et des encadrants. Sortie de chaque test calculée par la solution de l’auteur avant publication. Aucun point attribué.',
+          'Written by students and teachers. Each test’s output is computed by the author’s solution before publication. No points awarded.',
         )}
         actions={
           <LinkButton to={proposeTo}>
@@ -162,7 +162,7 @@ export function Community() {
           {mine.length > 0 && (
             <section aria-labelledby="mes-problemes">
               <h2 id="mes-problemes" className="mb-3 text-lg font-semibold">
-                {t('Tes problèmes', 'Your problems')}
+                {t('Mes problèmes', 'My problems')}
               </h2>
               <Rows items={mine} show="mine" />
             </section>
@@ -203,8 +203,8 @@ export function Community() {
                 </p>
                 <p className="max-w-[60ch] text-sm text-ink-2">
                   {t(
-                    'Pour proposer un problème : un énoncé, au moins un exemple, trois tests cachés et ta solution en Python ou en C++. Elle calcule les sorties attendues dans ton navigateur.',
-                    'To propose a problem: a statement, at least one example, three hidden tests and your solution in Python or C++. It computes the expected outputs in your browser.',
+                    'Requis pour proposer un problème : un énoncé, au moins un exemple, trois tests cachés et une solution de référence en Python ou en C++. Sorties attendues calculées dans le navigateur.',
+                    'Required to propose a problem: a statement, at least one example, three hidden tests and a reference solution in Python or C++. Expected outputs computed in the browser.',
                   )}
                 </p>
                 <LinkButton to={proposeTo} variant="secondary" size="sm">

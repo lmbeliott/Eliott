@@ -82,15 +82,26 @@ Lignes de texte : 65–75 caractères maximum.
 
 ## 7. Écriture
 
-Kodo tutoie, parle simplement et ne vend rien. Chaque phrase doit apprendre quelque chose de **précis** à l'élève.
+Registre d'outil professionnel : on énonce des faits, on ne s'adresse pas à l'élève. Pas de tutoiement dans les textes descriptifs ou informatifs. Chaque phrase apprend quelque chose de **précis**.
 
-- **Concret, chiffré, vérifiable.** « 60 problèmes, de *Somme de deux nombres* à *Inversions* » plutôt que « des dizaines d'exercices variés ». « Python a 5 fois plus de temps que le C++ » plutôt que « adapté à chaque langage ».
-- **Des noms, pas des adjectifs.** Titres de section = ce que contient la section (« Défi du jour », « Classement de la semaine », « Ta progression par chapitre »).
-- **Interdits** : slogans et formules creuses (« Pour de vrai », « Apprends en t'amusant », « Rejoins l'aventure », « Comment ça marche », « Simple et puissant », « rien à installer », « Bienvenue ! », « Bonjour X »), points d'exclamation hors réussite, superlatifs, emoji.
-- **Boutons** : verbe + objet. Jamais « OK », « Valider », « En savoir plus ».
-- **États vides** : ce que c'est + pourquoi c'est vide + l'action (« Aucun élève pour l'instant. Donne le code D25972 à ta classe. »).
-- **Erreurs** : ce qui s'est passé + comment s'en sortir, sans reproche.
-- **FR / EN** : mêmes faits, mêmes chiffres, formulés naturellement dans chaque langue.
+- **Pas de deuxième personne.** Ni « tu », « ton », « ta », « tes », « toi », « te », ni « tu peux », « n'hésite pas », « pense à ». Tournures nominales ou participiales (« Code exécuté dans le navigateur », « Réussite enregistrée sur cet appareil », « Brouillon conservé sur cet appareil »), ou infinitif impersonnel pour une consigne (« Vérifier la connexion internet puis réessayer. »).
+- **Statuts = faits bruts.** « Réussi », « Code », « Tenté », pas « Tu l'as réussi » ni « Ton code ». Pour une section qui appartient à l'utilisateur, « Mes problèmes » est acceptable ; préférer « Problèmes proposés » quand ça se lit naturellement.
+- **Boutons et liens** : verbe à l'infinitif + objet (« Soumettre », « Créer un compte », « Ouvrir le parcours », « Fermer la notification »). Jamais « OK », « Valider », « Envoyer » seul, « En savoir plus ».
+- **Concret, chiffré, vérifiable.** Garder chaque fait, chiffre et contrainte (limites, ce qui est enregistré et où, ce qui est public). Plus court est mieux, mais jamais cryptique.
+- **Interdits** : points d'exclamation, slogans, remplissage (« simplement », « facilement », « en un clic », « pour de vrai », « Apprends en t'amusant », « Rejoins l'aventure », « Bienvenue ! »), superlatifs, emoji.
+- **États vides** : ce que c'est + pourquoi c'est vide + l'action (« Aucun élève pour l'instant. Code d'invitation : D25972. »).
+- **Erreurs** : ce qui s'est passé + l'étape pour s'en sortir, à l'infinitif, sans reproche (« Connexion au serveur impossible. Vérifier la connexion internet puis réessayer. »).
+- **Typographie** : apostrophe typographique ’ et espace avant `:` `;` `?` en français, comme dans le reste du code.
+- **FR / EN** : mêmes faits, mêmes chiffres, même registre. L'anglais reste bref et impersonnel (« Runs in the browser », « Solved », « Saved on this device ») ; « you » seulement quand l'éviter serait maladroit. Chaque paire `t('…', '…')` se modifie ensemble.
+
+| Avant | Après |
+| --- | --- |
+| Ton code s’exécute dans ton navigateur : Python 3.14 avec Pyodide, C++17 avec Clang 22 compilé en WebAssembly. | Code exécuté dans le navigateur : Python 3.14 (Pyodide), C++17 (Clang 22 en WebAssembly). |
+| Écris d’abord un programme dans l’éditeur. | Éditeur vide. |
+| Réussite enregistrée sur cet appareil. Crée un compte pour gagner les 50 points et apparaître au classement. | Réussite enregistrée sur cet appareil. Les 50 points et le classement nécessitent un compte. |
+| Tu avais déjà réussi ce problème : cette version est enregistrée, sans points en plus. | Déjà réussi : version enregistrée, sans points supplémentaires. |
+| Ta ligue dépend de ton total de points. | Ligue déterminée par le total de points. |
+| Tu l’as réussi | Réussi |
 
 ## 8. Pages (un motif par route)
 
@@ -113,7 +124,7 @@ Kodo tutoie, parle simplement et ne vend rien. Chaque phrase doit apprendre quel
 ## 9. Contrôle avant livraison
 
 - [ ] Capture claire + sombre, 1440 et 375 px, sans défilement horizontal de la page.
-- [ ] Aucune phrase générique (voir §7) ; chaque texte cite un fait de Kodo.
+- [ ] Aucune phrase générique ni tutoiement (voir §7) ; chaque texte cite un fait de Kodo.
 - [ ] Au plus 3 graisses, rien sous 12 px, chiffres tabulaires uniquement en colonnes.
 - [ ] Tableaux et listes dans un L1 avec filets.
 - [ ] Accent ≤ 10 % de la surface ; pas de panneaux identiques alignés pour décorer.

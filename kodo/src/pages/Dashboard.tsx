@@ -124,7 +124,7 @@ export function Dashboard() {
       {/* ---------------------------------------------------------- En-tête */}
       <header className="border-b border-line pb-6">
         <h1 className="display text-2xl">{profile.display_name}</h1>
-        <ul className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-2" aria-label={t('Ton état', 'Your status')}>
+        <ul className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-2" aria-label={t('État du compte', 'Account status')}>
           <li className="font-medium text-ink">{formatPoints(lang, profile.xp)}</li>
           <li>
             <LeagueBadge league={leagueOf(profile.xp).current} className="text-ink" />
@@ -159,7 +159,7 @@ export function Dashboard() {
         ) : (
           <Panel className="p-6">
             <h2 className="display text-xl">{t(`Les ${problemList.length} problèmes sont réussis`, `All ${problemList.length} problems solved`)}</h2>
-            <p className="mt-2 text-ink-2">{t(`Tu as ${formatPoints(lang, profile.xp)}. Ton rang se joue maintenant au défi du jour et au classement de la semaine.`, `You have ${formatPoints(lang, profile.xp)}. Your rank now depends on the daily challenge and this week’s leaderboard.`)}</p>
+            <p className="mt-2 text-ink-2">{t(`${formatPoints(lang, profile.xp)} au total. Le rang dépend désormais du défi du jour et du classement de la semaine.`, `${formatPoints(lang, profile.xp)} in total. Rank now depends on the daily challenge and this week’s leaderboard.`)}</p>
             <LinkButton to="/classements" variant="secondary" className="mt-5">
               {t('Voir le classement', 'View the leaderboard')}
             </LinkButton>
@@ -198,10 +198,10 @@ export function Dashboard() {
 
       {/* ---------------------------------------------------------- Progression */}
       <section className="mt-12" aria-labelledby="dash-progression">
-        <SectionHead id="dash-progression" title={t('Ta progression', 'Your progress')} link={{ to: '/parcours', label: t('Ouvrir le parcours', 'Open the path') }}>
+        <SectionHead id="dash-progression" title={t('Progression', 'Progress')} link={{ to: '/parcours', label: t('Ouvrir le parcours', 'Open the path') }}>
           {t(
-            `${progress.solved.size} problème${progress.solved.size > 1 ? 's' : ''} réussi${progress.solved.size > 1 ? 's' : ''} sur ${problemList.length}${triedOnly ? `, ${triedOnly} tenté${triedOnly > 1 ? 's' : ''} sans réussite` : ''}. Chaque case est un problème : clique dessus pour l’ouvrir.`,
-            `${progress.solved.size} of ${problemList.length} problems solved${triedOnly ? `, ${triedOnly} attempted without success` : ''}. Each square is a problem: click it to open it.`,
+            `${progress.solved.size} problème${progress.solved.size > 1 ? 's' : ''} réussi${progress.solved.size > 1 ? 's' : ''} sur ${problemList.length}${triedOnly ? `, ${triedOnly} tenté${triedOnly > 1 ? 's' : ''} sans réussite` : ''}. Chaque case ouvre le problème correspondant.`,
+            `${progress.solved.size} of ${problemList.length} problems solved${triedOnly ? `, ${triedOnly} attempted without success` : ''}. Each square opens its problem.`,
           )}
         </SectionHead>
         <Legend />
@@ -223,7 +223,7 @@ export function Dashboard() {
         </section>
 
         <section aria-labelledby="dash-groupes" className="min-w-0">
-          <SectionHead id="dash-groupes" title={t('Tes groupes', 'Your groups')} link={groups.data?.length ? { to: '/groupes', label: t('Gérer', 'Manage') } : undefined}>
+          <SectionHead id="dash-groupes" title={t('Groupes', 'Groups')} link={groups.data?.length ? { to: '/groupes', label: t('Gérer les groupes', 'Manage groups') } : undefined}>
             {groups.data?.length
               ? t('Chaque groupe a son propre classement.', 'Each group has its own leaderboard.')
               : ' '}
@@ -242,7 +242,7 @@ export function Dashboard() {
                         <span className="block truncate font-medium">{g.name}</span>
                         <span className="block truncate text-sm text-muted">
                           {KIND[g.kind][lang === 'en' ? 1 : 0]}, {plural(lang, g.members, ['membre', 'membres'], ['member', 'members'])}
-                          {g.role === 'encadrant' && `, ${t('tu encadres', 'you lead it')}`}
+                          {g.role === 'encadrant' && `, ${t('rôle encadrant', 'leader role')}`}
                         </span>
                       </span>
                       <ChevronRight className="size-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -252,11 +252,11 @@ export function Dashboard() {
               </ul>
             ) : (
               <div className="p-4">
-                <p className="font-medium">{t('Tu n’es dans aucun groupe.', 'You are not in any group.')}</p>
+                <p className="font-medium">{t('Aucun groupe pour l’instant.', 'No groups yet.')}</p>
                 <p className="mt-1 text-sm text-ink-2">
                   {t(
-                    'Entre le code de 6 caractères donné par ton prof pour rejoindre ta classe et son classement, ou crée un groupe et partage son code.',
-                    'Enter the 6-character code from your teacher to join your class and its leaderboard, or create a group and share its code.',
+                    'Rejoindre une classe et son classement avec le code de 6 caractères fourni par l’enseignant, ou créer un groupe et partager son code.',
+                    'Join a class and its leaderboard with the 6-character code from the teacher, or create a group and share its code.',
                   )}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -313,12 +313,12 @@ function NextProblem({ problem, tried, isDaily, solved }: { problem: CatalogProb
   const dailyBonus = isDaily ? Math.floor(problem.points / 2) : 0
 
   const context = tried
-    ? t(`Tu as tenté ${title} sans le réussir.`, `You attempted ${title} without solving it.`)
+    ? t('Tenté, pas encore réussi.', 'Attempted, not solved yet.')
     : index === 0
       ? t('Premier problème du parcours.', 'First problem of the path.')
       : prev && solved.has(prev.id)
         ? t(`Suivant dans le parcours, après ${problemTitle(lang, prev)}.`, `Next in the path, after ${problemTitle(lang, prev)}.`)
-        : t('Premier problème du parcours que tu n’as pas encore réussi.', 'First problem of the path you have not solved yet.')
+        : t('Premier problème non réussi du parcours.', 'First unsolved problem of the path.')
 
   return (
     <Panel as="article" aria-labelledby="next-title" className="flex flex-col">
@@ -463,7 +463,7 @@ function LeagueRail({ points, solved }: { points: number; solved: Map<string, un
           {plan && (
             <p className="mt-3 text-sm text-ink-2">
               {plan.n === 1
-                ? t(`Le prochain problème du parcours rapporte ${formatPoints(lang, plan.sum)} : il suffit.`, `The next problem of the path is worth ${formatPoints(lang, plan.sum)}: that is enough.`)
+                ? t(`Le prochain problème du parcours rapporte ${formatPoints(lang, plan.sum)}, assez pour y accéder.`, `The next problem of the path is worth ${formatPoints(lang, plan.sum)}, enough to reach it.`)
                 : t(`Les ${plan.n} prochains problèmes du parcours rapportent ${formatPoints(lang, plan.sum)}.`, `The next ${plan.n} problems of the path are worth ${formatPoints(lang, plan.sum)}.`)}
             </p>
           )}
@@ -471,7 +471,7 @@ function LeagueRail({ points, solved }: { points: number; solved: Map<string, un
       ) : (
         <>
           <LeagueBadge league={l.current} className="mt-2" />
-          <p className="mt-2 text-sm text-ink-2">{t('C’est la plus haute ligue.', 'This is the highest league.')}</p>
+          <p className="mt-2 text-sm text-ink-2">{t('Ligue la plus haute.', 'Highest league.')}</p>
         </>
       )}
     </div>
@@ -486,7 +486,7 @@ function WeekRail({ streak, doneToday, untilMidnight, days }: { streak: number; 
 
   return (
     <div className="border-t border-line pt-6">
-      <h2 className="text-sm font-medium">{t('Tes 7 derniers jours', 'Your last 7 days')}</h2>
+      <h2 className="text-sm font-medium">{t('7 derniers jours', 'Last 7 days')}</h2>
       <ol className="mt-3 grid grid-cols-7 gap-1">
         {week.map((d, i) => {
           const a = byDay.get(parisDay(d))
@@ -496,7 +496,7 @@ function WeekRail({ streak, doneToday, untilMidnight, days }: { streak: number; 
               ? plural(lang, a.solves, ['réussite', 'réussites'], ['solve', 'solves'])
               : a?.submissions
                 ? plural(lang, a.submissions, ['soumission sans réussite', 'soumissions sans réussite'], ['submission, no solve', 'submissions, no solve'])
-                : t('rien', 'nothing')
+                : t('aucune activité', 'no activity')
           }`
           return (
             <li key={i} className="flex flex-col items-center gap-1.5">
@@ -519,13 +519,13 @@ function WeekRail({ streak, doneToday, untilMidnight, days }: { streak: number; 
           </>
         ) : streak > 0 ? (
           t(
-            `Ta série de ${plural(lang, streak, ['jour', 'jours'], ['', ''])} retombe à zéro dans ${untilMidnight} sans nouveau problème réussi ou défi du jour.`,
-            `Your ${streak}-day streak resets in ${untilMidnight} unless you solve a new problem or a daily challenge.`,
+            `Série de ${plural(lang, streak, ['jour', 'jours'], ['', ''])} remise à zéro dans ${untilMidnight} sans nouveau problème ou défi du jour réussi.`,
+            `${streak}-day streak resets in ${untilMidnight} without a new problem or daily challenge solved.`,
           )
         ) : (
           t(
-            `Pas de série en cours. Réussis un nouveau problème ou un défi du jour d’ici minuit (${untilMidnight}) pour en commencer une.`,
-            `No streak yet. Solve a new problem or a daily challenge before midnight (${untilMidnight}) to start one.`,
+            `Pas de série en cours. Un nouveau problème ou un défi du jour réussi d’ici minuit (${untilMidnight}) en démarre une.`,
+            `No streak yet. A new problem or daily challenge solved before midnight (${untilMidnight}) starts one.`,
           )
         )}
       </p>

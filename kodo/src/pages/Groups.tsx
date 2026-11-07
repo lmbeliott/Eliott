@@ -42,22 +42,22 @@ export function Groups() {
         <PageHeader
           title={t('Groupes', 'Groups')}
           lead={t(
-            'Un groupe, c’est une classe, un établissement ou des amis. Il a son propre classement, et l’encadrant suit la progression de chacun.',
-            'A group is a class, a school or friends. It has its own leaderboard, and its leader can follow everyone’s progress.',
+            'Classe, établissement ou amis : chaque groupe a son propre classement, et l’encadrant suit la progression de chaque membre.',
+            'Class, school or friends: each group has its own leaderboard, and its leader follows each member’s progress.',
           )}
         />
         <div className="rounded-xl border border-line bg-surface p-6">
           <p className="font-medium">
             {params.code
-              ? t(`Connecte-toi pour rejoindre le groupe ${params.code.toUpperCase()}.`, `Sign in to join group ${params.code.toUpperCase()}.`)
-              : t('Connecte-toi pour créer ou rejoindre un groupe.', 'Sign in to create or join a group.')}
+              ? t(`Connexion requise pour rejoindre le groupe ${params.code.toUpperCase()}.`, `Sign-in required to join group ${params.code.toUpperCase()}.`)
+              : t('Connexion requise pour créer ou rejoindre un groupe.', 'Sign-in required to create or join a group.')}
           </p>
           <div className="mt-4 flex gap-2">
             <LinkButton to={`/connexion?retour=${encodeURIComponent(window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), ''))}`}>
               {t('Se connecter', 'Sign in')}
             </LinkButton>
             <LinkButton to={`/inscription?retour=${encodeURIComponent(window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), ''))}`} variant="secondary">
-              {t('Créer un compte', 'Sign up')}
+              {t('Créer un compte', 'Create an account')}
             </LinkButton>
           </div>
         </div>
@@ -81,14 +81,14 @@ export function Groups() {
     }
     await qc.invalidateQueries({ queryKey: ['groups'] })
     const g = data as Group
-    toast(t(`Tu as rejoint « ${g.name} ».`, `You joined “${g.name}”.`), 'ok')
+    toast(t(`Groupe « ${g.name} » rejoint.`, `Joined “${g.name}”.`), 'ok')
     navigate(`/groupes/${g.id}`)
   }
 
   const create = async (e: FormEvent) => {
     e.preventDefault()
     if (name.trim().length < 2) {
-      setNameError(t('Donne un nom d’au moins 2 caractères.', 'Use a name of at least 2 characters.'))
+      setNameError(t('Nom trop court : 2 caractères minimum.', 'Name too short: 2 characters minimum.'))
       return
     }
     setCreating(true)
@@ -100,13 +100,13 @@ export function Groups() {
     }
     await qc.invalidateQueries({ queryKey: ['groups'] })
     const g = data as Group
-    toast(t(`Groupe « ${g.name} » créé. Partage le code ${g.join_code}.`, `Group “${g.name}” created. Share the code ${g.join_code}.`), 'ok')
+    toast(t(`Groupe « ${g.name} » créé. Code d’accès : ${g.join_code}.`, `Group “${g.name}” created. Join code: ${g.join_code}.`), 'ok')
     navigate(`/groupes/${g.id}`)
   }
 
   return (
     <div className="mx-auto max-w-[1080px] px-4 py-10 sm:px-6">
-      <PageHeader title={t('Groupes', 'Groups')} lead={t('Rejoins le groupe de ta classe avec son code à 6 caractères, ou crée le tien : chaque groupe a son classement de la semaine.', 'Join your class group with its 6-character code, or create your own: each group has its own weekly leaderboard.')} />
+      <PageHeader title={t('Groupes', 'Groups')} lead={t('Rejoindre un groupe avec son code à 6 caractères, ou en créer un. Chaque groupe a son classement de la semaine.', 'Join a group with its 6-character code, or create one. Each group has its own weekly leaderboard.')} />
 
       <section aria-labelledby="mes-cordees">
         <h2 id="mes-cordees" className="text-lg font-semibold">
@@ -125,7 +125,7 @@ export function Groups() {
                       <span className="block truncate font-medium">{g.name}</span>
                       <span className="block text-sm text-muted">
                         {KIND_LABEL[g.kind][lang === 'en' ? 1 : 0]}, {plural(lang, g.members, ['membre', 'membres'], ['member', 'members'])}
-                        {g.role === 'encadrant' && `, ${t('tu encadres', 'you lead it')}`}
+                        {g.role === 'encadrant' && `, ${t('encadrant', 'leader')}`}
                       </span>
                     </span>
                     <ChevronRight className="size-5 text-muted" aria-hidden />
@@ -134,7 +134,7 @@ export function Groups() {
               ))}
             </ul>
           ) : (
-            <p className="px-5 py-4 text-sm text-ink-2">{t('Tu ne fais partie d’aucun groupe pour l’instant. Rejoins-en un avec un code, ou crée le tien.', 'You are not in any group yet. Join one with a code, or create your own.')}</p>
+            <p className="px-5 py-4 text-sm text-ink-2">{t('Aucun groupe pour l’instant. Rejoindre un groupe avec un code, ou en créer un.', 'No groups yet. Join one with a code, or create one.')}</p>
           )}
         </div>
       </section>
@@ -144,7 +144,7 @@ export function Groups() {
           <h2 id="rejoindre" className="text-lg font-semibold">
             {t('Rejoindre un groupe', 'Join a group')}
           </h2>
-          <Field label={t('Code du groupe', 'Group code')} htmlFor="code" error={joinError} hint={t('6 caractères, donnés par ton prof ou un ami.', '6 characters, from your teacher or a friend.')}>
+          <Field label={t('Code du groupe', 'Group code')} htmlFor="code" error={joinError} hint={t('6 caractères, fournis par un professeur ou un ami.', '6 characters, from a teacher or a friend.')}>
             <Input
               id="code"
               value={code}
@@ -177,7 +177,7 @@ export function Groups() {
                 setName(e.target.value)
                 setNameError(null)
               }}
-              onBlur={() => name && name.trim().length < 2 && setNameError(t('Donne un nom d’au moins 2 caractères.', 'Use a name of at least 2 characters.'))}
+              onBlur={() => name && name.trim().length < 2 && setNameError(t('Nom trop court : 2 caractères minimum.', 'Name too short: 2 characters minimum.'))}
               aria-invalid={!!nameError}
               aria-describedby={nameError ? 'nom-cordee-error' : 'nom-cordee-hint'}
             />
