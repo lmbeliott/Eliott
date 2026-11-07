@@ -124,7 +124,7 @@ Registre d'outil professionnel : on énonce des faits, on ne s'adresse pas à l'
 ## 9. Contrôle avant livraison
 
 - [ ] Capture claire + sombre, 1440 et 375 px, sans défilement horizontal de la page.
-- [ ] Aucune phrase générique ni tutoiement (voir §7) ; chaque texte cite un fait de Kodo.
+- [ ] Aucune phrase générique (voir §7) ; chaque texte cite un fait de Kodo.
 - [ ] Au plus 3 graisses, rien sous 12 px, chiffres tabulaires uniquement en colonnes.
 - [ ] Tableaux et listes dans un L1 avec filets.
 - [ ] Accent ≤ 10 % de la surface ; pas de panneaux identiques alignés pour décorer.
