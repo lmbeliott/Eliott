@@ -26,7 +26,7 @@ tests = [
     genere(6, 7, 5, 3, 6, 6, 9, 4),
 ]
 # Cas limites : un sommet, aucune arête utile, boucles et arêtes multiples, poids égaux
-tests.append(explicite([7], [(1, 1, 3)], [(1, 2), (1, 3)]))
+tests.append(explicite([1], [(1, 1, 3)], [(1, 2), (1, 3)]))
 tests.append(explicite([1, 1, 1], [(1, 2, 5), (2, 3, 5)], [(1, 4), (1, 5), (3, 5)]))
 tests.append(explicite([1, 2, 3, 4], [(1, 2, 2), (1, 2, 1), (3, 3, 1), (2, 3, 2), (3, 4, 9)],
                        [(4, 8), (4, 9), (1, 1), (3, 2)]))
