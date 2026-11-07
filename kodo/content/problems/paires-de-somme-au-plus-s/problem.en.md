@@ -3,7 +3,7 @@ title: Pairs with sum at most S
 ---
 
 ## Statement
-A sequence of N integers a₁, a₂, …, a_N is built by a formula, so that the input stays short: a₁ = X, then a_{i+1} = (aᵢ × B + C) mod M for i ≥ 1.
+A sequence of N integers a₁, a₂, …, a_N is built by a formula, so that the input stays short: a₁ = X, then a_{i+1} = (aᵢ × B + C) mod M for i ≥ 1, where "mod M" is the remainder of the division by M. For example, with X = 3, B = 7, C = 2 and M = 11, the sequence starts with 3, 1, 9, 10, 6, since (3 × 7 + 2) mod 11 = 1, (1 × 7 + 2) mod 11 = 9, and so on.
 
 Count the pairs of indices (i, j), with i < j, such that aᵢ + aⱼ ≤ S.
 

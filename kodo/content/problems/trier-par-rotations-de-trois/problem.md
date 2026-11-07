@@ -39,4 +39,4 @@ T lignes : `OUI` si la liste peut être triée, `NON` sinon.
 
 **Calculer la parité.** On trie les positions par valeur pour connaître, pour chaque position i, la place p(i) de sa valeur dans la liste triée. La permutation p se décompose en **cycles** (i → p(i) → p(p(i)) → … → i). Un cycle de longueur ℓ s'obtient par ℓ − 1 échanges, et chaque échange de deux valeurs change la parité du nombre d'inversions. La parité cherchée est donc celle de N − (nombre de cycles). On parcourt les cycles en marquant les positions visitées : O(N).
 
-**Coût.** O(N log N) par liste à cause du tri, au lieu de O(N²) pour compter les inversions une à une, et d'un nombre d'états astronomique pour une recherche exhaustive.
+**Coût.** O(N log N) par liste à cause du tri, au lieu de O(N²) pour compter les inversions une à une, et d'un nombre d'états astronomique pour une recherche exhaustive. Avec une somme des N limitée à 10 000, le comptage direct des inversions, 5 × 10⁷ comparaisons, passe encore en C++ mais pas en Python : l'essentiel est l'invariant de parité.

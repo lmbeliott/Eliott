@@ -1,9 +1,10 @@
-import sys
+n, c = map(int, input().split())
+x, a, b = map(int, input().split())
 
-donnees = sys.stdin.read().split()
-n = int(donnees[0])
-c = int(donnees[1])
-p = sorted(int(x) for x in donnees[2:2 + n])
+p = [x] * n
+for i in range(1, n):
+    p[i] = (p[i - 1] * a + b) % c
+p.sort()
 
 # écarts entre voisins, puis écart de bouclage par la ligne de départ
 ecarts = [p[i + 1] - p[i] for i in range(n - 1)]

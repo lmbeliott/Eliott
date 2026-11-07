@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <utility>
 #include <vector>
 using namespace std;
 
@@ -8,17 +9,18 @@ bool triable(const vector<long long> &a) {
     if (n <= 2) {
         return n < 2 || a[0] <= a[1];
     }
-    vector<int> ordre(n);
-    for (int i = 0; i < n; i++) ordre[i] = i;
-    sort(ordre.begin(), ordre.end(), [&](int i, int j) { return a[i] < a[j]; });
+    // couples (valeur, position), triés par valeur
+    vector<pair<long long, int>> ordre(n);
+    for (int i = 0; i < n; i++) ordre[i] = {a[i], i};
+    sort(ordre.begin(), ordre.end());
     for (int r = 0; r + 1 < n; r++) {
-        if (a[ordre[r]] == a[ordre[r + 1]]) {
+        if (ordre[r].first == ordre[r + 1].first) {
             return true;              // deux valeurs égales : toujours possible
         }
     }
     // place[i] = rang de a[i] dans la liste triée
     vector<int> place(n);
-    for (int r = 0; r < n; r++) place[ordre[r]] = r;
+    for (int r = 0; r < n; r++) place[ordre[r].second] = r;
     // nombre de cycles de la permutation
     vector<bool> vu(n, false);
     int cycles = 0;

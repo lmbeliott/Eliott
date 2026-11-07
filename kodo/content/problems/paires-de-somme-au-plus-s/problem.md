@@ -8,7 +8,7 @@ samples: 2
 ---
 
 ## Énoncé
-Une suite de N entiers a₁, a₂, …, a_N est fabriquée par une formule, pour que l'entrée reste courte : a₁ = X, puis a_{i+1} = (aᵢ × B + C) mod M pour i ≥ 1.
+Une suite de N entiers a₁, a₂, …, a_N est fabriquée par une formule, pour que l'entrée reste courte : a₁ = X, puis a_{i+1} = (aᵢ × B + C) mod M pour i ≥ 1, où « mod M » désigne le reste de la division par M. Par exemple, avec X = 3, B = 7, C = 2 et M = 11, la suite commence par 3, 1, 9, 10, 6, car (3 × 7 + 2) mod 11 = 1, (1 × 7 + 2) mod 11 = 9, et ainsi de suite.
 
 Compter les paires d'indices (i, j), avec i < j, telles que aᵢ + aⱼ ≤ S.
 

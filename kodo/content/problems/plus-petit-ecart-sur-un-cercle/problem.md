@@ -8,28 +8,30 @@ samples: 3
 ---
 
 ## Énoncé
-Une piste circulaire mesure C mètres. Une position sur la piste est repérée par la distance parcourue depuis la ligne de départ, dans le sens de la course : c'est un entier de 0 à C − 1. N coureurs sont arrêtés sur la piste. La **distance** entre deux coureurs est la longueur du plus court des deux arcs qui les relient. Par exemple, sur une piste de 100 mètres, les positions 5 et 95 sont à distance 10.
+Une piste circulaire mesure C mètres. Une position sur la piste est repérée par la distance parcourue depuis la ligne de départ, dans le sens de la course : c'est un entier de 0 à C − 1. La **distance** entre deux coureurs est la longueur du plus court des deux arcs qui les relient. Par exemple, sur une piste de 100 mètres, les positions 5 et 95 sont à distance 10.
 
-Trouver la plus petite distance entre deux coureurs, et le nombre de paires de coureurs qui sont à cette distance.
+N coureurs sont arrêtés sur la piste. Pour que l'entrée reste courte, leurs positions sont fabriquées par une formule : le premier est à la position p₁ = X, et chaque coureur suivant à la position p_{i+1} = (pᵢ × A + B) mod C, où « mod C » désigne le reste de la division par C. Par exemple, avec C = 100, X = 1, A = 6 et B = 17, les cinq premiers coureurs sont aux positions 1, 23, 55, 47 et 99, car (1 × 6 + 17) mod 100 = 23, (23 × 6 + 17) mod 100 = 55, et ainsi de suite.
+
+Trouver la plus petite distance entre deux coureurs, et le nombre de paires de coureurs qui sont à cette distance. Plusieurs coureurs peuvent être à la même position.
 
 ## Entrée
-La première ligne contient N et C. La deuxième ligne contient les N positions.
+La première ligne contient N et C. La deuxième ligne contient X, A et B.
 
 ## Sortie
 Deux entiers sur une ligne : la plus petite distance, puis le nombre de paires de coureurs à cette distance.
 
 ## Contraintes
-- 2 ≤ N ≤ 15 000
+- 2 ≤ N ≤ 200 000
 - 1 ≤ C ≤ 10⁹
-- 0 ≤ position < C. Plusieurs coureurs peuvent être à la même position.
+- 0 ≤ X, A, B < C
 
 ## Indices
 1. Après avoir trié les positions, les deux coureurs les plus proches sont forcément voisins dans l'ordre du tour de piste. Sans oublier le dernier et le premier, qui sont voisins en passant par la ligne de départ.
 2. Si deux coureurs sont à la même position, la plus petite distance est 0, et toutes les paires de coureurs d'une même position comptent.
-3. Avec seulement deux coureurs, les deux arcs relient la même paire : elle ne doit être comptée qu'une fois.
+3. Avec seulement deux coureurs, les deux arcs relient la même paire : elle ne doit être comptée qu'une fois. Et le nombre de paires peut dépasser 2³¹.
 
 ## Solution
-On trie les positions p₀ ≤ p₁ ≤ … ≤ p_{N−1}. Les **écarts** entre voisins sont g_i = p_{i+1} − p_i pour i < N − 1, et l'écart de bouclage g_{N−1} = C − (p_{N−1} − p₀), qui passe par la ligne de départ. Ces N écarts ont pour somme C.
+On fabrique les positions avec la formule, puis on les trie : p₀ ≤ p₁ ≤ … ≤ p_{N−1}. Les **écarts** entre voisins sont g_i = p_{i+1} − p_i pour i < N − 1, et l'écart de bouclage g_{N−1} = C − (p_{N−1} − p₀), qui passe par la ligne de départ. Ces N écarts ont pour somme C.
 
 **Cas avec des positions égales.** Si un écart vaut 0, la plus petite distance est 0. Les paires à distance 0 sont les paires de coureurs à la même position : un groupe de k coureurs au même endroit en donne k(k − 1)/2. Ces groupes sont des blocs consécutifs de la liste triée.
 
@@ -37,4 +39,4 @@ On trie les positions p₀ ≤ p₁ ≤ … ≤ p_{N−1}. Les **écarts** entre
 
 **Cas N = 2.** Une seule paire, à distance min(g₀, C − g₀). On répond cette distance et 1.
 
-**Coût.** Le tri coûte O(N log N), le reste O(N). Tester toutes les paires coûterait O(N²), environ 10⁸ comparaisons : trop pour Python.
+**Coût.** Le tri coûte O(N log N), le reste O(N). Tester toutes les paires coûterait O(N²), environ 2 × 10¹⁰ comparaisons pour N = 200 000 : beaucoup trop, même en C++. Quand tous les coureurs sont au même endroit, le nombre de paires atteint N(N − 1)/2 ≈ 2 × 10¹⁰ : `long long` en C++, comme pour le calcul de pᵢ × A.

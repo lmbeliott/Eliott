@@ -19,17 +19,19 @@ export interface League {
 
 // Rangs : un chemin d'apprentissage japonais, de l'esprit du débutant au maître reconnu.
 // Shu, Ha, Ri sont les trois étapes classiques : suivre la forme, la briser, s'en détacher.
-// Seuils calés sur le parcours : niveau 1 terminé ≈ 1 600 pts, niveau 2 ≈ 4 700, niveau 3 ≈ 12 000.
+// Seuils calés sur le parcours complet (bonus de chapitre compris) : niveau 1 terminé ≈ 6 000 pts,
+// niveau 2 ≈ 11 000, niveau 3 ≈ 25 000, niveau 4 ≈ 55 000, niveau 5 ≈ 110 000 ; Meijin demande
+// presque tout le parcours et une bonne part des problèmes ouverts.
 export const LEAGUES: League[] = [
   { id: 'shoshin', fr: 'Shoshin', en: 'Shoshin', kanji: '初心', glyph: '初', meaning: ['L’esprit du débutant', 'The beginner’s mind'], min: 0, tone: '#8b95a3' },
-  { id: 'minarai', fr: 'Minarai', en: 'Minarai', kanji: '見習い', glyph: '見', meaning: ['Apprendre en regardant faire', 'Learning by watching'], min: 300, tone: '#6f9f88' },
-  { id: 'deshi', fr: 'Deshi', en: 'Deshi', kanji: '弟子', glyph: '弟', meaning: ['L’élève, admis auprès d’un maître', 'The student, taken in by a master'], min: 1000, tone: '#4d9a4a' },
-  { id: 'shu', fr: 'Shu', en: 'Shu', kanji: '守', glyph: '守', meaning: ['Suivre la forme', 'Following the form'], min: 2000, tone: '#3a86c4' },
-  { id: 'ha', fr: 'Ha', en: 'Ha', kanji: '破', glyph: '破', meaning: ['Briser la forme', 'Breaking the form'], min: 4000, tone: '#5a66ec' },
-  { id: 'ri', fr: 'Ri', en: 'Ri', kanji: '離', glyph: '離', meaning: ['Se détacher de la forme', 'Moving beyond the form'], min: 7000, tone: '#8b5fe0' },
-  { id: 'tatsujin', fr: 'Tatsujin', en: 'Tatsujin', kanji: '達人', glyph: '達', meaning: ['Celui qui a atteint la maîtrise', 'One who has reached mastery'], min: 11000, tone: '#c9952a' },
-  { id: 'shihan', fr: 'Shihan', en: 'Shihan', kanji: '師範', glyph: '師', meaning: ['Le modèle, celui qui enseigne', 'The model, one who teaches'], min: 17000, tone: '#d96a32' },
-  { id: 'meijin', fr: 'Meijin', en: 'Meijin', kanji: '名人', glyph: '名', meaning: ['Le maître dont le nom fait autorité', 'The master whose name carries authority'], min: 24000, tone: '#cf3044' },
+  { id: 'minarai', fr: 'Minarai', en: 'Minarai', kanji: '見習い', glyph: '見', meaning: ['Apprendre en regardant faire', 'Learning by watching'], min: 1000, tone: '#6f9f88' },
+  { id: 'deshi', fr: 'Deshi', en: 'Deshi', kanji: '弟子', glyph: '弟', meaning: ['L’élève, admis auprès d’un maître', 'The student, taken in by a master'], min: 3000, tone: '#4d9a4a' },
+  { id: 'shu', fr: 'Shu', en: 'Shu', kanji: '守', glyph: '守', meaning: ['Suivre la forme', 'Following the form'], min: 7500, tone: '#3a86c4' },
+  { id: 'ha', fr: 'Ha', en: 'Ha', kanji: '破', glyph: '破', meaning: ['Briser la forme', 'Breaking the form'], min: 15000, tone: '#5a66ec' },
+  { id: 'ri', fr: 'Ri', en: 'Ri', kanji: '離', glyph: '離', meaning: ['Se détacher de la forme', 'Moving beyond the form'], min: 30000, tone: '#8b5fe0' },
+  { id: 'tatsujin', fr: 'Tatsujin', en: 'Tatsujin', kanji: '達人', glyph: '達', meaning: ['Celui qui a atteint la maîtrise', 'One who has reached mastery'], min: 50000, tone: '#c9952a' },
+  { id: 'shihan', fr: 'Shihan', en: 'Shihan', kanji: '師範', glyph: '師', meaning: ['Le modèle, celui qui enseigne', 'The model, one who teaches'], min: 80000, tone: '#d96a32' },
+  { id: 'meijin', fr: 'Meijin', en: 'Meijin', kanji: '名人', glyph: '名', meaning: ['Le maître dont le nom fait autorité', 'The master whose name carries authority'], min: 120000, tone: '#cf3044' },
 ]
 
 export const leagueName = (lang: UiLang, l: League) => (lang === 'en' ? l.en : l.fr)

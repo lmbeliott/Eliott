@@ -3,7 +3,7 @@ title: Portions with range at most D
 ---
 
 ## Statement
-A sequence of N integers a₀, a₁, …, a_{N−1} is built by a formula, so that the input stays short: a₀ = X, then a_{i+1} = (aᵢ × B + C) mod M.
+A sequence of N integers a₀, a₁, …, a_{N−1} is built by a formula, so that the input stays short: a₀ = X, then a_{i+1} = (aᵢ × B + C) mod M, where "mod M" is the remainder of the division by M. For example, with X = 3, B = 4, C = 2 and M = 5, the sequence starts with 3, 4, 3, since (3 × 4 + 2) mod 5 = 4 and (4 × 4 + 2) mod 5 = 3.
 
 The **range** of a portion (a run of consecutive elements aᵢ, …, aⱼ, with i ≤ j) is the difference between its largest and smallest element. Count the portions with range at most D.
 

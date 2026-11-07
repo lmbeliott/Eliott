@@ -3,7 +3,7 @@ title: Numbers of the form 2ᵃ × 3ᵇ
 ---
 
 ## Statement
-We look at the integers that can be written 2ᵃ × 3ᵇ, with integers a ≥ 0 and b ≥ 0: 1, 2, 3, 4, 6, 8, 9, 12, 16, 18, 24, 27… They are the integers whose only prime divisors are 2 and 3.
+We look at the integers that can be written 2ᵃ × 3ᵇ, with integers a ≥ 0 and b ≥ 0: 1, 2, 3, 4, 6, 8, 9, 12, 16, 18, 24, 27… They are the integers with no prime divisor other than 2 and 3.
 
 Answer Q questions: how many such integers are there between A and B (inclusive)?
 

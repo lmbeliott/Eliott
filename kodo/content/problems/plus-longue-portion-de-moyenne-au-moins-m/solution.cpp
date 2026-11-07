@@ -32,9 +32,12 @@ int main() {
     cin.tie(nullptr);
     int n, q;
     cin >> n >> q;
+    long long x, b, c, k;
+    cin >> x >> b >> c >> k;
     vector<long long> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
-    for (int k = 0; k < q; k++) {
+    a[0] = x;
+    for (int i = 1; i < n; i++) a[i] = (a[i - 1] * b + c) % k;
+    for (int t = 0; t < q; t++) {
         long long m;
         cin >> m;
         cout << plus_longue(a, m) << "\n";

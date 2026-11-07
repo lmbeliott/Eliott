@@ -34,8 +34,8 @@ export const AVATARS: AvatarDef[] = [
 ]
 
 /** Avatars réservés, vérifiés aussi par la base (trigger profiles_avatar_guard) :
- *  le dragon 竜 se débloque au rang Meijin (24 000 points) ; katana et marteau restent à l'administrateur. */
-export const DRAGON_POINTS = 24000
+ *  le dragon 竜 se débloque au rang Meijin (120 000 points) ; katana et marteau restent à l'administrateur. */
+export const DRAGON_POINTS = 120000
 export const SPECIAL_AVATARS: AvatarDef[] = [
   { id: 'ryu', kanji: '竜', fr: 'Dragon', en: 'Dragon', bg: '#2a0b10', colors: ["#ffd56b", "#f2a93b", "#e8592f"], px: ["................", ".......11.......", "...1111111111...", ".....1....1.....", ".....1....1.....", ".11111111111111.", "................", "...2222222222...", "...2...2....2...", "...2222222222...", "...2...2....2...", "...3333333333...", ".......3......3.", ".......3......3.", ".......3333333..", "................"], unlock: { minPoints: DRAGON_POINTS } },
   { id: 'forge', kanji: '鍛冶', fr: 'Katana et marteau (fondateur)', en: 'Katana and hammer (founder)', bg: '#16181f', colors: ["#c9ced8", "#8c2232", "#f0b43c", "#7d8594", "#b9844a", "#aab2c0", "#f4f6fa"], unlock: 'admin', px: ["...........1", "66666.....17", "44444....17.", "44444...17..", "...55..17...", "....5517....", "..3..17.....", "..331755....", "...33..55...", ".22.....55..", "223......55.", "2..........."] },

@@ -115,7 +115,7 @@ export function errorText(e: unknown, lang: 'fr' | 'en'): string {
     [/déjà créé 30 groupes/i, 'Limite de 30 groupes créés atteinte. Supprimer un groupe pour en créer un autre.', 'Limit of 30 created groups reached. Delete a group to create another.'],
     [/déjà partie de 30 groupes/i, 'Limite de 30 groupes atteinte. Quitter un groupe pour en rejoindre un autre.', 'Limit of 30 groups reached. Leave a group to join another.'],
     [/créé un groupe qui a encore des membres/i, 'Un groupe créé par ce compte a encore des membres. Le supprimer d’abord (page du groupe, onglet Membres).', 'A group created by this account still has members. Delete it first (group page, Members tab).'],
-    [/rang Meijin/i, 'Avatar réservé au rang Meijin (24 000 points).', 'Avatar reserved for the Meijin rank (24,000 points).'],
+    [/rang Meijin/i, 'Avatar réservé au rang Meijin (120 000 points).', 'Avatar reserved for the Meijin rank (120,000 points).'],
     [/Avatar réservé/i, 'Avatar réservé.', 'Reserved avatar.'],
     [/déjà proposé 5 problèmes/i, 'Limite de 5 problèmes proposés en 24 heures atteinte. Réessayer demain.', 'Limit of 5 problems proposed in 24 hours reached. Try again tomorrow.'],
     [/masqué par la modération/i, 'Problème masqué par la modération : republication impossible.', 'Problem hidden by moderators: it cannot be republished.'],

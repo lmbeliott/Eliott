@@ -34,4 +34,4 @@ T lines: `OUI` if the list can be sorted, `NON` otherwise.
 
 **Computing the parity.** Sort the positions by value to know, for each position i, the place p(i) of its value in the sorted list. The permutation p splits into **cycles** (i → p(i) → p(p(i)) → … → i). A cycle of length ℓ is obtained with ℓ − 1 swaps, and each swap of two values changes the parity of the number of inversions. So the parity we want is that of N − (number of cycles). Go through the cycles while marking visited positions: O(N).
 
-**Cost.** O(N log N) per list because of the sort, instead of O(N²) to count inversions one by one, and an astronomical number of states for an exhaustive search.
+**Cost.** O(N log N) per list because of the sort, instead of O(N²) to count inversions one by one, and an astronomical number of states for an exhaustive search. With the sum of the N limited to 10,000, counting the inversions directly, 5 × 10⁷ comparisons, still passes in C++ but not in Python: the heart of the problem is the parity invariant.

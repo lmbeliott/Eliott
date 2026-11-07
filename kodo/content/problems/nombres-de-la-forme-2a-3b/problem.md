@@ -8,7 +8,7 @@ samples: 2
 ---
 
 ## Énoncé
-On s'intéresse aux entiers qui s'écrivent 2ᵃ × 3ᵇ, avec a ≥ 0 et b ≥ 0 entiers : 1, 2, 3, 4, 6, 8, 9, 12, 16, 18, 24, 27… Ce sont les entiers dont les seuls diviseurs premiers sont 2 et 3.
+On s'intéresse aux entiers qui s'écrivent 2ᵃ × 3ᵇ, avec a ≥ 0 et b ≥ 0 entiers : 1, 2, 3, 4, 6, 8, 9, 12, 16, 18, 24, 27… Ce sont les entiers qui n'ont aucun diviseur premier autre que 2 et 3.
 
 Répondre à Q questions : combien y a-t-il de tels entiers entre A et B (inclus) ?
 

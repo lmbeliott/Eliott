@@ -4,14 +4,13 @@
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
     int n;
-    long long c;
-    cin >> n >> c;
+    long long c, x, a, b;
+    cin >> n >> c >> x >> a >> b;
     vector<long long> p(n);
-    for (int i = 0; i < n; i++) {
-        cin >> p[i];
+    p[0] = x;
+    for (int i = 1; i < n; i++) {
+        p[i] = (p[i - 1] * a + b) % c;
     }
     sort(p.begin(), p.end());
 
@@ -39,8 +38,13 @@ int main() {
     } else if (n == 2) {
         cout << min(ecarts[0], c - ecarts[0]) << " " << 1 << "\n";
     } else {
-        long long d = *min_element(ecarts.begin(), ecarts.end());
-        cout << d << " " << count(ecarts.begin(), ecarts.end(), d) << "\n";
+        long long d = ecarts[0];
+        for (long long e : ecarts) d = min(d, e);
+        long long nb = 0;                // nombre d'écarts égaux à d
+        for (long long e : ecarts) {
+            if (e == d) nb++;
+        }
+        cout << d << " " << nb << "\n";
     }
     return 0;
 }

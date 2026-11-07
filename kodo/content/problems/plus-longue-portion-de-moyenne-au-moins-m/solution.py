@@ -1,5 +1,3 @@
-import sys
-
 def plus_longue(a, m):
     n = len(a)
     # sommes préfixes de a[k] - m
@@ -26,9 +24,12 @@ def plus_longue(a, m):
             i = i + 1
     return meilleur
 
-donnees = sys.stdin.read().split()
-n = int(donnees[0])
-q = int(donnees[1])
-a = [int(x) for x in donnees[2:2 + n]]
-for k in range(q):
-    print(plus_longue(a, int(donnees[2 + n + k])))
+n, q = map(int, input().split())
+x, b, c, k = map(int, input().split())
+seuils = list(map(int, input().split()))
+
+a = [x] * n
+for i in range(1, n):
+    a[i] = (a[i - 1] * b + c) % k
+for m in seuils:
+    print(plus_longue(a, m))

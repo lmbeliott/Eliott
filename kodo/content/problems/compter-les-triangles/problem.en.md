@@ -14,11 +14,11 @@ The first line contains N. The second line contains the N lengths.
 The number of triples of sticks that form a triangle.
 
 ## Constraints
-- 1 ≤ N ≤ 1,500
+- 1 ≤ N ≤ 2,500
 - 1 ≤ length ≤ 10⁹
 
 ## Hints
-1. Trying every triple costs about N³/6 ≈ 5.6 × 10⁸ operations: too many for Python. Sorting the lengths simplifies the condition: in a sorted triple, only the inequality x + y > z matters.
+1. Trying every triple costs about N³/6 ≈ 2.6 × 10⁹ operations: too many, even in C++. Sorting the lengths simplifies the condition: in a sorted triple, only the inequality x + y > z matters.
 2. Fix the largest stick z = a[k]. What remains is to count the pairs i < j < k such that a[i] + a[j] > a[k]: a pair problem in a sorted list.
 3. With two indices i (on the left) and j = k − 1 (on the right): if a[i] + a[j] > a[k], then every i' between i and j − 1 also works with j.
 
@@ -32,4 +32,4 @@ The number of triples of sticks that form a triangle.
 
 **Invariant.** All the valid pairs that are not entirely inside [i, j] have been counted exactly once. When i = j, no pair is left: the count for this k is complete.
 
-**Cost.** Sorting costs O(N log N). For each k, each iteration brings i and j closer, so at most k iterations: O(N²) in total, about 10⁶ iterations for N = 1,500, against O(N³) for the direct method. The sums a[i] + a[j] reach 2 × 10⁹, beyond an `int`: use `long long` in C++ for the sums and the total.
+**Cost.** Sorting costs O(N log N). For each k, each iteration brings i and j closer, so at most k iterations: O(N²) in total, about 3 × 10⁶ iterations for N = 2,500, against 2.6 × 10⁹ triples for the direct method. The sums a[i] + a[j] reach 2 × 10⁹, beyond an `int`, and the number of triangles can exceed 2.6 × 10⁹: use `long long` in C++ for the sums and the total.

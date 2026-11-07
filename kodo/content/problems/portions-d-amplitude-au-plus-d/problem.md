@@ -8,7 +8,7 @@ samples: 2
 ---
 
 ## Énoncé
-Une suite de N entiers a₀, a₁, …, a_{N−1} est fabriquée par une formule, pour que l'entrée reste courte : a₀ = X, puis a_{i+1} = (aᵢ × B + C) mod M.
+Une suite de N entiers a₀, a₁, …, a_{N−1} est fabriquée par une formule, pour que l'entrée reste courte : a₀ = X, puis a_{i+1} = (aᵢ × B + C) mod M, où « mod M » désigne le reste de la division par M. Par exemple, avec X = 3, B = 4, C = 2 et M = 5, la suite commence par 3, 4, 3, car (3 × 4 + 2) mod 5 = 4 et (4 × 4 + 2) mod 5 = 3.
 
 L'**amplitude** d'une portion (une suite d'éléments consécutifs aᵢ, …, aⱼ, avec i ≤ j) est la différence entre son plus grand et son plus petit élément. Compter les portions d'amplitude au plus D.
 
