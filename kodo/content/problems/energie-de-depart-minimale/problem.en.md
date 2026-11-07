@@ -39,5 +39,5 @@ In the second example, we first do (3, +4). Then (6, −2), which leaves 4, befo
 
 **Traps.**
 - The answer can go beyond 2³¹ (up to about 10¹⁰): use `long long` in C++.
-- Tasks with G_i = 0 go with the ones that give energy (or anywhere: they do not change the energy).
+- Tasks with G_i = 0 go with the ones that give energy, sorted by R_i like them. Not just anywhere: they do not change the energy, but their R_i still counts. With (10, 0) and (10, −10), doing (10, 0) last would need 20 instead of 10.
 - The answer is at least `0`, even if no task requires any energy.

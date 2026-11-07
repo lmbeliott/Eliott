@@ -5,6 +5,7 @@ chapter: n4-structures
 order: 7
 tags: [arbre-de-segments]
 samples: 2
+time_limit_ms: 500
 ---
 
 ## Énoncé

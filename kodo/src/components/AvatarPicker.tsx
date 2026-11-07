@@ -1,8 +1,9 @@
 // Choix de l'avatar parmi la liste fixe. Un clic enregistre aussitôt (pas de bouton à valider).
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { AVATARS, SPECIAL_AVATARS, avatarFor } from '../lib/avatars'
-import { useI18n } from '../lib/i18n'
+import { Lock } from 'lucide-react'
+import { AVATARS, SPECIAL_AVATARS, avatarFor, canUse } from '../lib/avatars'
+import { formatPoints, useI18n } from '../lib/i18n'
 import { errorText, supabase, type Profile } from '../lib/supabase'
 import { AvatarImage } from './UserAvatar'
 import { useToast } from './Toast'
@@ -16,10 +17,13 @@ export function AvatarPicker({ profile }: { profile: Profile }) {
   const [value, setValue] = useState(current)
   const [saving, setSaving] = useState<string | null>(null)
   const refs = useRef<(HTMLButtonElement | null)[]>([])
-  const list = profile.staff === 'admin' ? [...SPECIAL_AVATARS, ...AVATARS] : AVATARS
+  // Le dragon est montré à tous (verrouillé tant que le rang Meijin n'est pas atteint) ; les avatars
+  // réservés à l'administrateur ne sont montrés qu'à lui.
+  const list = [...SPECIAL_AVATARS.filter((a) => a.unlock !== 'admin' || profile.staff === 'admin'), ...AVATARS]
+  const usable = (id: string) => canUse(list.find((a) => a.id === id)!, profile.xp, profile.staff)
 
   const pick = async (id: string) => {
-    if (id === value || saving) return
+    if (id === value || saving || !usable(id)) return
     const before = value
     setValue(id)
     setSaving(id)
@@ -48,7 +52,9 @@ export function AvatarPicker({ profile }: { profile: Profile }) {
     <div role="radiogroup" aria-label={t('Avatar', 'Avatar')} className="grid grid-cols-4 gap-2 sm:grid-cols-8">
       {list.map((a, i) => {
         const on = a.id === value
-        const name = `${lang === 'en' ? a.en : a.fr} (${a.kanji})`
+        const locked = !canUse(a, profile.xp, profile.staff)
+        const need = a.unlock && a.unlock !== 'admin' ? a.unlock.minPoints : 0
+        const name = `${lang === 'en' ? a.en : a.fr} (${a.kanji})${locked ? t(` : rang Meijin requis, ${formatPoints(lang, need)}`, ` : Meijin rank required, ${formatPoints(lang, need)}`) : ''}`
         return (
           <button
             key={a.id}
@@ -58,6 +64,7 @@ export function AvatarPicker({ profile }: { profile: Profile }) {
             type="button"
             role="radio"
             aria-checked={on}
+            aria-disabled={locked || undefined}
             aria-label={name}
             title={name}
             tabIndex={on ? 0 : -1}
@@ -65,11 +72,17 @@ export function AvatarPicker({ profile }: { profile: Profile }) {
             onKeyDown={(e) => onKey(e, i)}
             className={cx(
               'flex aspect-square items-center justify-center rounded-[14px] transition-[box-shadow,transform] duration-150',
-              on ? 'shadow-[0_0_0_2px_var(--accent)]' : 'hover:shadow-[0_0_0_1px_var(--line-strong)]',
+              'relative',
+              on ? 'shadow-[0_0_0_2px_var(--accent)]' : locked ? 'cursor-not-allowed' : 'hover:shadow-[0_0_0_1px_var(--line-strong)]',
               saving === a.id && 'animate-pulse',
             )}
           >
-            <AvatarImage def={a} size={44} />
+            <AvatarImage def={a} size={44} className={locked ? 'opacity-35 grayscale' : undefined} />
+            {locked && (
+              <span className="absolute inset-0 flex items-center justify-center" aria-hidden>
+                <Lock className="size-4 text-ink" />
+              </span>
+            )}
           </button>
         )
       })}

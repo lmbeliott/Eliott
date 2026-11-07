@@ -31,7 +31,7 @@ Un seul entier : le nombre de triplets.
 ## Solution
 On fixe l'élément du **milieu** `j`. Le choix de `i` à sa gauche et celui de `k` à sa droite sont indépendants : si `G[j]` est le nombre de `i < j` avec `A[i] < A[j]`, et `D[j]` le nombre de `k > j` avec `A[k] > A[j]`, alors `j` est le milieu de `G[j] × D[j]` triplets. La réponse est la somme de ces produits.
 
-On calcule `G` avec un **arbre de Fenwick** indexé par les valeurs. On parcourt la suite de gauche à droite : avant d'insérer `A[j]`, la somme des compteurs des valeurs `1 … A[j] - 1` donne `G[j]`. Puis on parcourt de droite à gauche avec un nouvel arbre : parmi les `N - 1 - j` éléments déjà vus (indices de 0 à N - 1), ceux qui sont **strictement** plus grands sont `N - 1 - j` moins ceux de valeur au plus `A[j]`.
+On calcule `G` avec un **arbre de Fenwick** indexé par les valeurs. On parcourt la suite de gauche à droite : avant d'insérer `A[j]`, la somme des compteurs des valeurs `1 … A[j] - 1` donne `G[j]`. Puis on parcourt de droite à gauche avec un nouvel arbre : au moment de traiter `A[j]`, on a déjà vu les `N - j` éléments situés à sa droite ; ceux qui sont **strictement** plus grands sont ces `N - j` éléments moins ceux de valeur au plus `A[j]`.
 
 On peut remplacer chaque valeur par son rang parmi les valeurs distinctes (compression) : l'arbre a alors au plus `N` cases, et il reste petit même si les valeurs étaient très grandes.
 

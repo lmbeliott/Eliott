@@ -26,7 +26,7 @@ A single integer: the number of triplets.
 ## Solution
 Fix the **middle** element `j`. The choice of `i` on its left and that of `k` on its right are independent: if `L[j]` is the number of `i < j` with `A[i] < A[j]`, and `R[j]` the number of `k > j` with `A[k] > A[j]`, then `j` is the middle of `L[j] × R[j]` triplets. The answer is the sum of these products.
 
-Compute `L` with a **Fenwick tree** indexed by the values. Go through the sequence from left to right: before inserting `A[j]`, the sum of the counters of the values `1 … A[j] - 1` gives `L[j]`. Then go from right to left with a new tree: among the `N - 1 - j` elements already seen (indices from 0 to N - 1), those that are **strictly** greater are `N - 1 - j` minus those with a value at most `A[j]`.
+Compute `L` with a **Fenwick tree** indexed by the values. Go through the sequence from left to right: before inserting `A[j]`, the sum of the counters of the values `1 … A[j] - 1` gives `L[j]`. Then go from right to left with a new tree: when you reach `A[j]`, you have already seen the `N - j` elements to its right; those that are **strictly** greater are these `N - j` elements minus those with a value at most `A[j]`.
 
 You can replace each value by its rank among the distinct values (compression): the tree then has at most `N` cells, and it stays small even if the values were very large.
 

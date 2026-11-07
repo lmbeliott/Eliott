@@ -44,5 +44,5 @@ Sur le deuxième exemple, on fait d'abord (3, +4). Puis (6, −2), qui laisse 4,
 
 **Pièges.**
 - La réponse peut dépasser 2³¹ (jusqu'à environ 10¹⁰) : utilise des `long long` en C++.
-- Les tâches avec G_i = 0 vont avec celles qui rapportent (ou n'importe où : elles ne changent rien à l'énergie).
+- Les tâches avec G_i = 0 vont avec celles qui rapportent, triées par R_i comme elles. Pas n'importe où : elles ne changent pas l'énergie, mais leur R_i compte. Avec (10, 0) et (10, −10), faire (10, 0) en dernier demanderait 20 au lieu de 10.
 - La réponse vaut au moins `0`, même si aucune tâche ne demande d'énergie.
