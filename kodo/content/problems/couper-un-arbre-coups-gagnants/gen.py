@@ -49,16 +49,15 @@ def coups_gagnants(parents):
     return total
 
 
-def interessant(n, portee, mini):
-    while True:
-        parents = aleatoire(n, portee)
-        if coups_gagnants(parents) >= mini:
-            return explicite(parents)
+def interessant(n, portee, essais):
+    # garde, parmi quelques arbres aléatoires, celui qui a le plus de coups gagnants
+    meilleur = max((aleatoire(n, portee) for _ in range(essais)), key=coups_gagnants)
+    return explicite(meilleur)
 
 
-tests.append(interessant(12, 3, 2))
-tests.append(interessant(60, 60, 4))
-tests.append(interessant(2000, 5, 6))
+tests.append(interessant(12, 3, 50))
+tests.append(interessant(60, 60, 50))
+tests.append(interessant(2000, 5, 30))
 # Deux balais : un long manche, puis beaucoup de brins au bout
 balai1 = [i - 1 for i in range(1, 7001)] + [7000] * 3000
 balai2 = [0] + [10000 + i for i in range(1, 7000)] + [17000] * 3001

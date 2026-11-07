@@ -28,6 +28,8 @@ insert into public.problems (id, chapter, level, difficulty, points, title) valu
   ('compter-les-sous-ensembles', 'n4-structures', 'n4', 'expert', 400, 'Compter les sous-ensembles'),
   ('compter-les-voyelles', 'n2-chaines', 'n2', 'moyen', 100, 'Compter les voyelles'),
   ('connexite-sous-un-seuil', 'n4-chemins', 'n4', 'expert', 400, 'Connexité sous un seuil'),
+  ('couleurs-d-une-composante', 'n4-defis', 'n4', 'expert', 400, 'Couleurs d''une composante'),
+  ('couper-un-arbre-coups-gagnants', 'n4-defis', 'n4', 'expert', 400, 'Couper un arbre : coups gagnants'),
   ('couper-un-arbre-en-deux', 'n4-arbres', 'n4', 'expert', 400, 'Couper un arbre en deux'),
   ('course-contre-la-propagation', 'n4-graphes', 'n4', 'expert', 400, 'Course contre la propagation'),
   ('creneaux-sans-chevauchement', 'n3-glouton', 'n3', 'difficile', 200, 'Créneaux sans chevauchement'),
