@@ -23,7 +23,7 @@
   --admin-a: #b7791f;
   --admin-b: #c2410c;
   color-scheme: light;
-  --bg: #fafafa;
+  --bg: #f9fafd;
   --surface: #ffffff;
   --surface-2: #f4f4f6;
   --surface-3: #ebebef;
@@ -33,30 +33,35 @@
   --ink: #17171c;
   --ink-2: #4a4a55;
   --muted: #6e6e7a;
-  --accent: #2f3cf0;
-  --accent-hover: #2532d4;
+  /* Indigo doux, même teinte que l'accent du thème sombre. Texte : contraste ≥ 5,5:1 sur blanc. */
+  --accent: #5358d6;
+  --accent-hover: #4748c5;
   --accent-ink: #ffffff;
-  --accent-soft: #eef0fe;
-  --ok: #0e7240;
-  --ok-soft: #e4f4eb;
-  --bad: #b42335;
-  --bad-soft: #fcebed;
-  --warn: #8a4b00;
-  --warn-soft: #fcf1df;
-  --focus: #2f3cf0;
+  --accent-soft: #eff1ff;
+  /* Verdicts : teinte foncée pour le texte, teinte claire pour les cellules (comme en sombre). */
+  --ok: #107550;
+  --ok-cell: #40be8a;
+  --ok-soft: #e3f8ec;
+  --bad: #b83646;
+  --bad-cell: #ef7276;
+  --bad-soft: #ffeeee;
+  --warn: #905b20;
+  --warn-cell: #f0b04f;
+  --warn-soft: #fff3df;
+  --focus: #5358d6;
   --code-bg: #ffffff;
   --e1: 0 1px 2px rgb(23 23 28 / 0.04);
   --e2: 0 4px 16px rgb(23 23 28 / 0.06);
   --e3: 0 12px 32px rgb(23 23 28 / 0.07);
   --edge: inset 0 0 0 0 transparent;
-  --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Crect x='10' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='34' width='4' height='4' rx='1' fill='rgb%2847 60 240 / 0.28%29'/%3E%3Crect x='154' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='58' width='4' height='4' rx='1' fill='rgb%2847 60 240 / 0.28%29'/%3E%3Crect x='58' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='82' width='4' height='4' rx='1' fill='rgb%2847 60 240 / 0.28%29'/%3E%3Crect x='106' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='130' width='4' height='4' rx='1' fill='rgb%2847 60 240 / 0.28%29'/%3E%3Crect x='82' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='154' width='4' height='4' rx='1' fill='rgb%2847 60 240 / 0.28%29'/%3E%3Crect x='178' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3C/svg%3E");
+  --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Crect x='10' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='10' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='34' width='4' height='4' rx='1' fill='rgb%2883 88 214 / 0.26%29'/%3E%3Crect x='154' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='34' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='58' width='4' height='4' rx='1' fill='rgb%2883 88 214 / 0.26%29'/%3E%3Crect x='58' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='58' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='82' width='4' height='4' rx='1' fill='rgb%2883 88 214 / 0.26%29'/%3E%3Crect x='106' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='82' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='106' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='130' width='4' height='4' rx='1' fill='rgb%2883 88 214 / 0.26%29'/%3E%3Crect x='82' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='130' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='154' width='4' height='4' rx='1' fill='rgb%2883 88 214 / 0.26%29'/%3E%3Crect x='178' y='154' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='10' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='34' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='58' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='82' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='106' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='130' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='154' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3Crect x='178' y='178' width='4' height='4' rx='1' fill='rgb%2823 23 28 / 0.09%29'/%3E%3C/svg%3E");
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a96' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 
   --tok-keyword: #6d28d9;
   --tok-string: #0f7a3d;
   --tok-number: #b4530a;
   --tok-comment: #7a7a86;
-  --tok-function: #2f3cf0;
+  --tok-function: #5358d6;
   --tok-type: #9a3412;
   --tok-builtin: #0e7490;
 }
@@ -81,10 +86,13 @@
     --accent-ink: #0b0b1a;
     --accent-soft: #1d1f45;
     --ok: #4ac985;
+    --ok-cell: #4ac985;
     --ok-soft: #132a1e;
     --bad: #ff7d8c;
+    --bad-cell: #ff7d8c;
     --bad-soft: #3a1820;
     --warn: #f0a43a;
+    --warn-cell: #f0a43a;
     --warn-soft: #36280f;
     --focus: #8a93ff;
     --code-bg: #16161a;
@@ -121,10 +129,13 @@
   --accent-ink: #0b0b1a;
   --accent-soft: #1d1f45;
   --ok: #4ac985;
+  --ok-cell: #4ac985;
   --ok-soft: #132a1e;
   --bad: #ff7d8c;
+  --bad-cell: #ff7d8c;
   --bad-soft: #3a1820;
   --warn: #f0a43a;
+  --warn-cell: #f0a43a;
   --warn-soft: #36280f;
   --focus: #8a93ff;
   --code-bg: #16161a;
@@ -162,6 +173,9 @@
   --color-accent-soft: var(--accent-soft);
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
+  --color-ok-cell: var(--ok-cell);
+  --color-bad-cell: var(--bad-cell);
+  --color-warn-cell: var(--warn-cell);
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
   --color-warn: var(--warn);

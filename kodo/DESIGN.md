@@ -27,7 +27,7 @@ Neutres froids + un accent outremer. Vert / rouge / ambre réservés aux **verdi
 | `--ink` | `#17171c` | `#ededf1` | texte principal |
 | `--ink-2` | `#4a4a55` | `#b9b9c4` | texte secondaire (≥ 7:1) |
 | `--muted` | `#6e6e7a` | `#8b8b98` | méta (≥ 4.5:1 sur L0 et L1) |
-| `--accent` | `#2f3cf0` | `#8a93ff` | actions primaires, focus, cases réussies, onglet actif |
+| `--accent` | `#5358d6` | `#8a93ff` | actions primaires, focus, cases réussies, onglet actif |
 | `--accent-soft` | `#eef0fe` | `#1d1f45` | ta ligne au classement, sélection |
 | `--ok` / `--bad` / `--warn` | verdicts | | test réussi / raté / temps dépassé |
 

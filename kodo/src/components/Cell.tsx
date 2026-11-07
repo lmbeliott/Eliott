@@ -12,9 +12,9 @@ const stateCls: Record<CellState, string> = {
   empty: 'bg-surface-2 shadow-[inset_0_0_0_1px_var(--line-strong)]',
   tried: 'bg-accent-soft shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_55%,transparent)]',
   done: 'bg-accent',
-  pass: 'bg-ok',
-  fail: 'bg-bad',
-  slow: 'bg-warn',
+  pass: 'bg-ok-cell',
+  fail: 'bg-bad-cell',
+  slow: 'bg-warn-cell',
   running: 'bg-surface shadow-[inset_0_0_0_1.5px_var(--accent)] animate-pulse',
   skipped: 'bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] opacity-60',
 }

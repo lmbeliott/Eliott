@@ -75,7 +75,7 @@ function RuntimeStatus({ lang }: { lang: Lang }) {
   if (state === 'ready')
     return (
       <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs text-muted">
-        <span className="size-1.5 rounded-full bg-ok" aria-hidden />
+        <span className="size-1.5 rounded-full bg-ok-cell" aria-hidden />
         {t(`${name} prêt`, `${name} ready`)}
       </span>
     )
