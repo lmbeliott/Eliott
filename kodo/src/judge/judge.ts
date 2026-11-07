@@ -190,7 +190,7 @@ export function warmUp(lang: Lang) {
 
 /** Limite par test (ms) : le Python du navigateur est bien plus lent que le C++. */
 export function limitFor(lang: Lang, timeLimitMs: number) {
-  return lang === 'python' ? Math.max(3000, timeLimitMs * 5) : Math.max(1500, timeLimitMs * 2)
+  return lang === 'python' ? Math.max(3000, timeLimitMs * 5) : Math.max(500, timeLimitMs * 2)
 }
 
 // ------------------------------------------------------------------ Exécution

@@ -53,7 +53,7 @@ export function ChapterPage() {
             </li>
           )
         })}
-        {chapter.problems.length === 0 && <li className="px-4 py-3 text-sm text-muted">{t('Les problèmes de ce chapitre arrivent bientôt.', 'Problems for this chapter are coming soon.')}</li>}
+        {chapter.problems.length === 0 && <li className="px-4 py-3 text-sm text-muted">{t('Problèmes de ce chapitre à venir.', 'Problems for this chapter coming soon.')}</li>}
       </ol>
       {firstTodo && (
         <LinkButton to={`/probleme/${firstTodo}`} className="mt-4 w-full">
@@ -95,7 +95,7 @@ export function ChapterPage() {
       <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <article className={cx(pane === 'lesson' ? 'block' : 'hidden', 'lg:block')}>
           <div className="mb-6 flex items-center justify-between gap-4 border-b border-line pb-4">
-            <p className="text-sm text-muted">{t('Les exemples de code sont affichés en', 'Code examples are shown in')}</p>
+            <p className="text-sm text-muted">{t('Exemples de code en', 'Code examples in')}</p>
             <Segmented
               size="sm"
               label={t('Langage des exemples', 'Example language')}
@@ -109,15 +109,15 @@ export function ChapterPage() {
           </div>
           {lesson.isError ? (
             <Notice tone="error" action={<Button size="sm" variant="secondary" onClick={() => lesson.refetch()}>{t('Réessayer', 'Try again')}</Button>}>
-              {t('Le cours n’a pas pu être chargé.', 'The lesson could not be loaded.')}
+              {t('Chargement du cours impossible. Vérifier la connexion internet puis réessayer.', 'The lesson could not be loaded. Check the internet connection, then try again.')}
             </Notice>
           ) : body ? (
             <>
               <div className="prose-kodo" dangerouslySetInnerHTML={{ __html: body.html }} />
-              {lang === 'en' && !lesson.data?.en && <p className="mt-6 text-sm text-muted">This lesson has not been translated into English yet, so it is shown in French.</p>}
+              {lang === 'en' && !lesson.data?.en && <p className="mt-6 text-sm text-muted">Not yet translated into English: lesson shown in French.</p>}
             </>
           ) : !chapter.lessonMinutes ? (
-            <p className="text-muted">{t('Le cours de ce chapitre arrive bientôt.', 'The lesson for this chapter is coming soon.')}</p>
+            <p className="text-muted">{t('Cours de ce chapitre à venir.', 'Lesson for this chapter coming soon.')}</p>
           ) : showSkeleton ? (
             <div className="flex max-w-2xl flex-col gap-3">
               <Skeleton className="h-5 w-3/4" />

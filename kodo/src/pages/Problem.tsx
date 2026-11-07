@@ -79,7 +79,7 @@ function RuntimeStatus({ lang }: { lang: Lang }) {
         {t(`${name} prêt`, `${name} ready`)}
       </span>
     )
-  if (state === 'failed') return <span className="text-xs text-bad">{t(`${name} n’a pas pu se charger. Recharge la page.`, `${name} failed to load. Reload the page.`)}</span>
+  if (state === 'failed') return <span className="text-xs text-bad">{t(`Échec du chargement de ${name}. Recharger la page.`, `${name} failed to load. Reload the page.`)}</span>
   if (state === 'loading') {
     const pct = progress.total ? Math.round((progress.loaded / progress.total) * 100) : 0
     return (
@@ -166,8 +166,8 @@ function Hints({ hints }: { hints: string[] }) {
     <div className="max-w-[70ch]">
       <p className="text-sm text-ink-2">
         {t(
-          `${plural(lang, hints.length, ['indice', 'indices'], ['', ''])}, du plus léger au plus complet. Chacun s’ouvre après le précédent.`,
-          `${plural(lang, hints.length, ['', ''], ['hint', 'hints'])}, from the lightest to the most complete. Each one opens after the previous one.`,
+          `${plural(lang, hints.length, ['indice', 'indices'], ['', ''])}, du plus léger au plus complet, à ouvrir dans l’ordre.`,
+          `${plural(lang, hints.length, ['', ''], ['hint', 'hints'])}, from lightest to most complete, opened in order.`,
         )}
       </p>
       <Panel as="section" className="mt-4">
@@ -209,13 +209,13 @@ function Solution({ data, solved, lang, onOpenHints }: { data: ProblemData; solv
           <Lock className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden />
           <div>
             <p className="font-medium">
-              {t(`La solution s’ouvre quand ton programme passe les ${total} tests.`, `The solution opens once your program passes all ${total} tests.`)}
+              {t(`Solution disponible une fois les ${total} tests réussis.`, `Solution available once all ${total} tests pass.`)}
             </p>
             {langs.length > 0 && (
               <p className="mt-1 text-sm text-ink-2">
                 {t(
-                  `Elle explique la méthode et donne un programme de référence en ${langs.join(' et en ')}.`,
-                  `It explains the method and gives a reference program in ${langs.join(' and ')}.`,
+                  `Explication de la méthode et programme de référence en ${langs.join(' et en ')}.`,
+                  `Explanation of the method and reference program in ${langs.join(' and ')}.`,
                 )}
               </p>
             )}
@@ -389,12 +389,12 @@ export function StatementPanel({
             {statsReady
               ? solvers > 0
                 ? t(`Réussi par ${plural(lang, solvers, ['élève', 'élèves'], ['', ''])}`, `Solved by ${plural(lang, solvers, ['', ''], ['student', 'students'])}`)
-                : t('Personne ne l’a encore réussi', 'Nobody has solved it yet')
+                : t('Aucune réussite pour l’instant', 'No solves yet')
               : null}
           </span>
           {solved && (
             <span className="inline-flex items-center gap-1 font-medium text-ok">
-              <Check className="size-4" aria-hidden /> {t('Tu l’as réussi', 'You solved it')}
+              <Check className="size-4" aria-hidden /> {t('Réussi', 'Solved')}
             </span>
           )}
         </div>
@@ -429,7 +429,7 @@ export function StatementPanel({
             <StatementSection title={data.samples.length > 1 ? t('Exemples', 'Examples') : t('Exemple', 'Example')}>
               <Samples data={data} />
             </StatementSection>
-            {lang === 'en' && !data.text.en && !community && <p className="mt-8 text-sm text-muted">This problem has not been translated into English yet, so it is shown in French.</p>}
+            {lang === 'en' && !data.text.en && !community && <p className="mt-8 text-sm text-muted">Not yet translated into English: shown in French.</p>}
           </article>
         )}
         {tab === 'hints' && <Hints key={data.id} hints={text.hints} />}
@@ -474,7 +474,7 @@ function Strips({ items, samples, hidden, selected, onSelect }: { items: StripIt
           <p className="mb-2 text-xs text-muted">
             {ran.length
               ? t(`${hidden} tests cachés`, `${hidden} hidden tests`)
-              : t(`${hidden} tests cachés, lancés quand tu soumets`, `${hidden} hidden tests, run when you submit`)}
+              : t(`${hidden} tests cachés, lancés à la soumission`, `${hidden} hidden tests, run on submit`)}
           </p>
           <TestStrip results={hiddenItems} selected={selected} onSelect={onSelect} />
         </div>
@@ -549,7 +549,7 @@ function firstDiff(expected: string, got: string) {
 function DiffNote({ d }: { d: NonNullable<ReturnType<typeof firstDiff>> }) {
   const { t, lang } = useI18n()
   let line: string
-  if (d.gotCount === 0) line = t('Ton programme n’a rien affiché.', 'Your program printed nothing.')
+  if (d.gotCount === 0) line = t('Le programme n’a rien affiché.', 'The program printed nothing.')
   else if (d.exp !== undefined && d.got !== undefined)
     line =
       d.exp.toLowerCase() === d.got.toLowerCase()
@@ -557,13 +557,13 @@ function DiffNote({ d }: { d: NonNullable<ReturnType<typeof firstDiff>> }) {
         : t(`Premier écart à la valeur ${d.i + 1} : « ${short(d.exp)} » attendu, « ${short(d.got)} » affiché.`, `First difference at value ${d.i + 1}: expected “${short(d.exp)}”, got “${short(d.got)}”.`)
   else if (d.got === undefined)
     line = t(
-      `Ta sortie s’arrête après ${plural(lang, d.gotCount, ['valeur', 'valeurs'], ['', ''])} ; la sortie attendue en compte ${d.expCount}.`,
-      `Your output stops after ${plural(lang, d.gotCount, ['', ''], ['value', 'values'])}; the expected output has ${d.expCount}.`,
+      `Sortie arrêtée après ${plural(lang, d.gotCount, ['valeur', 'valeurs'], ['', ''])} ; la sortie attendue en compte ${d.expCount}.`,
+      `Output stops after ${plural(lang, d.gotCount, ['', ''], ['value', 'values'])}; the expected output has ${d.expCount}.`,
     )
   else
     line = t(
-      `Ta sortie continue après les ${d.expCount} valeurs attendues : « ${short(d.got!)} » est en trop.`,
-      `Your output goes on after the ${d.expCount} expected values: “${short(d.got!)}” is extra.`,
+      `Sortie prolongée au-delà des ${d.expCount} valeurs attendues : « ${short(d.got!)} » est en trop.`,
+      `Output goes on after the ${d.expCount} expected values: “${short(d.got!)}” is extra.`,
     )
   return (
     <p className="text-sm text-ink">
@@ -588,8 +588,8 @@ function TestDetail({ r, lang, limitMs, custom, skippedAfter, onUseInput }: { r:
             : '.'}{' '}
           <span className="text-ink-2">
             {t(
-              `Cherche une boucle qui ne s’arrête jamais, ou compte les opérations pour la plus grande entrée des contraintes. En ${LANG_NAME[otherLang]}, la limite est de ${seconds(ui, limitFor(otherLang, limitMs === limitFor(lang, 0) ? 0 : limitMs))}.`,
-              `Look for a loop that never ends, or count the operations for the largest input in the constraints. In ${LANG_NAME[otherLang]}, the limit is ${seconds(ui, limitFor(otherLang, limitMs === limitFor(lang, 0) ? 0 : limitMs))}.`,
+              `Chercher une boucle qui ne s’arrête jamais, ou compter les opérations pour la plus grande entrée des contraintes. Limite en ${LANG_NAME[otherLang]} : ${seconds(ui, limitFor(otherLang, limitMs === limitFor(lang, 0) ? 0 : limitMs))}.`,
+              `Look for a loop that never ends, or count the operations for the largest input in the constraints. Limit in ${LANG_NAME[otherLang]}: ${seconds(ui, limitFor(otherLang, limitMs === limitFor(lang, 0) ? 0 : limitMs))}.`,
             )}
           </span>
         </p>
@@ -600,7 +600,7 @@ function TestDetail({ r, lang, limitMs, custom, skippedAfter, onUseInput }: { r:
         <div className="flex min-h-10 items-center justify-between gap-3 border-b border-line bg-surface-2 px-3">
           <span className="flex min-w-0 items-center gap-2 text-sm">
             {!custom && <Cell state={cellStateOf(r.status)} label={statusText(t, r.status)} />}
-            <span className="font-medium">{custom ? t('Ton entrée', 'Your input') : t(`Test ${r.index + 1}`, `Test ${r.index + 1}`)}</span>
+            <span className="font-medium">{custom ? t('Entrée personnalisée', 'Custom input') : t(`Test ${r.index + 1}`, `Test ${r.index + 1}`)}</span>
             {!custom && <span className="truncate text-muted">{r.sample ? t(`exemple ${r.index + 1} de l’énoncé`, `example ${r.index + 1} from the statement`) : t('test caché', 'hidden test')}</span>}
           </span>
           <span className="shrink-0 text-xs text-muted">
@@ -619,13 +619,13 @@ function TestDetail({ r, lang, limitMs, custom, skippedAfter, onUseInput }: { r:
             <Row label={t('Sortie attendue', 'Expected output')}>
               <p className="text-sm text-ink-2">
                 {t(
-                  'Masquée : pour un test caché, ton navigateur ne reçoit qu’une empreinte SHA-256 de la sortie attendue, comparée à celle de ta sortie.',
-                  'Hidden: for a hidden test, your browser only receives a SHA-256 hash of the expected output, compared with the hash of yours.',
+                  'Masquée : pour un test caché, le navigateur ne reçoit qu’une empreinte SHA-256 de la sortie attendue, comparée à celle de la sortie obtenue.',
+                  'Hidden: for a hidden test, the browser only receives a SHA-256 hash of the expected output, compared with the hash of the actual output.',
                 )}
               </p>
             </Row>
           ) : null}
-          <Row label={t('Ta sortie', 'Your output')}>
+          <Row label={t('Sortie obtenue', 'Actual output')}>
             {r.stdout.trim() === '' ? (
               <p className="text-sm text-muted">{t('Rien n’a été affiché.', 'Nothing was printed.')}</p>
             ) : (
@@ -647,8 +647,8 @@ function TestDetail({ r, lang, limitMs, custom, skippedAfter, onUseInput }: { r:
             {t('Reprendre cette entrée', 'Reuse this input')}
           </Button>
           <span className="text-xs text-muted">
-            {t('Elle remplace ta propre entrée : corrige ton code, puis', 'It replaces your own input: fix your code, then')} <Keys keys={RUN_KEYS} className="inline-flex align-middle" />{' '}
-            {t('le relance dessus.', 'reruns it on that input.')}
+            {t('Remplace l’entrée personnalisée. Après correction du code,', 'Replaces the custom input. After fixing the code,')} <Keys keys={RUN_KEYS} className="inline-flex align-middle" />{' '}
+            {t('relance sur cette entrée.', 'reruns on that input.')}
           </span>
         </div>
       )}
@@ -668,15 +668,15 @@ function SuccessBlock({ o, data, next, onShowSolution }: { o: Outcome; data: Pro
         <p className="max-w-[60ch] text-sm text-ink">
           {!session ? (
             <>
+              {t('Réussite non comptée dans les statistiques de ce problème sans connexion. Les problèmes de la communauté ne rapportent pas de points.', 'Solve not counted in this problem’s statistics without signing in. Community problems give no points.')}{' '}
               <Link to="/connexion" className="font-medium text-accent underline underline-offset-2">
-                {t('Connecte-toi', 'Sign in')}
-              </Link>{' '}
-              {t('pour que ta réussite compte dans les statistiques de ce problème. Les problèmes de la communauté ne rapportent pas de points.', 'so that your solve counts in this problem’s statistics. Community problems give no points.')}
+                {t('Se connecter', 'Sign in')}
+              </Link>
             </>
           ) : o.recordError ? (
             <span className="text-bad">{o.recordError}</span>
           ) : o.recorded === undefined ? (
-            <Spinner label={t('Enregistrement de ta réussite…', 'Saving your solve…')} />
+            <Spinner label={t('Enregistrement de la réussite…', 'Saving the solve…')} />
           ) : (
             t('Réussite enregistrée. Les problèmes de la communauté ne rapportent pas de points.', 'Solve saved. Community problems give no points.')
           )}
@@ -715,19 +715,18 @@ function SuccessBlock({ o, data, next, onShowSolution }: { o: Outcome; data: Pro
             )}
           </>
         ) : rec ? (
-          <p className="text-sm text-ink">{t('Tu avais déjà réussi ce problème : cette version est enregistrée, sans points en plus.', 'You had already solved this problem: this version is saved, with no extra points.')}</p>
+          <p className="text-sm text-ink">{t('Déjà réussi : version enregistrée, sans points supplémentaires.', 'Already solved: version saved, with no extra points.')}</p>
         ) : !session ? (
           <p className="max-w-[52ch] text-sm text-ink">
-            {t('Réussite enregistrée sur cet appareil. ', 'Saved on this device. ')}
+            {t(`Réussite enregistrée sur cet appareil. Les ${data.points} points et le classement nécessitent un compte.`, `Solve saved on this device. The ${data.points} points and the leaderboard require an account.`)}{' '}
             <Link to="/inscription" className="font-medium text-accent underline underline-offset-2">
-              {t('Crée un compte', 'Create an account')}
-            </Link>{' '}
-            {t(`pour gagner les ${data.points} points et apparaître au classement.`, `to earn the ${data.points} points and appear on the leaderboard.`)}
+              {t('Créer un compte', 'Create an account')}
+            </Link>
           </p>
         ) : o.recordError ? (
           <p className="text-sm text-bad">{o.recordError}</p>
         ) : (
-          <Spinner label={t('Enregistrement de ta réussite…', 'Saving your solve…')} />
+          <Spinner label={t('Enregistrement de la réussite…', 'Saving the solve…')} />
         )}
       </div>
       <div className="flex flex-wrap gap-2">
@@ -780,8 +779,8 @@ function RunLog({
       <div>
         <p className="text-sm text-ink">
           {t(
-            `Ton programme sera jugé sur ${total} tests : ${samples > 1 ? `les ${samples} exemples` : 'l’exemple'} de l’énoncé, puis ${hidden} tests cachés.`,
-            `Your program will be judged on ${total} tests: the ${samples > 1 ? `${samples} examples` : 'example'} from the statement, then ${hidden} hidden tests.`,
+            `Jugement sur ${total} tests : ${samples > 1 ? `les ${samples} exemples` : 'l’exemple'} de l’énoncé, puis ${hidden} tests cachés.`,
+            `Judged on ${total} tests: the ${samples > 1 ? `${samples} examples` : 'example'} from the statement, then ${hidden} hidden tests.`,
           )}
         </p>
         <div className="mt-4">
@@ -799,8 +798,8 @@ function RunLog({
   if (o.phase === 'failed')
     return (
       <Notice tone="error">
-        {o.failure ?? t('Le juge n’a pas pu démarrer.', 'The judge could not start.')}{' '}
-        {t('Recharge la page puis relance ; si l’erreur revient, essaie un autre navigateur.', 'Reload the page and run again; if the error comes back, try another browser.')}
+        {o.failure ?? t('Démarrage du juge impossible.', 'The judge could not start.')}{' '}
+        {t('Recharger la page puis relancer ; si l’erreur persiste, essayer un autre navigateur.', 'Reload the page and run again; if the error persists, try another browser.')}
       </Notice>
     )
 
@@ -839,7 +838,7 @@ function RunLog({
         : o.phase === 'loading'
           ? t(`Démarrage de ${RUNTIME_NAME[lang]}…`, `Starting ${RUNTIME_NAME[lang]}…`)
           : custom
-            ? t('Exécution sur ton entrée…', 'Running on your input…')
+            ? t('Exécution sur l’entrée personnalisée…', 'Running on the custom input…')
             : t(`Test ${Math.min(finished + 1, r?.total ?? 1)} sur ${r?.total ?? 0}…`, `Test ${Math.min(finished + 1, r?.total ?? 1)} of ${r?.total ?? 0}…`)
     head = <Spinner label={label} className="text-ink-2" />
   } else if (custom) {
@@ -847,8 +846,8 @@ function RunLog({
     head = (
       <p className={cx('text-sm font-medium', x?.status === 'ok' ? 'text-ink' : 'text-bad')} aria-live="polite">
         {x?.status === 'ok'
-          ? t(`Exécuté sur ton entrée en ${x.timeMs} ms`, `Ran on your input in ${x.timeMs} ms`)
-          : `${statusText(t, x?.status ?? 'error').replace(/^./, (c) => c.toUpperCase())} ${t('sur ton entrée', 'on your input')}`}
+          ? t(`Exécuté sur l’entrée personnalisée en ${x.timeMs} ms`, `Ran on the custom input in ${x.timeMs} ms`)
+          : `${statusText(t, x?.status ?? 'error').replace(/^./, (c) => c.toUpperCase())} ${t('sur l’entrée personnalisée', 'on the custom input')}`}
       </p>
     )
   } else {
@@ -887,7 +886,7 @@ function RunLog({
       )}
       {accepted && o.mode === 'run' && (
         <p className="mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-ink-2">
-          {t(`Soumets pour lancer les ${hidden} tests cachés :`, `Submit to run the ${hidden} hidden tests:`)}
+          {t(`Soumettre pour lancer les ${hidden} tests cachés :`, `Submit to run the ${hidden} hidden tests:`)}
           <Keys keys={SUBMIT_KEYS} className="inline-flex" />
         </p>
       )}
@@ -968,7 +967,7 @@ export function Workspace({
     async (mode: Mode) => {
       if (busy) return
       if (!code.trim()) {
-        toast(t('Écris d’abord un programme dans l’éditeur.', 'Write a program in the editor first.'))
+        toast(t('Éditeur vide.', 'The editor is empty.'))
         return
       }
       setBusy(true)
@@ -1030,7 +1029,7 @@ export function Workspace({
   )
 
   const reset = () => {
-    if (window.confirm(t('Remplacer ton code par le code de départ ? Ton brouillon sera perdu.', 'Replace your code with the starting code? Your draft will be lost.'))) {
+    if (window.confirm(t('Remplacer le code par le code de départ ? Le brouillon actuel sera perdu.', 'Replace the code with the starting code? The current draft will be lost.'))) {
       setCode(defaultCode(data, lang, ui))
     }
   }
@@ -1081,8 +1080,8 @@ export function Workspace({
           value={code}
           onChange={setCode}
           lang={lang}
-          label={t('Ton code', 'Your code')}
-          placeholder={lang === 'python' ? t('# Écris ton programme ici', '# Write your program here') : undefined}
+          label={t('Code', 'Code')}
+          placeholder={lang === 'python' ? t('# Lecture avec input(), affichage avec print()', '# Read with input(), write with print()') : undefined}
           onRun={() => run(showCustom ? 'custom' : 'run')}
           onSubmit={() => run('submit')}
         />
@@ -1090,7 +1089,7 @@ export function Workspace({
       {showCustom && (
         <div className="border-t border-line px-3 pb-3 pt-2">
           <label htmlFor="custom-input" className="text-xs text-muted">
-            {t('Ton entrée, lue par ton programme comme une entrée de test', 'Your input, read by your program like a test input')}
+            {t('Entrée personnalisée, lue par le programme comme une entrée de test', 'Custom input, read by the program like a test input')}
           </label>
           <textarea
             ref={customRef}
@@ -1106,12 +1105,12 @@ export function Workspace({
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-3 py-2">
         <label className="flex min-h-9 items-center gap-2 text-sm text-ink-2">
           <input type="checkbox" checked={showCustom} onChange={(e) => setShowCustom(e.target.checked)} className="size-4 accent-[var(--accent)]" />
-          {t('Tester avec ma propre entrée', 'Test with my own input')}
+          {t('Tester avec une entrée personnalisée', 'Test with a custom input')}
         </label>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => run(showCustom ? 'custom' : 'run')} loading={runningOther} disabled={busy} aria-keyshortcuts={ARIA_RUN}>
             {!runningOther && <Play className="size-4" aria-hidden />}
-            {showCustom ? t('Exécuter sur mon entrée', 'Run on my input') : t('Tester les exemples', 'Run examples')}
+            {showCustom ? t('Exécuter sur l’entrée', 'Run on input') : t('Tester les exemples', 'Run examples')}
             <Keys keys={RUN_KEYS} className="ml-1 hidden xl:inline-flex" />
           </Button>
           <Button onClick={() => run('submit')} loading={runningSubmit} disabled={busy} aria-keyshortcuts={ARIA_SUBMIT}>
@@ -1206,7 +1205,7 @@ export function Problem() {
               </Button>
             }
           >
-            {t('L’énoncé n’a pas pu être chargé. Vérifie ta connexion.', 'The statement could not be loaded. Check your connection.')}
+            {t('Chargement de l’énoncé impossible. Vérifier la connexion internet puis réessayer.', 'The statement could not be loaded. Check the internet connection and try again.')}
           </Notice>
         </div>
       ) : !q.data ? (

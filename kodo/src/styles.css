@@ -197,11 +197,15 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
     text-rendering: optimizeLegibility;
   }
   body {
-    /* Identité discrète : la grille de cellules de Kodo, visible en haut de page puis fondue. */
+    /* Identité discrète : la grille de cellules de Kodo, visible en haut de page puis fondue,
+       sous une lueur d'accent très légère qui donne de la profondeur au haut de page. */
     background:
+      radial-gradient(1100px 480px at 86% -180px, color-mix(in oklab, var(--accent) 14%, transparent), transparent 72%) top / 100% 760px no-repeat,
+      radial-gradient(800px 360px at 4% -160px, color-mix(in oklab, var(--accent) 8%, transparent), transparent 70%) top / 100% 760px no-repeat,
       linear-gradient(to bottom, transparent 0, var(--bg) 760px) top / 100% 760px no-repeat,
       var(--pattern) top center / 192px 192px repeat-x,
       var(--pattern) 0 192px / 192px 192px repeat-x,
@@ -416,6 +420,39 @@
     transform: translateY(-6px);
   }
 }
+/* Logo : la branche du K se trace, puis la cellule s'allume. */
+@keyframes logo-arm {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes logo-cell {
+  0%,
+  50% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.logo-anim .logo-arm {
+  stroke-dasharray: 100;
+  animation: logo-arm 620ms var(--ease-out) 100ms both;
+}
+.logo-anim .logo-cell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logo-cell 1000ms var(--ease-out) both;
+}
 .anim-rise {
   animation: rise 360ms var(--ease-out) both;
 }
@@ -429,6 +466,9 @@
   animation: pulse-ring 1800ms var(--ease-out) infinite;
 }
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

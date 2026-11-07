@@ -11,7 +11,7 @@ export function DailyList({ daily, loading, solved }: { daily?: { level: string;
   const rows = levels
     .map((l) => ({ level: l, id: daily?.find((d) => d.level === l.id)?.problem_id }))
     .filter((r): r is { level: (typeof levels)[number]; id: string } => !!r.id && !!problemById(r.id))
-  if (!rows.length) return <p className="text-sm text-muted">{t('Le défi du jour n’a pas pu être chargé. Recharge la page.', 'The daily challenge could not be loaded. Reload the page.')}</p>
+  if (!rows.length) return <p className="text-sm text-muted">{t('Chargement du défi du jour impossible. Recharger la page.', 'The daily challenge could not be loaded. Reload the page.')}</p>
   return (
     <ul className="overflow-hidden rounded-lg bg-surface shadow-[inset_0_0_0_1px_var(--line),var(--edge)]">
       {rows.map(({ level, id }) => {

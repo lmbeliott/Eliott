@@ -142,10 +142,10 @@ function TopBar() {
   useEffect(() => setMenu(false), [location.pathname])
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-bg">
+    <header className="sticky top-0 z-30 border-b border-line bg-[color-mix(in_oklab,var(--bg)_84%,transparent)] backdrop-blur-md backdrop-saturate-150">
       <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-8 px-4 sm:px-6">
         <Link to="/" className="shrink-0 rounded-md" aria-label={t('Kodo, accueil', 'Kodo, home')}>
-          <Logo />
+          <Logo animate />
         </Link>
         <nav aria-label={t('Navigation principale', 'Main navigation')} className="hidden h-full items-stretch gap-0.5 lg:flex">
           {nav.map((n) => (

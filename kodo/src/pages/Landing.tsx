@@ -202,7 +202,7 @@ function TryIt() {
     line = (
       <span className="text-bad">
         {t(
-          'Python n’a pas pu démarrer dans ce navigateur. Recharge la page, puis relance les tests.',
+          'Démarrage de Python impossible dans ce navigateur. Recharger la page puis relancer les tests.',
           'Python could not start in this browser. Reload the page, then run the tests again.',
         )}
       </span>
@@ -212,19 +212,19 @@ function TryIt() {
       <span className="flex flex-col gap-1">
         <span className="inline-flex items-center gap-1.5 font-medium text-ok">
           <Check className="size-4 shrink-0" aria-hidden />
-          {t('3 tests sur 3. Ton programme est juste !', '3 tests out of 3. Your program is correct!')}
+          {t('3 tests sur 3 réussis.', '3 of 3 tests passed.')}
         </span>
         <span className="flex flex-col gap-1 text-ink-2">
           {hiddenCount !== null ? (
             <span>
               {t(
-                `Sur sa page, le problème a ${hiddenCount} tests cachés de plus et rapporte ${pts(lang, first.points)}.`,
-                `On its page, the problem has ${hiddenCount} more hidden tests and is worth ${pts(lang, first.points)}.`,
+                `Problème complet : ${hiddenCount} tests cachés supplémentaires, ${pts(lang, first.points)}.`,
+                `Full problem: ${hiddenCount} additional hidden tests, ${pts(lang, first.points)}.`,
               )}
             </span>
           ) : null}
           <Link to={`/probleme/${FIRST_ID}`} className="self-start font-medium text-accent underline-offset-2 hover:underline">
-            {t('Le soumettre avec ce code', 'Submit it with this code')}
+            {t('Soumettre ce code', 'Submit this code')}
           </Link>
         </span>
       </span>
@@ -240,15 +240,15 @@ function TryIt() {
         <span>
           {firstBad.status === 'wrong'
             ? got
-              ? t(`Test ${n} : attendu ${exp}, ton programme affiche ${got}.`, `Test ${n}: expected ${exp}, your program prints ${got}.`)
-              : t(`Test ${n} : attendu ${exp}, ton programme n’affiche rien.`, `Test ${n}: expected ${exp}, your program prints nothing.`)
+              ? t(`Test ${n} : attendu ${exp}, obtenu ${got}.`, `Test ${n}: expected ${exp}, got ${got}.`)
+              : t(`Test ${n} : attendu ${exp}, sortie vide.`, `Test ${n}: expected ${exp}, empty output.`)
             : firstBad.status === 'timeout'
-              ? t(`Test ${n} : plus de ${DEMO_LIMIT / 1000} s, le juge l’a arrêté.`, `Test ${n}: over ${DEMO_LIMIT / 1000} s, the judge stopped it.`)
+              ? t(`Test ${n} : plus de ${DEMO_LIMIT / 1000} s, arrêté par le juge.`, `Test ${n}: over ${DEMO_LIMIT / 1000} s, stopped by the judge.`)
               : `${t(`Test ${n} : `, `Test ${n}: `)}${explainError('python', firstBad.stderr, lang) ?? lastErr}`}
         </span>
       </span>
     )
-  } else line = <span className="text-muted">{t('Le premier lancement charge Python 3.14 dans la page : 7,5 Mo.', 'The first run loads Python 3.14 into the page: 7.5 MB.')}</span>
+  } else line = <span className="text-muted">{t('Premier lancement : chargement de Python 3.14 dans la page (7,5 Mo).', 'First run: Python 3.14 loads into the page (7.5 MB).')}</span>
 
   return (
     <section aria-labelledby="essai-titre" className="overflow-hidden rounded-xl bg-surface shadow-[inset_0_0_0_1px_var(--line-strong),var(--edge)]">
@@ -261,7 +261,7 @@ function TryIt() {
         </div>
         <p className="mt-1 text-sm text-ink-2">
           {t(
-            'Lis deux entiers sur une ligne et affiche leur somme. Ce programme se trompe d’opération à la ligne 2.',
+            'Lire deux entiers sur une ligne et afficher leur somme. Ce programme utilise la mauvaise opération à la ligne 2.',
             'Read two integers on one line and print their sum. This program uses the wrong operation on line 2.',
           )}
         </p>
@@ -287,7 +287,7 @@ function TryIt() {
               {t('Attendu', 'Expected')}
             </th>
             <th scope="col" className="pr-4 font-medium sm:pr-5">
-              {t('Ta sortie', 'Your output')}
+              {t('Obtenu', 'Actual')}
             </th>
           </tr>
         </thead>
@@ -310,7 +310,7 @@ function TryIt() {
                 ) : r.status === 'timeout' ? (
                   t('trop long', 'too slow')
                 ) : (
-                  oneLine(r.stdout) || t('(rien)', '(nothing)')
+                  oneLine(r.stdout) || t('(vide)', '(empty)')
                 )}
               </td>
             </tr>
@@ -398,7 +398,7 @@ function HiddenTestExample() {
                 <dd className="mt-1 font-mono text-[0.8125rem]">{THRESHOLD.input}</dd>
               </div>
               <div className="px-4 py-3">
-                <dt className="text-xs text-muted">{t('Ta sortie', 'Your output')}</dt>
+                <dt className="text-xs text-muted">{t('Sortie obtenue', 'Actual output')}</dt>
                 <dd className="mt-1 font-mono text-[0.8125rem] text-bad">{THRESHOLD.output}</dd>
               </div>
               <div className="col-span-2 border-t border-line px-4 py-3">
@@ -413,8 +413,8 @@ function HiddenTestExample() {
         <WithCode
           code={['8', 't >= 8']}
           text={t(
-            'Un test caché te montre son entrée, jamais la sortie attendue. Ici, l’entrée 8 suffit pour voir que la condition doit être t >= 8.',
-            'A hidden test shows you its input, never the expected output. Here, the input 8 is enough to see that the condition must be t >= 8.',
+            'Un test caché affiche son entrée, jamais la sortie attendue. Ici, l’entrée 8 suffit à montrer que la condition doit être t >= 8.',
+            'A hidden test shows its input, never the expected output. Here, the input 8 is enough to show that the condition must be t >= 8.',
           )}
         />
       </p>
@@ -638,8 +638,8 @@ export function Landing() {
           </h1>
           <p className="mt-6 max-w-[34rem] text-lg leading-[1.55] text-ink-2">
             {t(
-              `${problemList.length} problèmes à résoudre en Python ou en C++, jugés dans ton navigateur sur des tests cachés. Chaque chapitre s’ouvre sur un cours de ${lessonMinutes} minutes, et chaque problème réussi rapporte des points au classement de ta classe.`,
-              `${problemList.length} problems to solve in Python or C++, judged in your browser against hidden tests. Each chapter opens with a ${lessonMinutes}-minute lesson, and every solved problem earns points on your class leaderboard.`,
+              `${problemList.length} problèmes en Python ou en C++, jugés dans le navigateur sur des tests cachés. Chaque chapitre s’ouvre sur un cours de ${lessonMinutes} minutes ; chaque problème réussi rapporte des points au classement de la classe.`,
+              `${problemList.length} problems in Python or C++, judged in the browser against hidden tests. Each chapter opens with a ${lessonMinutes}-minute lesson; every solved problem earns points on the class leaderboard.`,
             )}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -652,8 +652,8 @@ export function Landing() {
           </div>
           <p className="mt-5 max-w-[34rem] text-sm text-muted">
             {t(
-              'Sans compte, ta progression reste sur cet appareil. Quand tu t’inscris, elle est transférée sur ton compte.',
-              'Without an account, your progress stays on this device. When you sign up, it moves to your account.',
+              'Sans compte, progression conservée sur cet appareil, puis transférée au compte à l’inscription.',
+              'Without an account, progress is kept on this device, then moved to the account on sign-up.',
             )}
           </p>
         </div>
@@ -722,8 +722,8 @@ export function Landing() {
               </h2>
               <p className="mt-3 text-ink-2">
                 {t(
-                  'Pour les profs : un groupe réunit tes élèves, suit ce que chacun a résolu et a son propre classement, de la semaine ou depuis le début.',
-                  'For teachers: a group brings your students together, tracks what each one solved and has its own leaderboard, for the week or all time.',
+                  'Pour les profs : un groupe réunit les élèves d’une classe, suit les problèmes résolus par chacun et a son propre classement, de la semaine ou depuis le début.',
+                  'For teachers: a group brings a class’s students together, tracks what each one solved and has its own leaderboard, for the week or all time.',
                 )}
               </p>
               <LinkButton to="/groupes" variant="secondary" className="mt-6">
@@ -735,8 +735,8 @@ export function Landing() {
                 [
                   t('Un code à 6 caractères', 'A 6-character code'),
                   t(
-                    'Kodo génère un code comme K7QM2P. Tes élèves le saisissent dans Groupes, ou ouvrent le lien d’invitation que tu leur envoies.',
-                    'Kodo generates a code such as K7QM2P. Your students type it in Groups, or open the invite link you send them.',
+                    'Kodo génère un code comme K7QM2P. Les élèves le saisissent dans Groupes, ou ouvrent le lien d’invitation envoyé par le prof.',
+                    'Kodo generates a code such as K7QM2P. Students type it in Groups, or open the invite link sent by the teacher.',
                   ),
                 ],
                 [
@@ -749,8 +749,8 @@ export function Landing() {
                 [
                   t('Le programme de chaque soumission', 'The program behind each submission'),
                   t(
-                    'Clique sur un élève : ses 30 dernières soumissions s’affichent avec le code envoyé, le langage et le nombre de tests passés.',
-                    'Click a student: their last 30 submissions appear with the code sent, the language and the number of tests passed.',
+                    'Un clic sur un élève affiche ses 30 dernières soumissions, avec le code envoyé, le langage et le nombre de tests passés.',
+                    'Clicking a student shows their last 30 submissions, with the code sent, the language and the number of tests passed.',
                   ),
                 ],
               ].map(([term, text]) => (
@@ -776,8 +776,8 @@ export function Landing() {
             </h2>
             <p className="mt-3 text-ink-2">
               {t(
-                'Les points gagnés depuis lundi, heure de Paris. Un problème rapporte ses points une seule fois, +20 % si ta première soumission est la bonne, +50 % s’il fait partie du défi du jour.',
-                'Points earned since Monday, Paris time. A problem pays its points once, +20% if your first submission is accepted, +50% if it is part of the daily challenge.',
+                'Points gagnés depuis lundi, heure de Paris. Un problème rapporte ses points une seule fois, +20 % si la première soumission est acceptée, +50 % s’il fait partie du défi du jour.',
+                'Points earned since Monday, Paris time. A problem pays its points once, +20% if the first submission is accepted, +50% if it is part of the daily challenge.',
               )}
             </p>
             <Link to="/classements" className="mt-4 inline-block text-sm font-medium text-accent underline-offset-2 hover:underline">
@@ -791,11 +791,11 @@ export function Landing() {
               compact
               empty={
                 <Panel className="px-5 py-6">
-                  <p className="font-medium">{t('Personne n’a marqué de points depuis lundi.', 'Nobody has scored since Monday.')}</p>
+                  <p className="font-medium">{t('Aucun point marqué depuis lundi.', 'No points scored since Monday.')}</p>
                   <p className="mt-1 text-sm text-ink-2">
                     {t(
-                      `Le classement repart de zéro chaque lundi. Avec un compte, ${firstTitle} réussi te place en tête avec ${pts(lang, first.points)}.`,
-                      `The leaderboard resets every Monday. With an account, solving ${firstTitle} puts you first with ${pts(lang, first.points)}.`,
+                      `Remise à zéro chaque lundi. Avec un compte, réussir ${firstTitle} suffit pour passer en tête (${pts(lang, first.points)}).`,
+                      `Resets every Monday. With an account, solving ${firstTitle} is enough to take first place (${pts(lang, first.points)}).`,
                     )}
                   </p>
                   <LinkButton to="/inscription" variant="secondary" size="sm" className="mt-4">

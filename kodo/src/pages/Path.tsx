@@ -78,8 +78,8 @@ export function Path() {
         {progress.guest ? (
           <>
             {t(
-              `Sans compte, tes réussites restent dans ce navigateur et ne rapportent pas de points. Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus. `,
-              `Without an account, your solved problems stay in this browser and earn no points. The ${total} problems are worth ${formatPoints(lang, totalPoints)} before bonuses. `,
+              `Sans compte, réussites conservées dans ce navigateur, sans points. Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus. `,
+              `Without an account, solved problems are kept in this browser and earn no points. The ${total} problems are worth ${formatPoints(lang, totalPoints)} before bonuses. `,
             )}
             <Link to="/inscription" className="font-medium text-ink underline underline-offset-2 hover:text-accent">
               {t('Créer un compte', 'Create an account')}
@@ -87,8 +87,8 @@ export function Path() {
           </>
         ) : (
           t(
-            `Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus : +20 % si ta première soumission est acceptée, +50 % pour le défi du jour.`,
-            `The ${total} problems are worth ${formatPoints(lang, totalPoints)} before bonuses: +20% if your first submission is accepted, +50% for the daily challenge.`,
+            `Les ${total} problèmes valent ${formatPoints(lang, totalPoints)} hors bonus : +20 % si la première soumission est acceptée, +50 % pour le défi du jour.`,
+            `The ${total} problems are worth ${formatPoints(lang, totalPoints)} before bonuses: +20% if the first submission is accepted, +50% for the daily challenge.`,
           )
         )}
       </p>
