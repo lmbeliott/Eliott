@@ -18,16 +18,40 @@ tests.append(texte(2, 100, []))
 tests.append(texte(2, 7, [(1, 2, 7, 4), (1, 2, 8, 1), (2, 2, 1, 1)]))
 for n, m in [(6, 10), (12, 25), (40, 80), (200, 400)]:
     tests.append(texte(n, random.randint(10, 60), alea(n, m, 20, 50)))
-# grands : chemin court mais cher, chemins longs et bon marché
-n = 10000
-ch = [(i, i + 1, 100, random.randint(1, 1000)) for i in range(1, n)][:4000]
-routes = ch + alea(n, 1000, 10 ** 6, 10 ** 6)
-random.shuffle(routes)
-tests.append(texte(n, 10 ** 12, routes))
-n = 3000
-routes = alea(n, 5000, 1000, 10 ** 6)
-tests.append(texte(n, 9000, routes))
+# grands
+import heapq
+
+
+def plus_court(n, routes):
+    vois = [[] for _ in range(n + 1)]
+    for a, b, l, t in routes:
+        vois[a].append((b, l))
+        vois[b].append((a, l))
+    dist = [None] * (n + 1)
+    dist[1] = 0
+    tas = [(0, 1)]
+    while tas:
+        d, u = heapq.heappop(tas)
+        if d > dist[u]:
+            continue
+        for v, l in vois[u]:
+            if dist[v] is None or d + l < dist[v]:
+                dist[v] = d + l
+                heapq.heappush(tas, (d + l, v))
+    return dist[n]
+
+
+# une seule chaîne de 1 à N, plus des raccourcis longs et chers
 n = 5000
-routes = alea(n, 5000, 10 ** 6, 5000)
-tests.append(texte(n, 3 * 10 ** 6, routes))
+routes = [(i, i + 1, 100, random.randint(1, 1000)) for i in range(1, n)]
+routes += [(random.randint(1, n), random.randint(1, n), random.randint(10 ** 5, 10 ** 6), random.randint(500, 10 ** 6)) for _ in range(1000)]
+random.shuffle(routes)
+tests.append(texte(n, 600000, routes))
+for n, m, lmax, tmax, facteur in [(2000, 6000, 1000, 10 ** 6, 1.5), (5000, 6000, 10 ** 6, 5000, 2), (3000, 6000, 10 ** 6, 10 ** 6, 1)]:
+    while True:
+        routes = alea(n, m, lmax, tmax)
+        d = plus_court(n, routes)
+        if d is not None:
+            break
+    tests.append(texte(n, int(d * facteur), routes))
 print(json.dumps(tests))
