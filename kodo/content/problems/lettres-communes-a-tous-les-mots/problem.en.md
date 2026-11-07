@@ -23,8 +23,8 @@ The common letters stuck together, in alphabetical order, on a single line. If t
 3. A set has no order: to print in alphabetical order, go through the letters from `a` to `z` with `ord` and `chr`, and keep those that are in the set.
 
 ## Solution
-The set `common` contains, at each step, the letters present in all the words read so far. At the start, these are the letters of the first word. For each following word, replace `common` with its **intersection** with the set of letters of that word: a letter missing from the word disappears, the others remain. After the last word, `common` contains exactly the letters present everywhere.
+The set `communes` ("common") contains, at each step, the letters present in all the words read so far. At the start, these are the letters of the first word. For each following word, replace `communes` with its **intersection** with the set of letters of that word: a letter missing from the word disappears, the others remain. After the last word, `communes` contains exactly the letters present everywhere.
 
-For the output, don't go through the set itself, since the order of its elements is not guaranteed in Python. Go through the 26 letters from `a` to `z` (codes `ord("a")` to `ord("z")`) and keep those in `common`.
+For the output, don't go through the set itself, since the order of its elements is not guaranteed in Python. Go through the 26 letters from `a` to `z` (codes `ord("a")` to `ord("z")`) and keep those in `communes`.
 
-In C++, there is no `&` operator for sets: build the intersection by hand, keeping the elements of `common` that are also found in the set of letters of the word. Think of the case `N = 1` (all the letters of the word) and of the case where the intersection becomes empty (`AUCUNE`).
+In C++, there is no `&` operator for sets: build the intersection by hand, keeping the elements of `communes` that are also found in the set of letters of the word. Think of the case `N = 1` (all the letters of the word) and of the case where the intersection becomes empty (`AUCUNE`).

@@ -1,8 +1,9 @@
 a = input()
 b = input()
-reponse = -1
-for k in range(len(a)):
-    if a[k:] + a[:k] == b:     # le mot tourné de k crans
-        reponse = k
-        break                  # on garde le plus petit k
-print(reponse)
+k = 0
+while k < len(a) and a[k:] + a[:k] != b:   # a[k:] + a[:k] : le mot tourné de k crans
+    k = k + 1                              # on s'arrête au plus petit k qui convient
+if k < len(a):
+    print(k)
+else:
+    print(-1)

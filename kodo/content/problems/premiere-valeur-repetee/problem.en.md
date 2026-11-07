@@ -23,10 +23,10 @@ The repeated value and its position, separated by a space. If all values are dif
 3. As soon as a repetition is found, you can stop the loop with `break`.
 
 ## Solution
-Go through the sequence while keeping a **set** `seen` of the values already read. For each value `v`, at position `i`:
+Go through the sequence while keeping a **set** `vues` ("seen") of the values already read. For each value `v`, at position `i`:
 
-- if `v` is in `seen`, this is the first repetition: print `v` and `i`, and stop;
-- otherwise, add `v` to `seen` and continue.
+- if `v` is in `vues`, this is the first repetition: print `v` and `i`, and stop;
+- otherwise, add `v` to `vues` and continue.
 
 The order of the two operations matters: if you add `v` before testing, every value looks repeated as soon as it first appears.
 

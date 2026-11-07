@@ -28,6 +28,6 @@ First compute two integers: `S`, the sum of the `grade × coefficient`, and `C`,
 
 The trap is to do the division with decimal numbers, then round with `round` or by printing one decimal. In Python, `round` rounds halves towards the even digit (`round(0.25, 1)` gives `0.2`), and anyway `12.25` or `13.35` are not represented exactly by the machine: the result depends on tiny errors.
 
-So stay with integers. The number of tenths you want is the integer nearest to `10 × S / C`. For a positive quotient `a / b`, adding one half then taking the integer part gives the rounding with halves up: `⌊a / b + 1/2⌋ = ⌊(2a + b) / (2b)⌋`. With `a = 10 × S` and `b = C`, you get `(20 × S + C) // (2 × C)`. A small function `round_to_tenth` isolates this computation and makes it easy to test.
+So stay with integers. The number of tenths you want is the integer nearest to `10 × S / C`. For a positive quotient `a / b`, adding one half then taking the integer part gives the rounding with halves up: `⌊a / b + 1/2⌋ = ⌊(2a + b) / (2b)⌋`. With `a = 10 × S` and `b = C`, you get `(20 × S + C) // (2 × C)`. A small function `arrondi_au_dixieme` ("round to the tenth") isolates this computation and makes it easy to test.
 
-For the output, `tenths // 10` is the integer part and `tenths % 10` the digit after the dot: 123 tenths are written `12.3`, and 150 tenths `15.0`, with the final zero.
+For the output, `dixiemes // 10` (the number of tenths) is the integer part and `dixiemes % 10` the digit after the dot: 123 tenths are written `12.3`, and 150 tenths `15.0`, with the final zero.

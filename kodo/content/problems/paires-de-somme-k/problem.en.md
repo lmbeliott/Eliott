@@ -26,10 +26,10 @@ A single integer: the number of pairs.
 ## Solution
 A pair `(i, j)` with `i < j` is counted when its second value `Aⱼ` is read. At that moment, you only need to know how many values already read are equal to `K - Aⱼ`: each of them forms a pair with `Aⱼ`.
 
-So keep a dictionary `seen` that maps each value to its number of occurrences among the values read before the current position. For each new value `x`:
+So keep a dictionary `deja_vus` ("already seen") that maps each value to its number of occurrences among the values read before the current position. For each new value `x`:
 
-1. add `seen.get(K - x, 0)` to the number of pairs;
-2. then increase `seen[x]` by 1.
+1. add `deja_vus.get(K - x, 0)` to the number of pairs;
+2. then increase `deja_vus[x]` by 1.
 
 The order matters: if you added `x` first, a value `x` equal to `K - x` (that is, `x = K / 2`) would form a pair with itself. With the right order, `c` values equal to `K / 2` correctly give 0 + 1 + … + (c - 1) = c × (c - 1) / 2 pairs.
 

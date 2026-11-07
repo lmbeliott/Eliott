@@ -20,7 +20,7 @@ tests.append(test("a" * 2000, "a" * 2000))
 a = "a" * 1999 + "b"
 tests.append(test(a, a[1998:] + a[:1998]))              # K = 1998
 tests.append(test(a, "a" * 1998 + "ba"))               # K = 1
-tests.append(test("a" * 1999 + "b", "a" * 1998 + "bb"))  # même lettres ? non : -1
+tests.append(test("a" * 1999 + "b", "a" * 1998 + "bb"))  # pas une rotation : -1
 x = mot(2000, "ab")
 tests.append(test(x, x[1234:] + x[:1234]))
 y = mot(2000)

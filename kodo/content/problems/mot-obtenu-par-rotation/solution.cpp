@@ -5,13 +5,15 @@ using namespace std;
 int main() {
     string a, b;
     cin >> a >> b;
-    int reponse = -1;
-    for (int k = 0; k < (int) a.size(); k++) {
-        if (a.substr(k) + a.substr(0, k) == b) {   // le mot tourné de k crans
-            reponse = k;
-            break;                                 // on garde le plus petit k
-        }
+    int n = a.size();
+    int k = 0;
+    while (k < n && a.substr(k) + a.substr(0, k) != b) {   // le mot tourné de k crans
+        k = k + 1;                                         // on s'arrête au plus petit k qui convient
     }
-    cout << reponse << "\n";
+    if (k < n) {
+        cout << k << "\n";
+    } else {
+        cout << -1 << "\n";
+    }
     return 0;
 }

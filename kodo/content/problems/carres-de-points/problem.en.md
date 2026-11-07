@@ -26,7 +26,7 @@ A single integer: the number of squares.
 ## Solution
 A square is fully determined by one of its sides and by which side of it the square lies on. Take two points `A` and `B`, and let `(dx, dy) = (xB - xA, yB - yA)`. Turning this vector a quarter turn counterclockwise gives `(-dy, dx)`: same length, perpendicular direction. The points `C = B + (-dy, dx)` and `D = A + (-dy, dx)` then complete `A`, `B` into a square `ABCD`, traversed counterclockwise.
 
-Store all the points in a **set of pairs** `(x, y)`. For each ordered pair `(A, B)` of different points, compute `C` and `D` and test whether they are in the set. A small function `is_present(x, y)` makes this test readable.
+Store all the points in a **set of pairs** `(x, y)`. For each ordered pair `(A, B)` of different points, compute `C` and `D` and test whether they are in the set. A small function `est_present(x, y)` ("is present") makes this test readable.
 
 How many times is each square counted? A square has four sides; traversed counterclockwise, each one gives exactly one ordered pair `(A, B)` for which the test succeeds. The pair `(B, A)` builds the square on the other side of `AB`. Each square is therefore counted exactly 4 times, and the answer is the total divided by 4.
 
